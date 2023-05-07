@@ -1,5 +1,5 @@
 {
-  "name": "@china-caesar/devx-service",
+  "name": "devx",
   "version": "1.0.0",
   "description": "",
   "main": "app.js",
@@ -7,9 +7,13 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node app.js"
   },
+  "bin": {
+    "devx": "app.js"
+  },
   "author": "Caesar Liu",
   "license": "ISC",
   "dependencies": {
+    "adcd": "file:../../node-cli-core",
     "cookie-parser": "^1.4.6",
     "express": "^4.18.2",
     "morgan": "^1.10.0",

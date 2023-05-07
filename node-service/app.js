@@ -1,4 +1,7 @@
-var createError = require('http-errors');
+#!/usr/bin/env node
+// 禁用 DeprecationWarning
+process.noDeprecation = true
+
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');

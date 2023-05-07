@@ -10,11 +10,11 @@ class Request {
   }
 
   send (callback) {
-    let result = callback
-    if (typeof callback === 'function') {
-      result = callback()
-    }
     router[this.#methods](this.#url, function(req, res, next) {
+      let result = callback
+      if (typeof callback === 'function') {
+        result = callback()
+      }
       res.send(result);
     })
     return router

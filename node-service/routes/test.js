@@ -1,8 +1,11 @@
 const request = require('../utils/request')
+const { init, build } = require('adcd')
 
 // test api
 request
   .get('/test')
-  .send('你好')
+  .send(() => {
+    build.exec()
+  })
 
 module.exports = request.router
