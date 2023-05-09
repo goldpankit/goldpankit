@@ -11,7 +11,7 @@ const app = createSSRApp(App)
 
 app.use(router)
 app.use(ElementUI, {
-  size: 'large'
+  size: 'default'
 })
 
 app.mount('#app')
