@@ -15,4 +15,8 @@
   .el-input, .el-textarea {
     --el-input-focus-border-color: var(--input-border-color);
   }
+  // 下拉框
+  .el-select {
+    --el-select-input-focus-border-color: var(--input-border-color);
+  }
 }
