@@ -5,10 +5,13 @@
       <el-form-item label="Factory Name" required>
         <el-input/>
       </el-form-item>
-      <el-form-item label="Factory Name" required>
-        <i18n-input/>
+      <el-form-item label="Description" required>
+        <i18n-input type="textarea"/>
       </el-form-item>
     </el-form>
+    <div class="opera">
+      <el-button type="primary">Create Factory</el-button>
+    </div>
   </div>
 </template>
 
@@ -24,15 +27,30 @@ export default {
 <style scoped lang="scss">
 .form {
   width: 500px;
-  height: 600px;
   background-color: #fff;
   margin: 30px auto 0 auto;
+  padding-bottom: 30px;
+  // 标题
   h2 {
     text-align: center;
     padding: 30px 0;
   }
+  // 表单
   .el-form {
     padding: 0 30px;
+    :deep(.el-form-item) {
+      flex-direction: column;
+      .el-form-item__label {
+        justify-content: flex-start;
+      }
+    }
+  }
+  // 操作
+  .opera {
+    margin-top: 120px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 }
 </style>

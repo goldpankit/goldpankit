@@ -12,9 +12,8 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import "../assets/style/app";
 header {
   padding: 10px 30px;
-  font-size: $font-size-big;
+  font-size: var(--font-size-big);
 }
 </style>

@@ -1,19 +1,56 @@
 <template>
-  <div>
+  <div class="i18n-input">
     <ul>
-      <li>中文</li>
+      <li class="selected">中文</li>
       <li>English</li>
     </ul>
-    <el-input/>
+    <el-input v-if="type === 'text'" :maxlength="maxlength"/>
+    <el-input
+      v-else-if="type === 'textarea'"
+      type="textarea"
+      resize="none"
+      :rows="rows"
+      :maxlength="maxlength"
+    />
   </div>
 </template>
 
 <script>
 export default {
-  name: "I18nInput"
+  name: 'I18nInput',
+  props: {
+    type: {
+      default: 'text'
+    },
+    // 最大输入长度
+    maxlength: {
+      default: null
+    },
+    // textarea配置
+    rows: {
+      default: 5
+    },
+    resize: {
+      default: 'none'
+    }
+  }
 }
 </script>
 
-<style scoped>
-
+<style scoped lang="scss">
+.i18n-input {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  & > ul {
+    display: flex;
+    li {
+      margin-right: 10px;
+      cursor: default;
+      &.selected {
+        font-weight: bold;
+      }
+    }
+  }
+}
 </style>
