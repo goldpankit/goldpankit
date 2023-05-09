@@ -1,3 +1,16 @@
+@import "variables";
 html {
-  text-align: center;
+  body {
+    margin: 0;
+    padding: 0;
+    font-size: $font-size;
+    color: $font-color;
+  }
+  h1,h2,h3,h4,h5,h6,ul,li,p {
+    margin: 0;
+    padding: 0;
+  }
+  ul,ol {
+    list-style: none;
+  }
 }
