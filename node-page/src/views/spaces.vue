@@ -1,135 +1,86 @@
 <template>
-  <AppLayout :header-visible="false">
-    <header>
-      DevX
-      <div class="buts">
-        <el-button>Databases</el-button>
-        <el-button>Create Factory</el-button>
-        <el-button>Create Template</el-button>
-      </div>
-    </header>
-    <main></main>
-    <footer>
+  <div class="main">
+    <div class="blank"></div>
+    <div class="space-warp">
+      <h3>Public Spaces</h3>
       <ul>
-        <li class="title"><h4>factories</h4></li>
         <li v-for="item of 3" :key="item">
-          <h4>Eva for Java</h4>
-          <p>eva用于研发管理系统，+目前已超过4000目前已超过4000目前已超过4000目前已超过4000，由devx团队研发和维护</p>
+          <h5>Eva for Java</h5>
+          <p>eva用于研发管理系统eva用于研发管理系统eva用于研发管理系统eva用于研发管理系统，目前已超过4000+项目沉淀，由devx团队研发和维护</p>
           <span>Java ·SpringBoot·MyBatisPlus·MySQL</span>
-          <div class="install">
+          <div class="install-box">
             <span>last modified by 2023/5/7</span>
             <el-button>Install</el-button>
           </div>
         </li>
       </ul>
-    </footer>
-  </AppLayout>
+    </div>
+  </div>
 </template>
 
 <script>
-import AppLayout from '@/layouts/AppLayout.vue'
 export default {
-  name: 'list',
-  components: { AppLayout }
 }
 </script>
 
 <style scoped lang="scss">
-header {
-  padding: 5px 30px;
-  display: flex;
-  align-items: center;
-  font-size: var(--font-size-big);
-  background-color: var(--primary-color);
-  .buts {
-    width: 100%;
-    display: flex;
-    justify-content: right;
-    button {
-      height: 40px;
-      border: 0;
-      background-color: rgba(99, 245, 88, 1);
-      color: var(--font-color);
-      &:hover {
-        color: var(--font-color);
-      }
-      &:active {
-        color: var(--font-color);
-      }
-    }
+.main {
+  .blank {
+    height: 200px;
+    background-color: rgba(224, 224, 224, 1);
   }
-}
-main {
-  height: 200px;
-  background-color: rgba(224, 224, 224, 1);
-}
-footer {
-  box-sizing: border-box;
-  background-color: var(--background-color);
-  ul {
+  .space-warp {
     width: 830px;
-    display: flex;
-    flex-wrap: wrap;
-    margin: 50px auto 0 auto;
-    justify-content: space-between;
-    li {
-      width: 400px;
-      height: 200px;
-      padding: 20px 20px 10px 20px;
-      box-sizing: border-box;
-      background-color: #fff;
-      margin-bottom: 20px;
+    margin: 30px auto 0 auto;
+    h3 {
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+    ul {
+      width: 100%;
       display: flex;
-      flex-direction: column;
       justify-content: space-between;
-      font-size: 16px;
-      p {
-        overflow: hidden;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-      }
-      h4 {
-        margin: 0;
-        padding: 0;
-        font-size: 20px;
-      }
-      &.title {
-        width: 100%;
-        height: 40px;
-        padding: 0;
-        line-height: 40px;
-        margin: 0;
-        background-color: var(--background-color);
-        font-size: 20px;
-      }
-      span {
-        color: #747474;
-      }
-      .install {
+      flex-wrap: wrap;
+      li {
+        width: 400px;
+        margin-bottom: 20px;
+        height: 180px;
+        padding: 15px;
+        box-sizing: border-box;
+        background-color: #fff;
         display: flex;
+        flex-direction: column;
         justify-content: space-between;
-        align-items: center;
-        font-size: 14px;
-        span {
-          color: rgba(181, 181, 181, 1);
+        font-size: var(--font-size-middle);
+        h5 {
+          font-size: var(--font-size-title);
         }
-        button {
-          height: 30px;
-          width: 100px;
-          border-radius: 20px;
-          border: 0;
+        p {
           color: var(--font-color);
-          background-color: var(--primary-color);
-          &:hover {
-            color: var(--font-color);
+          overflow: hidden;
+          text-overflow: ellipsis;
+          -webkit-line-clamp: 2;
+          display: -webkit-box;
+          -webkit-box-orient: vertical;
+        }
+        span {
+          color: #747474;
+          font-weight: 400;
+        }
+        .install-box {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          span {
+            color: rgba(181, 181, 181, 1);
+            font-size: var(--font-size);
           }
-          &:active {
-            color: var(--font-color);
+          button {
+            background-color: var(--primary-color);
+            border: 0;
           }
         }
       }
-
     }
   }
 }

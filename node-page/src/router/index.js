@@ -6,11 +6,6 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/spaces',
-      name: 'PublicSpaces',
-      component: () => import('@/views/spaces.vue')
-    },
-    {
       path: '/',
       name: 'DefaultLayout',
       component: DefaultLayout,
@@ -58,9 +53,9 @@ const router = createRouter({
       component: AppLayout,
       children: [
         {
-          path: '/warehouse',
-          name: 'warehouse',
-          component: () => import('@/views/template/warehouse.vue')
+          path: '/spaces',
+          name: 'PublicSpaces',
+          component: () => import('@/views/spaces.vue')
         }
       ]
     }
