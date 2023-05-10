@@ -27,11 +27,10 @@
 </template>
 
 <script>
-import WorkspaceLayout from '@/layouts/WorkspaceLayout.vue'
 import AppLayout from '@/layouts/AppLayout.vue'
 export default {
   name: 'list',
-  components: { AppLayout, WorkspaceLayout }
+  components: { AppLayout }
 }
 </script>
 
