@@ -37,12 +37,17 @@ const router = createRouter({
         {
           path: '/usr/service/create',
           name: 'CreateService',
-          component: () => import('@/views/service/create.vue')
+          component: () => import('@/views/usr/service/create.vue')
         },
         {
           path: '/usr/service/settings',
           name: 'ServiceSettings',
-          component: () => import('@/views/service/settings.vue')
+          component: () => import('@/views/usr/service/settings.vue')
+        },
+        {
+          path: '/usr/services',
+          name: 'UserServices',
+          component: () => import('@/views/usr/services.vue')
         }
       ]
     }

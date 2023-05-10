@@ -11,10 +11,16 @@
     --el-button-hover-bg-color: #fff;
     --el-button-hover-border-color: var(--input-border-color);
     --el-button-active-border-color: var(--input-border-color);
+    --el-button-active-color: var(--primary-color-dark);
+    --el-button-active-bg-color: #eee;
   }
   .el-button--primary {
     --el-button-text-color: var(--font-color);
     --el-button-hover-text-color: var(--font-color);
+    --el-button-hover-bg-color: var(--primary-color);
+    --el-button-active-border-color: var(--input-border-color);
+    --el-button-active-color: var(--primary-color-dark);
+    --el-button-active-bg-color: var(--primary-color-dark);
   }
   // 输入框
   .el-input, .el-textarea {
@@ -32,5 +38,9 @@
         justify-content: flex-start;
       }
     }
+  }
+  // 分页
+  .el-pagination {
+    --el-pagination-hover-color: var(--primary-color-dark);
   }
 }

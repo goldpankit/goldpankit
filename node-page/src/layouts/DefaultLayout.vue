@@ -1,6 +1,8 @@
 <template>
   <div class="default-layout">
-    <header>Gold Pan Kit</header>
+    <header>
+      <h1>Gold Pan Kit</h1>
+    </header>
     <main>
       <router-view/>
     </main>
@@ -23,7 +25,10 @@ export default {
 header {
   flex-shrink: 0;
   padding: 10px 30px;
-  font-size: var(--font-size-large);
+  h1 {
+    font-size: var(--font-size-large);
+    font-style: italic;
+  }
 }
 main {
   flex-grow: 1;

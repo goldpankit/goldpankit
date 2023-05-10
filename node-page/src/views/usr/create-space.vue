@@ -1,16 +1,18 @@
 <template>
   <div class="form">
-    <h2>Create Space</h2>
-    <el-form>
-      <el-form-item label="Space Name" required>
-        <el-input/>
-      </el-form-item>
-      <el-form-item label="Description" required>
-        <i18n-input type="textarea"/>
-      </el-form-item>
-    </el-form>
-    <div class="opera">
-      <el-button type="primary">Create Space</el-button>
+    <div class="wrap">
+      <h2>Create Space</h2>
+      <el-form>
+        <el-form-item label="Space Name" required>
+          <el-input/>
+        </el-form-item>
+        <el-form-item label="Description" required>
+          <i18n-input type="textarea"/>
+        </el-form-item>
+      </el-form>
+      <div class="opera">
+        <el-button type="primary">Create Space</el-button>
+      </div>
     </div>
   </div>
 </template>
@@ -19,17 +21,21 @@
 import I18nInput from "../../components/common/I18nInput.vue";
 
 export default {
-  name: "create-factory",
   components: {I18nInput}
 }
 </script>
 
 <style scoped lang="scss">
 .form {
-  width: 500px;
-  background-color: #fff;
-  margin: 30px auto 0 auto;
-  padding-bottom: 30px;
+  height: 100%;
+  overflow-y: auto;
+  .wrap {
+    width: 500px;
+    background-color: #fff;
+    margin: 30px auto 60px auto;
+    box-shadow: 1px 1px 10px -5px #999;
+    padding-bottom: 30px;
+  }
   // 标题
   h2 {
     text-align: center;
