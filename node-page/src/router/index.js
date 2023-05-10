@@ -24,6 +24,11 @@ const router = createRouter({
           path: '/create-space',
           name: 'CreateSpace',
           component: () => import('@/views/create-space.vue')
+        },
+        {
+          path: '/login',
+          name: 'login',
+          component: () => import('@/views/login.vue')
         }
       ]
     }
