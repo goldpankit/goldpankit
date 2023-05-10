@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import DefaultLayout from '../layouts/DefaultLayout.vue'
+import AppLayout from '../layouts/AppLayout.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -48,6 +49,18 @@ const router = createRouter({
           path: '/usr/services',
           name: 'UserServices',
           component: () => import('@/views/usr/services.vue')
+        }
+      ]
+    },
+    {
+      path: '/',
+      name: 'AppLayout',
+      component: AppLayout,
+      children: [
+        {
+          path: '/warehouse',
+          name: 'warehouse',
+          component: () => import('@/views/template/warehouse.vue')
         }
       ]
     }
