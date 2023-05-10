@@ -1,5 +1,5 @@
 <template>
-  <header>DevX</header>
+  <header>Gold Pan Kit</header>
   <main>
     <router-view/>
   </main>

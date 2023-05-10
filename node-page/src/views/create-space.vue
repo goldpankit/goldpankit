@@ -1,8 +1,8 @@
 <template>
   <div class="form">
-    <h2>Create Factory</h2>
+    <h2>Create Space</h2>
     <el-form>
-      <el-form-item label="Factory Name" required>
+      <el-form-item label="Space Name" required>
         <el-input/>
       </el-form-item>
       <el-form-item label="Description" required>
@@ -10,7 +10,7 @@
       </el-form-item>
     </el-form>
     <div class="opera">
-      <el-button type="primary">Create Factory</el-button>
+      <el-button type="primary">Create Space</el-button>
     </div>
   </div>
 </template>
@@ -38,12 +38,6 @@ export default {
   // 表单
   .el-form {
     padding: 0 30px;
-    :deep(.el-form-item) {
-      flex-direction: column;
-      .el-form-item__label {
-        justify-content: flex-start;
-      }
-    }
   }
   // 操作
   .opera {

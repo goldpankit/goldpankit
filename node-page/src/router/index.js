@@ -16,9 +16,19 @@ const router = createRouter({
       component: WorkspaceLayout,
       children: [
         {
-          path: '/create-factory',
-          name: 'CreateFactory',
-          component: () => import('@/views/create-factory.vue')
+          path: '/service/create',
+          name: 'CreateService',
+          component: () => import('@/views/service/create.vue')
+        },
+        {
+          path: '/service/settings',
+          name: 'ServiceSettings',
+          component: () => import('@/views/service/settings.vue')
+        },
+        {
+          path: '/create-space',
+          name: 'CreateSpace',
+          component: () => import('@/views/create-space.vue')
         },
         {
           path: '/login',
