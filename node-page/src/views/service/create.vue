@@ -9,7 +9,7 @@
         <ServiceTypeSelect/>
       </el-form-item>
       <el-form-item label="Factory" required>
-        <FactorySelect/>
+        <SpaceSelect/>
       </el-form-item>
       <el-form-item label="Compiler" required>
         <CompilerSelect/>
@@ -28,15 +28,14 @@
 </template>
 
 <script>
-import I18nInput from "../components/common/I18nInput.vue";
-import FactorySelect from "../components/factory/FactorySelect.vue";
-import CompilerSelect from "../components/common/CompilerSelect.vue";
-import ServiceTypeSelect from "../components/service/ServiceTypeSelect.vue";
-import DatabaseSelect from "../components/database/DatabaseSelect.vue";
+import I18nInput from "../../components/common/I18nInput.vue";
+import SpaceSelect from "../../components/space/SpaceSelect.vue";
+import CompilerSelect from "../../components/common/CompilerSelect.vue";
+import ServiceTypeSelect from "../../components/service/ServiceTypeSelect.vue";
+import DatabaseSelect from "../../components/database/DatabaseSelect.vue";
 
 export default {
-  name: "create-factory",
-  components: {DatabaseSelect, ServiceTypeSelect, CompilerSelect, FactorySelect, I18nInput}
+  components: {DatabaseSelect, ServiceTypeSelect, CompilerSelect, SpaceSelect, I18nInput}
 }
 </script>
 
@@ -54,12 +53,6 @@ export default {
   // 表单
   .el-form {
     padding: 0 30px;
-    :deep(.el-form-item) {
-      flex-direction: column;
-      .el-form-item__label {
-        justify-content: flex-start;
-      }
-    }
   }
   // 操作
   .opera {

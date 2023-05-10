@@ -38,12 +38,6 @@ export default {
   // 表单
   .el-form {
     padding: 0 30px;
-    :deep(.el-form-item) {
-      flex-direction: column;
-      .el-form-item__label {
-        justify-content: flex-start;
-      }
-    }
   }
   // 操作
   .opera {
