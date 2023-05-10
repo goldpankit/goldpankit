@@ -1,14 +1,13 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
 import DefaultLayout from '../layouts/DefaultLayout.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/public-spaces',
+      path: '/spaces',
       name: 'PublicSpaces',
-      component: HomeView
+      component: () => import('@/views/spaces.vue')
     },
     {
       path: '/',
@@ -46,11 +45,6 @@ const router = createRouter({
           component: () => import('@/views/service/settings.vue')
         }
       ]
-    },
-    {
-      path: '/service-list',
-      name: 'list',
-      component: () => import('@/views/service/list.vue')
     }
   ]
 })
