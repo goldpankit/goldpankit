@@ -46,6 +46,11 @@ const router = createRouter({
           component: () => import('@/views/service/settings.vue')
         }
       ]
+    },
+    {
+      path: '/service-list',
+      name: 'list',
+      component: () => import('@/views/service/list.vue')
     }
   ]
 })
