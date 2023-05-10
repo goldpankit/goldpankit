@@ -10,7 +10,7 @@
           <h2>Profile</h2>
         </router-link>
       </div>
-      <router-link class="module private-space" to="#">
+      <router-link class="module private-space" :to="{ name: 'UserSpaces' }">
         <h2>Purchased or private service spaces</h2>
         <p>Private space only serves you or your team, you can organize technical staff to create and develop your service space for better and more efficient research and development work.</p>
       </router-link>

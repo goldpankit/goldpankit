@@ -30,7 +30,7 @@ export default {
   // 头部
   h2 {
     padding: 10px 0 60px 0;
-    font-size: var(--font-size-big);
+    font-size: var(--font-size-large);
     text-align: center;
   }
   .input-box {

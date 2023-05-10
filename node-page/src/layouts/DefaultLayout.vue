@@ -23,7 +23,7 @@ export default {
 header {
   flex-shrink: 0;
   padding: 10px 30px;
-  font-size: var(--font-size-big);
+  font-size: var(--font-size-large);
 }
 main {
   flex-grow: 1;

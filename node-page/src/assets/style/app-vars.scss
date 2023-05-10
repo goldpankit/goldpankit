@@ -1,4 +1,6 @@
 #app {
+  // 页面宽度
+  --page-width: 1000px;
   // 字体
   --font-family: Inter,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Fira Sans,Helvetica Neue,sans-serif;
   // 默认尺寸
@@ -10,5 +12,5 @@
   // 中号尺寸
   --font-size-middle: 16px;
   // 大号尺寸
-  --font-size-big: 22px;
+  --font-size-large: 22px;
 }

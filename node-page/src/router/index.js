@@ -21,24 +21,29 @@ const router = createRouter({
           component: () => import('@/views/index.vue')
         },
         {
-          path: '/service/create',
+          path: '/login',
+          name: 'login',
+          component: () => import('@/views/login.vue')
+        },
+        {
+          path: '/usr/space/create',
+          name: 'CreateSpace',
+          component: () => import('@/views/usr/create-space.vue')
+        },
+        {
+          path: '/usr/spaces',
+          name: 'UserSpaces',
+          component: () => import('@/views/usr/spaces.vue')
+        },
+        {
+          path: '/usr/service/create',
           name: 'CreateService',
           component: () => import('@/views/service/create.vue')
         },
         {
-          path: '/service/settings',
+          path: '/usr/service/settings',
           name: 'ServiceSettings',
           component: () => import('@/views/service/settings.vue')
-        },
-        {
-          path: '/create-space',
-          name: 'CreateSpace',
-          component: () => import('@/views/create-space.vue')
-        },
-        {
-          path: '/login',
-          name: 'login',
-          component: () => import('@/views/login.vue')
         }
       ]
     }

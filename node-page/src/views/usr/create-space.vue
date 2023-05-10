@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import I18nInput from "../components/common/I18nInput.vue";
+import I18nInput from "../../components/common/I18nInput.vue";
 
 export default {
   name: "create-factory",
