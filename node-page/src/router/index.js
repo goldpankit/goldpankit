@@ -1,20 +1,25 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
-import WorkspaceLayout from '../layouts/WorkspaceLayout.vue'
+import DefaultLayout from '../layouts/DefaultLayout.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/',
-      name: 'home',
+      path: '/public-spaces',
+      name: 'PublicSpaces',
       component: HomeView
     },
     {
       path: '/',
-      name: 'WorkspaceLayout',
-      component: WorkspaceLayout,
+      name: 'DefaultLayout',
+      component: DefaultLayout,
       children: [
+        {
+          path: '/',
+          name: 'Index',
+          component: () => import('@/views/index.vue')
+        },
         {
           path: '/service/create',
           name: 'CreateService',
