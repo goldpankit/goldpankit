@@ -1,7 +1,7 @@
 <template>
   <div class="page">
     <div class="wrap">
-      <div class="line">
+      <div class="line gap-bottom">
         <router-link :to="{ name: 'PublicSpaces' }" class="module public-space">
           <h2>Public Spaces</h2>
           <p>For all technical teams, you can click in to view all the service space, select and open the service space you need.</p>
@@ -14,6 +14,16 @@
         <h2>Purchased or private service spaces</h2>
         <p>Private space only serves you or your team, you can organize technical staff to create and develop your service space for better and more efficient research and development work.</p>
       </router-link>
+      <div class="line gap-top">
+        <router-link :to="{ name: 'CreateSpace' }" class="module new-space">
+          <h2>Create New Space</h2>
+          <p>Create a new service space and start a new journey of research and development.</p>
+        </router-link>
+        <router-link to="#" class="module database">
+          <h2>Database</h2>
+          <p>Connect and save your database connection information to help you get the code you want more easily.</p>
+        </router-link>
+      </div>
     </div>
   </div>
 </template>
@@ -25,7 +35,7 @@ export default {
 
 <style scoped lang="scss">
 .page {
-  width: 680px;
+  width: 780px;
   height: 100%;
   margin: 0 auto;
   display: flex;
@@ -36,15 +46,12 @@ export default {
   }
   .line {
     display: flex;
-    margin-bottom: 20px;
     .module {
+      flex-grow: 1;
       margin-right: 20px;
       &:last-of-type {
         margin-right: 0;
       }
-    }
-    .profile {
-      width: 180px;
     }
   }
   .module {
@@ -67,12 +74,17 @@ export default {
     }
     p {
       font-size: var(--font-size-middle);
-      line-height: 25px;
+      line-height: 1.5;
+      margin-top: 20px;
     }
   }
   // 个人设置
-  .profile h2 {
-    color: #555;
+  .profile {
+    width: 255px;
+    flex-shrink: 0;
+    h2 {
+      color: #555;
+    }
   }
   // 公共空间
   .public-space h2 {
@@ -82,6 +94,25 @@ export default {
   .private-space h2 {
     font-size: 30px;
     color: #D761FF;
+  }
+  // 创建新空间
+  .new-space {
+    width: 380px;
+    flex-shrink: 0;
+    h2 {
+      font-size: 35px;
+      color: #1861ff;
+    }
+  }
+  // 数据库
+  .database h2 {
+    color: #ff188c;
+  }
+  .gap-top {
+    margin-top: 20px;
+  }
+  .gap-bottom {
+    margin-bottom: 20px;
   }
 }
 </style>

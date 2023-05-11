@@ -3,9 +3,9 @@
     <header>
       <h1>Gold Pan Kit</h1>
       <div class="buts">
-        <el-button>Databases</el-button>
-        <el-button>Create Factory</el-button>
-        <el-button>Create Template</el-button>
+<!--        <el-button>Databases</el-button>-->
+<!--        <el-button>Create Factory</el-button>-->
+<!--        <el-button>Create Template</el-button>-->
       </div>
     </header>
     <main>

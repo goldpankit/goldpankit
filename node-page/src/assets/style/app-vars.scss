@@ -1,8 +1,9 @@
 #app {
   // 页面宽度
-  --page-width: 1000px;
+  --page-width: 780px;
   // 字体
-  --font-family: Inter,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Fira Sans,Helvetica Neue,sans-serif;
+  --font-family: 'Source Sans Pro', 'Lucida Grande', sans-serif;
+  --font-family-number: -apple-system,BlinkMacSystemFont,avenir next,avenir,helvetica neue,helvetica,ubuntu,roboto,noto,segoe ui,arial,sans-serif;
   // 默认尺寸
   --font-size: 14px;
   // 标题尺寸
@@ -17,4 +18,6 @@
   --input-search-height: 50px;
   // 默认边框
   --border-default-color: #eee;
+  // 间距
+  --title-gap: 20px;
 }

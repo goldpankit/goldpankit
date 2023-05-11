@@ -21,6 +21,11 @@ const router = createRouter({
           component: () => import('@/views/login.vue')
         },
         {
+          path: '/spaces',
+          name: 'PublicSpaces',
+          component: () => import('@/views/spaces.vue')
+        },
+        {
           path: '/usr/space/create',
           name: 'CreateSpace',
           component: () => import('@/views/usr/create-space.vue')
@@ -44,18 +49,6 @@ const router = createRouter({
           path: '/usr/services',
           name: 'UserServices',
           component: () => import('@/views/usr/services.vue')
-        }
-      ]
-    },
-    {
-      path: '/',
-      name: 'AppLayout',
-      component: AppLayout,
-      children: [
-        {
-          path: '/spaces',
-          name: 'PublicSpaces',
-          component: () => import('@/views/spaces.vue')
         }
       ]
     }

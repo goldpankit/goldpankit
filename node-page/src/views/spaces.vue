@@ -1,17 +1,12 @@
 <template>
-  <div class="main">
-    <div class="blank"></div>
-    <div class="space-warp">
-      <h3>Public Spaces</h3>
+  <div class="page">
+    <div class="warp">
+      <h2>Public Spaces</h2>
       <ul>
         <li v-for="item of 3" :key="item">
-          <h5>Eva for Java</h5>
+          <h3>Eva for Java</h3>
           <p>eva用于研发管理系统eva用于研发管理系统eva用于研发管理系统eva用于研发管理系统，目前已超过4000+项目沉淀，由devx团队研发和维护</p>
-          <span>Java ·SpringBoot·MyBatisPlus·MySQL</span>
-          <div class="install-box">
-            <span>last modified by 2023/5/7</span>
-            <el-button>Install</el-button>
-          </div>
+          <p class="tech-stack">Java · SpringBoot · MyBatisPlus · MySQL</p>
         </li>
       </ul>
     </div>
@@ -24,36 +19,31 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.main {
-  .blank {
-    height: 200px;
-    background-color: rgba(224, 224, 224, 1);
-  }
-  .space-warp {
-    width: 830px;
+.page {
+  height: 100%;
+  overflow-y: auto;
+  .warp {
+    width: var(--page-width);
     margin: 30px auto 0 auto;
-    h3 {
-      font-size: 18px;
-      margin-bottom: 10px;
+    h2 {
+      font-size: var(--font-size-title);
+      margin-bottom: var(--title-gap);
     }
     ul {
       width: 100%;
-      display: flex;
-      justify-content: space-between;
-      flex-wrap: wrap;
       li {
-        width: 400px;
         margin-bottom: 20px;
-        height: 180px;
-        padding: 15px;
+        padding: 50px 30px;
         box-sizing: border-box;
         background-color: #fff;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
         font-size: var(--font-size-middle);
-        h5 {
+        border-radius: 30px;
+        h3 {
           font-size: var(--font-size-title);
+          margin-bottom: 15px;
         }
         p {
           color: var(--font-color);
@@ -63,22 +53,10 @@ export default {
           display: -webkit-box;
           -webkit-box-orient: vertical;
         }
-        span {
+        .tech-stack {
+          margin-top: 10px;
           color: #747474;
           font-weight: 400;
-        }
-        .install-box {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          span {
-            color: rgba(181, 181, 181, 1);
-            font-size: var(--font-size);
-          }
-          button {
-            background-color: var(--primary-color);
-            border: 0;
-          }
         }
       }
     }
