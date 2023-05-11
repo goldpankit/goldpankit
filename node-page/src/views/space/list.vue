@@ -4,9 +4,11 @@
       <h2>Public Spaces</h2>
       <ul>
         <li v-for="item of 3" :key="item">
-          <h3>Eva for Java</h3>
-          <p>eva用于研发管理系统eva用于研发管理系统eva用于研发管理系统eva用于研发管理系统，目前已超过4000+项目沉淀，由devx团队研发和维护</p>
-          <p class="tech-stack">Java · SpringBoot · MyBatisPlus · MySQL</p>
+          <router-link :to="{ name: 'SpaceDetail' }">
+            <h3>Eva for Java</h3>
+            <p>eva用于研发管理系统eva用于研发管理系统eva用于研发管理系统eva用于研发管理系统，目前已超过4000+项目沉淀，由devx团队研发和维护</p>
+            <p class="tech-stack">Java · SpringBoot · MyBatisPlus · MySQL</p>
+          </router-link>
         </li>
       </ul>
     </div>

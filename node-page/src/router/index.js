@@ -23,7 +23,12 @@ const router = createRouter({
         {
           path: '/spaces',
           name: 'PublicSpaces',
-          component: () => import('@/views/spaces.vue')
+          component: () => import('@/views/space/list.vue')
+        },
+        {
+          path: '/space/detail',
+          name: 'SpaceDetail',
+          component: () => import('@/views/space/detail.vue')
         },
         {
           path: '/usr/space/create',

@@ -49,7 +49,7 @@ export default {
     width: 500px;
     background-color: #fff;
     margin: 30px auto 60px auto;
-    box-shadow: 1px 1px 10px -5px #999;
+    box-shadow: var(--form-shadow);
     padding-bottom: 30px;
   }
   // 标题

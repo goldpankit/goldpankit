@@ -1,6 +1,8 @@
 #app.theme-light {
   // 主色调
   --primary-color: #FFE957;
+  --primary-color-match: #333;
+  --primary-color-match-2: #666;
   --primary-color-dark: #d3b300;
   --primary-color-3: #fae464;
   --primary-color-5: #fdec7d;
@@ -8,9 +10,11 @@
   --primary-color-8: #faf1b6;
   --primary-color-9: #f8f1c4;
   // 背景色
-  --background-color: #f7f7f7;
+  --background-color: #fafafa;
   // 字体
   --font-color: #333;
   // 输入框边框色
   --input-border-color: #666;
+  // 色彩
+  --color-gray: #757575;
 }
