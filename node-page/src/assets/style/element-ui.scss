@@ -25,6 +25,15 @@
     --el-button-active-color: var(--primary-color-dark);
     --el-button-active-bg-color: var(--primary-color-dark);
   }
+  .el-button--reverse {
+    --el-button-bg-color: var(--primary-color-match-1);
+    --el-button-text-color: #fff;
+    --el-button-hover-text-color: #fff;
+    --el-button-hover-bg-color: var(--primary-color-match-1-transition);
+    --el-button-active-border-color: var(--primary-color-match-1);
+    --el-button-active-color: var(--primary-color-match-1);
+    --el-button-active-bg-color: var(--primary-color-match-1);
+  }
   // 输入框
   .el-input, .el-textarea {
     --el-input-focus-border-color: var(--input-border-color);

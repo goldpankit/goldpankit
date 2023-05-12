@@ -41,7 +41,11 @@
               size="large"
               @click="$router.push({ name: 'CreateService' })"
             >Create New Service</el-button>
-            <el-button type="primary" size="large">INSTALL</el-button>
+            <el-button
+              type="primary"
+              size="large"
+              @click="$router.push({ name: 'InstallService' })"
+            >INSTALL</el-button>
           </div>
           <ul>
             <li>
@@ -76,9 +80,9 @@ export default {
     width: var(--page-width);
     margin: 0 auto 100px auto;
     background: #fff;
-    padding: 30px;
+    padding: var(--gap-page-padding);
     box-sizing: border-box;
-    border-radius: 20px;
+    border-radius: var(--radius-page);
     box-shadow: var(--page-shadow);
   }
   // 技术栈
@@ -101,7 +105,7 @@ export default {
     padding: 15px 0;
     border-bottom: 1px solid var(--border-default-color);
     margin-top: 10px;
-    margin-bottom: var(--title-gap);
+    margin-bottom: var(--gap-title);
     ul {
       display: flex;
       font-size: var(--font-size-middle);

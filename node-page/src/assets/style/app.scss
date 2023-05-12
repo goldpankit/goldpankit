@@ -16,6 +16,9 @@ html {
   ul,ol {
     list-style: none;
   }
+  * {
+    box-sizing: border-box;
+  }
   #app {
     width: 100%;
     height: 100%;

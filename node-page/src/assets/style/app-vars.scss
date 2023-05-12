@@ -24,5 +24,10 @@
   // 默认边框
   --border-default-color: #eee;
   // 间距
-  --title-gap: 20px;
+  --gap-title: 20px;
+  // 页面底部预留间距
+  --gap-page-bottom: 50px;
+  --gap-page-padding: 30px;
+  // 圆弧
+  --radius-page: 20px;
 }

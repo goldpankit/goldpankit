@@ -29,7 +29,7 @@ export default {
     margin: 30px auto 0 auto;
     h2 {
       font-size: var(--font-size-title);
-      margin-bottom: var(--title-gap);
+      margin-bottom: var(--gap-title);
     }
     ul {
       width: 100%;
