@@ -24,6 +24,27 @@
           <p>Connect and save your database connection information to help you get the code you want more easily.</p>
         </router-link>
       </div>
+      <div class="project-wrap">
+        <div class="title">
+          <h2>My Projects</h2>
+          <el-button type="reverse" @click="$router.push({ name: 'CreateProject' })">
+            <el-icon :size="20"><Plus /></el-icon>
+          </el-button>
+        </div>
+        <ul>
+          <li v-for="i in 5">
+            <div class="avatar">Q</div>
+            <div class="info">
+              <h3>quanzhi</h3>
+              <p>/Users/Caesar/orders/quanzhi/codespace/quanzhi-server</p>
+              <p class="color-info-1">3 databases</p>
+            </div>
+            <div class="opera">
+              <el-button>Use It</el-button>
+            </div>
+          </li>
+        </ul>
+      </div>
     </div>
   </div>
 </template>
@@ -35,14 +56,12 @@ export default {
 
 <style scoped lang="scss">
 .page {
-  width: 780px;
   height: 100%;
-  margin: 0 auto;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  overflow-y: auto;
+  padding-bottom: var(--gap-page-bottom);
   .wrap {
-    margin-top: -100px;
+    width: 780px;
+    margin: 0 auto;
   }
   .line {
     display: flex;
@@ -88,12 +107,12 @@ export default {
   }
   // 公共空间
   .public-space h2 {
-    color: #FC777D;
+    color: var(--primary-color-match-2);
   }
   // 私有空间
   .private-space h2 {
     font-size: 30px;
-    color: #D761FF;
+    color: var(--primary-color-match-3);
   }
   // 创建新空间
   .new-space {
@@ -113,6 +132,56 @@ export default {
   }
   .gap-bottom {
     margin-bottom: 20px;
+  }
+  // 我的项目
+  .project-wrap {
+    margin-top: 20px;
+    background: #fff;
+    padding: 30px;
+    .title {
+      display: flex;
+      justify-content: space-between;
+      padding-bottom: 15px;
+      .el-button {
+        padding: 0;
+        width: 40px;
+        height: 40px;
+      }
+    }
+    li {
+      padding: 15px 0;
+      display: flex;
+      border-top: 1px solid var(--border-default-color);
+      .avatar {
+        flex-shrink: 0;
+        width: 50px;
+        height: 50px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: var(--primary-color-match-2);
+        font-size: 35px;
+        font-weight: bold;
+        border-radius: 10px;
+        color: #fff;
+        margin-right: 20px;
+      }
+      .info {
+        flex-grow: 1;
+        h3 {
+          margin-bottom: 15px;
+        }
+        p {
+          margin-top: 5px;
+        }
+      }
+      .opera {
+        flex-shrink: 0;
+        width: 80px;
+        display: flex;
+        justify-content: flex-end;
+      }
+    }
   }
 }
 </style>
