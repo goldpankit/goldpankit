@@ -31,6 +31,11 @@ const router = createRouter({
           component: () => import('@/views/space/detail.vue')
         },
         {
+          path: '/project/create',
+          name: 'CreateProject',
+          component: () => import('@/views/project/create.vue')
+        },
+        {
           path: '/usr/space/create',
           name: 'CreateSpace',
           component: () => import('@/views/usr/create-space.vue')
