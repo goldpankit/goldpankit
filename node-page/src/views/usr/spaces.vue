@@ -4,7 +4,7 @@
       <h2>Purchased & private spaces</h2>
       <ul>
         <li v-for="i in 10" :key="i">
-          <router-link :to="{ name: 'UserServices' }">
+          <router-link :to="{ name: 'SpaceDetail' }">
             <h3>Eva for SpringBoot</h3>
             <p>For all technical teams, you can click in to view all the service space, select and open the service space you need.</p>
           </router-link>

@@ -2,7 +2,10 @@
   <div class="page">
     <div class="wrap">
       <h2>Eva for Java</h2>
-      <p class="tech-stack">Java · SpringBoot · MyBatisPlus · MySQL</p>
+      <div class="tech-stack-wrap">
+        <em>Private</em>
+        <p class="tech-stack">Java · SpringBoot · MyBatisPlus · MySQL</p>
+      </div>
       <div class="frameworks">
         <ul>
           <li class="selected">前端框架</li>
@@ -33,6 +36,11 @@
         </div>
         <div class="info">
           <div class="install">
+            <el-button
+              type="primary"
+              size="large"
+              @click="$router.push({ name: 'CreateService' })"
+            >Create New Service</el-button>
             <el-button type="primary" size="large">INSTALL</el-button>
           </div>
           <ul>
@@ -65,7 +73,7 @@ export default {
   height: 100%;
   overflow-y: auto;
   .wrap {
-    width: 1000px;
+    width: var(--page-width);
     margin: 0 auto 100px auto;
     background: #fff;
     padding: 30px;
@@ -74,8 +82,18 @@ export default {
     box-shadow: var(--page-shadow);
   }
   // 技术栈
-  .tech-stack {
+  .tech-stack-wrap {
+    display: flex;
+    align-items: center;
     margin-top: 10px;
+    em {
+      //padding: 5px 15px;
+      border-radius: 30px;
+      //background-color: #efc3ff;
+      margin-right: 10px;
+      font-style: normal;
+      color: var(--primary-color-match-3);
+    }
   }
   // 框架列表
   .frameworks {
@@ -107,7 +125,7 @@ export default {
       .dimensions {
         display: flex;
         border-bottom: 3px solid;
-        border-image: linear-gradient(to right, var(--primary-color-match-2), var(--primary-color-match-2)) 1;
+        border-image: linear-gradient(to right, var(--primary-color-match-1), var(--primary-color-match-2), var(--primary-color)) 1;
         li {
           flex-grow: 1;
           text-align: center;
@@ -115,7 +133,7 @@ export default {
           font-size: var(--font-size-middle);
           cursor: pointer;
           &.selected {
-            background-image: linear-gradient(to right, var(--primary-color-match-2), var(--primary-color-match));
+            background-image: linear-gradient(to right, var(--primary-color-match-1-transition), var(--primary-color-match-1));
             color: var(--primary-color);
             border-radius: 10px 10px 0 0;
           }
@@ -123,7 +141,7 @@ export default {
       }
       // 维度详情
       .detail {
-        padding: 20px;
+        padding: 20px 20px 20px 0;
       }
     }
     .info {
@@ -135,14 +153,21 @@ export default {
       // 安装
       .install {
         border-bottom: 2px solid;
-        border-color: linear-gradient(to right, var(--primary-color-match-2), var(--primary-color-match)) 1;
-        padding-bottom: 20px;
+        border-color: linear-gradient(to right, var(--primary-color-match-1-transition), var(--primary-color-match-1)) 1;
         margin-bottom: 20px;
         .el-button {
           width: 100%;
           font-size: var(--font-size-middle);
           font-weight: bold;
           letter-spacing: 2px;
+          margin: 0 0 10px 0;
+          &:first-of-type {
+            font-size: var(--font-size);
+            letter-spacing: 0;
+          }
+          &:last-of-type {
+            margin-bottom: 20px;
+          }
         }
       }
       ul {

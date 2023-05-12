@@ -9,10 +9,10 @@
         <el-form-item label="Service Type" required>
           <ServiceTypeSelect/>
         </el-form-item>
-        <el-form-item label="Factory" required>
-          <SpaceSelect/>
-        </el-form-item>
-        <el-form-item label="Compiler" required>
+<!--        <el-form-item label="Factory" required>-->
+<!--          <SpaceSelect/>-->
+<!--        </el-form-item>-->
+        <el-form-item label="Default Compiler" required>
           <CompilerSelect/>
         </el-form-item>
         <el-form-item label="Supported Databases" required>
@@ -23,7 +23,7 @@
         </el-form-item>
       </el-form>
       <div class="opera">
-        <el-button type="primary">Create Service</el-button>
+        <el-button type="primary" @click="$router.push({ name: 'ServiceSettings' })">Create Service</el-button>
       </div>
     </div>
   </div>

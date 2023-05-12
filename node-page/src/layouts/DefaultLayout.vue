@@ -1,7 +1,13 @@
 <template>
   <div class="default-layout">
     <header>
-      <h1>Gold Pan Kit</h1>
+      <div class="logo-wrap" @click="$router.push({ name: 'Index' })">
+        <h1>Gold Pan Kit</h1>
+        <div class="decoration">
+          <em></em>
+          <em></em>
+        </div>
+      </div>
     </header>
     <main>
       <router-view/>
@@ -11,7 +17,7 @@
 
 <script>
 export default {
-  name: 'WorkspaceLayout'
+  name: 'DefaultLayout'
 }
 </script>
 
@@ -25,22 +31,37 @@ export default {
 header {
   flex-shrink: 0;
   padding: 10px 30px;
+  .logo-wrap {
+    cursor: pointer;
+    width: 160px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
   h1 {
     font-size: var(--font-size-large);
     font-style: italic;
     display: inline-block;
-    border-bottom: 15px solid;
-    border-image: linear-gradient(to right, #333, var(--primary-color)) 1;
-    //border-image: linear-gradient(to right, #ffb208, #f616ff, #fff308) 1;
     position: relative;
     padding: 0 10px;
-    //&::after {
-    //  content: 'Gold Pan Kit';
-    //  position: absolute;
-    //  transform: rotateX(180deg);
-    //  display: block;
-    //  opacity: .3;
-    //}
+  }
+  .decoration {
+    width: 160px;
+    height: 15px;
+    background-color: var(--primary-color-match-1);
+    display: flex;
+    justify-content: space-between;
+    em {
+      width: 80px;
+      height: 100%;
+      border: 1px solid var(--primary-color-match-1);
+      background-color: var(--primary-color);
+      box-sizing: border-box;
+      &:first-of-type {
+        width: 10px;
+      }
+    }
   }
 }
 main {
