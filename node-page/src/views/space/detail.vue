@@ -6,12 +6,12 @@
         <em>Private</em>
         <p class="tech-stack">Java · SpringBoot · MyBatisPlus · MySQL</p>
       </div>
-      <div class="frameworks">
-        <ul>
-          <li class="selected">前端框架</li>
-          <li>后端框架</li>
-        </ul>
-      </div>
+<!--      <div class="frameworks">-->
+<!--        <ul>-->
+<!--          <li class="selected">前端框架</li>-->
+<!--          <li>后端框架</li>-->
+<!--        </ul>-->
+<!--      </div>-->
       <div class="content-wrap">
         <div class="dimension-wrap">
           <ul class="dimensions">
@@ -21,6 +21,12 @@
             <li>Files</li>
           </ul>
           <div class="detail">
+            <ul class="service-types">
+              <li class="selected">Framework</li>
+              <li>Common</li>
+              <li>Logic</li>
+              <li>Page</li>
+            </ul>
             <ul class="service-list">
               <li v-for="i in 10" :key="i">
                 <div class="service-info">
@@ -123,6 +129,7 @@ export default {
   }
   .content-wrap {
     display: flex;
+    margin-top: 25px;
     .dimension-wrap {
       flex-grow: 1;
       // 空间维度
@@ -145,7 +152,7 @@ export default {
       }
       // 维度详情
       .detail {
-        padding: 20px 20px 20px 0;
+        padding: 20px 20px 0 0;
       }
     }
     .info {
@@ -192,8 +199,35 @@ export default {
         }
       }
     }
+    // 服务类型
+    ul.service-types {
+      display: flex;
+      border-bottom: 1px solid var(--border-default-color);
+      li {
+        padding: 10px 20px;
+        margin-right: 10px;
+        position: relative;
+        border: 1px solid transparent;
+        top: 1px;
+        color: var(--color-gray);
+        cursor: pointer;
+        transition: all ease .15s;
+        &.selected {
+          border: 1px solid var(--border-default-color);
+          border-bottom-color: #fff;
+          font-weight: bold;
+          color: var(--font-color);
+        }
+        &:hover {
+          color: var(--font-color);
+        }
+      }
+    }
     // 服务列表
     ul.service-list {
+      border: 1px solid var(--border-default-color);
+      border-top: 0;
+      padding: 0 20px;
       & > li {
         background-color: #fff;
         padding: 15px 0;
