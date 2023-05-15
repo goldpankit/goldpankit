@@ -1,5 +1,5 @@
 const test = require('./test')
-const test2 = require('./test2')
+const serviceSpace = require('./service.space')
 module.exports = {
-  test, test2
+  test, serviceSpace
 };

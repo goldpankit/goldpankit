@@ -11,17 +11,31 @@
         </el-form-item>
       </el-form>
       <div class="opera">
-        <el-button type="primary">Create Space</el-button>
+        <el-button type="primary" @click="create">Create Space</el-button>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import I18nInput from "../../components/common/I18nInput.vue";
+import I18nInput from '@/components/common/I18nInput.vue'
+import { create } from '@/api/service.space'
 
 export default {
-  components: {I18nInput}
+  components: {I18nInput},
+  methods: {
+    create () {
+      create({
+        name: 'Test'
+      })
+        .then(data => {
+          console.log('data', data)
+        })
+        .catch(e => {
+          console.log('e', e)
+        })
+    }
+  }
 }
 </script>
 

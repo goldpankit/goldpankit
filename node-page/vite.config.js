@@ -17,7 +17,7 @@ export default ({ mode }) => {
     server: {
       proxy: {
         [apiPrefix]: {
-          target: 'http://localhost:8888',
+          target: 'http://localhost:8888/api',
           changeOrigin: true,
           rewrite: (path) => path.replace(new RegExp(`^${apiPrefix}`), "")
         },

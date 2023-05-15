@@ -1,8 +1,6 @@
 const request = require('../utils/request.define')
 
-// test api
-request
-  .get('/test')
-  .data('你好2')
+// 创建
+request.post('/service/space/create').proxy()
 
 module.exports = request.router
