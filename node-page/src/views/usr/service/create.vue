@@ -7,26 +7,26 @@
       </section>
       <el-form>
         <el-form-item label="Service Name" required>
-          <I18nInput/>
+          <I18nInput v-model="form.name"/>
         </el-form-item>
         <el-form-item label="Service Type" required>
-          <ServiceTypeSelect/>
+          <ServiceTypeSelect v-model="form.type"/>
         </el-form-item>
-<!--        <el-form-item label="Factory" required>-->
-<!--          <SpaceSelect/>-->
-<!--        </el-form-item>-->
         <el-form-item label="Default Compiler" required>
-          <CompilerSelect/>
+          <CompilerSelect v-model="form.compiler"/>
         </el-form-item>
-        <el-form-item label="Supported Databases" required>
-          <DatabaseSelect/>
+        <el-form-item label="Supported Databases">
+          <DatabaseSelect v-model="form.supportedDatabases"/>
+        </el-form-item>
+        <el-form-item label="Repository">
+          <el-input v-model="form.repository"/>
         </el-form-item>
         <el-form-item label="Introduce" required>
-          <I18nInput type="textarea"/>
+          <I18nInput type="textarea" v-model="form.description"/>
         </el-form-item>
       </el-form>
       <div class="opera">
-        <el-button type="primary" @click="$router.push({ name: 'ServiceSettings' })">Create Service</el-button>
+        <el-button type="primary" @click="create">Create Service</el-button>
       </div>
     </div>
   </div>
@@ -39,18 +39,37 @@ import CompilerSelect from "../../../components/common/CompilerSelect.vue";
 import ServiceTypeSelect from "../../../components/service/ServiceTypeSelect.vue";
 import DatabaseSelect from "../../../components/database/DatabaseSelect.vue";
 import { fetchById } from "../../../api/service.space";
+import { create } from "../../../api/service";
 
 export default {
   components: {DatabaseSelect, ServiceTypeSelect, CompilerSelect, SpaceSelect, I18nInput},
   data () {
     return {
-      spaceId: null,
-      space: null
+      space: null,
+      form: {
+        spaceId: null,
+        name: '',
+        type: 'framework',
+        compiler: 'static',
+        supportedDatabases: [],
+        description: ''
+      }
     }
   },
   methods: {
+    // 创建服务
+    create () {
+      create(this.form)
+        .then(data => {
+          this.$router.push({ name: 'ServiceSettings', query: { service_id: data } })
+        })
+        .catch(e => {
+          console.log('e', e)
+        })
+    },
+    // 查询服务空间
     fetchSpaceById() {
-      fetchById(this.spaceId)
+      fetchById(this.form.spaceId)
         .then(data => {
           this.space = data
         })
@@ -60,7 +79,7 @@ export default {
     }
   },
   created () {
-    this.spaceId = this.$route.query.space_id
+    this.form.spaceId = this.$route.query.space_id
     this.fetchSpaceById()
   }
 }

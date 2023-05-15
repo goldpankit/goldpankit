@@ -4,13 +4,20 @@
       <li class="selected">中文</li>
       <li>English</li>
     </ul>
-    <el-input v-if="type === 'text'" :maxlength="maxlength"/>
+    <el-input
+      v-if="type === 'text'"
+      :maxlength="maxlength"
+      :model-value="modelValue"
+      @update:modelValue="$emit('update:modelValue', $event)"
+    />
     <el-input
       v-else-if="type === 'textarea'"
       type="textarea"
       resize="none"
       :rows="rows"
       :maxlength="maxlength"
+      :model-value="modelValue"
+      @update:modelValue="$emit('update:modelValue', $event)"
     />
   </div>
 </template>
@@ -19,6 +26,7 @@
 export default {
   name: 'I18nInput',
   props: {
+    modelValue: {},
     type: {
       default: 'text'
     },
@@ -32,6 +40,12 @@ export default {
     },
     resize: {
       default: 'none'
+    }
+  },
+  methods: {
+    handleInput (value) {
+      console.log('value', value)
+      this.$emit('update:modelValue', value)
     }
   }
 }

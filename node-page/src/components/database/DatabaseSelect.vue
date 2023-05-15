@@ -1,7 +1,7 @@
 <template>
   <el-select class="database-select">
-    <el-option value="static" label="Static"/>
-    <el-option value="freemarker" label="Freemarker"/>
+    <el-option value="mysql" label="MySQL"/>
+    <el-option value="oracle" label="Oracle"/>
   </el-select>
 </template>
 

@@ -5,7 +5,7 @@ export function create (data) {
   return request.post('/service/space/create', data)
 }
 
-// 创建
+// 根据ID查询
 export function fetchById (id) {
   return request.get(`/service/space/${id}`)
 }
