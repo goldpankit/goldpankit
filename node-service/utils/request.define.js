@@ -25,8 +25,15 @@ class Request {
   proxy () {
     router[this.#methods](this.#url, (req, res, next) => {
       console.log(`Proxy: ${this.#methods} ${this.#url}`)
-      console.log(`Proxy Request: `, typeof req.body)
-      request[this.#methods](this.#url, req.body)
+      // 如果存在参数
+      let url = this.#url
+      if (url.indexOf(':') !== -1 && req.params != null && typeof req.params === 'object') {
+        for (const key in req.params) {
+          url = url.replace(new RegExp(`:${key}`,'g'), req.params[key])
+        }
+      }
+      // 发起请求
+      request[this.#methods](url, req.body)
         .then(data => {
           res.send(JSON.stringify(data))
         })
