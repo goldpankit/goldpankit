@@ -1,14 +1,12 @@
 const request = require('../utils/request.define')
 const { file } = require('kit-cli-core')
 
-// Get runtime root folder.
 request
   .get('/local/file/runtime/root')
   .data(() => {
     return file.getRuntimeRoot()
   })
 
-// Get target folder files.
 request
   .get('/local/file/list')
   .data((req) => {
@@ -20,7 +18,6 @@ request
     })
   })
 
-// Create new Directory.
 request
   .get('/local/directory/create')
   .data((req) => {
