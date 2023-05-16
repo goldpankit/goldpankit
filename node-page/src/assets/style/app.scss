@@ -27,6 +27,7 @@ html {
     color: var(--font-color);
     background-color: var(--background-color);
     font-family: var(--font-family);
+    -webkit-font-smoothing: antialiased;
     a {
       text-decoration: none;
       color: var(--font-color)

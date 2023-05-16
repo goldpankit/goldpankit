@@ -13,11 +13,26 @@ class Request {
   // 定义
   data (callback) {
     router[this.#methods](this.#url, (req, res, next) => {
-      let result = callback
-      if (typeof callback === 'function') {
-        result = callback()
+      try {
+        let result = callback
+        if (typeof callback === 'function') {
+          result = callback(req)
+        }
+        res.send({
+          code: 200,
+          success: true,
+          data: result,
+          message: null
+        });
+      } catch (e) {
+        res.send({
+          code: 500,
+          success: true,
+          data: null,
+          message: e.message
+        });
+        throw e
       }
-      res.send(result);
     })
   }
 

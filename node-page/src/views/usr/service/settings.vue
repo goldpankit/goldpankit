@@ -56,7 +56,7 @@
               <DirectorySelect title="Select Service Folder"/>
             </div>
             <div class="opera-bottom">
-              <el-button type="important" size="large">Initialize Service</el-button>
+              <el-button type="reverse" size="large">Initialize Service</el-button>
             </div>
           </div>
         </template>

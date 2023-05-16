@@ -3,46 +3,30 @@
     <div class="header">
       <h4>{{ title }}</h4>
       <div class="opera">
-        <el-button type="reverse" icon="Plus">New Folder</el-button>
+        <el-button type="primary" icon="Plus">New Folder</el-button>
       </div>
     </div>
     <ul class="paths">
-      <li>Users</li>
-      <li>Caesar</li>
-      <li>orders</li>
-      <li>quanzhi</li>
-      <li>codespace</li>
-      <li>Users</li>
-      <li>Caesar</li>
-      <li>orders</li>
-      <li>quanzhi</li>
-      <li class="current">codespace</li>
+      <li
+        v-for="(path,index) in paths"
+        :key="path"
+        :class="{ current: index === paths.length - 1 }"
+        @click="changePath(index)"
+      >{{ path }}</li>
     </ul>
-    <div class="directories">
+    <div class="files">
       <ul>
-        <li>
-          <el-icon><Folder /></el-icon>
-          <p>quanzhi-server</p>
-        </li>
-        <li>
-          <el-icon><Folder /></el-icon>
-          <p>quanzhi-front</p>
-        </li>
-        <li>
-          <el-icon><Folder /></el-icon>
-          <p>quanzhi-swyj-front</p>
-        </li>
-        <li>
-          <el-icon><Folder /></el-icon>
-          <p>quanzhi-swyj-server</p>
-        </li>
-        <li>
-          <el-icon><Folder /></el-icon>
-          <p>quanzhi-server</p>
-        </li>
-        <li>
-          <el-icon><Folder /></el-icon>
-          <p>quanzhi-front</p>
+        <li
+          v-for="file in files"
+          :key="file.path"
+          :class="{ 'is-file': !file.isDirectory }"
+          @click="fetchSubFiles(file)"
+        >
+          <el-icon>
+            <Folder v-if="file.isDirectory"/>
+            <Document v-else/>
+          </el-icon>
+          <p>{{ file.path }}</p>
         </li>
       </ul>
     </div>
@@ -50,12 +34,67 @@
 </template>
 
 <script>
+import {fetchFiles, fetchRuntimeRoot} from "../../api/local.file";
+
 export default {
   name: "DirectorySelect",
   props: {
     title: {
       default: 'Select Folder'
     }
+  },
+  data () {
+    return {
+      paths: [],
+      files: []
+    }
+  },
+  methods: {
+    // 修改路径
+    changePath (index) {
+      if (index === this.paths.length - 1) {
+        return
+      }
+      this.paths = this.paths.splice(0, index + 1)
+      this.__fetchFiles()
+    },
+    // 查看子目录
+    fetchSubFiles (file) {
+      if (!file.isDirectory) {
+        return
+      }
+      this.paths.push(file.path)
+      this.__fetchFiles()
+    },
+    // 获取文件列表
+    __fetchFiles () {
+      fetchFiles(`/${this.paths.join('/')}/`)
+        .then(data => {
+          this.files = data.sort((item1, item2) => {
+            if (item1.isDirectory) {
+              return -1
+            }
+            return 1
+          })
+        })
+        .catch(e => {
+          console.log('e', e)
+        })
+    },
+    // 获取路径
+    __fetchDefaultPaths () {
+      fetchRuntimeRoot()
+        .then(data => {
+          this.paths = data.split('/').filter(item => item !== '')
+          this.__fetchFiles()
+        })
+        .catch(e => {
+          console.log('e', e)
+        })
+    }
+  },
+  created () {
+    this.__fetchDefaultPaths()
   }
 }
 </script>
@@ -100,6 +139,7 @@ export default {
       &.current {
         font-weight: bold;
         color: var(--primary-color-match-2);
+        cursor: default;
       }
       &:hover {
         color: var(--primary-color-match-2);
@@ -117,16 +157,18 @@ export default {
       }
     }
   }
-  .directories {
+  .files {
     flex-grow: 1;
     background: var(--color-light);
-    height: 350px;
+    height: 280px;
     display: flex;
     flex-direction: column;
     ul {
-      flex-grow: 1;
       overflow-y: auto;
+      display: flex;
+      flex-wrap: wrap;
       li {
+        width: 50%;
         padding: 0 10px;
         height: 40px;
         line-height: 40px;
@@ -134,6 +176,13 @@ export default {
         cursor: pointer;
         display: flex;
         align-items: center;
+        &.is-file {
+          color: var(--color-gray);
+          cursor: default;
+          &:hover {
+            color: var(--color-gray);
+          }
+        }
         &:last-of-type {
           border-bottom: 0;
         }
