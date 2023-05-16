@@ -33,7 +33,7 @@ export default {
   }
   ul {
     li {
-      background-color: #fff;
+      background-color: var(--color-light);
       padding: 30px;
       margin-bottom: 20px;
       &:last-of-type {

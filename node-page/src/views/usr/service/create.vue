@@ -91,7 +91,7 @@ export default {
   overflow-y: auto;
   .wrap {
     width: 500px;
-    background-color: #fff;
+    background-color: var(--color-light);
     margin: 30px auto var(--gap-page-bottom) auto;
     box-shadow: var(--form-shadow);
     padding-bottom: 30px;
@@ -105,7 +105,7 @@ export default {
   .tip {
     padding: 20px;
     background: var(--primary-color-match-2);
-    color: #fff;
+    color: var(--color-light);
     display: flex;
     align-items: center;
     margin-bottom: 20px;

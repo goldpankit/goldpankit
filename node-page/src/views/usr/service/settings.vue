@@ -3,95 +3,79 @@
     <div class="wrap">
       <div class="header">
         <h2>Eva for SpringBoot</h2>
-        <div class="opera">
+        <div v-if="service.initialized" class="opera">
           <el-button>Push</el-button>
           <el-button>Pull</el-button>
           <el-button type="reverse">Publish</el-button>
         </div>
       </div>
       <div class="main">
-        <div class="nav">
-          <ul class="tabs">
-            <li class="selected">Files</li>
-            <li>Variables</li>
-          </ul>
-          <div class="tree">
-            <el-input placeholder="Filter keyword" />
-            <el-tree :data="data"/>
+        <template v-if="service.initialized">
+          <div class="nav">
+            <ul class="tabs">
+              <li class="selected">Files</li>
+              <li>Variables</li>
+            </ul>
+            <SettingFiles/>
           </div>
-        </div>
-        <div class="settings-wrap">
-          <h4>File Settings</h4>
-          <div class="content-wrap">
-            <el-form>
-              <el-form-item label="Enable Express">
-                <el-input type="textarea" :rows="8"/>
-              </el-form-item>
-              <el-form-item label="Git">
-                <el-input/>
-              </el-form-item>
-              <el-form-item label="Variables" class="item-variables">
-                <template #label>
-                  <div>
-                    <label>Variables</label>
-                    <el-button>Add</el-button>
-                  </div>
-                </template>
-                <el-table>
-                  <el-table-column label="*Name" min-width="120px"></el-table-column>
-                  <el-table-column label="*Compiler" min-width="120px"></el-table-column>
-                  <el-table-column label="*Input Type" min-width="120px"></el-table-column>
-                  <el-table-column label="Remark" min-width="200px"></el-table-column>
-                </el-table>
-              </el-form-item>
-            </el-form>
+          <div class="settings-wrap">
+            <h4>File Settings</h4>
+            <div class="content-wrap">
+              <el-form>
+                <el-form-item label="Enable Express">
+                  <el-input type="textarea" :rows="8"/>
+                </el-form-item>
+                <el-form-item label="Git">
+                  <el-input/>
+                </el-form-item>
+                <el-form-item label="Variables" class="item-variables">
+                  <template #label>
+                    <div>
+                      <label>Variables</label>
+                      <el-button>Add</el-button>
+                    </div>
+                  </template>
+                  <el-table>
+                    <el-table-column label="*Name" min-width="120px"></el-table-column>
+                    <el-table-column label="*Compiler" min-width="120px"></el-table-column>
+                    <el-table-column label="*Input Type" min-width="120px"></el-table-column>
+                    <el-table-column label="Remark" min-width="200px"></el-table-column>
+                  </el-table>
+                </el-form-item>
+              </el-form>
+            </div>
           </div>
-        </div>
+        </template>
+        <template v-else>
+          <div class="initialize-wrap">
+            <div class="tip">
+              <h3>Initialize Service</h3>
+              <p>You must first specify or create a local directory and initialize the service. Then you can code the service in the specified local directory.</p>
+            </div>
+            <div class="directory-select-wrap">
+              <DirectorySelect title="Select Service Folder"/>
+            </div>
+            <div class="opera-bottom">
+              <el-button type="important" size="large">Initialize Service</el-button>
+            </div>
+          </div>
+        </template>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import SettingFiles from "../../../components/service/settings/SettingFiles.vue";
+import DirectorySelect from "../../../components/common/DirectorySelect.vue";
+
 export default {
+  components: {DirectorySelect, SettingFiles},
   data () {
     return {
-      data: [
-        {
-          label: 'Level one 1',
-          children: [
-            {
-              label: 'Level two 1-1',
-              children: [
-                {
-                  label: 'Level three 1-1-1',
-                },
-              ],
-            },
-          ],
-        },
-        {
-          label: 'Level one 2',
-          children: [
-            {
-              label: 'Level two 2-1',
-              children: [
-                {
-                  label: 'Level three 2-1-1',
-                },
-              ],
-            },
-            {
-              label: 'Level two 2-2',
-              children: [
-                {
-                  label: 'Level three 2-2-1',
-                },
-              ],
-            },
-          ],
-        }
-      ]
+      service: {
+        initialized: false
+      }
     }
   }
 }
@@ -99,15 +83,15 @@ export default {
 
 <style scoped lang="scss">
 .page {
-  width: var(--page-width);
   height: 100%;
-  margin: 0 auto;
   padding-bottom: var(--gap-page-bottom);
+  overflow-y: auto;
   .wrap {
-    height: 100%;
+    width: var(--page-width);
+    margin: 0 auto;
     box-shadow: var(--page-shadow);
-    background: #fff;
-    padding: var(--gap-page-padding) var(--gap-page-padding) 0 var(--gap-page-padding);
+    background: var(--color-light);
+    padding: var(--gap-page-padding);
     border-radius: var(--radius-page);
     display: flex;
     flex-direction: column;
@@ -123,6 +107,7 @@ export default {
   .main {
     flex-grow: 1;
     display: flex;
+    // 文件&变量区域
     .nav {
       width: 220px;
       flex-shrink: 0;
@@ -142,16 +127,11 @@ export default {
           }
         }
       }
-      // 文件树
-      .tree {
-        .el-input {
-          margin-bottom: 5px;
-        }
-      }
     }
+    // 设置区域
     .settings-wrap {
       flex-grow: 1;
-      background: #fff;
+      background: var(--color-light);
       padding: 20px 0 20px 20px;
       .content-wrap {
         padding: 20px 0;
@@ -166,6 +146,39 @@ export default {
               }
             }
           }
+        }
+      }
+    }
+    // 初始化
+    .initialize-wrap {
+      width: 650px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      padding-top: var(--gap-page-bottom);
+      .tip {
+        text-align: center;
+        h3 {
+          margin-bottom: 20px;
+          font-size: var(--font-size-large);
+        }
+        p {
+          font-size: var(--font-size-middle);
+          line-height: 1.5;
+        }
+      }
+      .directory-select-wrap {
+        margin-top: 20px;
+        box-shadow: var(--form-shadow);
+        border-radius: var(--radius-page);
+      }
+      .opera-bottom {
+        margin-top: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        .el-button {
+          font-size: var(--font-size-middle);
         }
       }
     }

@@ -72,7 +72,7 @@ export default {
   }
   ul.service-list {
     & > li {
-      background-color: #fff;
+      background-color: var(--color-light);
       padding: 15px 30px;
       display: flex;
       border-bottom: 1px solid var(--border-default-color);

@@ -76,7 +76,7 @@ export default {
     overflow: hidden;
     padding: 3px 3px var(--gap-page-bottom) 3px;
     & > div {
-      background-color: #fff;
+      background-color: var(--color-light);
       border-radius: var(--radius-page);
       height: 100%;
       overflow: hidden;
@@ -121,7 +121,7 @@ export default {
         width: 100%;
         font-size: 40px;
         font-weight: bold;
-        color: #fff;
+        color: var(--color-light);
         background-image: linear-gradient(to right, var(--primary-color-match-2), var(--primary-color));
         text-align: center;
       }
@@ -156,7 +156,7 @@ export default {
       // 服务列表
       .service-list {
         flex-grow: 1;
-        background-color: #fff;
+        background-color: var(--color-light);
         overflow-y: auto;
         li {
           border-top: 1px solid var(--border-default-color);
@@ -184,7 +184,7 @@ export default {
       }
     }
     .setting-wrap {
-      background-color: #fff;
+      background-color: var(--color-light);
       flex-grow: 1;
       box-sizing: border-box;
       display: flex;

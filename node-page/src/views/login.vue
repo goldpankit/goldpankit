@@ -22,7 +22,7 @@ export default {
 .login-wrap {
   width: 400px;
   padding: 40px 30px;
-  background-color: #fff;
+  background-color: var(--color-light);
   box-sizing: border-box;
   position: absolute;
   right: 172px;

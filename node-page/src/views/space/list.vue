@@ -37,7 +37,7 @@ export default {
         margin-bottom: 20px;
         padding: 50px 30px;
         box-sizing: border-box;
-        background-color: #fff;
+        background-color: var(--color-light);
         display: flex;
         flex-direction: column;
         justify-content: space-between;

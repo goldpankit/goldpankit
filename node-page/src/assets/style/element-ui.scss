@@ -8,12 +8,12 @@
   // 按钮
   .el-button {
     --el-button-hover-text-color: var(--font-color);
-    --el-button-hover-bg-color: #fff;
+    --el-button-hover-bg-color: var(--color-light);
     --el-button-hover-border-color: var(--input-border-color);
     --el-button-active-border-color: var(--input-border-color);
     --el-button-active-color: var(--primary-color-dark);
     --el-button-active-bg-color: #eee;
-    --el-button-bg-color: #fff;
+    --el-button-bg-color: var(--color-light);
     --el-button-text-color: var(--el-text-color-regular);
   }
   .el-button--primary {
@@ -25,10 +25,19 @@
     --el-button-active-color: var(--primary-color-dark);
     --el-button-active-bg-color: var(--primary-color-dark);
   }
+  // 重点按钮
+  .el-button--important {
+    background-color: initial;
+    background-image: linear-gradient(to right, var(--primary-color-match-1), var(--primary-color-match-2), var(--primary-color));
+    color: var(--color-light);
+    border: 0;
+    text-shadow: 1px 1px 5px #999;
+  }
+  // 反转色按钮
   .el-button--reverse {
     --el-button-bg-color: var(--primary-color-match-1);
-    --el-button-text-color: #fff;
-    --el-button-hover-text-color: #fff;
+    --el-button-text-color: var(--color-light);
+    --el-button-hover-text-color: var(--color-light);
     --el-button-hover-bg-color: var(--primary-color-match-1-transition);
     --el-button-active-border-color: var(--primary-color-match-1);
     --el-button-active-color: var(--primary-color-match-1);

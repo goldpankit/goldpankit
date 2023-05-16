@@ -85,7 +85,7 @@ export default {
   .wrap {
     width: var(--page-width);
     margin: 0 auto 100px auto;
-    background: #fff;
+    background: var(--color-light);
     padding: var(--gap-page-padding);
     box-sizing: border-box;
     border-radius: var(--radius-page);
@@ -214,7 +214,7 @@ export default {
         transition: all ease .15s;
         &.selected {
           border: 1px solid var(--border-default-color);
-          border-bottom-color: #fff;
+          border-bottom-color: var(--color-light);
           font-weight: bold;
           color: var(--font-color);
         }
@@ -229,7 +229,7 @@ export default {
       border-top: 0;
       padding: 0 20px;
       & > li {
-        background-color: #fff;
+        background-color: var(--color-light);
         padding: 15px 0;
         display: flex;
         border-bottom: 1px solid var(--border-default-color);

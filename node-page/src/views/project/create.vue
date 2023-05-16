@@ -31,7 +31,7 @@ export default {
   overflow-y: auto;
   .wrap {
     width: 500px;
-    background-color: #fff;
+    background-color: var(--color-light);
     margin: 30px auto 60px auto;
     box-shadow: var(--form-shadow);
     padding-bottom: 30px;

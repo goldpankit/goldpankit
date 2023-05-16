@@ -75,7 +75,7 @@ export default {
   }
   .module {
     display: block;
-    background: #fff;
+    background: var(--color-light);
     padding: 25px;
     box-sizing: border-box;
     transition: all ease .15s;
@@ -136,7 +136,7 @@ export default {
   // 我的项目
   .project-wrap {
     margin-top: 20px;
-    background: #fff;
+    background: var(--color-light);
     padding: 30px;
     .title {
       display: flex;
@@ -163,7 +163,7 @@ export default {
         font-size: 35px;
         font-weight: bold;
         border-radius: 10px;
-        color: #fff;
+        color: var(--color-light);
         margin-right: 20px;
       }
       .info {
