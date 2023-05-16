@@ -9,3 +9,8 @@ export function fetchRuntimeRoot () {
 export function fetchFiles (target) {
   return request.get(`/local/file/list?target=${target}`)
 }
+
+// 创建目录
+export function createDirectory (path) {
+  return request.get(`/local/directory/create?path=${path}`)
+}

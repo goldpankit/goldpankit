@@ -37,7 +37,7 @@
             <div class="info">
               <h3>quanzhi</h3>
               <p>/Users/Caesar/orders/quanzhi/codespace/quanzhi-server</p>
-              <p class="color-info-1">3 databases</p>
+              <p class="text-info-1">3 databases</p>
             </div>
             <div class="opera">
               <el-button>Use It</el-button>

@@ -53,7 +53,7 @@
               <p>You must first specify or create a local directory and initialize the service. Then you can code the service in the specified local directory.</p>
             </div>
             <div class="directory-select-wrap">
-              <DirectorySelect title="Select Service Folder"/>
+              <DirectorySelect title="Select Service Directory"/>
             </div>
             <div class="opera-bottom">
               <el-button type="reverse" size="large">Initialize Service</el-button>

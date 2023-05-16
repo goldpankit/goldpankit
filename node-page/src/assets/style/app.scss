@@ -32,8 +32,14 @@ html {
       text-decoration: none;
       color: var(--font-color)
     }
-    .color-info-1 {
+    // 信息文字
+    .text-info-1 {
       color: var(--color-gray);
+    }
+    // 图标按钮
+    .button-icon {
+      padding-left: 10px;
+      padding-right: 10px;
     }
   }
 }

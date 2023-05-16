@@ -20,4 +20,11 @@ request
     })
   })
 
+// Create new Directory.
+request
+  .get('/local/directory/create')
+  .data((req) => {
+    file.createDirectory(req.query.path)
+  })
+
 module.exports = request.router

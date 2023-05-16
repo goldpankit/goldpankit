@@ -3,7 +3,8 @@
     <div class="header">
       <h4>{{ title }}</h4>
       <div class="opera">
-        <el-button type="primary" icon="Plus">New Folder</el-button>
+        <el-button class="button-icon" icon="Refresh" @click="__fetchFiles"></el-button>
+        <el-button type="reverse" icon="Plus" @click="createDirectory">New Folder</el-button>
       </div>
     </div>
     <ul class="paths">
@@ -17,16 +18,25 @@
     <div class="files">
       <ul>
         <li
-          v-for="file in files"
+          v-for="(file,index) in files"
           :key="file.path"
           :class="{ 'is-file': !file.isDirectory }"
           @click="fetchSubFiles(file)"
         >
-          <el-icon>
-            <Folder v-if="file.isDirectory"/>
-            <Document v-else/>
-          </el-icon>
-          <p>{{ file.path }}</p>
+          <template v-if="file.__creatable">
+            <div class="new-directory">
+              <el-input v-model="file.path" placeholder="unknown directory"/>
+              <el-button type="reverse" class="button-icon" icon="Select" :disabled="file.__working_create" @click="confirmCreateDirectory(file)"></el-button>
+              <el-button icon="Close" class="button-icon" @click="cancelCreateDirectory(index)"></el-button>
+            </div>
+          </template>
+          <template v-else>
+            <el-icon>
+              <Folder v-if="file.isDirectory"/>
+              <Document v-else/>
+            </el-icon>
+            <p>{{ file.path }}</p>
+          </template>
         </li>
       </ul>
     </div>
@@ -34,13 +44,13 @@
 </template>
 
 <script>
-import {fetchFiles, fetchRuntimeRoot} from "../../api/local.file";
+import {fetchFiles, fetchRuntimeRoot, createDirectory} from "../../api/local.file";
 
 export default {
   name: "DirectorySelect",
   props: {
     title: {
-      default: 'Select Folder'
+      default: 'Select Directory'
     }
   },
   data () {
@@ -50,6 +60,37 @@ export default {
     }
   },
   methods: {
+    // 添加目录
+    createDirectory () {
+      this.files.push({
+        path: '',
+        isDirectory: true,
+        __creatable: true,
+        __working_create: false
+      })
+    },
+    // 确认添加
+    confirmCreateDirectory (file) {
+      if (file.__working_create) {
+        return
+      }
+      file.__working_create = true
+      createDirectory(this.__getAbsolutePath(file.path))
+        .then(() => {
+          file.__creatable = false
+          this.__sortFiles()
+        })
+        .catch(e => {
+          console.log('e', e)
+        })
+        .finally(() => {
+          file.__working_create = false
+        })
+    },
+    // 取消添加
+    cancelCreateDirectory (index) {
+      this.files.splice(index, 1)
+    },
     // 修改路径
     changePath (index) {
       if (index === this.paths.length - 1) {
@@ -60,6 +101,9 @@ export default {
     },
     // 查看子目录
     fetchSubFiles (file) {
+      if (file.__creatable) {
+        return
+      }
       if (!file.isDirectory) {
         return
       }
@@ -68,14 +112,10 @@ export default {
     },
     // 获取文件列表
     __fetchFiles () {
-      fetchFiles(`/${this.paths.join('/')}/`)
+      fetchFiles(this.__getAbsolutePath())
         .then(data => {
-          this.files = data.sort((item1, item2) => {
-            if (item1.isDirectory) {
-              return -1
-            }
-            return 1
-          })
+          this.files = data
+          this.__sortFiles()
         })
         .catch(e => {
           console.log('e', e)
@@ -91,6 +131,27 @@ export default {
         .catch(e => {
           console.log('e', e)
         })
+    },
+    // 获取绝对路径
+    __getAbsolutePath (path) {
+      return `/${this.paths.join('/')}${path == null ? '' : '/' + path}`
+    },
+    // 文件排序
+    __sortFiles () {
+      this.files = this.files.sort((item1, item2) => {
+        // 都是目录，比较path
+        if (item1.isDirectory && item2.isDirectory) {
+          if (item1.path > item2.path) {
+            return 1
+          }
+          return -1
+        }
+        // 一个目录一个文件，目录排在前面
+        if (item1.isDirectory) {
+          return -1
+        }
+        return 1
+      })
     }
   },
   created () {
@@ -177,20 +238,32 @@ export default {
         display: flex;
         align-items: center;
         &.is-file {
-          color: var(--color-gray);
+          color: var(--color-gray-1);
           cursor: default;
           &:hover {
-            color: var(--color-gray);
+            color: var(--color-gray-1);
           }
         }
         &:last-of-type {
           border-bottom: 0;
         }
+        &:hover {
+          color: var(--primary-color-match-2);
+        }
         .el-icon {
           margin-right: 10px;
         }
-        &:hover {
-          color: var(--primary-color-match-2);
+        // 创建目录
+        .new-directory {
+          width: 100%;
+          display: flex;
+          .el-input {
+            flex-grow: 1;
+          }
+          .el-button {
+            flex-shrink: 0;
+            margin-left: 10px;
+          }
         }
       }
     }
