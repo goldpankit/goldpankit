@@ -39,7 +39,7 @@ module.exports = {
   // 目录配置文件前缀
   DIR_CONFIG_PREFIX: '#',
   // 监听、推送服务文件时忽略的目录
-  IGNORE_DIRS: [`.${PROJECT_NAME}`, '.idea', '.vscode', 'node_modules', '.git', '.github'],
+  IGNORE_DIRS: ['.DS_Store',`.${PROJECT_NAME}`, '.idea', '.vscode', 'node_modules', '.git', '.github'],
   // 目录配置
   DIR_CONFIG_CONTENT: {
     id: null,

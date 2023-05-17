@@ -2,6 +2,28 @@ const fs = require("fs");
 const Const = require("./constants/constants");
 const path = require("path");
 module.exports = {
+  getFileTree (absolutePath) {
+    let filePool = []
+    const files = fs.readdirSync(absolutePath)
+    files.forEach(file => {
+      // 忽略文件
+      if (Const.IGNORE_DIRS.findIndex(f => file === f || file.startsWith(`${f}/`)) !== -1) {
+        return
+      }
+      // 全路径
+      const fullpath = path.join(absolutePath, file)
+      const fileObject = {
+        label: file,
+        path: fullpath,
+        children: []
+      }
+      filePool.push(fileObject);
+      if (this.isDirectory(fullpath)) {
+        fileObject.children = this.getFileTree(fullpath);
+      }
+    });
+    return filePool
+  },
   getFiles (absolutePath) {
     let filePool = []
     const files = fs.readdirSync(absolutePath)
@@ -13,7 +35,7 @@ module.exports = {
       // 全路径
       const fullpath = path.join(absolutePath, file)
       // 相对路径
-      filePool.push(file);
+      filePool.push(fullpath);
       if (this.isDirectory(fullpath)) {
         const subfiles = this.getFiles(fullpath);
         filePool = filePool.concat(subfiles);

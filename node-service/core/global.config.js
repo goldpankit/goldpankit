@@ -1,5 +1,5 @@
 const Const = require('./constants/constants')
-const FileUtil = require('./utils/file')
+const FileUtil = require('./service')
 const serviceApi = require("./api/service");
 const cache = require('./utils/cache')
 module.exports = {

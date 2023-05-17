@@ -1,9 +1,8 @@
 const fs = require('fs')
 const path = require('path')
-const root = process.cwd()
-const home = process.env.HOME
-const Const = require('../constants/constants')
-const cache = require('./cache')
+const Const = require('./constants/constants')
+const cache = require('./utils/cache')
+const file = require('./service.file')
 module.exports = {
     __getFullFilepath (filepath) {
         return this.getRoot() + '/' + filepath
@@ -15,36 +14,15 @@ module.exports = {
         }
         return root
     },
-    getHome () {
-        return home
+    // 获取服务文件列表
+    getFiles(serviceId) {
+        const service = cache.services.get(serviceId)
+        return file.getFiles(service.dir)
     },
-    // 获取指定目录下的文件
-    getFiles(absolutePath, ignore=true) {
-        let filePool = [];
-        const files = fs.readdirSync(absolutePath);
-        // rootdir用于递归时拼接根结点，否则多级目录下将出现重复目录
-        files.forEach(file => {
-            // 忽略文件
-            if (ignore && Const.IGNORE_DIRS.findIndex(f => file === f || file.startsWith(`${f}/`)) !== -1) {
-                return
-            }
-            // 全路径
-            const fullpath = path.join(absolutePath, file)
-            // 相对路径
-            const relativePath = this.getRelativePath(fullpath)
-            filePool.push(relativePath);
-            if (this.isDirectory(relativePath)) {
-                const subfiles = this.getFiles(fullpath, ignore);
-                filePool = filePool.concat(subfiles);
-            }
-        });
-        return filePool
-    },
-    isDirectory (filepath) {
-        return fs.statSync(this.__getFullFilepath(filepath)).isDirectory()
-    },
-    isFile (filepath) {
-        return fs.statSync(this.__getFullFilepath(filepath)).isFile()
+    // 获取服务文件树
+    getFileTree(serviceId) {
+        const service = cache.services.get(serviceId)
+        return file.getFileTree(service.dir)
     },
     readFile (filepath) {
         return fs.readFileSync(this.__getFullFilepath(filepath)).toString()

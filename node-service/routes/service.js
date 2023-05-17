@@ -2,6 +2,7 @@ const request = require('../utils/request.define')
 const axios = require('../utils/request.axios')
 const cache = require('../core/utils/cache')
 const globalConfig = require('../core/global.config')
+const service = require('../core/service')
 
 // 创建服务
 request.post('/service/create').proxy()
@@ -25,7 +26,7 @@ request
     return axios.get(`/service/profile/${serviceId}`)
       .then(data => {
         return {
-          ...,
+          ...data,
           local: serviceConfig == null ? null : {
             ...serviceConfig
           }
@@ -34,6 +35,13 @@ request
       .catch(e => {
         return Promise.reject(e)
       })
+  })
+
+// 查询服务文件
+request
+  .get('/service/:serviceId/files')
+  .data ((req) => {
+    return service.getFileTree(req.params.serviceId)
   })
 
 module.exports = request.router
