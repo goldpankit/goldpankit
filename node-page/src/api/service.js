@@ -14,3 +14,8 @@ export function initialize (data) {
 export function getProfile (id) {
   return request.get(`/service/profile/${id}`)
 }
+
+// 获取服务文件
+export function getFiles (id) {
+  return request.get(`/service/${id}/files`)
+}

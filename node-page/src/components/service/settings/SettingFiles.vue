@@ -1,52 +1,38 @@
 <template>
   <div class="tree">
     <el-input placeholder="Filter keyword" />
-    <el-tree :data="data"/>
+    <el-tree :data="files" :transition="false"/>
   </div>
 </template>
 
 <script>
+import {getFiles} from "../../../api/service";
+
 export default {
   name: "SettingFiles",
+  props: {
+    serviceId: {
+      required: true
+    }
+  },
   data () {
     return {
-      data: [
-        {
-          label: 'Level one 1',
-          children: [
-            {
-              label: 'Level two 1-1',
-              children: [
-                {
-                  label: 'Level three 1-1-1',
-                },
-              ],
-            },
-          ],
-        },
-        {
-          label: 'Level one 2',
-          children: [
-            {
-              label: 'Level two 2-1',
-              children: [
-                {
-                  label: 'Level three 2-1-1',
-                },
-              ],
-            },
-            {
-              label: 'Level two 2-2',
-              children: [
-                {
-                  label: 'Level three 2-2-1',
-                },
-              ],
-            },
-          ],
-        }
-      ]
+      files: []
     }
+  },
+  methods: {
+    getFiles () {
+      getFiles(this.serviceId)
+        .then(data => {
+          this.files = data
+        })
+        .catch(e => {
+          console.log('e', e)
+        })
+    }
+  },
+  created () {
+    this.getFiles()
   }
 }
 </script>

@@ -19,7 +19,9 @@
               <li class="selected">Files</li>
               <li>Variables</li>
             </ul>
-            <SettingFiles/>
+            <div class="tab-content">
+              <SettingFiles :service-id="serviceId"/>
+            </div>
           </div>
           <div class="settings-wrap">
             <h4>File Settings</h4>
@@ -123,8 +125,8 @@ export default {
 .page {
   height: 100%;
   padding-bottom: var(--gap-page-bottom);
-  overflow-y: auto;
   .wrap {
+    height: 100%;
     width: var(--page-width);
     margin: 0 auto;
     box-shadow: var(--page-shadow);
@@ -148,16 +150,23 @@ export default {
     }
   }
   .main {
+    height: 100%;
+    overflow: hidden;
     flex-grow: 1;
     display: flex;
     // 文件&变量区域
     .nav {
-      width: 220px;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      overflow: hidden;
+      width: 420px;
       flex-shrink: 0;
       padding: 20px 20px 20px 0;
       border-right: 1px solid var(--border-default-color);
       // 页签
       .tabs {
+        flex-shrink: 0;
         display: flex;
         margin-bottom: 10px;
         li {
@@ -169,6 +178,11 @@ export default {
             margin-right: 0;
           }
         }
+      }
+      // 页签内容
+      .tab-content {
+        flex-grow: 1;
+        overflow-y: auto;
       }
     }
     // 设置区域
