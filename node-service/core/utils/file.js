@@ -1,14 +1,22 @@
 const fs = require('fs')
 const path = require('path')
 const root = process.cwd()
+const home = process.env.HOME
 const Const = require('../constants/constants')
 const cache = require('./cache')
 module.exports = {
     __getFullFilepath (filepath) {
-        return cache.get('SERVICE_ROOT') + '/' + filepath
+        return this.getRoot() + '/' + filepath
     },
     getRoot() {
+        const root = cache.get('SERVICE_ROOT')
+        if (root == null) {
+            throw new Error('can not found root directory.')
+        }
         return root
+    },
+    getHome () {
+        return home
     },
     // 获取指定目录下的文件
     getFiles(absolutePath, ignore=true) {
