@@ -110,6 +110,10 @@ export default {
       this.paths.push(file.path)
       this.__fetchFiles()
     },
+    // 获取选择的目录
+    getValue () {
+      return this.__getAbsolutePath()
+    },
     // 获取文件列表
     __fetchFiles () {
       fetchFiles(this.__getAbsolutePath())

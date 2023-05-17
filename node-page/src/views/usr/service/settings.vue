@@ -53,10 +53,10 @@
               <p>You must first specify or create a local directory and initialize the service. Then you can code the service in the specified local directory.</p>
             </div>
             <div class="directory-select-wrap">
-              <DirectorySelect title="Select Service Directory"/>
+              <DirectorySelect ref="directorySelect" title="Select Service Directory"/>
             </div>
             <div class="opera-bottom">
-              <el-button type="reverse" size="large">Initialize Service</el-button>
+              <el-button type="reverse" size="large" @click="initialize">Initialize Service</el-button>
             </div>
           </div>
         </template>
@@ -68,6 +68,7 @@
 <script>
 import SettingFiles from "../../../components/service/settings/SettingFiles.vue";
 import DirectorySelect from "../../../components/common/DirectorySelect.vue";
+import { initialize } from "../../../api/service";
 
 export default {
   components: {DirectorySelect, SettingFiles},
@@ -76,6 +77,22 @@ export default {
       service: {
         initialized: false
       }
+    }
+  },
+  methods: {
+    // 初始化
+    initialize () {
+      initialize({
+        id: this.$route.query.service_id,
+        name: '前端框架',
+        dir: this.$refs.directorySelect.getValue()
+      })
+        .then(data => {
+          this.service.initialized = true
+        })
+        .catch(e => {
+          console.log('e', e)
+        })
     }
   }
 }
