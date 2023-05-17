@@ -9,3 +9,8 @@ export function create (data) {
 export function initialize (data) {
   return request.post('/service/initialize', data)
 }
+
+// 获取服务信息
+export function getProfile (id) {
+  return request.get(`/service/profile/${id}`)
+}

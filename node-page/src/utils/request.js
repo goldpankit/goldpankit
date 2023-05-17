@@ -18,6 +18,7 @@ axiosInstance.interceptors.request.use(function (config) {
 
 // 添加响应拦截器
 axiosInstance.interceptors.response.use(function (response) {
+  console.log('response.data', response.data)
   // 对响应数据做点什么
   if (response.data.success) {
     return response.data.data

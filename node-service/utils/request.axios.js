@@ -17,7 +17,10 @@ axiosInstance.interceptors.request.use(config => {
 
 // 新建响应拦截器
 axiosInstance.interceptors.response.use((response) => {
-  return response.data
+  if (!response.data.success) {
+    return Promise.reject(response.data)
+  }
+  return response.data.data
 }, function (error) {
   if (error.code == null) {
     return Promise.reject(new Error('服务器繁忙，请稍后再试'))

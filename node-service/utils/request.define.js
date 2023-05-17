@@ -18,6 +18,26 @@ class Request {
         if (typeof callback === 'function') {
           result = callback(req)
         }
+        if (result instanceof Promise) {
+          result
+            .then(data => {
+              res.send({
+                code: 200,
+                success: true,
+                data,
+                message: null
+              });
+            })
+            .catch(e => {
+              res.send({
+                code: 500,
+                success: true,
+                data: null,
+                message: e.message
+              })
+            })
+          return
+        }
         res.send({
           code: 200,
           success: true,
@@ -27,7 +47,7 @@ class Request {
       } catch (e) {
         res.send({
           code: 500,
-          success: true,
+          success: false,
           data: null,
           message: e.message
         });

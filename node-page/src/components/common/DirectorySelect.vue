@@ -49,6 +49,7 @@ import {fetchFiles, fetchRuntimeRoot, createDirectory} from "../../api/local.fil
 export default {
   name: "DirectorySelect",
   props: {
+    modelValue: {},
     title: {
       default: 'Select Directory'
     }
@@ -98,6 +99,7 @@ export default {
       }
       this.paths = this.paths.splice(0, index + 1)
       this.__fetchFiles()
+      this.$emit('update:modelValue', this.__getAbsolutePath())
     },
     // 查看子目录
     fetchSubFiles (file) {
@@ -109,15 +111,13 @@ export default {
       }
       this.paths.push(file.path)
       this.__fetchFiles()
-    },
-    // 获取选择的目录
-    getValue () {
-      return this.__getAbsolutePath()
+      this.$emit('update:modelValue', this.__getAbsolutePath())
     },
     // 获取文件列表
     __fetchFiles () {
       fetchFiles(this.__getAbsolutePath())
         .then(data => {
+          console.log('files', data)
           this.files = data
           this.__sortFiles()
         })
@@ -131,6 +131,7 @@ export default {
         .then(data => {
           this.paths = data.split('/').filter(item => item !== '')
           this.__fetchFiles()
+          this.$emit('update:modelValue', this.__getAbsolutePath())
         })
         .catch(e => {
           console.log('e', e)
@@ -159,7 +160,12 @@ export default {
     }
   },
   created () {
-    this.__fetchDefaultPaths()
+    if (this.modelValue == null || this.modelValue === '') {
+      this.__fetchDefaultPaths()
+      return
+    }
+    this.paths = this.modelValue.split('/').filter(item => item !== '')
+    this.__fetchFiles()
   }
 }
 </script>
