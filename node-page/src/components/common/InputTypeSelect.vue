@@ -1,18 +1,19 @@
 <template>
-  <el-select class="compiler-select">
-    <el-option value="static" label="Static"/>
-    <el-option value="freemarker" label="Freemarker"/>
+  <el-select class="input-type-select" @change="$emit('change', $event)">
+    <el-option value="input" label="Input"/>
+    <el-option value="textarea" label="Textarea"/>
+    <el-option value="select" label="Select"/>
   </el-select>
 </template>
 
 <script>
 export default {
-  name: "CompilerSelect"
+  name: "InputTypeSelect"
 }
 </script>
 
 <style scoped lang="scss">
-.compiler-select {
+.input-type-select {
   width: 100%;
 }
 </style>

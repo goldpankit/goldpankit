@@ -1,5 +1,5 @@
 <template>
-  <el-select class="compiler-select">
+  <el-select class="compiler-select" @change="$emit('change', $event)">
     <el-option value="static" label="Static"/>
     <el-option value="freemarker" label="Freemarker"/>
   </el-select>
