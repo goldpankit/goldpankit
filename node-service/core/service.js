@@ -41,7 +41,7 @@ module.exports = {
     const service = cache.services.get(fileSettings.serviceId)
     const configPath = this.__getConfigPath(service.codespace)
     const config = fs.readJSONFile(configPath)
-    let targetFileSettings = config.settings.find(file => file.path === fileSettings.path)
+    let targetFileSettings = config.settings.find(file => file.path === fileSettings.relativePath)
     if (targetFileSettings == null) {
       targetFileSettings = JSON.parse(JSON.stringify(Const.SERVICE_FILE_CONFIG_CONTENT))
       config.settings.push(targetFileSettings)
