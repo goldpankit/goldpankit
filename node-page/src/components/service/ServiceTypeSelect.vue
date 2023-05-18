@@ -4,6 +4,7 @@
     <el-option value="common" label="Common Service"/>
     <el-option value="logic" label="Logic Service"/>
     <el-option value="page" label="Page Service"/>
+    <el-option value="issue" label="Issue Service"/>
   </el-select>
 </template>
 

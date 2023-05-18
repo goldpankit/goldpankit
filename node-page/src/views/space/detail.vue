@@ -1,7 +1,7 @@
 <template>
-  <div class="page">
+  <div v-if="space != null" class="page">
     <div class="wrap">
-      <h2>Eva for Java</h2>
+      <h2>{{ space.name }}</h2>
       <div class="tech-stack-wrap">
         <em>Private</em>
         <p class="tech-stack">Java · SpringBoot · MyBatisPlus · MySQL</p>
@@ -17,8 +17,8 @@
           <ul class="dimensions">
             <li>Readme</li>
             <li class="selected">Services</li>
-            <li>Config</li>
-            <li>Files</li>
+            <li>Prices</li>
+            <li>Issues</li>
           </ul>
           <div class="detail">
             <ul class="service-types">
@@ -26,6 +26,7 @@
               <li>Common</li>
               <li>Logic</li>
               <li>Page</li>
+              <li>Issues</li>
             </ul>
             <ul class="service-list">
               <li v-for="i in 10" :key="i">
@@ -41,12 +42,24 @@
           </div>
         </div>
         <div class="info">
+          <div class="user-profile">
+            <div class="user-info">
+              <img src="/avatar.png">
+              <h4>Caesar Liu</h4>
+            </div>
+            <p class="description">Kit联合创始人，从业10年，精通Java、Vue等技术栈。</p>
+          </div>
           <div class="install">
             <el-button
               type="primary"
               size="large"
-              @click="$router.push({ name: 'CreateService' })"
+              @click="$router.push({ name: 'CreateService', query: { space_id: spaceId } })"
             >Create New Service</el-button>
+            <el-button
+              type="primary"
+              size="large"
+              @click="$router.push({ name: 'CreateService', query: { space_id: spaceId } })"
+            >Create New Issue</el-button>
             <el-button
               type="primary"
               size="large"
@@ -74,7 +87,30 @@
 </template>
 
 <script>
+import {fetchById} from "../../api/service.space";
+
 export default {
+  data () {
+    return {
+      spaceId: null,
+      space: null
+    }
+  },
+  methods: {
+    fetchById () {
+      fetchById(this.spaceId)
+        .then(data => {
+          this.space = data
+        })
+        .catch(e => {
+          console.log('e', e)
+        })
+    }
+  },
+  created () {
+    this.spaceId = this.$route.query.space_id
+    this.fetchById()
+  }
 }
 </script>
 
@@ -161,6 +197,27 @@ export default {
       border-left: 1px solid var(--border-default-color);
       padding: 0 30px;
       box-sizing: border-box;
+      // 用户简介
+      .user-profile {
+        padding-bottom: 20px;
+        margin-bottom: 20px;
+        border-bottom: 2px solid;
+        border-color: linear-gradient(to right, var(--primary-color-match-1-transition), var(--primary-color-match-1)) 1;
+        .user-info {
+          display: flex;
+          align-items: center;
+          img {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            margin-right: 10px;
+          }
+        }
+        .description {
+          margin-top: 5px;
+          font-size: var(--font-size-mini);
+        }
+      }
       // 安装
       .install {
         border-bottom: 2px solid;

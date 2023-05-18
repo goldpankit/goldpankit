@@ -3,9 +3,9 @@
     <div class="warp">
       <h2>Public Spaces</h2>
       <ul>
-        <li v-for="item of 3" :key="item">
-          <router-link :to="{ name: 'SpaceDetail' }">
-            <h3>Eva for Java</h3>
+        <li v-for="space in spaces" :key="space.id">
+          <router-link :to="{ name: 'SpaceDetail', query: { space_id: space.id } }">
+            <h3>{{space.name}}</h3>
             <p>eva用于研发管理系统eva用于研发管理系统eva用于研发管理系统eva用于研发管理系统，目前已超过4000+项目沉淀，由devx团队研发和维护</p>
             <p class="tech-stack">Java · SpringBoot · MyBatisPlus · MySQL</p>
           </router-link>
@@ -16,7 +16,28 @@
 </template>
 
 <script>
+import {search} from "../../api/service.space";
+
 export default {
+  data () {
+    return {
+      spaces: []
+    }
+  },
+  methods: {
+    search () {
+      search()
+        .then(data => {
+          this.spaces = data
+        })
+        .catch(e => {
+          console.log('e', e)
+        })
+    }
+  },
+  created () {
+    this.search()
+  }
 }
 </script>
 
