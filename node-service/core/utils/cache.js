@@ -1,5 +1,5 @@
 const Const = require('../constants/constants')
-const fs = require("fs");
+const fs = require("./fs");
 const CACHE = {}
 
 class ArrayCache {
@@ -37,25 +37,23 @@ class ArrayCache {
   #checkFile () {
     // 验证配置目录是否存在，不存在则创建
     const configDirectory = this.#getConfigDirectory()
-    if (!fs.existsSync(configDirectory)) {
-      fs.mkdirSync(configDirectory, { recursive: true })
+    if (!fs.exists(configDirectory)) {
+      fs.createDirectory(configDirectory, true)
     }
     // 验证配置文件是否存在，不存在则创建
     const configFilePath = this.#getConfigFile()
-    if (!fs.existsSync(configFilePath)) {
+    if (!fs.exists(configFilePath)) {
       const content = JSON.stringify(Const.LOCAL_CONFIG_FILE_CONTENT, null, 2)
-      fs.writeFileSync(configFilePath, content)
+      fs.createFile(configFilePath, content, true)
     }
   }
   // 读取配置文件
   #read () {
-    return JSON.parse(fs.readFileSync(this.#getConfigFile()).toString())
+    return fs.readJSONFile(this.#getConfigFile())
   }
   // 重写配置
   #rewrite (config) {
-    const configFile = this.#getConfigFile()
-    fs.unlinkSync(configFile)
-    fs.writeFileSync(configFile, JSON.stringify(config, null, 2))
+    fs.createFile(this.#getConfigFile(), fs.toJSONFileString(config), true)
   }
   // 获取配置目录
   #getConfigDirectory () {

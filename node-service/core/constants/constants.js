@@ -3,7 +3,7 @@ module.exports = {
   // 配置目录
   CONFIG_DIR: `.${PROJECT_NAME}`,
   // 服务配置文件
-  SERVICE_CONFIG_FILE: `#${PROJECT_NAME}.json`,
+  SERVICE_CONFIG_FILE: `${PROJECT_NAME}.json`,
   // 服务配置文件内容
   SERVICE_CONFIG_CONTENT: {
     id: null,

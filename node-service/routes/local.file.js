@@ -1,27 +1,30 @@
 const request = require('../utils/request.define')
-const { file } = require('kit-cli-core')
+const fs = require('../core/utils/fs')
 
+// 获取运行时根目录
 request
   .get('/local/file/runtime/root')
   .data(() => {
-    return file.getRuntimeRoot()
+    return fs.getRuntimeRoot()
   })
 
+// 获取本地文件列表
 request
   .get('/local/file/list')
   .data((req) => {
-    return file.getFiles(req.query.target).map(item => {
+    return fs.getFiles(req.query.target).map(item => {
       return {
         path: item,
-        isDirectory: file.isDirectory(`${req.query.target}/${item}`)
+        type: s.isDirectory(`${req.query.target}/${item}`) ? 'directory' : 'file'
       }
     })
   })
 
+// 创建本地目录
 request
   .get('/local/directory/create')
   .data((req) => {
-    file.createDirectory(req.query.path)
+    fs.createDirectory(req.query.path)
   })
 
 module.exports = request.router

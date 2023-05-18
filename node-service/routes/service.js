@@ -1,7 +1,6 @@
 const request = require('../utils/request.define')
 const axios = require('../utils/request.axios')
 const cache = require('../core/utils/cache')
-const globalConfig = require('../core/global.config')
 const service = require('../core/service')
 
 // 创建服务
@@ -11,9 +10,7 @@ request.post('/service/create').proxy()
 request
   .post('/service/initialize')
   .data((req) => {
-    const dir = req.body.dir
-    cache.set('SERVICE_ROOT', dir)
-    globalConfig.build(req.body)
+    service.initialize(req.body)
   })
 
 // 查询服务信息

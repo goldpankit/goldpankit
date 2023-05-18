@@ -1,105 +1,59 @@
-const fs = require('fs')
 const path = require('path')
 const Const = require('./constants/constants')
 const cache = require('./utils/cache')
-const file = require('./service.file')
+const fs = require('./utils/fs')
+const serviceApi = require("./api/service");
 module.exports = {
-    __getFullFilepath (filepath) {
-        return this.getRoot() + '/' + filepath
-    },
-    getRoot() {
-        const root = cache.get('SERVICE_ROOT')
-        if (root == null) {
-            throw new Error('can not found root directory.')
-        }
-        return root
-    },
-    // 获取服务文件列表
-    getFiles(serviceId) {
-        const service = cache.services.get(serviceId)
-        return file.getFiles(service.dir)
-    },
-    // 获取服务文件树
-    getFileTree(serviceId) {
-        const service = cache.services.get(serviceId)
-        return file.getFileTree(service.dir)
-    },
-    readFile (filepath) {
-        return fs.readFileSync(this.__getFullFilepath(filepath)).toString()
-    },
-    createDirectory (filepath, force = false) {
-        if (force) {
-            this.deleteDirectory(filepath, force)
-        }
-        if (!this.exists(filepath)) {
-            fs.mkdirSync(this.__getFullFilepath(filepath), { recursive: true })
-        }
-    },
-    getDirectory (filepath) {
-        if (filepath.indexOf('/') !== -1) {
-            const paths = filepath.split('/')
-            paths.pop()
-            return paths.join('/')
-        }
-        return filepath
-    },
-    deleteDirectory (filepath, force = false) {
-        if (this.exists(filepath)) {
-            fs.rmdirSync(this.__getFullFilepath(filepath), {
-                recursive: force
-            })
-        }
-    },
-    deleteFile (filepath) {
-        if (this.exists(filepath)) {
-            fs.unlinkSync(this.__getFullFilepath(filepath))
-        }
-    },
-    createFile (filepath, content, force = false) {
-        if (force) {
-            this.deleteFile(filepath)
-            // 获取文件所在目录，如果目录不存在，则创建目录
-            const directory = this.getDirectory(filepath)
-            if (!this.exists(directory)) {
-                this.createDirectory(directory)
-            }
-        }
-        fs.writeFileSync(this.__getFullFilepath(filepath), content)
-    },
-    createFileByAbsolutePath (filepath, content, force = false) {
-        if (force && fs.existsSync(filepath)) {
-            fs.unlinkSync(filepath)
-        }
-        const directory = this.getDirectory(filepath)
-        if (!fs.existsSync(directory)) {
-            fs.mkdirSync(directory, { recursive: true })
-        }
-        fs.writeFileSync(filepath, content)
-    },
-    exists (filepath) {
-        return fs.existsSync(this.__getFullFilepath(filepath))
-    },
-    isEmptyDirectory (filepath) {
-        return fs.readdirSync(this.__getFullFilepath(filepath)).length === 0
-    },
-    getRelativePath (filepath) {
-        return filepath.replace(this.getRoot() + '/', '')
-    },
-    getFilename (filepath) {
-        if (filepath.indexOf('/') === -1) {
-            return filepath
-        }
-        return filepath.split('/').pop()
-    },
-    getFiletype (filepath) {
-        let filetype = this.getFilename(filepath)
-        if (filetype.indexOf('.') !== -1) {
-            filetype = `.${filetype.split('.').pop()}`
-        }
-        filetype = Const.FILE_TYPE_MAP[filetype.toLowerCase()]
-        if (filetype == null) {
-            return 'FILE'
-        }
-        return filetype
+  // 初始化
+  initialize(extConfig) {
+    // 配置
+    const config = JSON.parse(JSON.stringify(Const.SERVICE_CONFIG_CONTENT))
+    // 配置文件
+    const codespace = extConfig.codespace
+    const configPath = `${codespace}/${Const.SERVICE_CONFIG_FILE}`
+    // 合并配置
+    for (const key in config) {
+      config[key] = extConfig[key] || config[key]
     }
+    serviceApi.initialize(config.id)
+      .then(() => {
+        // 初始化服务文件
+        fs.createFile(configPath, fs.toJSONFileString(config), true)
+        // 添加本地服务记录
+        cache.services.add({
+          id: config.id,
+          codespace
+        })
+      })
+      .catch(e => {
+        throw e
+      })
+  },
+  // 获取文件树
+  getFileTree (serviceId) {
+    const codespace = service.codespace
+    const service = cache.services.get(serviceId)
+    let filePool = []
+    const files = fs.getFiles(codespace)
+    files.forEach(file => {
+      // 忽略文件
+      if (Const.IGNORE_DIRS.findIndex(f => file === f || file.startsWith(`${f}/`)) !== -1) {
+        return
+      }
+      // 全路径
+      const fullpath = path.join(codespace, file)
+      const fileObject = {
+        label: file,
+        type: this.isDirectory(fullpath) ? 'dir' : 'file',
+        filetype: fs.getFiletype(fullpath),
+        path: fullpath,
+        children: []
+      }
+      filePool.push(fileObject);
+      if (this.isDirectory(fullpath)) {
+        fileObject.children = this.getFileTree(fullpath);
+      }
+    });
+    return filePool
+  }
 }
