@@ -44,13 +44,13 @@ module.exports = {
       const fullpath = path.join(codespace, file)
       const fileObject = {
         label: file,
-        type: this.isDirectory(fullpath) ? 'dir' : 'file',
+        type: fs.isDirectory(fullpath) ? 'directory' : 'file',
         filetype: fs.getFiletype(fullpath),
         path: fullpath,
         children: []
       }
       filePool.push(fileObject);
-      if (this.isDirectory(fullpath)) {
+      if (fileObject.type === 'directory') {
         fileObject.children = this.getFileTree(fullpath);
       }
     });

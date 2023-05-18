@@ -15,7 +15,7 @@ request
     return fs.getFiles(req.query.target).map(item => {
       return {
         path: item,
-        type: s.isDirectory(`${req.query.target}/${item}`) ? 'directory' : 'file'
+        type: fs.isDirectory(`${req.query.target}/${item}`) ? 'directory' : 'file'
       }
     })
   })
