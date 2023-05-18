@@ -20,7 +20,7 @@
         <li
           v-for="(file,index) in files"
           :key="file.path"
-          :class="{ 'is-file': !file.isDirectory }"
+          :class="{ 'is-file': file.type === 'file' }"
           @click="fetchSubFiles(file)"
         >
           <template v-if="file.__creatable">
@@ -32,7 +32,7 @@
           </template>
           <template v-else>
             <el-icon>
-              <Folder v-if="file.isDirectory"/>
+              <Folder v-if="file.type === 'directory'"/>
               <Document v-else/>
             </el-icon>
             <p>{{ file.path }}</p>
@@ -65,7 +65,7 @@ export default {
     createDirectory () {
       this.files.push({
         path: '',
-        isDirectory: true,
+        type: 'directory',
         __creatable: true,
         __working_create: false
       })
@@ -106,7 +106,7 @@ export default {
       if (file.__creatable) {
         return
       }
-      if (!file.isDirectory) {
+      if (file.type === 'file') {
         return
       }
       this.paths.push(file.path)
@@ -145,14 +145,14 @@ export default {
     __sortFiles () {
       this.files = this.files.sort((item1, item2) => {
         // 都是目录，比较path
-        if (item1.isDirectory && item2.isDirectory) {
+        if (item1.type === 'directory' && item2.type === 'directory') {
           if (item1.path > item2.path) {
-            return 1
+            return -1
           }
-          return -1
+          return 1
         }
         // 一个目录一个文件，目录排在前面
-        if (item1.isDirectory) {
+        if (item1.type === 'directory') {
           return -1
         }
         return 1

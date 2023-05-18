@@ -5,12 +5,15 @@
         <div class="header">
           <h2>{{service.space.name}}·{{service.name}}</h2>
           <div v-if="service.initialized" class="opera">
-            <el-button>Push</el-button>
+            <el-button @click="push">Push</el-button>
             <el-button>Pull</el-button>
             <el-button type="reverse">Publish</el-button>
           </div>
         </div>
-        <p v-if="service.initialized && service.local != null" class="text-info-1 service-path">At {{service.local.dir}}</p>
+        <p
+          v-if="service.initialized && service.local != null"
+          class="text-info-1 service-path"
+        >At {{service.local.codespace}}</p>
       </div>
       <div class="main">
         <template v-if="service.initialized">
@@ -20,34 +23,13 @@
               <li>Variables</li>
             </ul>
             <div class="tab-content">
-              <SettingFiles :service-id="serviceId"/>
+              <SettingFiles ref="settingFiles" :service-id="serviceId" @node-click="handleNodeClick"/>
             </div>
           </div>
-          <div class="settings-wrap">
-            <h4>File Settings</h4>
+          <div class="setting-wrap">
+            <h4>File Setting</h4>
             <div class="content-wrap">
-              <el-form>
-                <el-form-item label="Enable Express">
-                  <el-input type="textarea" :rows="8"/>
-                </el-form-item>
-                <el-form-item label="Git">
-                  <el-input/>
-                </el-form-item>
-                <el-form-item label="Variables" class="item-variables">
-                  <template #label>
-                    <div>
-                      <label>Variables</label>
-                      <el-button>Add</el-button>
-                    </div>
-                  </template>
-                  <el-table>
-                    <el-table-column label="*Name" min-width="120px"></el-table-column>
-                    <el-table-column label="*Compiler" min-width="120px"></el-table-column>
-                    <el-table-column label="*Input Type" min-width="120px"></el-table-column>
-                    <el-table-column label="Remark" min-width="200px"></el-table-column>
-                  </el-table>
-                </el-form-item>
-              </el-form>
+              <SettingForm :service-id="serviceId" :target="currentNode"/>
             </div>
           </div>
         </template>
@@ -58,7 +40,7 @@
               <p>You must first specify or create a local directory and initialize the service. Then you can code the service in the specified local directory.</p>
             </div>
             <div class="directory-select-wrap">
-              <DirectorySelect v-if="!loading" v-model="local.dir" title="Select Service Directory"/>
+              <DirectorySelect v-if="!loading" v-model="directorySelect.value" title="Select Service Directory"/>
             </div>
             <div class="opera-bottom">
               <el-button type="reverse" size="large" @click="initialize">Initialize Service</el-button>
@@ -73,15 +55,20 @@
 <script>
 import SettingFiles from "../../../components/service/settings/SettingFiles.vue";
 import DirectorySelect from "../../../components/common/DirectorySelect.vue";
+import SettingForm from "../../../components/service/settings/SettingForm.vue";
 import { initialize, getProfile } from "../../../api/service";
 
 export default {
-  components: {DirectorySelect, SettingFiles},
+  components: {SettingForm, DirectorySelect, SettingFiles},
   data () {
     return {
       loading: true,
       serviceId: null,
-      service: null
+      service: null,
+      currentNode: null,
+      directorySelect: {
+        value: ''
+      }
     }
   },
   methods: {
@@ -89,10 +76,11 @@ export default {
     initialize () {
       initialize({
         id: this.$route.query.service_id,
-        name: '前端框架',
-        dir: this.$refs.directorySelect.getValue()
+        name: this.service.name,
+        type: this.service.type,
+        codespace: this.directorySelect.value
       })
-        .then(data => {
+        .then(() => {
           this.service.initialized = true
         })
         .catch(e => {
@@ -112,6 +100,14 @@ export default {
         .finally(() => {
           this.loading = false
         })
+    },
+    // 选择树节点
+    handleNodeClick (node) {
+      this.currentNode = node
+    },
+    // 推送服务代码
+    push () {
+      console.log(this.$refs.settingFiles.files)
     }
   },
   created () {
@@ -160,7 +156,7 @@ export default {
       flex-direction: column;
       height: 100%;
       overflow: hidden;
-      width: 420px;
+      width: 320px;
       flex-shrink: 0;
       padding: 20px 20px 20px 0;
       border-right: 1px solid var(--border-default-color);
@@ -186,24 +182,13 @@ export default {
       }
     }
     // 设置区域
-    .settings-wrap {
+    .setting-wrap {
       flex-grow: 1;
       background: var(--color-light);
       padding: 20px 0 20px 20px;
+      overflow: hidden;
       .content-wrap {
         padding: 20px 0;
-        .el-form {
-          :deep(.item-variables) {
-            .el-form-item__label {
-              padding-right: 0;
-              & > div {
-                width: 100%;
-                display: flex;
-                justify-content: space-between;
-              }
-            }
-          }
-        }
       }
     }
     // 初始化

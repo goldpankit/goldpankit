@@ -1,12 +1,15 @@
 <template>
   <div class="tree">
     <el-input placeholder="Filter keyword" />
-    <el-tree :data="files" :transition="false"/>
+    <el-tree
+      :data="files"
+      @node-click="$emit('node-click', $event)"
+    />
   </div>
 </template>
 
 <script>
-import {getFiles} from "../../../api/service";
+import {fetchFiles} from "../../../api/service";
 
 export default {
   name: "SettingFiles",
@@ -21,8 +24,8 @@ export default {
     }
   },
   methods: {
-    getFiles () {
-      getFiles(this.serviceId)
+    fetchFiles () {
+      fetchFiles(this.serviceId)
         .then(data => {
           this.files = data
         })
@@ -32,7 +35,7 @@ export default {
     }
   },
   created () {
-    this.getFiles()
+    this.fetchFiles()
   }
 }
 </script>
