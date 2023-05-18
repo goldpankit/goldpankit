@@ -18,39 +18,21 @@ class Request {
         if (typeof callback === 'function') {
           result = callback(req)
         }
+        // 结果为Promise
         if (result instanceof Promise) {
           result
             .then(data => {
-              res.send({
-                code: 200,
-                success: true,
-                data,
-                message: null
-              });
+              res.send(this.#buildSuccess(data));
             })
             .catch(e => {
-              res.send({
-                code: 500,
-                success: true,
-                data: null,
-                message: e.message
-              })
+              res.send(this.#buildError(e))
             })
           return
         }
-        res.send({
-          code: 200,
-          success: true,
-          data: result,
-          message: null
-        });
+        // 结果为非Promise
+        res.send(this.#buildSuccess(result));
       } catch (e) {
-        res.send({
-          code: 500,
-          success: false,
-          data: null,
-          message: e.message
-        });
+        res.send(this.#buildError(e));
         throw e
       }
     })
@@ -70,12 +52,30 @@ class Request {
       // 发起请求
       request[this.#methods](url, req.body)
         .then(data => {
-          res.send(JSON.stringify(data))
+          res.send(this.#buildSuccess(data))
         })
         .catch(e => {
-          res.send(JSON.stringify(e))
+          res.send(this.#buildError(e))
         })
     })
+  }
+
+  #buildSuccess(data) {
+    return {
+      code: 200,
+      success: true,
+      data,
+      message: null
+    }
+  }
+
+  #buildError(e) {
+    return {
+      code: 500,
+      success: false,
+      data: null,
+      message: e.message
+    }
   }
 }
 module.exports = {

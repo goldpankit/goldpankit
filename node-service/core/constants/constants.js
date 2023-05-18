@@ -1,7 +1,7 @@
 const PROJECT_NAME = 'kit'
 module.exports = {
-  // 配置目录
-  CONFIG_DIR: `.${PROJECT_NAME}`,
+  // 服务配置目录
+  SERVICE_CONFIG_DIRECTORY: `.${PROJECT_NAME}`,
   // 服务配置文件
   SERVICE_CONFIG_FILE: `${PROJECT_NAME}.json`,
   // 服务配置文件内容
@@ -10,15 +10,21 @@ module.exports = {
     name: '',
     type: '',
     version: '1.0.0', // 版本号
-    space: 'public', // 服务空间
     compiler: 'static', // 编译器
     description: '', // 模版描述
     build: `${process.cwd()}/.${PROJECT_NAME}/build`,
-    variables: [], // 模版变量
+    variables: [], // 全局变量
     select: [], // 忘了
     translator: [ // 翻译器，将代码翻译成模版
       // {path: '*', source: 'ruoyi', target: '${projectEnName}' },
-    ]
+    ],
+    settings: [] // 文件设置，设置内容见SERVICE_FILE_CONFIG_CONTENT
+  },
+  // 服务文件配置
+  SERVICE_FILE_CONFIG_CONTENT: {
+    path: '',
+    enableExpress: '',
+    variables: [] // 文件变量
   },
   // 本地全局配置目录
   LOCAL_CONFIG_DIRECTORY: `.${PROJECT_NAME}`,
@@ -36,28 +42,8 @@ module.exports = {
     // 项目列表
     projects: [],
   },
-  // 目录配置文件前缀
-  DIR_CONFIG_PREFIX: '#',
   // 监听、推送服务文件时忽略的目录
   IGNORE_DIRS: ['.DS_Store',`.${PROJECT_NAME}`, '.idea', '.vscode', 'node_modules', '.git', '.github'],
-  // 目录配置
-  DIR_CONFIG_CONTENT: {
-    id: null,
-    type: 'DIR',
-    // git: { // GIT配置
-    //   repository: '',
-    //   branch: ''
-    // },
-    enableExpress: '', // 启用表达式
-    variables: [], // 自定义变量列表
-  },
-  // 文件配置
-  FILE_CONFIG_CONTENT: {
-    id: null,
-    type: 'CODE',
-    enableExpress: '',
-    variables: [] // 自定义变量列表
-  },
   // 文件类型映射
   FILE_TYPE_MAP: {
     '.jpeg': 'IMAGE',

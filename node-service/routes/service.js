@@ -41,4 +41,11 @@ request
     return service.getFileTree(req.params.serviceId)
   })
 
+// 保存文件配置
+request
+  .post('/service/file/setting/save')
+  .data(req => {
+    service.saveFileSetting(req.body)
+  })
+
 module.exports = request.router

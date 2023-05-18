@@ -60,6 +60,9 @@ module.exports = {
     }
     fs.writeFileSync(filepath, content)
   },
+  rewrite (filepath, content) {
+    this.createFile(filepath, content, true)
+  },
   exists(filepath) {
     return fs.existsSync(filepath)
   },
@@ -72,7 +75,7 @@ module.exports = {
     }
     return filepath.split('/').pop()
   },
-  getFiletype(filepath) {
+  getContentType(filepath) {
     let filetype = this.getFilename(filepath)
     if (filetype.indexOf('.') !== -1) {
       filetype = `.${filetype.split('.').pop()}`
