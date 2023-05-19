@@ -12,6 +12,10 @@ export function search (data) {
 export function initialize (data) {
   return request.post('/service/initialize', data)
 }
+// 推送服务
+export function push (id) {
+  return request.get(`/service/${id}/push`)
+}
 // 获取服务信息
 export function getProfile (id) {
   return request.get(`/service/profile/${id}`)

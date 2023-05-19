@@ -56,7 +56,7 @@
 import SettingFiles from "../../../components/service/settings/SettingFiles.vue";
 import DirectorySelect from "../../../components/common/DirectorySelect.vue";
 import SettingForm from "../../../components/service/settings/SettingForm.vue";
-import { initialize, getProfile } from "../../../api/service";
+import {initialize, getProfile, push} from "../../../api/service";
 
 export default {
   components: {SettingForm, DirectorySelect, SettingFiles},
@@ -107,7 +107,13 @@ export default {
     },
     // 推送服务代码
     push () {
-      console.log(this.$refs.settingFiles.files)
+      push(this.serviceId)
+        .then(data => {
+          console.log('推送成功', data)
+        })
+        .catch(e => {
+          console.log('e', e)
+        })
     }
   },
   created () {
