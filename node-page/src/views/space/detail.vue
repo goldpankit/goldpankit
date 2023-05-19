@@ -61,19 +61,15 @@
               @click="$router.push({ name: 'CreateService', query: { space_id: spaceId } })"
             >Create New Issue</el-button>
             <el-button
-              type="primary"
+              type="important"
               size="large"
-              @click="$router.push({ name: 'InstallService' })"
+              @click="$router.push({ name: 'InstallService', query: { space_id: spaceId, v: 'v3' } })"
             >INSTALL</el-button>
           </div>
           <ul>
             <li>
               <label>Home Page</label>
               <a href="#">http://eva.adjustrd.com</a>
-            </li>
-            <li>
-              <label>Repository</label>
-              <p>http://gitee.com/eva.git</p>
             </li>
             <li>
               <label>Last Publish</label>
@@ -229,7 +225,7 @@ export default {
           font-weight: bold;
           letter-spacing: 2px;
           margin: 0 0 10px 0;
-          &:first-of-type {
+          &:nth-of-type(1),&:nth-of-type(2) {
             font-size: var(--font-size);
             letter-spacing: 0;
           }

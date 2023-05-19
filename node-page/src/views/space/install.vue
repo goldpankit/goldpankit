@@ -11,7 +11,7 @@
             </div>
           </div>
           <div class="info">
-            <em>V3</em>
+            <em>{{version}}</em>
             <p>current version</p>
           </div>
         </div>
@@ -24,14 +24,14 @@
             </div>
             <!-- 服务列表 -->
             <ul class="service-list">
-              <li v-for="i in 3" :key="i">
-                <div class="info">
-                  <h5>支付宝支付</h5>
-                  <p>集成支付宝支付，提供完善健全的支付接口</p>
-                </div>
-                <div class="opera">
-                  <el-button>Install</el-button>
-                </div>
+              <li
+                v-for="service in services"
+                :key="service.id"
+                :class="{ selected: currentService != null && currentService.id === service.id }"
+                @click="selectService(service)"
+              >
+                <h5>{{service.name}}</h5>
+                <p>集成支付宝支付，提供完善健全的支付接口</p>
               </li>
             </ul>
           </div>
@@ -52,7 +52,7 @@
               </el-form>
             </div>
             <div class="opera">
-              <el-button type="primary" size="large">Install</el-button>
+              <el-button type="primary" size="large" @click="install">Install</el-button>
             </div>
           </div>
         </div>
@@ -62,7 +62,53 @@
 </template>
 
 <script>
+import {search} from "../../api/service";
+import {compile} from "../../api/service.compile";
+
 export default {
+  data () {
+    return {
+      spaceId: null,
+      version: 'v1',
+      services: [],
+      currentService: null
+    }
+  },
+  methods: {
+    search () {
+      search({
+        spaceId: this.spaceId
+      })
+        .then(data => {
+          this.services = data
+        })
+        .catch(e => {
+          console.log('e', e)
+        })
+    },
+    // 选择服务
+    selectService (service) {
+      this.currentService = service
+    },
+    // 安装服务
+    install () {
+      compile({
+        id: this.currentService.id,
+        values: []
+      })
+        .then(data => {
+          console.log('data', data)
+        })
+        .catch(e => {
+          console.log('e', e)
+        })
+    }
+  },
+  created () {
+    this.spaceId = this.$route.query.spaceId
+    this.version = this.$route.query.v
+    this.search()
+  }
 }
 </script>
 
@@ -122,8 +168,9 @@ export default {
         font-size: 40px;
         font-weight: bold;
         color: var(--color-light);
-        background-image: linear-gradient(to right, var(--primary-color-match-2), var(--primary-color));
+        background-image: linear-gradient(to right, var(--primary-color-match-2), var(--primary-color-match-1));
         text-align: center;
+        text-transform: uppercase;
       }
       p {
         font-size: var(--font-size-mini);
@@ -161,25 +208,17 @@ export default {
         li {
           border-top: 1px solid var(--border-default-color);
           padding: 15px var(--gap-page-padding);
-          display: flex;
-          // 服务信息
-          .info {
-            flex-grow: 1;
+          cursor: pointer;
+          &.selected {
+            background: var(--primary-color-match-1);
           }
-          // 操作
-          .opera {
-            width: 70px;
-            flex-shrink: 0;
-            display: flex;
-            justify-content: flex-end;
+          h5 {
+            font-size: var(--font-size-middle);
+            margin-bottom: 5px;
           }
-        }
-        h5 {
-          font-size: var(--font-size-middle);
-          margin-bottom: 5px;
-        }
-        p {
-          color: var(--color-gray);
+          p {
+            color: var(--color-gray);
+          }
         }
       }
     }

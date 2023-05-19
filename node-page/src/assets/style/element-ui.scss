@@ -19,11 +19,14 @@
   }
   // 重点按钮
   .el-button--important {
-    background-color: initial;
-    background-image: linear-gradient(to right, var(--primary-color-match-1), var(--primary-color-match-2), var(--primary-color));
-    color: var(--color-light);
-    border: 0;
-    text-shadow: 1px 1px 5px #999;
+    --el-button-bg-color: var(--primary-color-match-1);
+    --el-button-border-color: var(--primary-color-match-1);
+    --el-button-hover-text-color: var(--font-color);
+    --el-button-hover-bg-color: var(--primary-color-match-1);
+    --el-button-hover-border-color: var(--primary-color-match-1);
+    --el-button-active-border-color: var(--primary-color-match-1-transition);
+    --el-button-active-color: var(--primary-color-match-1);
+    --el-button-active-bg-color: var(--primary-color-match-1-transition);
   }
   // 输入框
   .el-input, .el-textarea {
