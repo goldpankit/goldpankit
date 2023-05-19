@@ -22,6 +22,11 @@ class ArrayCache {
     const list = config[this.#cacheKey]
     return list.find(item => item[this.#uniqueField] === unique)
   }
+  // 搜索
+  search () {
+    const config = this.#read()
+    return config[this.#cacheKey]
+  }
   // 删除
   remove (unique) {
     const config = this.#read()
