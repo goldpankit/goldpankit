@@ -4,6 +4,7 @@ const cache = require('./utils/cache')
 const object = require('./utils/object')
 const fs = require('./utils/fs')
 const serviceApi = require("./api/service");
+const FileUtil = require("../../../kit-node-cli-core/src/utils/file");
 module.exports = {
   // 初始化
   initialize(extConfig) {
@@ -74,14 +75,32 @@ module.exports = {
   },
   // 安装服务
   install (dto) {
+    const projectId = dto.projectId
+    const project = cache.projects.get(projectId)
+    if (project == null) {
+      throw new Error('Please select a project.')
+    }
     return serviceApi.install(dto)
       .then(data => {
-        console.log('data', data)
+        this.__installFiles(data, project.codespace)
         return Promise.resolve()
       })
       .catch(e => {
         return Promise.reject(e)
       })
+  },
+  // 写入安装文件
+  __installFiles (files, codespace) {
+    let fileCount = 0
+    for (const file of files) {
+      const relativePath = file.filepath
+      // 创建文件
+      if (file.filetype !== 'DIRECTORY') {
+        fs.createFile(`${codespace}/${relativePath}`, file.content, true)
+        fileCount++
+      }
+    }
+    return fileCount
   },
   // 获取文件配置目录
   __getConfigPath (codespace) {

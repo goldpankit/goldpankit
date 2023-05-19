@@ -5,7 +5,7 @@ const CACHE = {}
 class ArrayCache {
   #cacheKey
   #uniqueField
-  constructor(cacheKey, uniqueField) {
+  constructor(cacheKey, uniqueField="id") {
     this.#cacheKey = cacheKey
     this.#uniqueField = uniqueField
     this.#checkFile()
@@ -78,6 +78,6 @@ module.exports = {
   get (key) {
     return CACHE[key]
   },
-  services: new ArrayCache('services', 'id'),
+  services: new ArrayCache('services'),
   projects: new ArrayCache('projects'),
 }
