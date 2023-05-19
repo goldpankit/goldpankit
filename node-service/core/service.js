@@ -50,6 +50,17 @@ module.exports = {
     targetFileSettings.path = fileSettings.relativePath
     fs.rewrite(configPath, fs.toJSONFileString(config))
   },
+  // 安装服务
+  install (dto) {
+    return serviceApi.install(dto)
+      .then(data => {
+        console.log('data', data)
+        return Promise.resolve()
+      })
+      .catch(e => {
+        return Promise.reject(e)
+      })
+  },
   // 获取文件配置目录
   __getConfigPath (codespace) {
     return `${codespace}/${Const.SERVICE_CONFIG_DIRECTORY}/${Const.SERVICE_CONFIG_FILE}`
