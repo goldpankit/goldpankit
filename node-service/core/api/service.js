@@ -9,4 +9,8 @@ module.exports = {
     install (data) {
         return request.post('/service/compile', data)
     },
+    // 推送服务
+    push (data) {
+        return request.post('/service/push', data)
+    },
 }

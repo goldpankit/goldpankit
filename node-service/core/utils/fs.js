@@ -9,6 +9,26 @@ module.exports = {
   getFiles (dir) {
     return fs.readdirSync(dir)
   },
+  // 获取文件和子文件
+  getFilesWithChildren (absolutePath) {
+    let filePool = [];
+    const files = fs.readdirSync(absolutePath);
+    files.forEach(file => {
+      // 忽略文件
+      if (Const.IGNORE_DIRS.findIndex(f => file === f || file.startsWith(`${f}/`)) !== -1) {
+        return
+      }
+      // 全路径
+      const fullpath = path.join(absolutePath, file)
+      console.log('fullpath', fullpath)
+      filePool.push(fullpath);
+      if (this.isDirectory(fullpath)) {
+        const subfiles = this.getFilesWithChildren(fullpath);
+        filePool = filePool.concat(subfiles);
+      }
+    })
+    return filePool
+  },
   isDirectory(filepath) {
     return fs.statSync(filepath).isDirectory()
   },

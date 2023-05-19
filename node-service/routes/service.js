@@ -9,6 +9,13 @@ request.post('/service/create').proxy()
 // 搜索服务
 request.post('/service/search').proxy()
 
+// 推送服务
+request
+  .get('/service/:serviceId/push')
+  .data(req => {
+    return service.push(req.params.serviceId)
+  })
+
 // 初始化服务
 request
   .post('/service/initialize')

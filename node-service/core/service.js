@@ -50,6 +50,28 @@ module.exports = {
     targetFileSettings.path = fileSettings.relativePath
     fs.rewrite(configPath, fs.toJSONFileString(config))
   },
+  // 推送服务
+  push(serviceId) {
+    const service = cache.services.get(serviceId)
+    const files = fs.getFilesWithChildren(service.codespace, service.codespace).map(fullpath => {
+      const filetype = fs.isDirectory(fullpath) ? 'DIRECTORY' : 'FILE'
+      const relativePath = fullpath.replace(service.codespace + '/', '')
+      return {
+        serviceId,
+        filepath: relativePath,
+        filetype,
+        contentType: fs.getContentType(fullpath),
+        content: filetype === 'DIRECTORY' ? null : fs.readFile(fullpath),
+        variables: JSON.stringify([]),
+        enableExpress: ''
+      }
+    })
+    console.log('files', files)
+    return serviceApi.push({
+      serviceId,
+      files
+    })
+  },
   // 安装服务
   install (dto) {
     return serviceApi.install(dto)
