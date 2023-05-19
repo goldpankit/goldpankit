@@ -8,6 +8,16 @@
           <em></em>
         </div>
       </div>
+      <ul class="opera">
+        <li>
+          <el-popover placement="right" :width="600" trigger="click" popper-class="select-project-popover">
+            <template #reference>
+              <el-button type="reverse">{{ currentProject == null ? 'Select Project' : 'Current project: ' + currentProject.name }}</el-button>
+            </template>
+            <UserProjects/>
+          </el-popover>
+        </li>
+      </ul>
     </header>
     <main>
       <router-view/>
@@ -16,8 +26,15 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+import UserProjects from "../components/usr/project/UserProjects.vue";
+
 export default {
-  name: 'DefaultLayout'
+  name: 'DefaultLayout',
+  components: {UserProjects},
+  computed: {
+    ...mapState(['currentProject'])
+  }
 }
 </script>
 
@@ -29,6 +46,8 @@ export default {
   flex-direction: column;
 }
 header {
+  display: flex;
+  justify-content: space-between;
   flex-shrink: 0;
   padding: 10px 30px;
   .logo-wrap {
@@ -67,5 +86,12 @@ header {
 main {
   flex-grow: 1;
   overflow: hidden;
+}
+</style>
+<style lang="scss">
+.select-project-popover {
+  .user-projects {
+    padding: 15px;
+  }
 }
 </style>

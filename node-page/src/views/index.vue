@@ -25,32 +25,17 @@
         </router-link>
       </div>
       <div class="project-wrap">
-        <div class="title">
-          <h2>My Projects</h2>
-          <el-button type="reverse" @click="$router.push({ name: 'CreateProject' })">
-            <el-icon :size="20"><Plus /></el-icon>
-          </el-button>
-        </div>
-        <ul>
-          <li v-for="i in 5">
-            <div class="avatar">Q</div>
-            <div class="info">
-              <h3>quanzhi</h3>
-              <p>/Users/Caesar/orders/quanzhi/codespace/quanzhi-server</p>
-              <p class="text-info-1">3 databases</p>
-            </div>
-            <div class="opera">
-              <el-button>Use It</el-button>
-            </div>
-          </li>
-        </ul>
+        <UserProjects/>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import UserProjects from "../components/usr/project/UserProjects.vue";
+
 export default {
+  components: {UserProjects}
 }
 </script>
 
@@ -136,52 +121,6 @@ export default {
   // 我的项目
   .project-wrap {
     margin-top: 20px;
-    background: var(--color-light);
-    padding: 30px;
-    .title {
-      display: flex;
-      justify-content: space-between;
-      padding-bottom: 15px;
-      .el-button {
-        padding: 0;
-        width: 40px;
-        height: 40px;
-      }
-    }
-    li {
-      padding: 15px 0;
-      display: flex;
-      border-top: 1px solid var(--border-default-color);
-      .avatar {
-        flex-shrink: 0;
-        width: 50px;
-        height: 50px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        background: var(--primary-color-match-2);
-        font-size: 35px;
-        font-weight: bold;
-        border-radius: 10px;
-        color: var(--color-light);
-        margin-right: 20px;
-      }
-      .info {
-        flex-grow: 1;
-        h3 {
-          margin-bottom: 15px;
-        }
-        p {
-          margin-top: 5px;
-        }
-      }
-      .opera {
-        flex-shrink: 0;
-        width: 80px;
-        display: flex;
-        justify-content: flex-end;
-      }
-    }
   }
 }
 </style>

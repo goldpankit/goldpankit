@@ -1,10 +1,14 @@
-import Vue from 'vue'
 import Vuex from 'vuex'
-Vue.use(Vuex)
 
 export default new Vuex.Store({
-  state: {},
-  mutations: {},
+  state: {
+    currentProject: null
+  },
+  mutations: {
+    setCurrentProject(state, project) {
+      state.currentProject = project
+    }
+  },
   actions: {},
   getters: {}
 })
