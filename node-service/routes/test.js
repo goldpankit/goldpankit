@@ -1,8 +1,0 @@
-const request = require('../utils/request.define')
-
-// test api
-request
-  .get('/test')
-  .data('你好2')
-
-module.exports = request.router

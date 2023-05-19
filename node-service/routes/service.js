@@ -6,6 +6,9 @@ const service = require('../core/service')
 // 创建服务
 request.post('/service/create').proxy()
 
+// 搜索服务
+request.post('/service/search').proxy()
+
 // 初始化服务
 request
   .post('/service/initialize')
