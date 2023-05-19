@@ -211,8 +211,6 @@ export default {
       }
       .directory-select-wrap {
         margin-top: 20px;
-        box-shadow: var(--form-shadow);
-        border-radius: var(--radius-page);
       }
       .opera-bottom {
         margin-top: 20px;

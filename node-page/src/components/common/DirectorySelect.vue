@@ -174,10 +174,11 @@ export default {
 .directory-select {
   text-align: initial;
   width: 100%;
-  //background: var(--background-color);
   padding: 20px;
   display: flex;
   flex-direction: column;
+  box-shadow: var(--form-shadow);
+  border-radius: var(--radius-page);
   .header {
     display: flex;
     justify-content: space-between;
@@ -207,6 +208,7 @@ export default {
       margin-bottom: 5px;
       border-radius: 5px;
       transition: all ease .15s;
+      line-height: 20px;
       &.current {
         font-weight: bold;
         color: var(--primary-color-match-2);
