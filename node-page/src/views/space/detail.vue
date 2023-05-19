@@ -172,7 +172,7 @@ export default {
       .dimensions {
         display: flex;
         border-bottom: 3px solid;
-        border-image: linear-gradient(to right, var(--primary-color-match-1), var(--primary-color-match-2), var(--primary-color)) 1;
+        border-image: linear-gradient(to right, var(--primary-color), var(--primary-color-match-2), var(--primary-color-match-1)) 1;
         li {
           flex-grow: 1;
           text-align: center;
@@ -180,8 +180,8 @@ export default {
           font-size: var(--font-size-middle);
           cursor: pointer;
           &.selected {
-            background-image: linear-gradient(to right, var(--primary-color-match-1-transition), var(--primary-color-match-1));
-            color: var(--primary-color);
+            background-image: linear-gradient(to right, var(--primary-color), var(--primary-color-5));
+            color: var(--primary-color-reverse);
             border-radius: 10px 10px 0 0;
           }
         }
@@ -221,7 +221,7 @@ export default {
       // 安装
       .install {
         border-bottom: 2px solid;
-        border-color: linear-gradient(to right, var(--primary-color-match-1-transition), var(--primary-color-match-1)) 1;
+        border-color: linear-gradient(to right, var(--primary-color), var(--primary-color-match-1)) 1;
         margin-bottom: 20px;
         .el-button {
           width: 100%;

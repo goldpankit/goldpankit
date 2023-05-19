@@ -2,7 +2,7 @@
   <div class="user-projects">
     <div class="title">
       <h2>My Projects</h2>
-      <el-button type="reverse" @click="$router.push({ name: 'CreateProject' })">
+      <el-button type="primary" @click="$router.push({ name: 'CreateProject' })">
         <el-icon :size="20"><Plus /></el-icon>
       </el-button>
     </div>

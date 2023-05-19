@@ -7,7 +7,7 @@
           <div v-if="service.initialized" class="opera">
             <el-button @click="push">Push</el-button>
             <el-button>Pull</el-button>
-            <el-button type="reverse">Publish</el-button>
+            <el-button type="primary">Publish</el-button>
           </div>
         </div>
         <p
@@ -43,7 +43,7 @@
               <DirectorySelect v-if="!loading" v-model="directorySelect.value" title="Select Service Directory"/>
             </div>
             <div class="opera-bottom">
-              <el-button type="reverse" size="large" @click="initialize">Initialize Service</el-button>
+              <el-button type="primary" size="large" @click="initialize">Initialize Service</el-button>
             </div>
           </div>
         </template>

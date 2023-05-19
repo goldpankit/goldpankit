@@ -4,7 +4,7 @@
       <h4>{{ title }}</h4>
       <div class="opera">
         <el-button class="button-icon" icon="Refresh" @click="__fetchFiles"></el-button>
-        <el-button type="reverse" icon="Plus" @click="createDirectory">New Folder</el-button>
+        <el-button type="primary" icon="Plus" @click="createDirectory">New Folder</el-button>
       </div>
     </div>
     <ul class="paths">
@@ -26,7 +26,7 @@
           <template v-if="file.__creatable">
             <div class="new-directory">
               <el-input v-model="file.path" placeholder="unknown directory"/>
-              <el-button type="reverse" class="button-icon" icon="Select" :disabled="file.__working_create" @click="confirmCreateDirectory(file)"></el-button>
+              <el-button type="primary" class="button-icon" icon="Select" :disabled="file.__working_create" @click="confirmCreateDirectory(file)"></el-button>
               <el-button icon="Close" class="button-icon" @click="cancelCreateDirectory(index)"></el-button>
             </div>
           </template>

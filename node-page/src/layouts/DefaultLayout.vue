@@ -12,7 +12,7 @@
         <li>
           <el-popover placement="right" :width="600" trigger="click" popper-class="select-project-popover">
             <template #reference>
-              <el-button type="reverse">{{ currentProject == null ? 'Select Project' : 'Current project: ' + currentProject.name }}</el-button>
+              <el-button type="primary">{{ currentProject == null ? 'Select Project' : 'Current project: ' + currentProject.name }}</el-button>
             </template>
             <UserProjects/>
           </el-popover>
@@ -68,14 +68,14 @@ header {
   .decoration {
     width: 160px;
     height: 15px;
-    background-color: var(--primary-color-match-1);
+    background-color: var(--primary-color);
     display: flex;
     justify-content: space-between;
     em {
       width: 80px;
       height: 100%;
-      border: 1px solid var(--primary-color-match-1);
-      background-color: var(--primary-color);
+      border: 1px solid var(--primary-color);
+      background-color: var(--primary-color-match-1);
       box-sizing: border-box;
       &:first-of-type {
         width: 10px;

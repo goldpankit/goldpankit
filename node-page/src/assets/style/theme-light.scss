@@ -1,16 +1,16 @@
 body.theme-light {
   // 主色调
-  --primary-color: #FFE957;
-  --primary-color-match-1: #333;
-  --primary-color-match-1-transition: #666;
+  --primary-color: #333;
+  --primary-color-reverse: #fff;
+  --primary-color-match-1: #FFE957;
+  --primary-color-match-1-transition: #bbab40;
   --primary-color-match-2: #FC777D;
   --primary-color-match-3: #ff00ff;
-  --primary-color-dark: #d3b300;
-  --primary-color-3: #fae464;
-  --primary-color-5: #fdec7d;
-  --primary-color-7: #faec91;
-  --primary-color-8: #faf1b6;
-  --primary-color-9: #f8f1c4;
+  --primary-color-3: #555;
+  --primary-color-5: #777;
+  --primary-color-7: #999;
+  --primary-color-8: #bbb;
+  --primary-color-9: #ddd;
   // 背景色
   --background-color: #fafafa;
   // 字体

@@ -52,7 +52,7 @@
               </el-form>
             </div>
             <div class="opera">
-              <el-button type="reverse" size="large">Install</el-button>
+              <el-button type="primary" size="large">Install</el-button>
             </div>
           </div>
         </div>
