@@ -62,6 +62,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import {search} from "../../api/service";
 import {compile} from "../../api/service.compile";
 
@@ -73,6 +74,9 @@ export default {
       services: [],
       currentService: null
     }
+  },
+  computed: {
+    ...mapState(['currentProject'])
   },
   methods: {
     search () {
@@ -94,6 +98,7 @@ export default {
     install () {
       compile({
         id: this.currentService.id,
+        projectId: this.currentProject.id,
         values: []
       })
         .then(data => {
@@ -105,7 +110,7 @@ export default {
     }
   },
   created () {
-    this.spaceId = this.$route.query.spaceId
+    this.spaceId = this.$route.query.space_id
     this.version = this.$route.query.v
     this.search()
   }
