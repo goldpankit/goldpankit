@@ -1,10 +1,15 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import DefaultLayout from '../layouts/DefaultLayout.vue'
-import AppLayout from '../layouts/AppLayout.vue'
+import PCDesign from '../views/ui/design/pc.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
+    {
+      path: '/ui/design/pc',
+      name: 'PCDesign',
+      component: PCDesign
+    },
     {
       path: '/',
       name: 'DefaultLayout',
