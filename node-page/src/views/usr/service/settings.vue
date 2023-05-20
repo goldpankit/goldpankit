@@ -19,15 +19,13 @@
         <template v-if="service.initialized">
           <ul class="tabs">
             <li :class="{ selected: currentTab === 'basic' }" @click="currentTab = 'basic'">Basic</li>
-            <li :class="{ selected: currentTab === 'files' }" @click="currentTab = 'files'">Files</li>
             <li :class="{ selected: currentTab === 'variables' }" @click="currentTab = 'variables'">Variables</li>
+            <li :class="{ selected: currentTab === 'files' }" @click="currentTab = 'files'">Files</li>
           </ul>
           <div class="tab-content">
             <SettingFiles
               v-show="currentTab === 'files'"
-              ref="settingFiles"
               :service-id="serviceId"
-              @node-click="handleNodeClick"
             />
             <SettingVariables
               v-show="currentTab === 'variables'"
@@ -57,16 +55,15 @@
 <script>
 import SettingFiles from "../../../components/service/settings/SettingFiles.vue";
 import DirectorySelect from "../../../components/common/DirectorySelect.vue";
-import SettingForm from "../../../components/service/settings/SettingForm.vue";
-import {initialize, getProfile, push} from "../../../api/service";
 import SettingVariables from "../../../components/service/settings/SettingVariables.vue";
+import {initialize, getProfile, push} from "../../../api/service";
 
 export default {
-  components: {SettingVariables, SettingForm, DirectorySelect, SettingFiles},
+  components: {SettingVariables, DirectorySelect, SettingFiles},
   data () {
     return {
       loading: true,
-      currentTab: 'files',
+      currentTab: 'variables',
       serviceId: null,
       service: null,
       directorySelect: {
