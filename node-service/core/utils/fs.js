@@ -9,6 +9,19 @@ module.exports = {
   getFiles (dir) {
     return fs.readdirSync(dir)
   },
+  // 写入代码文件
+  writeFiles (files, codespace) {
+    let fileCount = 0
+    for (const file of files) {
+      const relativePath = file.filepath
+      // 创建文件
+      if (file.filetype !== 'DIRECTORY') {
+        this.createFile(`${codespace}/${relativePath}`, file.content, true)
+        fileCount++
+      }
+    }
+    return fileCount
+  },
   // 获取文件和子文件
   getFilesWithChildren (absolutePath) {
     let filePool = [];

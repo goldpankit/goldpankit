@@ -58,4 +58,11 @@ request
     service.saveFileSetting(req.body)
   })
 
+// 保存服务变量
+request
+  .post('/service/variables/save')
+  .data(req => {
+    service.saveVariables(req.body)
+  })
+
 module.exports = request.router

@@ -51,6 +51,15 @@ module.exports = {
     targetFileSettings.path = fileSettings.relativePath
     fs.rewrite(configPath, fs.toJSONFileString(config))
   },
+  // 保存变量
+  saveVariables (dto) {
+    const service = cache.services.get(dto.serviceId)
+    console.log('service', dto.serviceId)
+    const configPath = this.__getConfigPath(service.codespace)
+    const config = fs.readJSONFile(configPath)
+    config.variables = dto.variables
+    fs.rewrite(configPath, fs.toJSONFileString(config))
+  },
   // 推送服务
   push(serviceId) {
     const service = cache.services.get(serviceId)
@@ -82,25 +91,12 @@ module.exports = {
     }
     return serviceApi.install(dto)
       .then(data => {
-        this.__installFiles(data, project.codespace)
+        fs.writeFiles(data, project.codespace)
         return Promise.resolve()
       })
       .catch(e => {
         return Promise.reject(e)
       })
-  },
-  // 写入安装文件
-  __installFiles (files, codespace) {
-    let fileCount = 0
-    for (const file of files) {
-      const relativePath = file.filepath
-      // 创建文件
-      if (file.filetype !== 'DIRECTORY') {
-        fs.createFile(`${codespace}/${relativePath}`, file.content, true)
-        fileCount++
-      }
-    }
-    return fileCount
   },
   // 获取文件配置目录
   __getConfigPath (codespace) {
