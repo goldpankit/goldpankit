@@ -1,4 +1,4 @@
-:root {
+body.theme-light {
   --el-color-primary: var(--primary-color);
   --el-color-primary-light-3: var(--primary-color-3);
   --el-color-primary-light-5: var(--primary-color-5);
@@ -6,6 +6,10 @@
   --el-color-primary-light-8: var(--primary-color-8);
   --el-color-primary-light-9: var(--primary-color-9);
   // 按钮
+  .el-button {
+    --el-button-hover-bg-color: var(--primary-color-reverse);
+    --el-button-active-bg-color: var(--primary-color-reverse);
+  }
   .el-button--primary {
     --el-button-bg-color: var(--primary-color);
     --el-button-text-color: var(--primary-color-reverse);

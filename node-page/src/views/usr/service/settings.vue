@@ -5,8 +5,8 @@
         <div class="header">
           <h2>{{service.space.name}}·{{service.name}}</h2>
           <div v-if="service.initialized" class="opera">
-            <el-button @click="push">Push</el-button>
-            <el-button>Pull</el-button>
+            <el-button type="important" @click="push">Push</el-button>
+            <el-button type="important">Pull</el-button>
             <el-button type="primary">Publish</el-button>
           </div>
         </div>
@@ -18,6 +18,7 @@
       <div class="main">
         <template v-if="service.initialized">
           <ul class="tabs">
+            <li :class="{ selected: currentTab === 'basic' }" @click="currentTab = 'basic'">Basic</li>
             <li :class="{ selected: currentTab === 'files' }" @click="currentTab = 'files'">Files</li>
             <li :class="{ selected: currentTab === 'variables' }" @click="currentTab = 'variables'">Variables</li>
           </ul>
@@ -159,7 +160,7 @@ export default {
     .tabs {
       flex-shrink: 0;
       display: flex;
-      margin: 10px 0;
+      margin: 15px 0 10px 0;
       li {
         margin-right: 10px;
         cursor: pointer;
