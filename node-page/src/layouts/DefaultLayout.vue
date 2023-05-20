@@ -68,13 +68,14 @@ header {
   .decoration {
     width: 160px;
     height: 15px;
-    background-color: var(--primary-color);
+    background-color: var(--primary-color-match-2);
+    border: 1px solid var(--primary-color);
     display: flex;
     justify-content: space-between;
     em {
       width: 80px;
       height: 100%;
-      border: 1px solid var(--primary-color);
+      //border: 1px solid var(--primary-color);
       background-color: var(--primary-color-match-1);
       box-sizing: border-box;
       &:first-of-type {

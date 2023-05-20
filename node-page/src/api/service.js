@@ -28,3 +28,7 @@ export function fetchFiles (id) {
 export function saveFileSetting (data) {
   return request.post('/service/file/setting/save', data)
 }
+// 保存服务文件配置
+export function saveVariables (data) {
+  return request.post('/service/variables/save', data)
+}

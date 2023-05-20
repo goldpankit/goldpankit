@@ -24,16 +24,16 @@
       <div class="content-wrap">
         <el-form v-if="currentVariable != null">
           <el-form-item label="Name" required>
-            <el-input v-model="currentVariable.name"/>
+            <el-input v-model="currentVariable.name" @input="saveVariables"/>
           </el-form-item>
           <el-form-item label="Message" required>
-            <I18nInput v-model="currentVariable.message"/>
+            <I18nInput v-model="currentVariable.message" @input="saveVariables"/>
           </el-form-item>
           <el-form-item label="Compiler" required>
-            <CompilerSelect v-model="currentVariable.compiler"/>
+            <CompilerSelect v-model="currentVariable.compiler" @change="saveVariables"/>
           </el-form-item>
           <el-form-item label="Input Type" required>
-            <InputTypeSelect v-model="currentVariable.inputType"/>
+            <InputTypeSelect v-model="currentVariable.inputType" @change="saveVariables"/>
           </el-form-item>
           <el-form-item
             v-if="currentVariable.inputType === 'checkbox' || currentVariable.inputType === 'radio'"
@@ -51,28 +51,23 @@
                 </div>
               </div>
             </template>
-            <el-table :data="currentVariable.values">
+            <el-table :data="currentVariable.options">
               <el-table-column label="*Name" min-width="120px">
                 <template #default="{ row }">
-                  <el-input v-model="row.name"/>
+                  <el-input v-model="row.name" @input="saveVariables"/>
                 </template>
               </el-table-column>
               <el-table-column label="*Label" min-width="200px">
                 <template #default="{ row }">
-                  <el-input v-model="row.label" type="textarea" :rows="1"/>
+                  <el-input v-model="row.label" type="textarea" :rows="1" @input="saveVariables"/>
                 </template>
               </el-table-column>
-              <el-table-column label="*Compiler" min-width="120px">
+              <el-table-column label="Remark" min-width="150px">
                 <template #default="{ row }">
-                  <CompilerSelect v-model="row.compiler"/>
+                  <el-input v-model="row.remark" type="textarea" :rows="1" @input="saveVariables"/>
                 </template>
               </el-table-column>
-              <el-table-column label="Remark" min-width="140px">
-                <template #default="{ row }">
-                  <el-input v-model="row.remark" type="textarea" :rows="1"/>
-                </template>
-              </el-table-column>
-              <el-table-column v-if="currentVariable.values.length > 0" min-width="60px" fixed="right">
+              <el-table-column v-if="currentVariable.options.length > 0" min-width="60px" fixed="right">
                 <template #default="{ row, index }">
                   <el-button icon="Delete" class="button-icon"></el-button>
                 </template>
@@ -80,7 +75,7 @@
             </el-table>
           </el-form-item>
           <el-form-item label="Remark">
-            <el-input v-model="currentVariable.remark" type="textarea" :rows="3"/>
+            <el-input v-model="currentVariable.remark" type="textarea" :rows="3" @input="saveVariables"/>
           </el-form-item>
         </el-form>
       </div>
@@ -92,6 +87,7 @@
 import CompilerSelect from "../../common/CompilerSelect.vue";
 import InputTypeSelect from "../../common/InputTypeSelect.vue";
 import I18nInput from "../../common/I18nInput.vue";
+import {saveVariables} from "../../../api/service";
 
 export default {
   name: "SettingVariables",
@@ -105,32 +101,7 @@ export default {
     return {
       varIndex: 1,
       currentVariable: null,
-      variables: [
-        {
-          name: 'basePackage',
-          message: '包名',
-          inputType: 'input',
-          compiler: 'static',
-          remark: '',
-          editable: false,
-          values: [
-            {name: 'Hash'},
-            {name: 'History'},
-          ]
-        },
-        {
-          name: 'routeType',
-          message: '路由方式',
-          inputType: 'checkbox',
-          compiler: 'static',
-          remark: '',
-          editable: false,
-          values: [
-            {name: 'hash', label: 'Hash'},
-            {name: 'history', label: 'History'},
-          ]
-        }
-      ]
+      variables: []
     }
   },
   methods: {
@@ -147,19 +118,47 @@ export default {
         inputType: 'input',
         compiler: 'static',
         remark: '',
-        values: []
+        options: []
       }
       this.variables.push(newVar)
       this.currentVariable = newVar
+      this.saveVariables()
     },
     // 添加选项
     createOption () {
       this.currentVariable.options.push({
         name: '',
         label: '',
-        compiler: 'static',
         remark: ''
       })
+    },
+    // 保存变量
+    saveVariables () {
+      // 过滤掉无效的变量
+      const variables = this.variables.filter(v => v.name.trim().length > 0 && v.message.trim().length > 0)
+      // 请求保存
+      saveVariables({
+        serviceId: this.serviceId,
+        variables: variables.map(item => {
+          const copyItem = JSON.parse(JSON.stringify(item))
+          // 输入类型去掉选项
+          if (copyItem.inputType === 'input') {
+            delete copyItem.options
+          }
+          // 选项类型过滤掉无效选项
+          else {
+            const copyOptions = JSON.parse(JSON.stringify(copyItem.options))
+            copyItem.options = copyOptions.filter(opt => opt.name.trim().length > 0)
+          }
+          return copyItem
+        })
+      })
+        .then(data => {
+          console.log('data', data)
+        })
+        .catch(e => {
+          console.log('e', e)
+        })
     },
     __generateVariableName () {
       let varName

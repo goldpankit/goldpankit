@@ -29,7 +29,7 @@
             />
             <SettingVariables
               v-show="currentTab === 'variables'"
-              service-id="serviceId"
+              :service-id="serviceId"
             />
           </div>
         </template>
