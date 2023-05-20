@@ -29,13 +29,49 @@
               <li>Issues</li>
             </ul>
             <ul class="service-list">
-              <li v-for="i in 10" :key="i">
+              <li>
                 <div class="service-info">
-                  <h3>支付宝支付</h3>
-                  <p>对接支付宝支付</p>
+                  <h3>eva-vue2</h3>
+                  <p>使用Vue2作为主框架</p>
                 </div>
                 <ul>
-                  <li><el-button>View Logic</el-button></li>
+                  <li><el-button @click="$router.push({ name: 'InstallService', query: { space_id: spaceId, v: 'v3' } })">INSTALL</el-button></li>
+                </ul>
+              </li>
+              <li>
+                <div class="service-info">
+                  <h3>eva-vue3</h3>
+                  <p>使用Vue3作为主框架</p>
+                </div>
+                <ul>
+                  <li><el-button>INSTALL</el-button></li>
+                </ul>
+              </li>
+              <li>
+                <div class="service-info">
+                  <h3>eva-react</h3>
+                  <p>使用React作为主框架</p>
+                </div>
+                <ul>
+                  <li><el-button>INSTALL</el-button></li>
+                </ul>
+              </li>
+              <li>
+                <div class="service-info">
+                  <h3>eva-springboot</h3>
+                  <p>使用SpringBoot作为主框架</p>
+                </div>
+                <ul>
+                  <li><el-button>INSTALL</el-button></li>
+                </ul>
+              </li>
+              <li>
+                <div class="service-info">
+                  <h3>eva-springcloud</h3>
+                  <p>使用SpringCloud作为主框架</p>
+                </div>
+                <ul>
+                  <li><el-button>INSTALL</el-button></li>
                 </ul>
               </li>
             </ul>
@@ -60,11 +96,11 @@
               size="large"
               @click="$router.push({ name: 'CreateService', query: { space_id: spaceId } })"
             >Create New Issue</el-button>
-            <el-button
-              type="important"
-              size="large"
-              @click="$router.push({ name: 'InstallService', query: { space_id: spaceId, v: 'v3' } })"
-            >INSTALL</el-button>
+<!--            <el-button-->
+<!--              type="important"-->
+<!--              size="large"-->
+<!--              @click="$router.push({ name: 'InstallService', query: { space_id: spaceId, v: 'v3' } })"-->
+<!--            >INSTALL</el-button>-->
           </div>
           <ul>
             <li>

@@ -68,7 +68,7 @@ header {
   .decoration {
     width: 160px;
     height: 15px;
-    background-color: var(--primary-color-match-2);
+    background-color: var(--primary-color);
     border: 1px solid var(--primary-color);
     display: flex;
     justify-content: space-between;

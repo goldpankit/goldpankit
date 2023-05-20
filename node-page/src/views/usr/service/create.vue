@@ -12,6 +12,17 @@
         <el-form-item label="Service Type" required>
           <ServiceTypeSelect v-model="form.type"/>
         </el-form-item>
+        <el-form-item v-if="form.type === 'framework'" label="Version" required>
+          <VersionSelect v-model="form.version"/>
+        </el-form-item>
+        <template v-else>
+          <el-form-item label="Follow Framework Service" required>
+            <VersionSelect v-model="form.version"/>
+          </el-form-item>
+          <el-form-item label="Follow Framework Version" required>
+            <VersionSelect v-model="form.version"/>
+          </el-form-item>
+        </template>
         <el-form-item label="Default Compiler" required>
           <CompilerSelect v-model="form.compiler"/>
         </el-form-item>
@@ -40,9 +51,10 @@ import ServiceTypeSelect from "../../../components/service/ServiceTypeSelect.vue
 import DatabaseSelect from "../../../components/database/DatabaseSelect.vue";
 import { fetchById } from "../../../api/service.space";
 import { create } from "../../../api/service";
+import VersionSelect from "../../../components/common/VersionSelect.vue";
 
 export default {
-  components: {DatabaseSelect, ServiceTypeSelect, CompilerSelect, SpaceSelect, I18nInput},
+  components: {VersionSelect, DatabaseSelect, ServiceTypeSelect, CompilerSelect, SpaceSelect, I18nInput},
   data () {
     return {
       space: null,
@@ -50,6 +62,7 @@ export default {
         spaceId: null,
         name: '',
         type: 'framework',
+        version: 'v1',
         compiler: 'static',
         supportedDatabases: [],
         description: ''
