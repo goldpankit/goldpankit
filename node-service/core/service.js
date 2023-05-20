@@ -54,7 +54,6 @@ module.exports = {
   // 保存变量
   saveVariables (dto) {
     const service = cache.services.get(dto.serviceId)
-    console.log('service', dto.serviceId)
     const configPath = this.__getConfigPath(service.codespace)
     const config = fs.readJSONFile(configPath)
     config.variables = dto.variables
