@@ -17,20 +17,21 @@
       </div>
       <div class="main">
         <template v-if="service.initialized">
-          <div class="nav">
-            <ul class="tabs">
-              <li class="selected">Files</li>
-              <li>Variables</li>
-            </ul>
-            <div class="tab-content">
-              <SettingFiles ref="settingFiles" :service-id="serviceId" @node-click="handleNodeClick"/>
-            </div>
-          </div>
-          <div class="setting-wrap">
-            <h4>File Setting</h4>
-            <div class="content-wrap">
-              <SettingForm :service-id="serviceId" :target="currentNode"/>
-            </div>
+          <ul class="tabs">
+            <li :class="{ selected: currentTab === 'files' }" @click="currentTab = 'files'">Files</li>
+            <li :class="{ selected: currentTab === 'variables' }" @click="currentTab = 'variables'">Variables</li>
+          </ul>
+          <div class="tab-content">
+            <SettingFiles
+              v-show="currentTab === 'files'"
+              ref="settingFiles"
+              :service-id="serviceId"
+              @node-click="handleNodeClick"
+            />
+            <SettingVariables
+              v-show="currentTab === 'variables'"
+              service-id="serviceId"
+            />
           </div>
         </template>
         <template v-else>
@@ -57,15 +58,16 @@ import SettingFiles from "../../../components/service/settings/SettingFiles.vue"
 import DirectorySelect from "../../../components/common/DirectorySelect.vue";
 import SettingForm from "../../../components/service/settings/SettingForm.vue";
 import {initialize, getProfile, push} from "../../../api/service";
+import SettingVariables from "../../../components/service/settings/SettingVariables.vue";
 
 export default {
-  components: {SettingForm, DirectorySelect, SettingFiles},
+  components: {SettingVariables, SettingForm, DirectorySelect, SettingFiles},
   data () {
     return {
       loading: true,
+      currentTab: 'files',
       serviceId: null,
       service: null,
-      currentNode: null,
       directorySelect: {
         value: ''
       }
@@ -101,10 +103,6 @@ export default {
           this.loading = false
         })
     },
-    // 选择树节点
-    handleNodeClick (node) {
-      this.currentNode = node
-    },
     // 推送服务代码
     push () {
       push(this.serviceId)
@@ -133,7 +131,7 @@ export default {
     margin: 0 auto;
     box-shadow: var(--page-shadow);
     background: var(--color-light);
-    padding: var(--gap-page-padding);
+    padding: var(--gap-page-padding) var(--gap-page-padding) 0 var(--gap-page-padding);
     border-radius: var(--radius-page);
     display: flex;
     flex-direction: column;
@@ -156,46 +154,27 @@ export default {
     overflow: hidden;
     flex-grow: 1;
     display: flex;
-    // 文件&变量区域
-    .nav {
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-      overflow: hidden;
-      width: 320px;
+    flex-direction: column;
+    // 页签
+    .tabs {
       flex-shrink: 0;
-      padding: 20px 20px 20px 0;
-      border-right: 1px solid var(--border-default-color);
-      // 页签
-      .tabs {
-        flex-shrink: 0;
-        display: flex;
-        margin-bottom: 10px;
-        li {
-          margin-right: 10px;
-          &.selected {
-            font-weight: bold;
-          }
-          &:last-of-type {
-            margin-right: 0;
-          }
+      display: flex;
+      margin: 10px 0;
+      li {
+        margin-right: 10px;
+        cursor: pointer;
+        &.selected {
+          font-weight: bold;
+        }
+        &:last-of-type {
+          margin-right: 0;
         }
       }
-      // 页签内容
-      .tab-content {
-        flex-grow: 1;
-        overflow-y: auto;
-      }
     }
-    // 设置区域
-    .setting-wrap {
+    // 页签内容
+    .tab-content {
       flex-grow: 1;
-      background: var(--color-light);
-      padding: 20px 0 20px 20px;
-      overflow: hidden;
-      .content-wrap {
-        padding: 20px 0;
-      }
+      overflow-y: auto;
     }
     // 初始化
     .initialize-wrap {

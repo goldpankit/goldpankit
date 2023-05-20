@@ -10,7 +10,7 @@
       </div>
       <ul class="opera">
         <li>
-          <el-popover placement="right" :width="600" trigger="click" popper-class="select-project-popover">
+          <el-popover placement="right" trigger="click" popper-class="select-project-popover">
             <template #reference>
               <el-button type="primary">{{ currentProject == null ? 'Select Project' : 'Current project: ' + currentProject.name }}</el-button>
             </template>
@@ -90,6 +90,10 @@ main {
 </style>
 <style lang="scss">
 .select-project-popover {
+  width: 600px !important;
+  max-height: 90%;
+  overflow-y: auto;
+  overflow-x: hidden;
   .user-projects {
     padding: 15px;
   }
