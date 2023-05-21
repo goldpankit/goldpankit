@@ -63,8 +63,8 @@
 
 <script>
 import { mapState } from 'vuex'
-import {search} from "../../api/service";
-import {compile} from "../../api/service.compile";
+import {search} from "../api/service";
+import {compile} from "../api/service.compile";
 
 export default {
   data () {

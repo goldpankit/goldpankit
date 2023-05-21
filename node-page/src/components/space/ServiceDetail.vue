@@ -3,7 +3,7 @@
     <div class="nav">
       <div class="title">
         <el-button class="button-icon" icon="ArrowLeftBold" @click="$emit('back')"></el-button>
-        <h4>eva-vue2</h4>
+        <h4>{{frameworkService.name}}</h4>
       </div>
       <ul>
         <li
@@ -66,9 +66,11 @@
 <script>
 import { mapState } from 'vuex'
 export default {
-  name: "SubServiceDetail",
+  name: "ServiceDetail",
   props: {
-    frameworkService: {}
+    frameworkService: {
+      required: true
+    }
   },
   data () {
     return {

@@ -36,6 +36,11 @@ const router = createRouter({
           component: () => import('@/views/space/detail.vue')
         },
         {
+          path: '/workbench',
+          name: 'Workbench',
+          component: () => import('@/views/workbench.vue')
+        },
+        {
           path: '/usr/project/create',
           name: 'CreateProject',
           component: () => import('@/views/usr/project/create.vue')
@@ -44,11 +49,6 @@ const router = createRouter({
           path: '/usr/space/create',
           name: 'CreateSpace',
           component: () => import('@/views/usr/create-space.vue')
-        },
-        {
-          path: '/space/install',
-          name: 'InstallService',
-          component: () => import('@/views/space/install.vue')
         },
         {
           path: '/usr/spaces',

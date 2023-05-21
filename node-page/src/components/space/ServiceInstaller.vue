@@ -3,7 +3,7 @@
     <div class="nav">
       <div class="title">
         <el-button class="button-icon" icon="ArrowLeftBold" @click="$emit('back')"></el-button>
-        <h4>eva-vue2 · V3 · Install</h4>
+        <h4>{{frameworkService.name}} · {{frameworkServiceVersion.toUpperCase()}} · Install</h4>
       </div>
     </div>
     <div class="content-wrap">
@@ -21,7 +21,7 @@
         </el-form-item>
       </el-form>
       <div class="install">
-        <el-button type="important">
+        <el-button type="important" @click="install">
           INSTALL{{currentProject == null ? '' : ' to project ' + currentProject.name}}
         </el-button>
       </div>
@@ -30,13 +30,22 @@
 </template>
 
 <script>
-import InstallCheckbox from "../service/installer/Checkbox.vue";
 import {mapState} from "vuex";
+import InstallCheckbox from "../service/installer/Checkbox.vue";
 import InstallInput from "../service/installer/Input.vue";
+import {compile} from "../../api/service.compile";
 
 export default {
   name: "ServiceInstaller",
   components: {InstallInput, InstallCheckbox},
+  props: {
+    frameworkService: {
+      required: true
+    },
+    frameworkServiceVersion: {
+      required: true
+    }
+  },
   data () {
     return {
       variables: [
@@ -73,6 +82,25 @@ export default {
   },
   computed: {
     ...mapState(['currentProject'])
+  },
+  methods: {
+    // 安装服务
+    install () {
+      compile({
+        id: this.frameworkService.id,
+        projectId: this.currentProject.id,
+        values: []
+      })
+        .then(() => {
+          this.$router.push({ name: 'Workbench', query: { framework_service_id: this.frameworkService.id } })
+        })
+        .catch(e => {
+          console.log('e', e)
+        })
+    }
+  },
+  created () {
+    console.log('frameworkService', this.frameworkService)
   }
 }
 </script>

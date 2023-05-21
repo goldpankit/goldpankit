@@ -16,9 +16,9 @@
           </ul>
           <div class="detail">
             <ul v-show="currentFrameworkService == null" class="service-list">
-              <li v-for="i in 5" @click="currentFrameworkService = i">
-                <h4>eva-vue2</h4>
-                <p>采用Vue2框架，结合Vue Router，SASS，Axios等技术栈</p>
+              <li v-for="service in frameworkServices" @click="currentFrameworkService = service">
+                <h4>{{service.name}}</h4>
+                <p>{{service.description}}</p>
                 <section class="infos">
                   <p>21 sub versions</p>
                   <p>Latest version: 2.2.0</p>
@@ -37,6 +37,7 @@
             <ServiceInstaller
               v-if="currentFrameworkServiceVersion != null"
               :framework-service="currentFrameworkService"
+              :framework-service-version="currentFrameworkServiceVersion"
               @back="currentFrameworkServiceVersion = null"
             />
           </div>
@@ -85,6 +86,7 @@
 import ServiceDetail from "../../components/space/ServiceDetail.vue";
 import {fetchById} from "../../api/service.space";
 import ServiceInstaller from "../../components/space/ServiceInstaller.vue";
+import {search} from "../../api/service";
 
 export default {
   components: {ServiceInstaller, ServiceDetail},
@@ -95,7 +97,9 @@ export default {
       currentFrameworkService: null,
       // 当前选择的框架服务版本
       currentFrameworkServiceVersion: null,
-      space: null
+      space: null,
+      // 框架服务列表
+      frameworkServices: []
     }
   },
   methods: {
@@ -104,6 +108,20 @@ export default {
       fetchById(this.spaceId)
         .then(data => {
           this.space = data
+          this.fetchServiceList()
+        })
+        .catch(e => {
+          console.log('e', e)
+        })
+    },
+    // 查询服务列表
+    fetchServiceList () {
+      search({
+        spaceId: this.spaceId,
+        type: 'framework'
+      })
+        .then(data => {
+          this.frameworkServices = data
         })
         .catch(e => {
           console.log('e', e)
