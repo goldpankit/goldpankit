@@ -92,7 +92,7 @@ export default {
         values: []
       })
         .then(() => {
-          this.$router.push({ name: 'Workbench', query: { framework_service_id: this.frameworkService.id } })
+          this.$router.push({ name: 'Workbench' })
         })
         .catch(e => {
           console.log('e', e)

@@ -65,6 +65,7 @@
 import { mapState } from 'vuex'
 import {search} from "../api/service";
 import {compile} from "../api/service.compile";
+import {fetchById} from "../api/user.project";
 
 export default {
   data () {
@@ -79,6 +80,15 @@ export default {
   },
   methods: {
     // 查询项目信息
+    fetchProject () {
+      fetchById(this.currentProject.id)
+        .then(data => {
+          console.log('data', data)
+        })
+        .catch(e => {
+          console.log('e', e)
+        })
+    },
     // 查询子服务
     searchSubServices () {
       search({
@@ -96,6 +106,7 @@ export default {
     }
   },
   created () {
+    this.fetchProject()
     this.searchSubServices()
   }
 }
