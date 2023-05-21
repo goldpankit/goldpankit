@@ -6,12 +6,6 @@
         <em>Private</em>
         <p class="tech-stack">Java · SpringBoot · MyBatisPlus · MySQL</p>
       </div>
-<!--      <div class="frameworks">-->
-<!--        <ul>-->
-<!--          <li class="selected">前端框架</li>-->
-<!--          <li>后端框架</li>-->
-<!--        </ul>-->
-<!--      </div>-->
       <div class="content-wrap">
         <div class="dimension-wrap">
           <ul class="dimensions">
@@ -21,58 +15,17 @@
             <li>Issues</li>
           </ul>
           <div class="detail">
-            <ul class="service-types">
-              <li class="selected">Framework</li>
-              <li>Common</li>
-              <li>Logic</li>
-              <li>Page</li>
-              <li>Issues</li>
-            </ul>
             <ul class="service-list">
-              <li>
-                <div class="service-info">
-                  <h3>eva-vue2</h3>
-                  <p>使用Vue2作为主框架</p>
-                </div>
-                <ul>
-                  <li><el-button @click="$router.push({ name: 'InstallService', query: { space_id: spaceId, v: 'v3' } })">INSTALL</el-button></li>
-                </ul>
-              </li>
-              <li>
-                <div class="service-info">
-                  <h3>eva-vue3</h3>
-                  <p>使用Vue3作为主框架</p>
-                </div>
-                <ul>
-                  <li><el-button>INSTALL</el-button></li>
-                </ul>
-              </li>
-              <li>
-                <div class="service-info">
-                  <h3>eva-react</h3>
-                  <p>使用React作为主框架</p>
-                </div>
-                <ul>
-                  <li><el-button>INSTALL</el-button></li>
-                </ul>
-              </li>
-              <li>
-                <div class="service-info">
-                  <h3>eva-springboot</h3>
-                  <p>使用SpringBoot作为主框架</p>
-                </div>
-                <ul>
-                  <li><el-button>INSTALL</el-button></li>
-                </ul>
-              </li>
-              <li>
-                <div class="service-info">
-                  <h3>eva-springcloud</h3>
-                  <p>使用SpringCloud作为主框架</p>
-                </div>
-                <ul>
-                  <li><el-button>INSTALL</el-button></li>
-                </ul>
+              <li v-for="i in 5">
+                <h4>eva-vue2</h4>
+                <p>采用Vue2框架，结合Vue Router，SASS，Axios等技术栈</p>
+                <section class="infos">
+                  <p>21 sub versions</p>
+                  <p>Latest version: 2.2.0</p>
+                </section>
+                <section class="infos text-info-1">
+                  <p>Last publish: 3 weeks ago</p>
+                </section>
               </li>
             </ul>
           </div>
@@ -314,32 +267,32 @@ export default {
     }
     // 服务列表
     ul.service-list {
-      border: 1px solid var(--border-default-color);
-      border-top: 0;
-      padding: 0 20px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
       & > li {
-        background-color: var(--color-light);
-        padding: 15px 0;
-        display: flex;
-        border-bottom: 1px solid var(--border-default-color);
-        &:last-of-type {
-          border-bottom: 0;
+        width: 325px;
+        border: 1px solid var(--border-default-color);
+        padding: 20px;
+        cursor: pointer;
+        margin-bottom: 15px;
+        border-radius: 10px;
+        transition: all ease .15s;
+        &:hover {
+          border-color: var(--primary-color);
+          background: var(--background-color);
         }
-        .service-info {
-          flex-grow: 1;
-          h3 {
-            font-size: var(--font-size-middle);
-            margin-bottom: 10px;
-          }
-          p {
-            font-size: var(--font-size);
-          }
+        h4 {
+          font-size: var(--font-size-middle);
+          margin-bottom: 10px;
         }
-        ul {
-          flex-shrink: 0;
+        .infos {
           display: flex;
-          align-items: center;
-          margin-left: 30px;
+          margin-top: 10px;
+          font-size: var(--font-size-mini);
+          p {
+            margin-right: 10px;
+          }
         }
       }
     }
