@@ -6,14 +6,24 @@
         <h4>eva-vue2</h4>
       </div>
       <ul>
-        <li class="selected"><em>V1</em></li>
-        <li><em>V2</em></li>
-        <li><em>V3</em></li>
+        <li
+          v-for="version in versions"
+          :key="version"
+          :class="{ selected: version === currentVersion }"
+          @click="currentVersion = version"
+        >{{version}}</li>
       </ul>
+    </div>
+    <div class="install">
+      <el-button type="important" @click="$emit('install', currentVersion)">
+        <h5>INSTALL{{currentProject == null ? '' : ' to project ' + currentProject.name}}</h5>
+        <p v-if="currentProject == null">Please select a project for install the framework.</p>
+      </el-button>
     </div>
     <div class="content-wrap">
       <ul class="service-types">
         <li class="selected">Readme</li>
+        <li>Sub Services</li>
         <li>Files</li>
       </ul>
       <ul class="service-list">
@@ -23,45 +33,30 @@
             <p>为每一次增删改操作增加操作日志</p>
             <p class="text-mini text-info-1">Last publish: 3 weeks ago</p>
           </div>
-          <ul>
-            <li><el-button @click="$router.push({ name: 'InstallService', query: { space_id: spaceId, v: 'v3' } })">INSTALL</el-button></li>
-          </ul>
         </li>
         <li>
           <div class="service-info">
             <h3>字典管理</h3>
             <p>可以将数据常量定义在字典里，通过提供的接口或service来获取，提高项目业务常量的实时修改。</p>
           </div>
-          <ul>
-            <li><el-button>INSTALL</el-button></li>
-          </ul>
         </li>
         <li>
           <div class="service-info">
             <h3>部门管理</h3>
             <p>企业部门的管理功能，支持用户设定至部门</p>
           </div>
-          <ul>
-            <li><el-button>INSTALL</el-button></li>
-          </ul>
         </li>
         <li>
           <div class="service-info">
             <h3>定时任务</h3>
             <p>通过spring自带的定时实现定时任务，可支持任务的分片功能</p>
           </div>
-          <ul>
-            <li><el-button>INSTALL</el-button></li>
-          </ul>
         </li>
         <li>
           <div class="service-info">
             <h3>消息通知</h3>
             <p>可实现业务操作后添加消息通知，通过轮询的方式定时获取消息送达用户。</p>
           </div>
-          <ul>
-            <li><el-button>INSTALL</el-button></li>
-          </ul>
         </li>
       </ul>
     </div>
@@ -69,10 +64,20 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 export default {
   name: "SubServiceDetail",
   props: {
-    frameworkServiceId: {}
+    frameworkService: {}
+  },
+  data () {
+    return {
+      currentVersion: 'v3',
+      versions: ['v3', 'v2', 'v1']
+    }
+  },
+  computed: {
+    ...mapState(['currentProject'])
   }
 }
 </script>
@@ -99,14 +104,27 @@ export default {
       li {
         padding: 0 10px;
         cursor: pointer;
+        font-size: var(--font-size-middle);
+        font-weight: bold;
+        font-style: italic;
+        text-transform: uppercase;
         &.selected {
-          em {
-            color: var(--primary-color-match-2);
-          }
+          color: var(--primary-color-match-2);
         }
-        em {
-          font-size: var(--font-size-middle);
-          font-weight: bold;
+      }
+    }
+  }
+  .install {
+    margin: 10px 0;
+    .el-button {
+      width: 100%;
+      height: 70px;
+      :deep(span) {
+        display: flex;
+        flex-direction: column;
+        h5 {
+          font-size: var(--font-size-large);
+          margin-bottom: 5px;
         }
       }
     }

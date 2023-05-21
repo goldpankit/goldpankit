@@ -28,10 +28,16 @@
                 </section>
               </li>
             </ul>
-            <SubServiceDetail
-              v-if="currentFrameworkService != null"
-              :framework-service-id="currentFrameworkService"
+            <ServiceDetail
+              v-if="currentFrameworkService != null && currentFrameworkServiceVersion == null"
+              :framework-service="currentFrameworkService"
+              @install="handleServiceInstall"
               @back="currentFrameworkService = null"
+            />
+            <ServiceInstaller
+              v-if="currentFrameworkServiceVersion != null"
+              :framework-service="currentFrameworkService"
+              @back="currentFrameworkServiceVersion = null"
             />
           </div>
         </div>
@@ -54,16 +60,15 @@
               size="large"
               @click="$router.push({ name: 'CreateService', query: { space_id: spaceId } })"
             >Create New Issue</el-button>
-<!--            <el-button-->
-<!--              type="important"-->
-<!--              size="large"-->
-<!--              @click="$router.push({ name: 'InstallService', query: { space_id: spaceId, v: 'v3' } })"-->
-<!--            >INSTALL</el-button>-->
           </div>
           <ul>
             <li>
               <label>Home Page</label>
               <a href="#">http://eva.adjustrd.com</a>
+            </li>
+            <li>
+              <label>Services</label>
+              <p>55</p>
             </li>
             <li>
               <label>Last Publish</label>
@@ -77,20 +82,24 @@
 </template>
 
 <script>
-import SubServiceDetail from "../../components/service/SubServiceDetail.vue";
+import ServiceDetail from "../../components/space/ServiceDetail.vue";
 import {fetchById} from "../../api/service.space";
+import ServiceInstaller from "../../components/space/ServiceInstaller.vue";
 
 export default {
-  components: {SubServiceDetail},
+  components: {ServiceInstaller, ServiceDetail},
   data () {
     return {
       spaceId: null,
-      // 当前框架服务
+      // 当前选择的框架服务
       currentFrameworkService: null,
+      // 当前选择的框架服务版本
+      currentFrameworkServiceVersion: null,
       space: null
     }
   },
   methods: {
+    // 查询空间信息
     fetchById () {
       fetchById(this.spaceId)
         .then(data => {
@@ -99,6 +108,10 @@ export default {
         .catch(e => {
           console.log('e', e)
         })
+    },
+    // 服务安装
+    handleServiceInstall (version) {
+      this.currentFrameworkServiceVersion = version
     }
   },
   created () {
