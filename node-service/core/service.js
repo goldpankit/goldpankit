@@ -32,10 +32,16 @@ module.exports = {
         return Promise.reject(e)
       })
   },
+  // 获取服务配置信息
+  getServiceConfig(serviceId) {
+    const service = cache.services.get(serviceId)
+    const configPath = this.__getConfigPath(service.codespace)
+    return fs.readJSONFile(configPath)
+  },
   // 获取服务文件树
   getFileTree(serviceId) {
     const service = cache.services.get(serviceId)
-    return this.__getFileTree(service.codespace, service.codespace)
+    return fs.getFileTree(service.codespace, service.codespace)
   },
   // 保存服务文件
   saveFileSetting (fileSettings) {
@@ -100,37 +106,6 @@ module.exports = {
   // 获取文件配置目录
   __getConfigPath (codespace) {
     return `${codespace}/${Const.SERVICE_CONFIG_DIRECTORY}/${Const.SERVICE_CONFIG_FILE}`
-  },
-  // 获取文件树
-  __getFileTree (absolutePath, codespace) {
-    let filePool = []
-    const files = fs.getFiles(absolutePath)
-    files.forEach(file => {
-      const fullpath = path.join(absolutePath, file)
-      // 忽略文件
-      if (Const.IGNORE_DIRS.findIndex(f => file === f || file.startsWith(`${f}/`)) !== -1) {
-        return
-      }
-      // 获取文件配置
-      const relativePath = fullpath.replace(codespace + '/', '')
-      const fileSettings = this.__getFileSettings(codespace, relativePath)
-      // 构建文件对象
-      const fileObject = {
-        label: file,
-        type: fs.isDirectory(fullpath) ? 'directory' : 'file',
-        contentType: fs.isDirectory(fullpath) ? undefined : fs.getContentType(fullpath),
-        path: fullpath,
-        relativePath,
-        enableExpress: fileSettings.enableExpress,
-        variables: fileSettings.variables,
-        children: fs.isDirectory(fullpath) ? [] : undefined
-      }
-      filePool.push(fileObject);
-      if (fileObject.type === 'directory') {
-        fileObject.children = this.__getFileTree(fullpath, codespace);
-      }
-    });
-    return filePool
   },
   // 获取文件设置
   __getFileSettings (codespace, fileRelativePath) {

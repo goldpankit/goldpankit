@@ -6,8 +6,41 @@ module.exports = {
   getRuntimeRoot() {
     return root
   },
+  // 获取文件列表
   getFiles (dir) {
     return fs.readdirSync(dir)
+  },
+  // 获取文件树
+  getFileTree (absolutePath, codespace) {
+    let filePool = []
+    const files = this.getFiles(absolutePath)
+    files.forEach(file => {
+      const fullpath = path.join(absolutePath, file)
+      // 忽略文件
+      if (Const.IGNORE_DIRS.findIndex(f => file === f || file.startsWith(`${f}/`)) !== -1) {
+        return
+      }
+      // 获取文件配置
+      const relativePath = fullpath.replace(codespace + '/', '')
+      const fileSettings = this.__getFileSettings(codespace, relativePath)
+      // 构建文件对象
+      const isDirectory = this.isDirectory(fullpath)
+      const fileObject = {
+        label: file,
+        type: isDirectory ? 'directory' : 'file',
+        contentType: isDirectory ? undefined : this.getContentType(fullpath),
+        path: fullpath,
+        relativePath,
+        enableExpress: fileSettings.enableExpress,
+        variables: fileSettings.variables,
+        children: isDirectory ? [] : undefined
+      }
+      filePool.push(fileObject);
+      if (fileObject.type === 'directory') {
+        fileObject.children = this.getFileTree(fullpath, codespace);
+      }
+    });
+    return filePool
   },
   // 写入代码文件
   writeFiles (files, codespace) {

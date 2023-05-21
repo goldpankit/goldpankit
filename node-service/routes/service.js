@@ -9,6 +9,13 @@ request.post('/service/create').proxy()
 // 搜索服务
 request.post('/service/search').proxy()
 
+// 获取服务配置
+request
+  .get('/service/:serviceId/config')
+  .data(req => {
+    return service.getServiceConfig(req.params.serviceId)
+  })
+
 // 推送服务
 request
   .get('/service/:serviceId/push')
