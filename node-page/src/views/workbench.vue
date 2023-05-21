@@ -69,7 +69,6 @@ import {compile} from "../api/service.compile";
 export default {
   data () {
     return {
-      spaceId: null,
       version: 'v1',
       services: [],
       currentService: null
@@ -79,9 +78,10 @@ export default {
     ...mapState(['currentProject'])
   },
   methods: {
-    search () {
+    // 查询项目信息
+    // 查询子服务
+    searchSubServices () {
       search({
-        spaceId: this.spaceId
       })
         .then(data => {
           this.services = data
@@ -93,26 +93,10 @@ export default {
     // 选择服务
     selectService (service) {
       this.currentService = service
-    },
-    // 安装服务
-    install () {
-      compile({
-        id: this.currentService.id,
-        projectId: this.currentProject.id,
-        values: []
-      })
-        .then(data => {
-          console.log('data', data)
-        })
-        .catch(e => {
-          console.log('e', e)
-        })
     }
   },
   created () {
-    this.spaceId = this.$route.query.space_id
-    this.version = this.$route.query.v
-    this.search()
+    this.searchSubServices()
   }
 }
 </script>
