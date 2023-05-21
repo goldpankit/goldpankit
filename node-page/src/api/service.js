@@ -24,6 +24,10 @@ export function getProfile (id) {
 export function fetchFiles (id) {
   return request.get(`/service/${id}/files`)
 }
+// 获取服务文件
+export function fetchConfig (id) {
+  return request.get(`/service/${id}/config`)
+}
 // 保存服务文件配置
 export function saveFileSetting (data) {
   return request.post('/service/file/setting/save', data)

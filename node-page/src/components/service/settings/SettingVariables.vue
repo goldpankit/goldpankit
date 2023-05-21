@@ -69,7 +69,7 @@
               </el-table-column>
               <el-table-column v-if="currentVariable.options.length > 0" min-width="60px" fixed="right">
                 <template #default="{ row, index }">
-                  <el-button icon="Delete" class="button-icon"></el-button>
+                  <el-button icon="Delete" class="button-icon" @click="deleteOption(index)"></el-button>
                 </template>
               </el-table-column>
             </el-table>
@@ -87,7 +87,7 @@
 import CompilerSelect from "../../common/CompilerSelect.vue";
 import InputTypeSelect from "../../common/InputTypeSelect.vue";
 import I18nInput from "../../common/I18nInput.vue";
-import {saveVariables} from "../../../api/service";
+import {fetchConfig, saveVariables} from "../../../api/service";
 
 export default {
   name: "SettingVariables",
@@ -132,6 +132,9 @@ export default {
         remark: ''
       })
     },
+    deleteOption (index) {
+      this.currentVariable.options.splice(index, 1)
+    },
     // 保存变量
     saveVariables () {
       // 过滤掉无效的变量
@@ -160,6 +163,16 @@ export default {
           console.log('e', e)
         })
     },
+    // 获取变量配置
+    fetchVariables () {
+      fetchConfig(this.serviceId)
+        .then(data => {
+          this.variables = data.variables
+        })
+        .catch(e => {
+          console.log('e', e)
+        })
+    },
     __generateVariableName () {
       let varName
       while(true) {
@@ -181,6 +194,7 @@ export default {
     }
   },
   created() {
+    this.fetchVariables()
   }
 }
 </script>
