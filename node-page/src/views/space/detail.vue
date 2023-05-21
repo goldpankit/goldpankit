@@ -4,7 +4,7 @@
       <h2>{{ space.name }}</h2>
       <div class="tech-stack-wrap">
         <em>Private</em>
-        <p class="tech-stack">Java · SpringBoot · MyBatisPlus · MySQL</p>
+        <p class="tech-stack">55 services</p>
       </div>
       <div class="content-wrap">
         <div class="dimension-wrap">
@@ -15,8 +15,8 @@
             <li>Issues</li>
           </ul>
           <div class="detail">
-            <ul class="service-list">
-              <li v-for="i in 5">
+            <ul v-show="currentFrameworkService == null" class="service-list">
+              <li v-for="i in 5" @click="currentFrameworkService = i">
                 <h4>eva-vue2</h4>
                 <p>采用Vue2框架，结合Vue Router，SASS，Axios等技术栈</p>
                 <section class="infos">
@@ -28,6 +28,11 @@
                 </section>
               </li>
             </ul>
+            <SubServiceDetail
+              v-if="currentFrameworkService != null"
+              :framework-service-id="currentFrameworkService"
+              @back="currentFrameworkService = null"
+            />
           </div>
         </div>
         <div class="info">
@@ -72,12 +77,16 @@
 </template>
 
 <script>
+import SubServiceDetail from "../../components/service/SubServiceDetail.vue";
 import {fetchById} from "../../api/service.space";
 
 export default {
+  components: {SubServiceDetail},
   data () {
     return {
       spaceId: null,
+      // 当前框架服务
+      currentFrameworkService: null,
       space: null
     }
   },
