@@ -116,6 +116,8 @@ export default {
         name: varName,
         message: varName,
         inputType: 'input',
+        required: false,
+        defaultValue: null,
         compiler: 'static',
         remark: '',
         options: []
