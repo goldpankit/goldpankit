@@ -152,7 +152,9 @@ export default {
           // 选项类型过滤掉无效选项
           else {
             const copyOptions = JSON.parse(JSON.stringify(copyItem.options))
-            copyItem.options = copyOptions.filter(opt => opt.name.trim().length > 0)
+            copyItem.options = copyOptions.filter(
+              opt => opt.value.trim().length > 0 && opt.label.trim().length > 0
+            )
           }
           return copyItem
         })

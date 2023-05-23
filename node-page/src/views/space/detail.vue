@@ -26,6 +26,9 @@
                 <section class="infos text-info-1">
                   <p>Last publish: 3 weeks ago</p>
                 </section>
+                <div class="opera">
+                  <el-button size="small" @click="$router.push({ name: 'ServiceSettings', query: { service_id: service.id } })">Edit</el-button>
+                </div>
               </li>
             </ul>
             <ServiceDetail
@@ -334,6 +337,10 @@ export default {
           p {
             margin-right: 10px;
           }
+        }
+        .opera {
+          display: flex;
+          justify-content: flex-end;
         }
       }
     }
