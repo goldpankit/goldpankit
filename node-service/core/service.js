@@ -4,7 +4,7 @@ const cache = require('./utils/cache')
 const object = require('./utils/object')
 const fs = require('./utils/fs')
 const serviceApi = require("./api/service");
-const FileUtil = require("../../../kit-node-cli-core/src/utils/file");
+const userProject = require('./user.project')
 module.exports = {
   // 初始化
   initialize(extConfig) {
@@ -94,8 +94,20 @@ module.exports = {
     if (project == null) {
       throw new Error('Please select a project.')
     }
-    return serviceApi.install(dto)
+    return serviceApi.install({
+      id: dto.framework.id,
+      variables: dto.variables
+    })
       .then(data => {
+        // 写入配置
+        const projectConfig = JSON.parse(JSON.stringify(Const.PROJECT_CONFIG_FILE_CONTENT))
+        projectConfig.space = dto.space.name
+        projectConfig.framework[dto.framework.name] = {
+          version: dto.framework.version || "",
+          variables: dto.variables
+        }
+        fs.createFile(userProject.getConfigPath(projectId), fs.toJSONFileString(projectConfig), true)
+        // 写入文件
         fs.writeFiles(data, project.codespace)
         return Promise.resolve()
       })

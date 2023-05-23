@@ -42,6 +42,26 @@ module.exports = {
     // 项目列表
     projects: [],
   },
+  // 项目配置文件
+  PROJECT_CONFIG_FILE: `${PROJECT_NAME}.json`,
+  // 项目配置内容
+  PROJECT_CONFIG_FILE_CONTENT: {
+    space: '',
+    framework: {
+    //   eva: {
+    //     version: 'v3.0.0',
+    //     variables: {
+    //       basePackage: 'com.kit'
+    //     }
+    //   }
+    },
+    services: {
+    //   alipay: {
+    //     version: 'v1.2.1',
+    //     variables: {}
+    //   }
+    }
+  },
   // 监听、推送服务文件时忽略的目录
   IGNORE_DIRS: ['.DS_Store',`.${PROJECT_NAME}`, '.idea', '.vscode', 'node_modules', '.git', '.github'],
   // 文件类型映射
