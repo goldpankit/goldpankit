@@ -67,6 +67,7 @@ module.exports = {
   },
   // 推送服务
   push(serviceId) {
+    // 获取服务文件
     const service = cache.services.get(serviceId)
     const files = fs.getFilesWithChildren(service.codespace, service.codespace).map(fullpath => {
       const filetype = fs.isDirectory(fullpath) ? 'DIRECTORY' : 'FILE'
@@ -81,10 +82,13 @@ module.exports = {
         enableExpress: ''
       }
     })
-    console.log('files', files)
+    // 获取服务变量
+    const serviceConfig = this.getServiceConfig(serviceId)
+    const variables = serviceConfig.variables
     return serviceApi.push({
       serviceId,
-      files
+      files,
+      variables
     })
   },
   // 安装服务
