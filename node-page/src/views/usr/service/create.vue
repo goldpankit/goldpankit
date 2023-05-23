@@ -7,7 +7,7 @@
       </section>
       <el-form>
         <el-form-item label="Service Name" required>
-          <I18nInput v-model="form.name"/>
+          <el-input v-model="form.name"/>
         </el-form-item>
         <el-form-item label="Service Type" required>
           <ServiceTypeSelect v-model="form.type"/>
@@ -37,7 +37,7 @@
         </el-form-item>
       </el-form>
       <div class="opera">
-        <el-button type="primary" @click="create">Create Service</el-button>
+        <el-button type="primary" size="large" @click="create">Create Service</el-button>
       </div>
     </div>
   </div>
@@ -49,9 +49,9 @@ import SpaceSelect from "../../../components/space/SpaceSelect.vue";
 import CompilerSelect from "../../../components/common/CompilerSelect.vue";
 import ServiceTypeSelect from "../../../components/service/ServiceTypeSelect.vue";
 import DatabaseSelect from "../../../components/database/DatabaseSelect.vue";
+import VersionSelect from "../../../components/common/VersionSelect.vue";
 import { fetchById } from "../../../api/service.space";
 import { create } from "../../../api/service";
-import VersionSelect from "../../../components/common/VersionSelect.vue";
 
 export default {
   components: {VersionSelect, DatabaseSelect, ServiceTypeSelect, CompilerSelect, SpaceSelect, I18nInput},

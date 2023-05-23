@@ -52,9 +52,9 @@
               </div>
             </template>
             <el-table :data="currentVariable.options">
-              <el-table-column label="*Name" min-width="120px">
+              <el-table-column label="*Value" min-width="120px">
                 <template #default="{ row }">
-                  <el-input v-model="row.name" @input="saveVariables"/>
+                  <el-input v-model="row.value" @input="saveVariables"/>
                 </template>
               </el-table-column>
               <el-table-column label="*Label" min-width="200px">
@@ -127,11 +127,12 @@ export default {
     // 添加选项
     createOption () {
       this.currentVariable.options.push({
-        name: '',
+        value: '',
         label: '',
         remark: ''
       })
     },
+    // 删除选项
     deleteOption (index) {
       this.currentVariable.options.splice(index, 1)
     },

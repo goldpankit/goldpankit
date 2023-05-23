@@ -36,6 +36,7 @@
             />
             <ServiceInstaller
               v-if="currentFrameworkServiceVersion != null"
+              :service-space="space"
               :framework-service="currentFrameworkService"
               :framework-service-version="currentFrameworkServiceVersion"
               @back="currentFrameworkServiceVersion = null"

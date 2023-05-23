@@ -39,6 +39,9 @@ export default {
   name: "ServiceInstaller",
   components: {InstallInput, InstallCheckbox},
   props: {
+    serviceSpace: {
+      required: true
+    },
     frameworkService: {
       required: true
     },
@@ -86,10 +89,12 @@ export default {
   methods: {
     // 安装服务
     install () {
+      console.log('this.serviceSpace', this.serviceSpace)
       compile({
-        id: this.frameworkService.id,
+        space: this.serviceSpace,
+        framework: this.frameworkService,
         projectId: this.currentProject.id,
-        values: []
+        variables: []
       })
         .then(() => {
           this.$router.push({ name: 'Workbench' })
