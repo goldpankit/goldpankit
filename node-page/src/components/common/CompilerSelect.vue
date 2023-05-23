@@ -1,5 +1,6 @@
 <template>
   <el-select class="compiler-select" @change="$emit('change', $event)">
+    <el-option v-if="withFollowService" value="" label="Follow Service"/>
     <el-option value="static" label="Static"/>
     <el-option value="freemarker" label="Freemarker"/>
   </el-select>
@@ -7,7 +8,12 @@
 
 <script>
 export default {
-  name: "CompilerSelect"
+  name: "CompilerSelect",
+  props: {
+    withFollowService: {
+      default: false
+    }
+  }
 }
 </script>
 

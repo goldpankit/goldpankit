@@ -16,12 +16,25 @@
           :key="variable.name"
           :label="variable.message"
         >
-          <InstallInput v-if="variable.inputType === 'input'" v-model="variable.value" placeholder="com.kit"/>
-          <InstallCheckbox v-else-if="variable.inputType === 'checkbox' || variable.inputType === 'radio'" :options="variable.options"/>
+          <InstallInput
+            v-if="variable.inputType === 'input'"
+            v-model="variable.value"
+            placeholder="com.kit"
+          />
+          <InstallCheckbox
+            v-else-if="variable.inputType === 'checkbox'"
+            v-model="variable.value"
+            :options="variable.options"
+          />
+          <InstallRadio
+            v-else-if="variable.inputType === 'radio'"
+            v-model="variable.value"
+            :options="variable.options"
+          />
         </el-form-item>
       </el-form>
       <div class="install">
-        <el-button type="important" @click="install">
+        <el-button type="important" :disabled="currentProject == null" @click="install">
           INSTALL{{currentProject == null ? '' : ' to project ' + currentProject.name}}
         </el-button>
       </div>
@@ -34,10 +47,11 @@ import {mapState} from "vuex";
 import InstallCheckbox from "../service/installer/Checkbox.vue";
 import InstallInput from "../service/installer/Input.vue";
 import {compile} from "../../api/service.compile";
+import InstallRadio from "../service/installer/Radio.vue";
 
 export default {
   name: "ServiceInstaller",
-  components: {InstallInput, InstallCheckbox},
+  components: {InstallRadio, InstallInput, InstallCheckbox},
   props: {
     serviceSpace: {
       required: true
@@ -51,36 +65,7 @@ export default {
   },
   data () {
     return {
-      variables: [
-        // {
-        //   name: 'basicPackage',
-        //   message: '基础包名',
-        //   inputType: 'input',
-        //   compiler: 'static',
-        //   value: '',
-        //   remark: ''
-        // },
-        // {
-        //   name: 'port',
-        //   message: '端口号',
-        //   inputType: 'input',
-        //   compiler: 'static',
-        //   value: '',
-        //   remark: ''
-        // },
-        // {
-        //   name: 'cacheType',
-        //   message: '缓存',
-        //   inputType: 'checkbox',
-        //   compiler: 'static',
-        //   remark: '',
-        //   options: [
-        //     { name: 'memory', label: '内存缓存', remark: '' },
-        //     { name: 'redis', label: 'Redis单机版', remark: '' },
-        //     { name: 'redis-plus', label: 'Redis高可用版', remark: '' }
-        //   ]
-        // }
-      ]
+      variables: []
     }
   },
   computed: {
@@ -89,12 +74,11 @@ export default {
   methods: {
     // 安装服务
     install () {
-      console.log('this.serviceSpace', this.serviceSpace)
       compile({
         space: this.serviceSpace,
         framework: this.frameworkService,
         projectId: this.currentProject.id,
-        variables: []
+        variables: this.variables
       })
         .then(() => {
           this.$router.push({ name: 'Workbench' })
@@ -102,16 +86,19 @@ export default {
         .catch(e => {
           console.log('e', e)
         })
+    },
+    // 获取默认值
+    __getVariableDefaultValue (variable) {
+      return variable === 'checkbox' ? [] : ''
     }
   },
   created () {
     this.variables = JSON.parse(this.frameworkService.variables).map(item => {
       return {
         ...item,
-        value: null
+        value: this.__getVariableDefaultValue(item)
       }
     })
-    console.log('frameworkService', this.frameworkService)
   }
 }
 </script>

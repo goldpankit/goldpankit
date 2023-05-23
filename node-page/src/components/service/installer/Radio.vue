@@ -2,7 +2,7 @@
   <ul class="installer-checkbox">
     <li
       v-for="option in options" :key="option.value"
-      :class="{ selected: selected != null && selected.value === option.value }"
+      :class="{ selected: modelValue === option.value }"
       @click="handleSelect(option)"
     >{{option.label}}</li>
   </ul>
@@ -10,19 +10,14 @@
 
 <script>
 export default {
-  name: "InstallCheckbox",
+  name: "InstallRadio",
   props: {
     modelValue: {},
     options: {}
   },
-  data () {
-    return {
-      selected: null
-    }
-  },
   methods: {
     handleSelect (option) {
-      this.selected = option
+      this.$emit('update:modelValue', option.value)
     }
   }
 }

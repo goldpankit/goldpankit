@@ -11,6 +11,9 @@
       <h4>File Setting</h4>
       <div class="content-wrap">
         <el-form v-if="currentNode != null">
+          <el-form-item label="Compiler">
+            <CompilerSelect v-model="currentNode.compiler" :with-follow-service="true" @change="saveFileSetting"/>
+          </el-form-item>
           <el-form-item label="Enable Express">
             <el-input v-model="currentNode.enableExpress" type="textarea" :rows="8" @input="saveFileSetting"/>
           </el-form-item>
@@ -95,7 +98,6 @@ export default {
         clearTimeout(this.saveTimeout)
       }
       this.saveTimeout = setTimeout(() => {
-        this.isWorking = true
         saveFileSetting({
           serviceId: this.serviceId,
           ...this.currentNode,
@@ -106,9 +108,6 @@ export default {
           })
           .catch(e => {
             console.log('e', e)
-          })
-          .finally(() => {
-            this.isWorking = false
           })
       }, 300)
     },
@@ -127,6 +126,7 @@ export default {
     },
     // 选择树节点
     handleNodeClick (node) {
+      console.log('node', node)
       this.currentNode = node
     }
   },
