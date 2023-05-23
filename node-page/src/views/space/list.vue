@@ -4,7 +4,7 @@
       <h2>Public Spaces</h2>
       <ul>
         <li v-for="space in spaces" :key="space.id">
-          <router-link :to="{ name: 'SpaceDetail', query: { space_id: space.id } }">
+          <router-link :to="{ name: 'SpaceDetail', params: { name: space.name } }">
             <h3>{{space.name}}</h3>
             <p>{{space.description}}</p>
             <p class="tech-stack">Java · SpringBoot · MyBatisPlus · MySQL</p>

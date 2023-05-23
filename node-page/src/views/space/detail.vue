@@ -85,7 +85,7 @@
 
 <script>
 import ServiceDetail from "../../components/space/ServiceDetail.vue";
-import {fetchById} from "../../api/service.space";
+import {fetchByName} from "../../api/service.space";
 import ServiceInstaller from "../../components/space/ServiceInstaller.vue";
 import {search} from "../../api/service";
 
@@ -105,8 +105,8 @@ export default {
   },
   methods: {
     // 查询空间信息
-    fetchById () {
-      fetchById(this.spaceId)
+    fetchSpace () {
+      fetchByName(this.spaceName)
         .then(data => {
           this.space = data
           this.fetchServiceList()
@@ -134,8 +134,8 @@ export default {
     }
   },
   created () {
-    this.spaceId = this.$route.query.space_id
-    this.fetchById()
+    this.spaceName = this.$route.params.name
+    this.fetchSpace()
   }
 }
 </script>

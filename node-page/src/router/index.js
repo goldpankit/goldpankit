@@ -31,7 +31,7 @@ const router = createRouter({
           component: () => import('@/views/space/list.vue')
         },
         {
-          path: '/space/detail',
+          path: '/space/:name',
           name: 'SpaceDetail',
           component: () => import('@/views/space/detail.vue')
         },

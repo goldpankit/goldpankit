@@ -4,9 +4,10 @@ import request from "../utils/request";
 export function create (data) {
   return request.post('/service/space/create', data)
 }
+
 // 根据ID查询
-export function fetchById (id) {
-  return request.get(`/service/space/${id}`)
+export function fetchByName (name) {
+  return request.get(`/service/space/${name}`)
 }
 // 搜索空间列表
 export function search () {

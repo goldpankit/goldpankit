@@ -1,14 +1,11 @@
 <template>
   <div class="page">
-    <div class="wrap">
+    <div v-if="space != null" class="wrap">
       <div>
         <div class="header">
           <div class="title">
-            <h2>Eva for SpringBoot·后端服务</h2>
-            <div class="tech-stack-wrap">
-              <em>Private</em>
-              <p class="tech-stack">Java · SpringBoot · MyBatisPlus · MySQL</p>
-            </div>
+            <h2>{{project.name}}</h2>
+            <p class="service-info">{{space.name}}·后端服务</p>
           </div>
           <div class="info">
             <em>{{version}}</em>
@@ -66,13 +63,16 @@ import { mapState } from 'vuex'
 import {search} from "../api/service";
 import {compile} from "../api/service.compile";
 import {fetchById} from "../api/user.project";
+import {fetchByName} from "../api/service.space";
 
 export default {
   data () {
     return {
       version: 'v1',
       services: [],
-      currentService: null
+      currentService: null,
+      project: null,
+      space: null
     }
   },
   computed: {
@@ -83,15 +83,36 @@ export default {
     fetchProject () {
       fetchById(this.currentProject.id)
         .then(data => {
-          console.log('data', data)
+          this.project = data
+          this.fetchSpace()
         })
         .catch(e => {
           console.log('e', e)
         })
     },
+    // 查询服务空间
+    fetchSpace () {
+      fetchByName(this.project.space)
+        .then(data => {
+          this.space = data
+          this.searchSubServices()
+        })
+        .catch(e => {
+          console.log('e' ,e)
+        })
+    },
     // 查询子服务
     searchSubServices () {
+      let frameworkName = null
+      console.log('this.project', this.project)
+      for (const key in this.project.framework) {
+        frameworkName = key
+        break
+      }
       search({
+        spaceName: this.space.name,
+        followServiceName: frameworkName,
+        serviceTypes: ['common', 'page', 'logic', 'issue']
       })
         .then(data => {
           this.services = data
@@ -107,7 +128,6 @@ export default {
   },
   created () {
     this.fetchProject()
-    this.searchSubServices()
   }
 }
 </script>
@@ -141,19 +161,11 @@ export default {
       h2 {
         flex-shrink: 0;
       }
-      // 技术栈
-      .tech-stack-wrap {
+      // 服务信息
+      .service-info {
         display: flex;
         align-items: center;
         margin-top: 10px;
-        em {
-          //padding: 5px 15px;
-          border-radius: 30px;
-          //background-color: #efc3ff;
-          margin-right: 10px;
-          font-style: normal;
-          color: var(--primary-color-match-3);
-        }
       }
     }
     .info {
