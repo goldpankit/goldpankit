@@ -4,7 +4,7 @@
       <h2>Create Space</h2>
       <el-form>
         <el-form-item label="Space Name" required>
-          <el-input v-model="form.id" placeholder="type your space name."/>
+          <el-input v-model="form.name" placeholder="type your space name."/>
         </el-form-item>
         <el-form-item label="Description" required>
           <i18n-input v-model="form.description" type="textarea"/>
@@ -26,7 +26,7 @@ export default {
   data () {
     return {
       form: {
-        id: '',
+        name: '',
         description: ''
       }
     }

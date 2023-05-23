@@ -6,7 +6,7 @@
         <li v-for="space in spaces" :key="space.id">
           <router-link :to="{ name: 'SpaceDetail', query: { space_id: space.id } }">
             <h3>{{space.name}}</h3>
-            <p>eva用于研发管理系统eva用于研发管理系统eva用于研发管理系统eva用于研发管理系统，目前已超过4000+项目沉淀，由devx团队研发和维护</p>
+            <p>{{space.description}}</p>
             <p class="tech-stack">Java · SpringBoot · MyBatisPlus · MySQL</p>
           </router-link>
         </li>
