@@ -5,7 +5,7 @@
         <div class="header">
           <div class="title">
             <h2>{{project.name}}</h2>
-            <p class="service-info">{{space.name}}·后端服务</p>
+            <p class="service-info">{{space.name}} · {{framework.name}}</p>
           </div>
           <div class="info">
             <em>{{version}}</em>
@@ -72,6 +72,7 @@ export default {
       services: [],
       currentService: null,
       project: null,
+      framework: null,
       space: null
     }
   },
@@ -84,6 +85,16 @@ export default {
       fetchById(this.currentProject.id)
         .then(data => {
           this.project = data
+          // 获取框架服务信息
+          let frameworkName = null
+          for (const key in this.project.framework) {
+            frameworkName = key
+            break
+          }
+          this.framework = {
+            name: frameworkName,
+            ...this.project.framework
+          }
           this.fetchSpace()
         })
         .catch(e => {
@@ -103,15 +114,10 @@ export default {
     },
     // 查询子服务
     searchSubServices () {
-      let frameworkName = null
-      console.log('this.project', this.project)
-      for (const key in this.project.framework) {
-        frameworkName = key
-        break
-      }
+
       search({
         spaceName: this.space.name,
-        followServiceName: frameworkName,
+        followServiceName: this.framework.name,
         serviceTypes: ['common', 'page', 'logic', 'issue']
       })
         .then(data => {
