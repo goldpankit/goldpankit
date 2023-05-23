@@ -17,7 +17,7 @@
           :label="variable.message"
         >
           <InstallInput v-if="variable.inputType === 'input'" v-model="variable.value" placeholder="com.kit"/>
-          <InstallCheckbox v-else-if="variable.inputType === 'checkbox'" :options="variable.options"/>
+          <InstallCheckbox v-else-if="variable.inputType === 'checkbox' || variable.inputType === 'radio'" :options="variable.options"/>
         </el-form-item>
       </el-form>
       <div class="install">
@@ -52,34 +52,34 @@ export default {
   data () {
     return {
       variables: [
-        {
-          name: 'basicPackage',
-          message: '基础包名',
-          inputType: 'input',
-          compiler: 'static',
-          value: '',
-          remark: ''
-        },
-        {
-          name: 'port',
-          message: '端口号',
-          inputType: 'input',
-          compiler: 'static',
-          value: '',
-          remark: ''
-        },
-        {
-          name: 'cacheType',
-          message: '缓存',
-          inputType: 'checkbox',
-          compiler: 'static',
-          remark: '',
-          options: [
-            { name: 'memory', label: '内存缓存', remark: '' },
-            { name: 'redis', label: 'Redis单机版', remark: '' },
-            { name: 'redis-plus', label: 'Redis高可用版', remark: '' }
-          ]
-        }
+        // {
+        //   name: 'basicPackage',
+        //   message: '基础包名',
+        //   inputType: 'input',
+        //   compiler: 'static',
+        //   value: '',
+        //   remark: ''
+        // },
+        // {
+        //   name: 'port',
+        //   message: '端口号',
+        //   inputType: 'input',
+        //   compiler: 'static',
+        //   value: '',
+        //   remark: ''
+        // },
+        // {
+        //   name: 'cacheType',
+        //   message: '缓存',
+        //   inputType: 'checkbox',
+        //   compiler: 'static',
+        //   remark: '',
+        //   options: [
+        //     { name: 'memory', label: '内存缓存', remark: '' },
+        //     { name: 'redis', label: 'Redis单机版', remark: '' },
+        //     { name: 'redis-plus', label: 'Redis高可用版', remark: '' }
+        //   ]
+        // }
       ]
     }
   },
@@ -105,6 +105,12 @@ export default {
     }
   },
   created () {
+    this.variables = JSON.parse(this.frameworkService.variables).map(item => {
+      return {
+        ...item,
+        value: null
+      }
+    })
     console.log('frameworkService', this.frameworkService)
   }
 }

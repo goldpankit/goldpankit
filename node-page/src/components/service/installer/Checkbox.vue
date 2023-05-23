@@ -1,8 +1,8 @@
 <template>
   <ul class="installer-checkbox">
     <li
-      v-for="option in options" :key="option.name"
-      :class="{ selected: selected != null && selected.name === option.name }"
+      v-for="option in options" :key="option.value"
+      :class="{ selected: selected != null && selected.value === option.value }"
       @click="handleSelect(option)"
     >{{option.label}}</li>
   </ul>
