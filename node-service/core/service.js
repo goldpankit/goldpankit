@@ -48,13 +48,20 @@ module.exports = {
     const service = cache.services.get(fileSettings.serviceId)
     const configPath = this.__getConfigPath(service.codespace)
     const config = fs.readJSONFile(configPath)
+    // 获取默认配置结构并装载新配置信息（此时settings是最新的文件配置结构和最新的文件配置信息）
+    let settings = JSON.parse(JSON.stringify(Const.SERVICE_FILE_CONFIG_CONTENT))
+    object.merge(fileSettings, settings)
+    // 如果不存在配置信息，则将新文件配置添加到settings中
     let targetFileSettings = config.settings.find(file => file.path === fileSettings.relativePath)
     if (targetFileSettings == null) {
-      targetFileSettings = JSON.parse(JSON.stringify(Const.SERVICE_FILE_CONFIG_CONTENT))
-      config.settings.push(targetFileSettings)
+      config.settings.push(settings)
     }
-    object.merge(fileSettings, targetFileSettings)
-    targetFileSettings.path = fileSettings.relativePath
+    // 如果存在文件配置，则使用Object.assign将最新配置写入原配置对象引用中，以实现增加配置项
+    else {
+      Object.assign(targetFileSettings, settings)
+    }
+    // 修改path为relativePath
+    settings.path = fileSettings.relativePath
     fs.rewrite(configPath, fs.toJSONFileString(config))
   },
   // 保存变量
@@ -72,14 +79,16 @@ module.exports = {
     const files = fs.getFilesWithChildren(service.codespace, service.codespace).map(fullpath => {
       const filetype = fs.isDirectory(fullpath) ? 'DIRECTORY' : 'FILE'
       const relativePath = fullpath.replace(service.codespace + '/', '')
+      const fileSetting = this.__getFileSettings(service.codespace, relativePath)
       return {
         serviceId,
         filepath: relativePath,
         filetype,
         contentType: fs.getContentType(fullpath),
         content: filetype === 'DIRECTORY' ? null : fs.readFile(fullpath),
-        variables: JSON.stringify([]),
-        enableExpress: ''
+        compiler: fileSetting.compiler,
+        variables: JSON.stringify(fileSetting.variables),
+        enableExpress: fileSetting.enableExpress
       }
     })
     // 获取服务变量
@@ -144,6 +153,7 @@ module.exports = {
         contentType: isDirectory ? undefined : fs.getContentType(fullpath),
         path: fullpath,
         relativePath,
+        compiler: fileSettings.compiler,
         enableExpress: fileSettings.enableExpress,
         variables: fileSettings.variables,
         children: isDirectory ? [] : undefined
@@ -159,10 +169,11 @@ module.exports = {
   __getFileSettings (codespace, fileRelativePath) {
     const configPath = this.__getConfigPath(codespace)
     const config = fs.readJSONFile(configPath)
-    let fileSettings = config.settings.find(file => file.path === fileRelativePath)
-    if (fileSettings == null) {
-      fileSettings = JSON.parse(JSON.stringify(Const.SERVICE_FILE_CONFIG_CONTENT))
+    const settings = JSON.parse(JSON.stringify(Const.SERVICE_FILE_CONFIG_CONTENT))
+    let targetSettings = config.settings.find(file => file.path === fileRelativePath)
+    if (targetSettings != null) {
+      object.merge(targetSettings, settings)
     }
-    return fileSettings
+    return settings
   }
 }

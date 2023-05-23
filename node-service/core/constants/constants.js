@@ -23,6 +23,7 @@ module.exports = {
   // 服务文件配置
   SERVICE_FILE_CONFIG_CONTENT: {
     path: '',
+    compiler: '',
     enableExpress: '',
     variables: [] // 文件变量
   },
