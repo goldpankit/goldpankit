@@ -17,7 +17,7 @@
         </el-form-item>
         <template v-else>
           <el-form-item label="Follow Framework Service" required>
-            <VersionSelect v-model="form.version"/>
+            <FrameworkServiceSelect v-model="form.followServiceId" :space-name="spaceName" />
           </el-form-item>
           <el-form-item label="Follow Framework Version" required>
             <VersionSelect v-model="form.version"/>
@@ -50,16 +50,20 @@ import CompilerSelect from "../../../components/common/CompilerSelect.vue";
 import ServiceTypeSelect from "../../../components/service/ServiceTypeSelect.vue";
 import DatabaseSelect from "../../../components/database/DatabaseSelect.vue";
 import VersionSelect from "../../../components/common/VersionSelect.vue";
-import { fetchById } from "../../../api/service.space";
+import { fetchByName } from "../../../api/service.space";
 import { create } from "../../../api/service";
+import FrameworkServiceSelect from "../../../components/service/FrameworkServiceSelect.vue";
 
 export default {
-  components: {VersionSelect, DatabaseSelect, ServiceTypeSelect, CompilerSelect, SpaceSelect, I18nInput},
+  components: {
+    FrameworkServiceSelect,
+    VersionSelect, DatabaseSelect, ServiceTypeSelect, CompilerSelect, SpaceSelect, I18nInput},
   data () {
     return {
+      spaceName: null,
       space: null,
       form: {
-        spaceId: null,
+        followServiceId: null,
         name: '',
         type: 'framework',
         version: 'v1',
@@ -72,7 +76,10 @@ export default {
   methods: {
     // 创建服务
     create () {
-      create(this.form)
+      create({
+        spaceId: this.space.id,
+        ...this.form
+      })
         .then(data => {
           this.$router.push({ name: 'ServiceSettings', query: { service_id: data } })
         })
@@ -81,8 +88,8 @@ export default {
         })
     },
     // 查询服务空间
-    fetchSpaceById() {
-      fetchById(this.form.spaceId)
+    fetchSpace() {
+      fetchByName(this.spaceName)
         .then(data => {
           this.space = data
         })
@@ -92,8 +99,8 @@ export default {
     }
   },
   created () {
-    this.form.spaceId = this.$route.query.space_id
-    this.fetchSpaceById()
+    this.spaceName = this.$route.query.space_name
+    this.fetchSpace()
   }
 }
 </script>

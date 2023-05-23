@@ -55,12 +55,12 @@
             <el-button
               type="primary"
               size="large"
-              @click="$router.push({ name: 'CreateService', query: { space_id: spaceId } })"
+              @click="$router.push({ name: 'CreateService', query: { space_name: spaceName } })"
             >Create New Service</el-button>
             <el-button
               type="primary"
               size="large"
-              @click="$router.push({ name: 'CreateService', query: { space_id: spaceId } })"
+              @click="$router.push({ name: 'CreateService', query: { space_name: spaceName } })"
             >Create New Issue</el-button>
           </div>
           <ul>
@@ -85,15 +85,15 @@
 
 <script>
 import ServiceDetail from "../../components/space/ServiceDetail.vue";
-import {fetchByName} from "../../api/service.space";
 import ServiceInstaller from "../../components/space/ServiceInstaller.vue";
+import {fetchByName} from "../../api/service.space";
 import {search} from "../../api/service";
 
 export default {
   components: {ServiceInstaller, ServiceDetail},
   data () {
     return {
-      spaceId: null,
+      spaceName: null,
       // 当前选择的框架服务
       currentFrameworkService: null,
       // 当前选择的框架服务版本
@@ -118,8 +118,8 @@ export default {
     // 查询服务列表
     fetchServiceList () {
       search({
-        spaceId: this.spaceId,
-        type: 'framework'
+        spaceName: this.spaceName,
+        serviceTypes: ['framework']
       })
         .then(data => {
           this.frameworkServices = data
