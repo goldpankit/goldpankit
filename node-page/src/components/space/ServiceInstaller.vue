@@ -32,7 +32,7 @@
 import {mapState} from "vuex";
 import InstallCheckbox from "../service/installer/Checkbox.vue";
 import InstallInput from "../service/installer/Input.vue";
-import {compile} from "../../api/service.compile";
+import {install} from "../../api/service.compile";
 import InstallRadio from "../service/installer/Radio.vue";
 import VariableInput from "../service/installer/VariableInput.vue";
 
@@ -67,7 +67,7 @@ export default {
   methods: {
     // 安装服务
     install () {
-      compile({
+      install({
         space: this.space,
         service: this.service,
         projectId: this.currentProject.id,

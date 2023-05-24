@@ -6,7 +6,7 @@
           <h2>{{service.space.name}}·{{service.name}}</h2>
           <div v-if="service.initialized" class="opera">
 <!--            <el-button type="important" @click="push">Push</el-button>-->
-            <el-button type="primary" :disabled="currentProject == null">Compile</el-button>
+            <el-button type="primary" :disabled="currentProject == null" @click="compile">Compile</el-button>
             <el-button type="primary" @click="push">Publish</el-button>
           </div>
         </div>
@@ -28,6 +28,7 @@
               :service-id="serviceId"
             />
             <SettingVariables
+              ref="variables"
               v-show="currentTab === 'variables'"
               :service-id="serviceId"
             />
@@ -58,6 +59,7 @@ import DirectorySelect from "../../../components/common/DirectorySelect.vue";
 import SettingVariables from "../../../components/service/settings/SettingVariables.vue";
 import {initialize, getProfile, push} from "../../../api/service";
 import {mapState} from "vuex";
+import {compile} from "../../../api/service.compile";
 
 export default {
   components: {SettingVariables, DirectorySelect, SettingFiles},
@@ -103,6 +105,19 @@ export default {
         })
         .finally(() => {
           this.loading = false
+        })
+    },
+    // 编译服务
+    compile () {
+      compile({
+        serviceId: this.service.id,
+        projectId: this.currentProject.id
+      })
+        .then(() => {
+          console.log('编译成功')
+        })
+        .catch(e => {
+          console.log('e', e)
         })
     },
     // 推送服务代码
