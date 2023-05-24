@@ -2,7 +2,7 @@
   <ul class="installer-checkbox">
     <li
       v-for="option in options" :key="option.value"
-      :class="{ selected: selected != null && selected.value === option.value }"
+      :class="{ selected: modelValue.findIndex(v => v === option.value) !== -1 }"
       @click="handleSelect(option)"
     >{{option.label}}</li>
   </ul>
@@ -12,7 +12,9 @@
 export default {
   name: "InstallCheckbox",
   props: {
-    modelValue: {},
+    modelValue: {
+      type: Array
+    },
     options: {}
   },
   data () {
@@ -22,7 +24,12 @@ export default {
   },
   methods: {
     handleSelect (option) {
-      this.selected = option
+      let index = this.modelValue.findIndex(v => v === option.value)
+      if (index === -1) {
+        this.$emit('update:modelValue', this.modelValue.concat([option.value]))
+      } else {
+        this.$emit('update:modelValue', this.modelValue.filter((item,i) => i !== index))
+      }
     }
   }
 }

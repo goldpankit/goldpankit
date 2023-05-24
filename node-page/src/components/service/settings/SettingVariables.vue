@@ -29,9 +29,6 @@
           <el-form-item label="Message" required>
             <I18nInput v-model="currentVariable.message" @input="saveVariables"/>
           </el-form-item>
-          <el-form-item label="Compiler" required>
-            <CompilerSelect v-model="currentVariable.compiler" @change="saveVariables"/>
-          </el-form-item>
           <el-form-item label="Input Type" required>
             <InputTypeSelect v-model="currentVariable.inputType" @change="saveVariables"/>
           </el-form-item>
@@ -74,6 +71,15 @@
               </el-table-column>
             </el-table>
           </el-form-item>
+          <el-form-item label="Default Value">
+            <VariableInput :variable="currentVariable" value-key="defaultValue" @change="saveVariables"/>
+          </el-form-item>
+          <el-form-item label="Required">
+            <el-switch v-model="currentVariable.required" @change="saveVariables"/>
+          </el-form-item>
+          <el-form-item label="Compiler">
+            <CompilerSelect v-model="currentVariable.compiler" @change="saveVariables"/>
+          </el-form-item>
           <el-form-item label="Remark">
             <el-input v-model="currentVariable.remark" type="textarea" :rows="3" @input="saveVariables"/>
           </el-form-item>
@@ -88,10 +94,11 @@ import CompilerSelect from "../../common/CompilerSelect.vue";
 import InputTypeSelect from "../../common/InputTypeSelect.vue";
 import I18nInput from "../../common/I18nInput.vue";
 import {fetchConfig, saveVariables} from "../../../api/service";
+import VariableInput from "../installer/VariableInput.vue";
 
 export default {
   name: "SettingVariables",
-  components: {I18nInput, InputTypeSelect, CompilerSelect},
+  components: {VariableInput, I18nInput, InputTypeSelect, CompilerSelect},
   props: {
     serviceId: {
       required: true
@@ -117,7 +124,7 @@ export default {
         message: varName,
         inputType: 'input',
         required: false,
-        defaultValue: null,
+        defaultValue: '',
         compiler: 'static',
         remark: '',
         options: []
@@ -153,8 +160,7 @@ export default {
           }
           // 选项类型过滤掉无效选项
           else {
-            const copyOptions = JSON.parse(JSON.stringify(copyItem.options))
-            copyItem.options = copyOptions.filter(
+            copyItem.options = copyItem.options.filter(
               opt => opt.value.trim().length > 0 && opt.label.trim().length > 0
             )
           }
@@ -172,7 +178,14 @@ export default {
     fetchVariables () {
       fetchConfig(this.serviceId)
         .then(data => {
-          this.variables = data.variables
+          this.variables = data.variables.map(item => {
+            return {
+              ...item,
+              // 无论是可选变量还是输入变量，都增加options，在保存时会根据类型自动过滤该属性
+              options: item.options == null ? [] : item.options
+            }
+          })
+          console.log('初始化变量', this.variables)
         })
         .catch(e => {
           console.log('e', e)

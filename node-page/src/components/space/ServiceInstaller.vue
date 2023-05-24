@@ -16,21 +16,7 @@
           :key="variable.name"
           :label="variable.message"
         >
-          <InstallInput
-            v-if="variable.inputType === 'input'"
-            v-model="variable.value"
-            placeholder="com.kit"
-          />
-          <InstallCheckbox
-            v-else-if="variable.inputType === 'checkbox'"
-            v-model="variable.value"
-            :options="variable.options"
-          />
-          <InstallRadio
-            v-else-if="variable.inputType === 'radio'"
-            v-model="variable.value"
-            :options="variable.options"
-          />
+          <VariableInput :variable="variable"/>
         </el-form-item>
       </el-form>
       <div v-if="withInstallButton" class="install">
@@ -48,10 +34,11 @@ import InstallCheckbox from "../service/installer/Checkbox.vue";
 import InstallInput from "../service/installer/Input.vue";
 import {compile} from "../../api/service.compile";
 import InstallRadio from "../service/installer/Radio.vue";
+import VariableInput from "../service/installer/VariableInput.vue";
 
 export default {
   name: "ServiceInstaller",
-  components: {InstallRadio, InstallInput, InstallCheckbox},
+  components: {VariableInput, InstallRadio, InstallInput, InstallCheckbox},
   props: {
     space: {
       required: true
@@ -87,10 +74,10 @@ export default {
         variables: this.variables
       })
         .then(() => {
-          this.$router.push({ name: 'Workbench' })
+          this.$emit('success')
         })
         .catch(e => {
-          console.log('e', e)
+          this.$emit('error', e)
         })
     },
     // 获取默认值

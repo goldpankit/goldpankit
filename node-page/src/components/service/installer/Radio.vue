@@ -18,6 +18,7 @@ export default {
   methods: {
     handleSelect (option) {
       this.$emit('update:modelValue', option.value)
+      this.$emit('change', option.value)
     }
   }
 }

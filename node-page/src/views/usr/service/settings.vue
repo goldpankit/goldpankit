@@ -5,9 +5,9 @@
         <div class="header">
           <h2>{{service.space.name}}·{{service.name}}</h2>
           <div v-if="service.initialized" class="opera">
-            <el-button type="important" @click="push">Push</el-button>
-            <el-button type="important">Pull</el-button>
-            <el-button type="primary">Publish</el-button>
+<!--            <el-button type="important" @click="push">Push</el-button>-->
+            <el-button type="primary" :disabled="currentProject == null">Compile</el-button>
+            <el-button type="primary" @click="push">Publish</el-button>
           </div>
         </div>
         <p
@@ -57,6 +57,7 @@ import SettingFiles from "../../../components/service/settings/SettingFiles.vue"
 import DirectorySelect from "../../../components/common/DirectorySelect.vue";
 import SettingVariables from "../../../components/service/settings/SettingVariables.vue";
 import {initialize, getProfile, push} from "../../../api/service";
+import {mapState} from "vuex";
 
 export default {
   components: {SettingVariables, DirectorySelect, SettingFiles},
@@ -70,6 +71,9 @@ export default {
         value: ''
       }
     }
+  },
+  computed: {
+    ...mapState(['currentProject'])
   },
   methods: {
     // 初始化
