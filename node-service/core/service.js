@@ -51,6 +51,8 @@ module.exports = {
     // 获取默认配置结构并装载新配置信息（此时settings是最新的文件配置结构和最新的文件配置信息）
     let settings = JSON.parse(JSON.stringify(Const.SERVICE_FILE_CONFIG_CONTENT))
     object.merge(fileSettings, settings)
+    // 修改path为relativePath
+    settings.path = fileSettings.relativePath
     // 如果不存在配置信息，则将新文件配置添加到settings中
     let targetFileSettings = config.settings.find(file => file.path === fileSettings.relativePath)
     if (targetFileSettings == null) {
@@ -60,8 +62,6 @@ module.exports = {
     else {
       Object.assign(targetFileSettings, settings)
     }
-    // 修改path为relativePath
-    settings.path = fileSettings.relativePath
     fs.rewrite(configPath, fs.toJSONFileString(config))
   },
   // 保存变量
@@ -108,20 +108,23 @@ module.exports = {
       throw new Error('Please select a project.')
     }
     return serviceApi.install({
-      id: dto.framework.id,
+      id: dto.service.id,
       variables: dto.variables
     })
       .then(data => {
-        // 写入配置
-        const projectConfig = JSON.parse(JSON.stringify(Const.PROJECT_CONFIG_FILE_CONTENT))
-        projectConfig.space = dto.space.name
-        projectConfig.framework[dto.framework.name] = {
-          version: dto.framework.version || "",
-          variables: dto.variables
-        }
-        fs.createFile(userProject.getConfigPath(projectId), fs.toJSONFileString(projectConfig), true)
         // 写入文件
         fs.writeFiles(data, project.codespace)
+        // 安装的是框架服务，则写入配置
+        if (dto.service.type === 'framework') {
+          // 写入配置
+          const projectConfig = JSON.parse(JSON.stringify(Const.PROJECT_CONFIG_FILE_CONTENT))
+          projectConfig.space = dto.space.name
+          projectConfig.framework[dto.service.name] = {
+            version: dto.service.version || "",
+            variables: dto.variables
+          }
+          fs.createFile(userProject.getConfigPath(projectId), fs.toJSONFileString(projectConfig), true)
+        }
         return Promise.resolve()
       })
       .catch(e => {
