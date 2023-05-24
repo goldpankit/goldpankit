@@ -32,24 +32,21 @@
               </li>
             </ul>
           </div>
-          <!-- 设置 -->
-          <div class="setting-wrap">
-            <h3>Settings</h3>
+          <!-- 服务信息 -->
+          <div v-if="currentService != null" class="setting-wrap">
+            <h3>Xxx Service</h3>
             <div class="main">
-              <el-form>
-                <el-form-item label="接口地址" required>
-                  <el-input placeholder="/pay/alipay"/>
-                </el-form-item>
-                <el-form-item label="API KEY">
-                  <el-input placeholder="type your API KEY"/>
-                </el-form-item>
-                <el-form-item label="API SECRET">
-                  <el-input placeholder="type your API SECRET"/>
-                </el-form-item>
-              </el-form>
+              <ul class="service-dimensions">
+                <li :class="{selected: currentServiceDimension === 'readme'}" @click="currentServiceDimension = 'readme'">Readme</li>
+                <li :class="{selected: currentServiceDimension === 'install'}" @click="currentServiceDimension = 'install'">Install</li>
+              </ul>
+              <div class="dimension-content">
+                <div v-show="currentServiceDimension === 'readme'">Readme</div>
+                <ServiceInstaller ref="installer" v-show="currentServiceDimension === 'install'" :service="currentService" :space="space"/>
+              </div>
             </div>
             <div class="opera">
-              <el-button type="primary" size="large" @click="install">Install</el-button>
+              <el-button type="primary" size="large" @click="$refs.installer.install()">Install</el-button>
             </div>
           </div>
         </div>
@@ -64,13 +61,16 @@ import {search} from "../api/service";
 import {compile} from "../api/service.compile";
 import {fetchById} from "../api/user.project";
 import {fetchByName} from "../api/service.space";
+import ServiceInstaller from "../components/space/ServiceInstaller.vue";
 
 export default {
+  components: {ServiceInstaller},
   data () {
     return {
       version: 'v1',
       services: [],
       currentService: null,
+      currentServiceDimension: 'readme',
       project: null,
       framework: null,
       space: null
@@ -259,6 +259,41 @@ export default {
         padding: 0 30px;
         .el-input {
           height: 40px;
+        }
+        // 服务信息维度
+        ul.service-dimensions {
+          display: flex;
+          border-bottom: 1px solid var(--border-default-color);
+          li {
+            padding: 10px 20px;
+            margin-right: 10px;
+            position: relative;
+            border: 1px solid transparent;
+            top: 1px;
+            color: var(--color-gray);
+            cursor: pointer;
+            transition: all ease .15s;
+            &.selected {
+              border: 1px solid var(--border-default-color);
+              border-bottom-color: var(--color-light);
+              font-weight: bold;
+              color: var(--font-color);
+            }
+            &:hover {
+              color: var(--font-color);
+            }
+          }
+        }
+        // 维度内容
+        .dimension-content {
+          padding: 20px;
+          border: 1px solid var(--border-default-color);
+          border-top: 0;
+          :deep(.service-installer) {
+            .content-wrap {
+              padding: 0;
+            }
+          }
         }
       }
       .opera {

@@ -21,7 +21,7 @@
       </el-button>
     </div>
     <div class="content-wrap">
-      <ul class="service-types">
+      <ul class="service-dimensions">
         <li class="selected">Readme</li>
         <li>Sub Services</li>
         <li>Files</li>
@@ -134,8 +134,8 @@ export default {
   .content-wrap {
     padding-top: 10px;
   }
-  // 服务类型
-  ul.service-types {
+  // 服务信息维度
+  ul.service-dimensions {
     display: flex;
     border-bottom: 1px solid var(--border-default-color);
     li {

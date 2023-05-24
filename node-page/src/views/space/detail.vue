@@ -39,9 +39,11 @@
             />
             <ServiceInstaller
               v-if="currentFrameworkServiceVersion != null"
-              :service-space="space"
-              :framework-service="currentFrameworkService"
-              :framework-service-version="currentFrameworkServiceVersion"
+              :space="space"
+              :service="currentFrameworkService"
+              :service-version="currentFrameworkServiceVersion"
+              :with-breadcrumbs="true"
+              :with-install-button="true"
               @back="currentFrameworkServiceVersion = null"
             />
           </div>

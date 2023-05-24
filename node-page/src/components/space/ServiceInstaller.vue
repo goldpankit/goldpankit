@@ -1,9 +1,9 @@
 <template>
   <div class="service-installer">
-    <div class="nav">
+    <div v-if="withBreadcrumbs" class="nav">
       <div class="title">
         <el-button class="button-icon" icon="ArrowLeftBold" @click="$emit('back')"></el-button>
-        <h4>{{frameworkService.name}} · {{frameworkServiceVersion.toUpperCase()}} · Install</h4>
+        <h4>{{service.name}}{{serviceVersion == null ? '' : ' · ' + serviceVersion.toUpperCase()}} · Install</h4>
       </div>
     </div>
     <div class="content-wrap">
@@ -33,7 +33,7 @@
           />
         </el-form-item>
       </el-form>
-      <div class="install">
+      <div v-if="withInstallButton" class="install">
         <el-button type="important" :disabled="currentProject == null" @click="install">
           INSTALL{{currentProject == null ? '' : ' to project ' + currentProject.name}}
         </el-button>
@@ -53,14 +53,20 @@ export default {
   name: "ServiceInstaller",
   components: {InstallRadio, InstallInput, InstallCheckbox},
   props: {
-    serviceSpace: {
+    space: {
       required: true
     },
-    frameworkService: {
+    service: {
       required: true
     },
-    frameworkServiceVersion: {
-      required: true
+    serviceVersion: {
+      required: false
+    },
+    withBreadcrumbs: {
+      default: false
+    },
+    withInstallButton: {
+      default: false
     }
   },
   data () {
@@ -75,8 +81,8 @@ export default {
     // 安装服务
     install () {
       compile({
-        space: this.serviceSpace,
-        framework: this.frameworkService,
+        space: this.space,
+        service: this.service,
         projectId: this.currentProject.id,
         variables: this.variables
       })
@@ -93,7 +99,7 @@ export default {
     }
   },
   created () {
-    this.variables = JSON.parse(this.frameworkService.variables).map(item => {
+    this.variables = JSON.parse(this.service.variables).map(item => {
       return {
         ...item,
         value: this.__getVariableDefaultValue(item)
