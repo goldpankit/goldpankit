@@ -20,7 +20,7 @@ class ArrayCache {
   get (unique) {
     const config = this.#read()
     const list = config[this.#cacheKey]
-    return list.find(item => item[this.#uniqueField] === unique)
+    return list.find(item => item[this.#uniqueField] == unique)
   }
   // 搜索
   search () {

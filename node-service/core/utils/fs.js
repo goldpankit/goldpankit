@@ -34,7 +34,6 @@ module.exports = {
       }
       // 全路径
       const fullpath = path.join(absolutePath, file)
-      console.log('fullpath', fullpath)
       filePool.push(fullpath);
       if (this.isDirectory(fullpath)) {
         const subfiles = this.getFilesWithChildren(fullpath);

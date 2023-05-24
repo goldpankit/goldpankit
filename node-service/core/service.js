@@ -140,6 +140,34 @@ module.exports = {
         return Promise.reject(e)
       })
   },
+  // 编译服务代码
+  compile(dto) {
+    // 获取项目信息
+    const project = cache.projects.get(dto.projectId)
+    if (project == null) {
+      throw new Error('Please select a project.')
+    }
+    // 获取服务信息
+    const service = this.getServiceConfig(dto.serviceId)
+    return serviceApi.compile({
+      defaultCompiler: service.compiler,
+      variables: service.variables.map(item => {
+        return {
+          ...item,
+          value: item.defaultValue
+        }
+      }),
+      files: this.__getFileConfigList(dto.serviceId)
+    })
+      .then(data => {
+        // 写入文件
+        fs.writeFiles(data, project.codespace)
+        return Promise.resolve()
+      })
+      .catch(e => {
+        return Promise.reject(e)
+      })
+  },
   // 简化变量
   __getSimpleVariables (variables) {
     const vars = {}
@@ -151,6 +179,28 @@ module.exports = {
   // 获取文件配置目录
   __getConfigPath (codespace) {
     return `${codespace}/${Const.SERVICE_CONFIG_DIRECTORY}/${Const.SERVICE_CONFIG_FILE}`
+  },
+  // 获取文件配置列表
+  __getFileConfigList (serviceId) {
+    const service = cache.services.get(serviceId)
+    const fullpaths = fs.getFilesWithChildren(service.codespace)
+    const configs = []
+    for (const fullpath of fullpaths) {
+      // 获取文件配置
+      const relativePath = fullpath.replace(service.codespace + '/', '')
+      const fileSettings = this.__getFileSettings(service.codespace, relativePath)
+      // 构建文件对象
+      const isDirectory = fs.isDirectory(fullpath)
+      configs.push({
+        filepath: relativePath,
+        content: fs.readFile(fullpath),
+        enableExpress: fileSettings.enableExpress,
+        compiler: fileSettings.compiler,
+        filetype: isDirectory ? 'directory' : 'file',
+        variables: JSON.stringify(fileSettings.variables)
+      })
+    }
+    return configs
   },
   // 获取文件树
   __getFileTree (absolutePath, codespace) {

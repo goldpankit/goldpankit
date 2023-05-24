@@ -7,6 +7,10 @@ module.exports = {
     },
     // 安装代码
     install (data) {
+        return request.post('/service/install', data)
+    },
+    // 编译代码
+    compile (data) {
         return request.post('/service/compile', data)
     },
     // 推送服务
