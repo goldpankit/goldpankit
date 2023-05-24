@@ -114,22 +114,39 @@ module.exports = {
       .then(data => {
         // 写入文件
         fs.writeFiles(data, project.codespace)
-        // 安装的是框架服务，则写入配置
+        // 获取项目配置
+        const configPath = userProject.getConfigPath(projectId)
+        let projectConfig = fs.readJSONFile(configPath)
+        if (projectConfig == null) {
+          projectConfig = JSON.parse(JSON.stringify(Const.PROJECT_CONFIG_FILE_CONTENT))
+        }
+        // 写入项目配置文件
         if (dto.service.type === 'framework') {
-          // 写入配置
-          const projectConfig = JSON.parse(JSON.stringify(Const.PROJECT_CONFIG_FILE_CONTENT))
           projectConfig.space = dto.space.name
           projectConfig.framework[dto.service.name] = {
             version: dto.service.version || "",
-            variables: dto.variables
+            variables: this.__getSimpleVariables(dto.variables)
           }
-          fs.createFile(userProject.getConfigPath(projectId), fs.toJSONFileString(projectConfig), true)
+        } else {
+          projectConfig.services[dto.service.name] = {
+            version: dto.service.version || "",
+            variables: this.__getSimpleVariables(dto.variables)
+          }
         }
+        fs.createFile(userProject.getConfigPath(projectId), fs.toJSONFileString(projectConfig), true)
         return Promise.resolve()
       })
       .catch(e => {
         return Promise.reject(e)
       })
+  },
+  // 简化变量
+  __getSimpleVariables (variables) {
+    const vars = {}
+    for (const v of variables) {
+      vars[v.name] = v.value
+    }
+    return vars
   },
   // 获取文件配置目录
   __getConfigPath (codespace) {

@@ -53,6 +53,9 @@ module.exports = {
     return fs.readFileSync(filepath).toString()
   },
   readJSONFile(filepath) {
+    if (!this.exists(filepath)) {
+      return null
+    }
     return JSON.parse(fs.readFileSync(filepath).toString())
   },
   createDirectory(filepath, force = false) {
