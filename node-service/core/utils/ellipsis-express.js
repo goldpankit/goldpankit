@@ -13,7 +13,7 @@ class EllipsisExpress {
    */
   merge (express, targetContent) {
     const diffs = this.#parse(express)
-    // console.log('diffs', JSON.stringify(diffs, null, 2))
+    console.log('diffs', JSON.stringify(diffs, null, 2))
     const contentLines = targetContent.split('\n')
     for (const diff of diffs) {
       // 找到插入的位置
@@ -21,7 +21,7 @@ class EllipsisExpress {
       if (insertIndexList == null) {
         continue
       }
-      console.log('insertIndexList', insertIndexList)
+      // console.log('insertIndexList', insertIndexList)
       insertIndexList = insertIndexList.reverse()
         .splice(0, diff.diffGroups.length)
         .reverse()
@@ -31,8 +31,8 @@ class EllipsisExpress {
       for (let i = diff.diffGroups.length - 1; i >= 0; i --) {
         const group = diff.diffGroups[i]
         contentLines.splice(insertIndexList[i], 0, ...group
-          .filter(line => line.startsWith('+'))
-          .map(item => item.substring(1))
+          .filter(line => line.trimStart().startsWith('+'))
+          .map(line => line.trimStart().substring(1))
         )
       }
     }
@@ -64,7 +64,7 @@ class EllipsisExpress {
     let lineGroup = []
     for (const line of lines) {
       // 非差异语句，将组添加至组列表
-      if (!line.startsWith('+') && !line.startsWith('-')) {
+      if (!line.trimStart().startsWith('+') && !line.trimStart().startsWith('-')) {
         if (lineGroup.length > 0) {
           lineGroups.push(lineGroup)
         }
@@ -98,7 +98,7 @@ class EllipsisExpress {
         const subExp = subExpresses[i]
         const lines = subExp.split('\n')
         let markLines = lines.map(line => {
-          if (line.startsWith('+') || line.startsWith('-')) {
+          if (line.trimStart().startsWith('+') || line.trimStart().startsWith('-')) {
             return '___diff___'
           }
           return line
@@ -156,22 +156,30 @@ class EllipsisExpress {
     if (startIndex === -1) {
       return null
     }
-    // 从第二行标记行开始，继续在内容行中查找
+    // 从第二行标记行开始，继续在内容行中查找，直到完全匹配
     let searchOffset = 1
+    let newRound = true
     for (let i = 1; i < markLines.length; i++) {
       const markLine = markLines[i]
       // 省略语句，搜索范围调整至内容的最后
       if (markLine === '...') {
         searchOffset = contentLines.length - startIndex + 1
+        newRound = true
         continue
       }
       // 差异语句，搜索范围调整至内容的最后
       if (markLine === '___diff___') {
-        searchOffset = contentLines.length - startIndex + 1
+        searchOffset = 1
+        newRound = true
         continue
       }
-      // 在检索范围内查找内容行，如果发现内容行等于标记行，则记录结束索引
-      for (let j = startIndex + 1; j < startIndex + 1 + searchOffset; j++) {
+      // 在检索范围内查找内容行，如果发现内容行等于标记行，则记录结束索引，否则视为不匹配
+      let matched = false
+      // 计算搜索开始位置，如果已经获取到了插入位置，则从插入位置开始搜索，否则从首行标记行的坐标+1开始搜索
+      let searchStartIndex = insertIndexList.length > 0 ? insertIndexList[insertIndexList.length - 1] : (startIndex + 1)
+      // 计算搜索结束位置
+      let searchEndIndex = searchStartIndex + searchOffset
+      for (let j = searchStartIndex; j < searchEndIndex; j++) {
         const contentLine = contentLines[j]
         // 没有检索行时，结束循环
         if (contentLine == null) {
@@ -179,25 +187,26 @@ class EllipsisExpress {
         }
         // 找到标记行，添加插入索引或更换插入索引
         if (contentLine === markLine) {
-          // 如果是连续的标记语句，则更换索引
-          if (searchOffset === 1 && insertIndexList.length > 0) {
+          matched = true
+          // 如果不是新一轮检索，则更换索引
+          if (!newRound) {
             insertIndexList[insertIndexList.length - 1] = j + 1
           }
-          // 如果是非连续的标记语句，则添加插入索引
+          // 如果是新一轮检索，则添加插入索引
           else {
-            console.log('push')
             insertIndexList.push(j + 1)
           }
           break
         }
       }
-      // 修改检索范围为1，实现连续标记语句的检索
-      searchOffset = 1
-      // 如果不存在结束索引，说明后面的标记行无法得到满足，此时需要重新进行检索
-      if (insertIndexList.length === 0) {
-        // 无法完全匹配，则调整检索索引并重新检索
+      // 如果存在一个标记行未匹配，则调整检索索引并重新检索
+      if (!matched) {
         return this.#getInsertIndex(contentLines, markLines, startIndex+1)
       }
+      // 修改检索范围为1，实现连续标记语句的检索
+      searchOffset = 1
+      // 进入下一次标记语句检索前标记为非新的一轮，只有到__diff__和...时才是新一轮的检测
+      newRound = false
     }
     return insertIndexList
   }
