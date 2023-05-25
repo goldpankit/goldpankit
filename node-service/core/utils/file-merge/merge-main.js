@@ -10,13 +10,7 @@ import './assets/style/app.scss'
 import store from './store'
 
 const app = createApp(App)
-for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
-  app.component(key, component)
-}
 app.component('I18nInput', I18nInput)
-for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
-  app.component(key, component)
-}
 
 app.use(router)
 app.use(store)

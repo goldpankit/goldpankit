@@ -12,4 +12,5 @@ app.component('I18nInput', I18nInput)
 app.use(router)
 app.use(store)
 
+import I18nInput from "./components/common/I18nInput.vue";
 app.mount('#app')

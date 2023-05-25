@@ -13,23 +13,49 @@ class EllipsisExpress {
    */
   merge (express, targetContent) {
     const diffs = this.#parse(express)
-    console.log('diffs', JSON.stringify(diffs, null, 2))
+    // console.log('diffs', JSON.stringify(diffs, null, 2))
     const contentLines = targetContent.split('\n')
-    for (const diff of diffs) {
+    for (let diffIndex = 0; diffIndex < diffs.length; diffIndex++) {
+      const diff = diffs[diffIndex]
       // 找到插入的位置
       let insertIndexList = this.#getInsertIndex(contentLines, diff.markLines)
+      console.log('insertIndexList', insertIndexList)
       if (insertIndexList == null) {
         continue
       }
-      // console.log('insertIndexList', insertIndexList)
       insertIndexList = insertIndexList.reverse()
         .splice(0, diff.diffGroups.length)
         .reverse()
-      // 处理删除行
-      // TODO
-      // 处理添加行，需要从后开始添加每一组的变化，避免索引混乱
+
+      // 处理行的增加和删除，需要从后开始处理每一组的变化，避免索引混乱
       for (let i = diff.diffGroups.length - 1; i >= 0; i --) {
         const group = diff.diffGroups[i]
+        // 处理删除行
+        const deletedLines = group
+          .filter(line => line.trimStart().startsWith('-'))
+          .map(line => line.trimStart().substring(1))
+        if (deletedLines.length > 0) {
+          // 循环需要删除的行，一一进行删除
+          for (const line of deletedLines) {
+            // 获取开始删除的内容行索引
+            let startDeleteIndex = insertIndexList[i]
+            // 获取结束删除的内容行索引
+            let endDeleteIndex = insertIndexList[i - 1] == null ? contentLines.length - 1 : insertIndexList[i + 1]
+            console.log('删除位置', startDeleteIndex, endDeleteIndex, insertIndexList)
+            for (let j = startDeleteIndex; j <= endDeleteIndex; j++) {
+              const contentLine = contentLines[j]
+              // 已经没有匹配到行，则结束循环
+              if (contentLine == null) {
+                break
+              }
+              // 匹配到对应的行，则删除
+              if (contentLine === line) {
+                contentLines.splice(j, 1)
+              }
+            }
+          }
+        }
+        // 处理添加行
         contentLines.splice(insertIndexList[i], 0, ...group
           .filter(line => line.trimStart().startsWith('+'))
           .map(line => line.trimStart().substring(1))
@@ -109,6 +135,7 @@ class EllipsisExpress {
           markLines.unshift('...')
           for (let lineIndex = lastDiff.markLines.length - 1; lineIndex >= 0; lineIndex--) {
             if (lastDiff.markLines[lineIndex] === '___diff___') {
+              markLines.unshift('...')
               continue
             }
             markLines.unshift(lastDiff.markLines[lineIndex])
@@ -167,9 +194,8 @@ class EllipsisExpress {
         newRound = true
         continue
       }
-      // 差异语句，搜索范围调整至内容的最后
+      // 差异语句，不调整搜索范围（如果上一轮是省略句，则保留查询至内容的最后）
       if (markLine === '___diff___') {
-        searchOffset = 1
         newRound = true
         continue
       }
