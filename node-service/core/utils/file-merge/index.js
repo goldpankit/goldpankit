@@ -6,4 +6,4 @@ const oldFilePath = '/Users/caesar/adjustrd/goldpankit/codespace/kit-node-cli-ui
 const newFileContent = fs.readFile(newFilePath)
 const oldFileContent = fs.readFile(oldFilePath)
 
-console.log(ee.merge(newFileContent, oldFileContent))
+ee.merge(newFileContent, oldFileContent)

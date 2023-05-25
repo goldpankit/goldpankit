@@ -10,11 +10,16 @@ const app = createApp(App)
 +  app.component(key, component)
 +}
 app.component('I18nInput', I18nInput)
++for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
++  app.component(key, component)
++}
 ...
 app.use(store)
 +app.use(ElementUI, {
 +  size: 'default'
 +})
+...
+-app.mount('#app')
 .../
 
 /...start
@@ -23,4 +28,5 @@ app.use(store)
 
 /...end
 +加入到文件最末尾
+-app.mount('#app')
 .../

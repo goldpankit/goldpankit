@@ -13,16 +13,17 @@ class EllipsisExpress {
    */
   merge (express, targetContent) {
     const diffs = this.#parse(express)
-    console.log('diffs', diffs)
+    console.log('diffs', JSON.stringify(diffs, null, 2))
     // const contentLines = targetContent.split('\n')
     // for (const diff of diffs) {
     //   const markLines = diff.markLines
     //   // 找到插入的位置
     //   const insertIndex = this.#getInsertIndex(contentLines, markLines)
+    //   console.log('insertIndex', insertIndex)
     //   // console.log('位置信息', positionInfo)
     //   // 处理删除行
     //   // 处理添加行
-    //   contentLines.splice(insertIndex, 0, ...diff.newLines)
+    //   // contentLines.splice(insertIndex, 0, ...diff.newLines)
     // }
     // return contentLines.join('\n')
   }
@@ -43,6 +44,33 @@ class EllipsisExpress {
   }
 
   /**
+   * 获取差异行组
+   * @param lines
+   * @returns {*[]}
+   */
+  #getDiffLineGroups (lines) {
+    const lineGroups = []
+    let lineGroup = []
+    for (const line of lines) {
+      // 非差异语句，将组添加至组列表
+      if (!line.startsWith('+') && !line.startsWith('-')) {
+        if (lineGroup.length > 0) {
+          lineGroups.push(lineGroup)
+        }
+        lineGroup = []
+        continue
+      }
+      // 差异语句，将语句添加至组
+      lineGroup.push(line)
+    }
+    // 如果存在差异语句，继续添加到组
+    if (lineGroup.length > 0) {
+      lineGroups.push(lineGroup)
+    }
+    return lineGroups
+  }
+
+  /**
    * 解析表达式
    * @param express 表达式
    * @returns {*[]}
@@ -58,7 +86,6 @@ class EllipsisExpress {
         i = parseInt(i)
         const subExp = subExpresses[i]
         const lines = subExp.split('\n').filter(line => line !== '')
-        // let markLines = lines.filter(line => !line.startsWith('+') && !line.startsWith('-'))
         let markLines = lines.map(line => {
           if (line.startsWith('+') || line.startsWith('-')) {
             return '...'
@@ -77,8 +104,7 @@ class EllipsisExpress {
         markLines = this.#mergeEllipsis(markLines)
         diffs.push({
           markLines,
-          newLines: lines.filter(line => line.startsWith('+')).map(item => item.substring(1)),
-          dropLines: lines.filter(line => line.startsWith('-')).map(item => item.substring(1))
+          diffLines: this.#getDiffLineGroups(lines)
         })
       }
     }
@@ -134,7 +160,7 @@ class EllipsisExpress {
       // 如果不存在结束索引，说明后面的标记行无法得到满足，此时需要重新进行检索
       if (endIndex === -1) {
         // 无法完全匹配，则调整检索索引并重新检索
-        return this.getInsertIndex(contentLines, markLines, startIndex+1)
+        return this.#getInsertIndex(contentLines, markLines, startIndex+1)
       }
     }
     return endIndex + 1
