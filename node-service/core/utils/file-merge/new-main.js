@@ -21,12 +21,3 @@ app.use(store)
 ...
 -app.mount('#app')
 .../
-
-/...start
-+加入到文件最开始
-.../
-
-/...end
-+加入到文件最末尾
--app.mount('#app')
-.../

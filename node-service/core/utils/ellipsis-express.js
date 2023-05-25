@@ -13,19 +13,27 @@ class EllipsisExpress {
    */
   merge (express, targetContent) {
     const diffs = this.#parse(express)
-    console.log('diffs', JSON.stringify(diffs, null, 2))
-    // const contentLines = targetContent.split('\n')
-    // for (const diff of diffs) {
-    //   const markLines = diff.markLines
-    //   // 找到插入的位置
-    //   const insertIndex = this.#getInsertIndex(contentLines, markLines)
-    //   console.log('insertIndex', insertIndex)
-    //   // console.log('位置信息', positionInfo)
-    //   // 处理删除行
-    //   // 处理添加行
-    //   // contentLines.splice(insertIndex, 0, ...diff.newLines)
-    // }
-    // return contentLines.join('\n')
+    // console.log('diffs', JSON.stringify(diffs, null, 2))
+    const contentLines = targetContent.split('\n')
+    for (const diff of diffs) {
+      // 找到插入的位置
+      const insertIndexList = this.#getInsertIndex(contentLines, diff.markLines)
+        .reverse()
+        .splice(0, diff.diffGroups.length)
+        .reverse()
+      // 处理删除行
+      // TODO
+      // 处理添加行，需要从后开始添加每一组的变化，避免索引混乱
+      for (let i = diff.diffGroups.length - 1; i >= 0; i --) {
+        const group = diff.diffGroups[i]
+        contentLines.splice(insertIndexList[i], 0, ...group
+          .filter(line => line.startsWith('+'))
+          .map(item => item.substring(1))
+        )
+      }
+    }
+    // console.log(contentLines.join('\n'))
+    return contentLines.join('\n')
   }
 
   /**
@@ -35,7 +43,7 @@ class EllipsisExpress {
   #mergeEllipsis (markLines) {
     const newMarkLines = []
     for (const line of markLines) {
-      if (line === '...' && newMarkLines[newMarkLines.length - 1] === '...') {
+      if (line === '___diff___' && newMarkLines[newMarkLines.length - 1] === '___diff___') {
         continue
       }
       newMarkLines.push(line)
@@ -88,7 +96,7 @@ class EllipsisExpress {
         const lines = subExp.split('\n').filter(line => line !== '')
         let markLines = lines.map(line => {
           if (line.startsWith('+') || line.startsWith('-')) {
-            return '...'
+            return '___diff___'
           }
           return line
         })
@@ -97,6 +105,9 @@ class EllipsisExpress {
           const lastDiff = diffs[diffs.length - 1]
           markLines.unshift('...')
           for (let lineIndex = lastDiff.markLines.length - 1; lineIndex >= 0; lineIndex--) {
+            if (lastDiff.markLines[lineIndex] === '___diff___') {
+              continue
+            }
             markLines.unshift(lastDiff.markLines[lineIndex])
           }
         }
@@ -104,7 +115,7 @@ class EllipsisExpress {
         markLines = this.#mergeEllipsis(markLines)
         diffs.push({
           markLines,
-          diffLines: this.#getDiffLineGroups(lines)
+          diffGroups: this.#getDiffLineGroups(lines)
         })
       }
     }
@@ -121,20 +132,20 @@ class EllipsisExpress {
   #getInsertIndex (contentLines, markLines, searchIndex = 0) {
     // 找到匹配的第一行坐标
     let startIndex = -1
-    let endIndex = -1
+    let endIndexList = []
     const firstMarkLine = markLines[0]
     // 如果标记行为start，则视为直接添加到内容最顶部
     if (firstMarkLine === 'start') {
-      return 0
+      return [0]
     }
     // 如果标记行为end，则视为直接添加到内容最底部
     if (firstMarkLine === 'end') {
-      return contentLines.length
+      return [contentLines.length - 1]
     }
     for (let i = searchIndex; i < contentLines.length; i++) {
       const contentLine = contentLines[i]
       if (contentLine === firstMarkLine) {
-        startIndex = endIndex = i
+        startIndex = i
         break
       }
     }
@@ -153,17 +164,17 @@ class EllipsisExpress {
       for (let j = startIndex + 1; j < contentLines.length; j++) {
         const contentLine = contentLines[j]
         if (contentLine === markLine) {
-          endIndex = j
+          endIndexList.push(j + 1)
           break
         }
       }
       // 如果不存在结束索引，说明后面的标记行无法得到满足，此时需要重新进行检索
-      if (endIndex === -1) {
+      if (endIndexList.length === 0) {
         // 无法完全匹配，则调整检索索引并重新检索
         return this.#getInsertIndex(contentLines, markLines, startIndex+1)
       }
     }
-    return endIndex + 1
+    return endIndexList
   }
 }
 module.exports = new EllipsisExpress()
