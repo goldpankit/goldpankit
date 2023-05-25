@@ -17,8 +17,12 @@ class EllipsisExpress {
     const contentLines = targetContent.split('\n')
     for (const diff of diffs) {
       // 找到插入的位置
-      const insertIndexList = this.#getInsertIndex(contentLines, diff.markLines)
-        .reverse()
+      let insertIndexList = this.#getInsertIndex(contentLines, diff.markLines)
+      if (insertIndexList == null) {
+        continue
+      }
+      console.log('insertIndexList', insertIndexList)
+      insertIndexList = insertIndexList.reverse()
         .splice(0, diff.diffGroups.length)
         .reverse()
       // 处理删除行
@@ -32,7 +36,6 @@ class EllipsisExpress {
         )
       }
     }
-    // console.log(contentLines.join('\n'))
     return contentLines.join('\n')
   }
 
@@ -93,7 +96,7 @@ class EllipsisExpress {
       for (let i in subExpresses) {
         i = parseInt(i)
         const subExp = subExpresses[i]
-        const lines = subExp.split('\n').filter(line => line !== '')
+        const lines = subExp.split('\n')
         let markLines = lines.map(line => {
           if (line.startsWith('+') || line.startsWith('-')) {
             return '___diff___'
@@ -132,7 +135,7 @@ class EllipsisExpress {
   #getInsertIndex (contentLines, markLines, searchIndex = 0) {
     // 找到匹配的第一行坐标
     let startIndex = -1
-    let endIndexList = []
+    let insertIndexList = []
     const firstMarkLine = markLines[0]
     // 如果标记行为start，则视为直接添加到内容最顶部
     if (firstMarkLine === 'start') {
@@ -154,27 +157,49 @@ class EllipsisExpress {
       return null
     }
     // 从第二行标记行开始，继续在内容行中查找
+    let searchOffset = 1
     for (let i = 1; i < markLines.length; i++) {
       const markLine = markLines[i]
+      // 省略语句，搜索范围调整至内容的最后
       if (markLine === '...') {
-        // 记录检索范围
+        searchOffset = contentLines.length - startIndex + 1
+        continue
+      }
+      // 差异语句，搜索范围调整至内容的最后
+      if (markLine === '___diff___') {
+        searchOffset = contentLines.length - startIndex + 1
         continue
       }
       // 在检索范围内查找内容行，如果发现内容行等于标记行，则记录结束索引
-      for (let j = startIndex + 1; j < contentLines.length; j++) {
+      for (let j = startIndex + 1; j < startIndex + 1 + searchOffset; j++) {
         const contentLine = contentLines[j]
+        // 没有检索行时，结束循环
+        if (contentLine == null) {
+          break
+        }
+        // 找到标记行，添加插入索引或更换插入索引
         if (contentLine === markLine) {
-          endIndexList.push(j + 1)
+          // 如果是连续的标记语句，则更换索引
+          if (searchOffset === 1 && insertIndexList.length > 0) {
+            insertIndexList[insertIndexList.length - 1] = j + 1
+          }
+          // 如果是非连续的标记语句，则添加插入索引
+          else {
+            console.log('push')
+            insertIndexList.push(j + 1)
+          }
           break
         }
       }
+      // 修改检索范围为1，实现连续标记语句的检索
+      searchOffset = 1
       // 如果不存在结束索引，说明后面的标记行无法得到满足，此时需要重新进行检索
-      if (endIndexList.length === 0) {
+      if (insertIndexList.length === 0) {
         // 无法完全匹配，则调整检索索引并重新检索
         return this.#getInsertIndex(contentLines, markLines, startIndex+1)
       }
     }
-    return endIndexList
+    return insertIndexList
   }
 }
 module.exports = new EllipsisExpress()
