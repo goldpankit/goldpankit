@@ -15,18 +15,20 @@ class EllipsisExpress {
     const diffs = this.#parse(express)
     // console.log('diffs', JSON.stringify(diffs, null, 2))
     const contentLines = targetContent.split('\n')
-    for (let diffIndex = 0; diffIndex < diffs.length; diffIndex++) {
+    // 记录上一次的插入索引，用于处理当前这一次的删除范围
+    let prefixInsertIndexList = null
+    // 差异从后往前处理
+    for (let diffIndex = diffs.length - 1; diffIndex >= 0; diffIndex--) {
       const diff = diffs[diffIndex]
       // 找到插入的位置
-      let insertIndexList = this.#getInsertIndex(contentLines, diff.markLines)
-      console.log('insertIndexList', insertIndexList)
-      if (insertIndexList == null) {
+      let originInsertIndexList = this.#getInsertIndex(contentLines, diff.markLines)
+      if (originInsertIndexList == null) {
         continue
       }
-      insertIndexList = insertIndexList.reverse()
+      let insertIndexList = originInsertIndexList.reverse()
         .splice(0, diff.diffGroups.length)
         .reverse()
-
+      console.log('insertIndexList after', insertIndexList)
       // 处理行的增加和删除，需要从后开始处理每一组的变化，避免索引混乱
       for (let i = diff.diffGroups.length - 1; i >= 0; i --) {
         const group = diff.diffGroups[i]
@@ -37,11 +39,11 @@ class EllipsisExpress {
         if (deletedLines.length > 0) {
           // 循环需要删除的行，一一进行删除
           for (const line of deletedLines) {
-            // 获取开始删除的内容行索引
+            // 获取开始删除的内容行索引，开始为为当前差异的开始插入位置
             let startDeleteIndex = insertIndexList[i]
-            // 获取结束删除的内容行索引
-            let endDeleteIndex = insertIndexList[i - 1] == null ? contentLines.length - 1 : insertIndexList[i + 1]
-            console.log('删除位置', startDeleteIndex, endDeleteIndex, insertIndexList)
+            // 获取结束删除的内容行索引，结束位置为上一次差异的插入位置
+            let endDeleteIndex = prefixInsertIndexList == null ? contentLines.length - 1 : prefixInsertIndexList[0]
+            console.log('删除范围', startDeleteIndex, endDeleteIndex, prefixInsertIndexList)
             for (let j = startDeleteIndex; j <= endDeleteIndex; j++) {
               const contentLine = contentLines[j]
               // 已经没有匹配到行，则结束循环
@@ -51,6 +53,7 @@ class EllipsisExpress {
               // 匹配到对应的行，则删除
               if (contentLine === line) {
                 contentLines.splice(j, 1)
+                break
               }
             }
           }
@@ -61,6 +64,8 @@ class EllipsisExpress {
           .map(line => line.trimStart().substring(1))
         )
       }
+      prefixInsertIndexList = originInsertIndexList
+      console.log('prefixInsertIndexList赋值', prefixInsertIndexList)
     }
     return contentLines.join('\n')
   }
@@ -73,6 +78,9 @@ class EllipsisExpress {
     const newMarkLines = []
     for (const line of markLines) {
       if (line === '___diff___' && newMarkLines[newMarkLines.length - 1] === '___diff___') {
+        continue
+      }
+      if (line === '...' && newMarkLines[newMarkLines.length - 1] === '...') {
         continue
       }
       newMarkLines.push(line)
@@ -160,6 +168,7 @@ class EllipsisExpress {
    * @returns {number|*|null}
    */
   #getInsertIndex (contentLines, markLines, searchIndex = 0) {
+    console.log('markLines', markLines)
     // 找到匹配的第一行坐标
     let startIndex = -1
     let insertIndexList = []

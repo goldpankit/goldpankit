@@ -5,7 +5,9 @@ import router from './router1'
 import ElementUI from 'element-plus'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import 'element-plus/dist/index.css'
-import I18nInput from "./components/common/I18nInput.vue";
+import ElementUI from 'element-plus'
+import * as ElementPlusIconsVue from '@element-plus/icons-vue'
+import 'element-plus/dist/index.css'
 import './assets/style/app.scss'
 import store from './store'
 
@@ -15,4 +17,5 @@ app.component('I18nInput', I18nInput)
 app.use(router)
 app.use(store)
 
+import I18nInput from "./components/common/I18nInput.vue";
 app.mount('#app')
