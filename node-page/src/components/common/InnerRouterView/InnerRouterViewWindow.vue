@@ -3,7 +3,7 @@
     <div class="nav">
       <div class="title">
         <el-button v-if="histories.length > 1" class="button-icon" icon="ArrowLeftBold" @click="back"></el-button>
-        <h4>{{currentView.title}}/{{currentView.name}}</h4>
+        <h4 v-if="currentView.title != null && currentView.title !== ''">{{currentView.title}}</h4>
       </div>
     </div>
     <div class="routers">
@@ -38,6 +38,7 @@ export default {
     push (viewName) {
       this.histories.push(viewName)
       this.currentViewName = viewName
+      this.views = this.$slots.default()
     },
     // 返回
     back () {

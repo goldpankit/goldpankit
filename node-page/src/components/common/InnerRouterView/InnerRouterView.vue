@@ -1,6 +1,6 @@
 <template>
-  <div class="inner-router-view">
-    <slot v-if="visible"></slot>
+  <div v-if="visible" class="inner-router-view">
+    <slot></slot>
   </div>
 </template>
 
