@@ -34,7 +34,8 @@ export default {
       form: {
         name: '',
         codespace: '',
-        remark: ''
+        remark: '',
+        databases: []
       }
     }
   },

@@ -24,16 +24,21 @@
       </el-form-item>
     </el-form>
     <div class="opera">
-      <el-button v-if="database == null" type="primary" size="large" @click="create">Add Database</el-button>
-      <el-button v-else type="primary" size="large" @click="create">Confirm Update</el-button>
+      <el-button v-if="database == null" type="primary" size="large" @click="save">Add Database</el-button>
+      <el-button v-else type="primary" size="large" @click="save">Confirm Update</el-button>
     </div>
   </div>
 </template>
 
 <script>
+import {saveConfig} from "../../../api/user.project";
+
 export default {
   name: "OperaDatabaseView",
   props: {
+    project: {
+      required: true
+    },
     database: {}
   },
   data () {
@@ -50,8 +55,20 @@ export default {
     }
   },
   methods: {
-    create () {
-      this.$emit('success')
+    save () {
+      if (this.database == null) {
+        this.project.databases.unshift(this.form)
+      }
+      saveConfig({
+        id: this.project.id,
+        databases: this.project.databases
+      })
+        .then(() => {
+          this.$emit('success')
+        })
+        .catch(e => {
+          console.log('e', e)
+        })
     }
   }
 }

@@ -15,7 +15,7 @@
           <p class="text-info-1">3 databases</p>
         </div>
         <div class="opera">
-          <el-button @click="$router.push({ name: 'ProjectDatabases' })">Databases</el-button>
+          <el-button @click="$router.push({ name: 'ProjectDatabases', query: { project_id: project.id } })">Databases</el-button>
           <el-button @click="setCurrentProject(project)">Use It</el-button>
         </div>
       </li>

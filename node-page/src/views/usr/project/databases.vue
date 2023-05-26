@@ -1,6 +1,6 @@
 <template>
   <div class="form">
-    <div class="wrap">
+    <div v-if="project != null" class="wrap">
       <h2>Xxx Databases</h2>
       <section class="tip">
         The database information will only be stored on your device.
@@ -10,18 +10,22 @@
           <div class="database-list-wrap">
             <ul class="toolbar">
               <li>
-                <el-button type="primary" @click="create">Add New Database</el-button>
+                <el-button type="primary" @click="add">Add New Database</el-button>
               </li>
             </ul>
             <ul class="database-list">
-              <li v-for="db in databases" :key="db.name">
-                <DatabaseView :database="db" @edit="edit(db)"/>
+              <li v-for="(db,index) in project.databases" :key="db.name">
+                <DatabaseView :database="db" @edit="edit(db)" @delete="deleteDatabase(index)"/>
               </li>
             </ul>
           </div>
         </InnerRouterView>
         <InnerRouterView name="operaDatabase" :title="operaDbTitle">
-          <OperaDatabaseView :database="currentDatabase" @success="$refs.window.push('databaseList')"/>
+          <OperaDatabaseView
+            :project="project"
+            :database="currentDatabase"
+            @success="$refs.window.back()"
+          />
         </InnerRouterView>
       </InnerRouterViewWindow>
     </div>
@@ -33,22 +37,15 @@ import InnerRouterView from "../../../components/common/InnerRouterView/InnerRou
 import InnerRouterViewWindow from "../../../components/common/InnerRouterView/InnerRouterViewWindow.vue";
 import OperaDatabaseView from "../../../components/usr/project/OperaDatabaseView.vue";
 import DatabaseView from "../../../components/usr/project/DatabaseView.vue";
+import {fetchConfigById, saveConfig} from "../../../api/user.project";
 
 export default {
   components: {DatabaseView, OperaDatabaseView, InnerRouterViewWindow, InnerRouterView},
   data () {
     return {
-      currentDatabase: null,
-      databases: [
-        {
-          name: '本地环境',
-          type: 'mysql',
-          host: 'localhost',
-          port: 3306,
-          username: 'root',
-          password: 'local@123'
-        }
-      ]
+      projectId: null,
+      project: null,
+      currentDatabase: null
     }
   },
   computed: {
@@ -60,14 +57,51 @@ export default {
     }
   },
   methods: {
-    create () {
+    // 查询项目
+    fetchProject () {
+      fetchConfigById(this.projectId)
+        .then(data => {
+          this.project = {
+            ...data,
+            databases: data.databases || []
+          }
+        })
+        .catch(e => {
+          console.log('e', e)
+        })
+    },
+    // 添加数据库
+    add () {
       this.currentDatabase = null
       this.$refs.window.push('operaDatabase')
     },
+    // 修改数据库
     edit (db) {
       this.currentDatabase = db
       this.$refs.window.push('operaDatabase')
+    },
+    // 删除数据库
+    deleteDatabase (index) {
+      this.project.databases.splice(index, 1)
+      this.__save()
+    },
+    // 保存
+    __save () {
+      saveConfig({
+        id: this.project.id,
+        databases: this.project.databases
+      })
+        .then(() => {
+          this.$emit('success')
+        })
+        .catch(e => {
+          console.log('e', e)
+        })
     }
+  },
+  created () {
+    this.projectId = this.$route.query.project_id
+    this.fetchProject()
   }
 }
 </script>
