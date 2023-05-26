@@ -42,11 +42,33 @@
               </ul>
               <div class="dimension-content">
                 <div v-show="currentServiceDimension === 'readme'">Readme</div>
-                <ServiceInstaller ref="installer" v-show="currentServiceDimension === 'install'" :service="currentService" :space="space"/>
+                <ServiceInstaller
+                  ref="installer"
+                  v-show="currentServiceDimension === 'install'"
+                  :service="currentService"
+                  :project-service="projectService"
+                  :space="space"
+                />
               </div>
             </div>
             <div class="opera">
-              <el-button type="primary" size="large" @click="$refs.installer.install()">Install</el-button>
+              <template v-if="installed">
+                <el-button
+                  type="primary"
+                  size="large"
+                  @click="$refs.installer.install()"
+                >REINSTALL</el-button>
+                <el-button
+                  size="large"
+                  @click="$refs.installer.install()"
+                >UNINSTALL</el-button>
+              </template>
+              <el-button
+                v-else
+                type="primary"
+                size="large"
+                @click="$refs.installer.install()"
+              >INSTALL</el-button>
             </div>
           </div>
         </div>
@@ -77,7 +99,19 @@ export default {
     }
   },
   computed: {
-    ...mapState(['currentProject'])
+    ...mapState(['currentProject']),
+    installed () {
+      if (this.currentService == null) {
+        return false
+      }
+      return this.project.services[this.currentService.name] != null
+    },
+    projectService () {
+      if (this.currentService == null) {
+        return null
+      }
+      return this.project.services[this.currentService.name]
+    }
   },
   methods: {
     // 查询项目信息
@@ -85,6 +119,7 @@ export default {
       fetchById(this.currentProject.id)
         .then(data => {
           this.project = data
+          console.log('this.project', this.project)
           // 获取框架服务信息
           let frameworkName = null
           for (const key in this.project.framework) {
@@ -114,7 +149,6 @@ export default {
     },
     // 查询子服务
     searchSubServices () {
-
       search({
         spaceName: this.space.name,
         followServiceName: this.framework.name,
@@ -228,7 +262,8 @@ export default {
           padding: 15px var(--gap-page-padding);
           cursor: pointer;
           &.selected {
-            background: var(--primary-color-match-1);
+            //background: var(--primary-color-match-1);
+            color: var(--primary-color-match-2)
           }
           h5 {
             font-size: var(--font-size-middle);

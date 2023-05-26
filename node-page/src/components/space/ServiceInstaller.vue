@@ -46,6 +46,8 @@ export default {
     service: {
       required: true
     },
+    // 项目安装服务信息（项目安装完服务后的记录）
+    projectService: {},
     serviceVersion: {
       required: false
     },
@@ -81,15 +83,22 @@ export default {
         })
     },
     // 获取默认值
-    __getVariableDefaultValue (variable) {
-      return variable === 'checkbox' ? [] : ''
+    __getVariableValue (variable) {
+      let value = null
+      if (this.projectService != null) {
+        value = this.projectService.variables[variable.name]
+      }
+      if (value == null) {
+        value = variable.inputType === 'checkbox' ? [] : ''
+      }
+      return value
     }
   },
   created () {
     this.variables = JSON.parse(this.service.variables).map(item => {
       return {
         ...item,
-        value: this.__getVariableDefaultValue(item)
+        value: this.__getVariableValue(item)
       }
     })
   }
