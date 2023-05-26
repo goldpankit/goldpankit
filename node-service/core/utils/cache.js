@@ -10,10 +10,19 @@ class ArrayCache {
     this.#uniqueField = uniqueField
     this.#checkFile()
   }
-  // 添加
-  add (data) {
+  // 保存
+  save (data) {
     const config = this.#read()
-    config[this.#cacheKey].push(data)
+    const list = config[this.#cacheKey]
+    const target = list.find(item => item[this.#uniqueField] == data[this.#uniqueField])
+    // 修改
+    if (target != null) {
+      Object.assign(target, data)
+    }
+    // 添加
+    else {
+      list.push(data)
+    }
     this.#rewrite(config)
   }
   // 获取

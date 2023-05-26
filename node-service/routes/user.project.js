@@ -1,17 +1,28 @@
 const request = require('../utils/request.define')
 const userProject = require('../core/user.project')
-// 查询项目信息
+// 查询项目详细信息
 request
   .get('/usr/project/:projectId')
   .data(req => {
-    return userProject.findById(req.params.projectId)
+    return userProject.findDetailById(req.params.projectId)
+  })
+// 查询项目配置信息
+request
+  .get('/usr/project/:projectId/config')
+  .data(req => {
+    return userProject.findConfigById(req.params.projectId)
   })
 // 创建项目
 request
   .post('/usr/project/create')
   .data(req => {
-    console.log('create project', req.body)
     return userProject.create(req.body)
+  })
+// 保存项目
+request
+  .post('/usr/project/save')
+  .data(req => {
+    return userProject.save(req.body)
   })
 // 搜索项目
 request

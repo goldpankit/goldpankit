@@ -22,7 +22,7 @@ module.exports = {
         // 初始化服务文件
         fs.createFile(configPath, fs.toJSONFileString(config), true)
         // 添加本地服务记录
-        cache.services.add({
+        cache.services.save({
           id: config.id,
           codespace
         })

@@ -6,16 +6,31 @@ module.exports = {
   // 创建
   create (project) {
     project.id = utils.generateId()
-    cache.projects.add(project)
+    cache.projects.save(project)
     return project.id
   },
-  // 查询项目信息
-  findById (id) {
-    const project = cache.projects.get(id)
-    const projectConfig = fs.readJSONFile(this.__getConfigPath(project.codespace))
+  // 保存项目信息
+  save (config) {
+    const projectConfig = cache.projects.get(config.id)
+    if (projectConfig == null) {
+      throw new Error('未找到项目信息')
+    }
+    Object.assign(projectConfig, config)
+    cache.projects.save(projectConfig)
+  },
+  // 查询项目配置信息
+  findConfigById (id) {
+    return cache.projects.get(id)
+  },
+  // 查询项目详细信息
+  findDetailById (id) {
+    // 获取项目配置
+    const projectConfig = cache.projects.get(id)
+    // 获取项目安装配置
+    const projectInstallConfig = fs.readJSONFile(this.__getConfigPath(project.codespace))
     return {
-      ...project,
-      ...projectConfig
+      ...projectConfig,
+      ...projectInstallConfig
     }
   },
   // 搜索
