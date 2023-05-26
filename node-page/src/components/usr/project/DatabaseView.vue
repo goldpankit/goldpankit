@@ -3,23 +3,45 @@
     <el-descriptions-item label="Type">{{database.type}}</el-descriptions-item>
     <el-descriptions-item label="Host">{{database.host}}</el-descriptions-item>
     <el-descriptions-item label="Port">{{database.port}}</el-descriptions-item>
+    <el-descriptions-item label="Schema">{{database.schema}}</el-descriptions-item>
     <el-descriptions-item label="Username">{{database.username}}</el-descriptions-item>
     <el-descriptions-item label="Password">{{database.password}}</el-descriptions-item>
     <template #extra>
       <ul class="toolbar">
-        <li><el-button size="small" icon="Edit" @click="$emit('edit')">编辑</el-button></li>
-        <li><el-button size="small" icon="Delete" @click="$emit('delete')">删除</el-button></li>
+        <li><el-button size="small" @click="testConnect">Test Connection</el-button></li>
+        <li><el-button size="small" icon="Edit" @click="$emit('edit')">Edit</el-button></li>
+        <li><el-button size="small" icon="Delete" @click="$emit('delete')">Delete</el-button></li>
       </ul>
     </template>
   </el-descriptions>
 </template>
 
 <script>
+import {testConnect} from "../../../api/db";
+
 export default {
   name: "DatabaseView",
   props: {
     database: {
       required: true
+    }
+  },
+  methods: {
+    // 测试连接
+    testConnect () {
+      testConnect({
+        host: this.database.host,
+        port: this.database.port,
+        user: this.database.username,
+        password: this.database.password,
+        database: this.database.schema
+      })
+        .then(data => {
+          console.log('data', data)
+        })
+        .catch(e => {
+          console.log('e', e)
+        })
     }
   }
 }

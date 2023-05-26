@@ -16,6 +16,9 @@
       <el-form-item label="Port" required>
         <el-input v-model="form.port"/>
       </el-form-item>
+      <el-form-item label="Schema" required>
+        <el-input v-model="form.schema"/>
+      </el-form-item>
       <el-form-item label="Username" required>
         <el-input v-model="form.username"/>
       </el-form-item>
@@ -46,10 +49,11 @@ export default {
     return {
       form: _this.database || {
         name: '',
-        type: '',
-        host: '',
+        type: 'mysql',
+        host: 'localhost',
         port: 3306,
-        username: '',
+        schema: '',
+        username: 'root',
         password: ''
       }
     }

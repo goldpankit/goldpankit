@@ -1,7 +1,7 @@
 <template>
   <div class="form">
     <div v-if="project != null" class="wrap">
-      <h2>Xxx Databases</h2>
+      <h2>{{project.name}} Databases</h2>
       <section class="tip">
         The database information will only be stored on your device.
       </section>
@@ -15,7 +15,12 @@
             </ul>
             <ul class="database-list">
               <li v-for="(db,index) in project.databases" :key="db.name">
-                <DatabaseView :database="db" @edit="edit(db)" @delete="deleteDatabase(index)"/>
+                <DatabaseView
+                  :database="db"
+                  @edit="edit(db)"
+                  @delete="deleteDatabase(index)"
+                  @connect="connect(db)"
+                />
               </li>
             </ul>
           </div>
@@ -85,6 +90,8 @@ export default {
       this.project.databases.splice(index, 1)
       this.__save()
     },
+    // 测试连接
+    connect (db) {},
     // 保存
     __save () {
       saveConfig({
