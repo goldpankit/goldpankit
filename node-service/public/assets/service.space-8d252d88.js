@@ -1,0 +1,1 @@
+import{u as c}from"./index-2937f55a.js";function s(e){return c.post("/service/space/create",e)}function t(e){return c.get(`/service/space/${e}`)}function a(){return c.get("/service/space/search")}export{s as c,t as f,a as s};
