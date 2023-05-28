@@ -2,12 +2,27 @@
   <div class="page">
     <div class="warp">
       <h2>Public Spaces</h2>
-      <ul>
+      <ul class="space-list">
         <li v-for="space in spaces" :key="space.id">
           <router-link :to="{ name: 'SpaceDetail', params: { name: space.name } }">
             <h3>{{space.name}}</h3>
             <p>{{space.description}}</p>
-            <p class="tech-stack">Java · SpringBoot · MyBatisPlus · MySQL</p>
+            <ul class="service-list">
+              <li v-for="service in space.frameworkServices">
+                <h4>{{service.name}}</h4>
+                <p>{{service.description}}</p>
+                <section class="infos">
+                  <p>21 sub versions</p>
+                  <p>Latest version: 2.2.0</p>
+                </section>
+                <section class="infos text-info-1">
+                  <p>Last publish: 3 weeks ago</p>
+                </section>
+                <div class="opera">
+                  <el-button size="small" @click="$router.push({ name: 'ServiceSettings', query: { service_id: service.id } })">Edit</el-button>
+                </div>
+              </li>
+            </ul>
           </router-link>
         </li>
       </ul>
@@ -25,10 +40,13 @@ export default {
     }
   },
   methods: {
+    // 搜索
     search () {
-      search()
+      search({
+        name: ''
+      })
         .then(data => {
-          this.spaces = data
+          this.spaces = data.records
         })
         .catch(e => {
           console.log('e', e)
@@ -52,9 +70,11 @@ export default {
       font-size: var(--font-size-title);
       margin-bottom: var(--gap-title);
     }
-    ul {
+    // 空间列表
+    ul.space-list {
       width: 100%;
-      li {
+      box-shadow: var(--page-shadow);
+      & > li {
         margin-bottom: 20px;
         padding: 50px 30px;
         box-sizing: border-box;
@@ -76,10 +96,41 @@ export default {
           display: -webkit-box;
           -webkit-box-orient: vertical;
         }
-        .tech-stack {
+      }
+    }
+    // 服务列表
+    ul.service-list {
+      margin-top: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      & > li {
+        margin-right: 10px;
+        width: 325px;
+        border: 1px solid var(--border-default-color);
+        padding: 20px;
+        cursor: pointer;
+        margin-bottom: 15px;
+        border-radius: 10px;
+        transition: all ease .15s;
+        &:hover {
+          // border-color: var(--primary-color);
+          background: var(--background-color);
+        }
+        h4 {
+          font-size: var(--font-size-middle);
+          margin-bottom: 10px;
+        }
+        .infos {
+          display: flex;
           margin-top: 10px;
-          color: #747474;
-          font-weight: 400;
+          font-size: var(--font-size-mini);
+          p {
+            margin-right: 10px;
+          }
+        }
+        .opera {
+          display: flex;
+          justify-content: flex-end;
         }
       }
     }

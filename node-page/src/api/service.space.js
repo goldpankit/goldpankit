@@ -10,6 +10,6 @@ export function fetchByName (name) {
   return request.get(`/service/space/${name}`)
 }
 // 搜索空间列表
-export function search () {
-  return request.get('/service/space/search')
+export function search (data) {
+  return request.post('/service/space/search', data)
 }
