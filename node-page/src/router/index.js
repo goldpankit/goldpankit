@@ -51,6 +51,11 @@ const router = createRouter({
           component: () => import('@/views/usr/project/databases.vue')
         },
         {
+          path: '/usr/project/:database/models',
+          name: 'DatabaseModels',
+          component: () => import('@/views/usr/project/database-models.vue')
+        },
+        {
           path: '/usr/space/create',
           name: 'CreateSpace',
           component: () => import('@/views/usr/create-space.vue')
