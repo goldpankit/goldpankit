@@ -70,10 +70,10 @@ module.exports = {
   },
   // 保存服务文件
   saveFileSetting (fileSettings) {
-    const service = cache.services.get(fileSettings.serviceId)
-    const configPath = this.__getConfigPath(service.codespace)
+    const serviceConfig = cache.services.get(fileSettings.space, fileSettings.service)
+    const configPath = this.__getConfigPath(serviceConfig.codespace)
     const config = fs.readJSONFile(configPath)
-    // 获取默认配置结构并装载新配置信息（此时settings是最新的文件配置结构和最新的文件配置信息）
+    // 读取配置结构
     let settings = JSON.parse(JSON.stringify(Const.SERVICE_FILE_CONFIG_CONTENT))
     object.merge(fileSettings, settings)
     // 修改path为relativePath
@@ -91,7 +91,7 @@ module.exports = {
   },
   // 保存变量
   saveVariables (dto) {
-    const service = cache.services.get(dto.serviceId)
+    const service = cache.services.get(dto.space, dto.service)
     const configPath = this.__getConfigPath(service.codespace)
     const config = fs.readJSONFile(configPath)
     config.variables = dto.variables
