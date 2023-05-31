@@ -71,7 +71,10 @@ export default {
   name: "SettingFiles",
   components: {CompilerSelect, InputTypeSelect},
   props: {
-    serviceId: {
+    space: {
+      required: true
+    },
+    service: {
       required: true
     }
   },
@@ -84,7 +87,7 @@ export default {
   methods: {
     // 获取文件
     fetchFiles () {
-      fetchFiles(this.serviceId)
+      fetchFiles(this.space, this.service)
         .then(data => {
           this.files = data
         })

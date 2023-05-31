@@ -25,7 +25,8 @@
           <div class="tab-content">
             <SettingFiles
               v-show="currentTab === 'files'"
-              :service-id="serviceId"
+              :space="route.space"
+              :service="route.service"
             />
             <SettingVariables
               ref="variables"
