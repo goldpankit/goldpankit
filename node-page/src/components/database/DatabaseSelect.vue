@@ -1,5 +1,5 @@
 <template>
-  <el-select class="database-select">
+  <el-select class="database-select" :multiple="true">
     <el-option value="mysql" label="MySQL"/>
     <el-option value="oracle" label="Oracle"/>
   </el-select>

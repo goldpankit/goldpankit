@@ -100,6 +100,7 @@ export default {
       this.paths = this.paths.splice(0, index + 1)
       this.__fetchFiles()
       this.$emit('update:modelValue', this.__getAbsolutePath())
+      this.$emit('change', this.__getAbsolutePath())
     },
     // 查看子目录
     fetchSubFiles (file) {
@@ -112,6 +113,7 @@ export default {
       this.paths.push(file.path)
       this.__fetchFiles()
       this.$emit('update:modelValue', this.__getAbsolutePath())
+      this.$emit('change', this.__getAbsolutePath())
     },
     // 获取文件列表
     __fetchFiles () {
@@ -132,6 +134,7 @@ export default {
           this.paths = data.split('/').filter(item => item !== '')
           this.__fetchFiles()
           this.$emit('update:modelValue', this.__getAbsolutePath())
+          this.$emit('change', this.__getAbsolutePath())
         })
         .catch(e => {
           console.log('e', e)
@@ -165,6 +168,8 @@ export default {
       return
     }
     this.paths = this.modelValue.split('/').filter(item => item !== '')
+    this.$emit('update:modelValue', this.__getAbsolutePath())
+    this.$emit('change', this.__getAbsolutePath())
     this.__fetchFiles()
   }
 }

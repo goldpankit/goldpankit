@@ -1,22 +1,22 @@
 <template>
-  <div class="page" v-loading="loading" v-if="service != null">
+  <div class="page" :class="{ 'page-un-initialize': !initialized }" v-loading="loading" v-if="service != null">
     <div class="wrap">
       <div class="header-wrap">
         <div class="header">
           <h2>{{service.space.name}}·{{service.name}}</h2>
-          <div v-if="service.initialized" class="opera">
+          <div v-if="initialized" class="opera">
 <!--            <el-button type="important" @click="push">Push</el-button>-->
             <el-button type="primary" :disabled="currentProject == null" @click="compile">Compile</el-button>
             <el-button type="primary" @click="push">Publish</el-button>
           </div>
         </div>
         <p
-          v-if="service.initialized && service.local != null"
+          v-if="initialized"
           class="text-info-1 service-path"
         >At {{service.local.codespace}}</p>
       </div>
       <div class="main">
-        <template v-if="service.initialized">
+        <template v-if="initialized">
           <ul class="tabs">
             <li :class="{ selected: currentTab === 'basic' }" @click="currentTab = 'basic'">Basic</li>
             <li :class="{ selected: currentTab === 'variables' }" @click="currentTab = 'variables'">Variables</li>
@@ -35,18 +35,10 @@
           </div>
         </template>
         <template v-else>
-          <div class="initialize-wrap">
-            <div class="tip">
-              <h3>Initialize Service</h3>
-              <p>You must first specify or create a local directory and initialize the service. Then you can code the service in the specified local directory.</p>
-            </div>
-            <div class="directory-select-wrap">
-              <DirectorySelect v-if="!loading" v-model="directorySelect.value" title="Select Service Directory"/>
-            </div>
-            <div class="opera-bottom">
-              <el-button type="primary" size="large" @click="initialize">Initialize Service</el-button>
-            </div>
-          </div>
+          <InitializeView
+            :space-name="service.space.name"
+            :service-name="service.name"
+          />
         </template>
       </div>
     </div>
@@ -54,15 +46,16 @@
 </template>
 
 <script>
+import {mapState} from "vuex";
 import SettingFiles from "../../../components/service/settings/SettingFiles.vue";
 import DirectorySelect from "../../../components/common/DirectorySelect.vue";
 import SettingVariables from "../../../components/service/settings/SettingVariables.vue";
-import {initialize, getProfile, push} from "../../../api/service";
-import {mapState} from "vuex";
+import InitializeView from "../../../components/service/settings/InitializeView.vue";
+import {getProfile, push} from "../../../api/service";
 import {compile} from "../../../api/service.compile";
 
 export default {
-  components: {SettingVariables, DirectorySelect, SettingFiles},
+  components: {InitializeView, SettingVariables, DirectorySelect, SettingFiles},
   data () {
     return {
       // 路由参数
@@ -72,31 +65,16 @@ export default {
       },
       loading: true,
       currentTab: 'variables',
-      service: null,
-      directorySelect: {
-        value: ''
-      }
+      service: null
     }
   },
   computed: {
-    ...mapState(['currentProject'])
+    ...mapState(['currentProject']),
+    initialized () {
+      return this.service.local && this.service.local.codespace
+    }
   },
   methods: {
-    // 初始化
-    initialize () {
-      initialize({
-        id: this.$route.query.service_id,
-        name: this.service.name,
-        type: this.service.type,
-        codespace: this.directorySelect.value
-      })
-        .then(() => {
-          this.service.initialized = true
-        })
-        .catch(e => {
-          console.log('e', e)
-        })
-    },
     // 获取服务信息
     getProfile () {
       this.loading = true
@@ -150,6 +128,17 @@ export default {
 .page {
   height: 100%;
   padding-bottom: var(--gap-page-bottom);
+  overflow: hidden;
+  // 未初始化状态
+  &.page-un-initialize {
+    overflow-y: auto;
+    padding-bottom: var(--gap-page-bottom);
+    .wrap {
+      height: initial;
+      min-height: 100%;
+      padding: var(--gap-page-padding);
+    }
+  }
   .wrap {
     height: 100%;
     width: var(--page-width);
@@ -200,37 +189,6 @@ export default {
     .tab-content {
       flex-grow: 1;
       overflow-y: auto;
-    }
-    // 初始化
-    .initialize-wrap {
-      width: 650px;
-      margin: 0 auto;
-      display: flex;
-      flex-direction: column;
-      padding-top: var(--gap-page-bottom);
-      .tip {
-        text-align: center;
-        h3 {
-          margin-bottom: 20px;
-          font-size: var(--font-size-large);
-        }
-        p {
-          font-size: var(--font-size-middle);
-          line-height: 1.5;
-        }
-      }
-      .directory-select-wrap {
-        margin-top: 20px;
-      }
-      .opera-bottom {
-        margin-top: 20px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        .el-button {
-          font-size: var(--font-size-middle);
-        }
-      }
     }
   }
 }

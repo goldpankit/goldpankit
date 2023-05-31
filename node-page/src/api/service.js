@@ -24,9 +24,9 @@ export function getProfile (data) {
 export function fetchFiles (id) {
   return request.get(`/service/${id}/files`)
 }
-// 获取服务文件
-export function fetchConfig (id) {
-  return request.get(`/service/${id}/config`)
+// 获取服务配置
+export function fetchConfig (data) {
+  return request.post('/service/config', data)
 }
 // 保存服务文件配置
 export function saveFileSetting (data) {
