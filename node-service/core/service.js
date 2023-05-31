@@ -54,8 +54,8 @@ module.exports = {
   },
   // 获取服务配置信息
   getServiceConfig(dto) {
-    if (dto.spaceName != null && dto.serviceName != null) {
-      const service = cache.services.get(dto.spaceName, dto.serviceName)
+    if (dto.space != null && dto.service != null) {
+      const service = cache.services.get(dto.space, dto.service)
       return this.__getServiceConfig(service.codespace)
     }
     if (dto.codespace != null) {

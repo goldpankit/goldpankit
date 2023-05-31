@@ -20,8 +20,8 @@ request
  * 1. 存在spaceName和serviceName时读取本地服务配置后获取codespace再读取服务完整配置。
  * 2. 存在codespace时直接根据codespace读取服务完整配置
  * req.body = {
- *   spaceName: '',
- *   serviceName: '',
+ *   space: '',
+ *   service: '',
  *   codespace: ''
  * }
  */
