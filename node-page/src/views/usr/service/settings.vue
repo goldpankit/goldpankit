@@ -18,7 +18,7 @@
       <div class="main">
         <template v-if="initialized">
           <ul class="tabs">
-            <li :class="{ selected: currentTab === 'basic' }" @click="currentTab = 'basic'">Basic</li>
+<!--            <li :class="{ selected: currentTab === 'basic' }" @click="currentTab = 'basic'">Basic</li>-->
             <li :class="{ selected: currentTab === 'variables' }" @click="currentTab = 'variables'">Variables</li>
             <li :class="{ selected: currentTab === 'files' }" @click="currentTab = 'files'">Files</li>
           </ul>
@@ -66,7 +66,7 @@ export default {
         service: ''
       },
       loading: true,
-      currentTab: 'variables',
+      currentTab: 'files',
       service: null
     }
   },
@@ -175,7 +175,10 @@ export default {
     .tabs {
       flex-shrink: 0;
       display: flex;
-      margin: 15px 0 10px 0;
+      justify-content: center;
+      margin: 15px 0 0 0;
+      border-bottom: 1px solid var(--border-default-color);
+      padding-bottom: 10px;
       li {
         margin-right: 10px;
         cursor: pointer;

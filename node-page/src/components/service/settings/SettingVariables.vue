@@ -227,16 +227,16 @@ export default {
 .tree {
   height: 100%;
   display: flex;
-
   .variables-wrap {
     width: 280px;
     flex-shrink: 0;
     border-right: 1px solid var(--border-default-color);
-    padding-right: 20px;
+    padding-top: 10px;
     .tools {
       display: flex;
       justify-content: flex-end;
-      margin-bottom: 5px;
+      padding-bottom: 10px;
+      padding-right: 10px;
     }
     // 变量列表
     ul.variables {
@@ -286,7 +286,7 @@ export default {
     flex-direction: column;
     h4 {
       flex-shrink: 0;
-      margin-top: 5px;
+      margin-top: 15px;
       padding-bottom: 15px;
     }
     .content-wrap {

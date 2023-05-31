@@ -1,7 +1,9 @@
 <template>
   <div class="tree">
     <div class="files-wrap">
-      <el-input placeholder="Filter keyword" />
+      <div class="search-wrap">
+        <el-input placeholder="Filter keyword" />
+      </div>
       <el-tree
         :data="files"
         @node-click="handleNodeClick"
@@ -149,9 +151,12 @@ export default {
     width: 280px;
     flex-shrink: 0;
     border-right: 1px solid var(--border-default-color);
-    padding-right: 20px;
-    .el-input {
-      margin-bottom: 5px;
+    padding: 10px 15px 0 15px;
+    .search-wrap {
+      margin-bottom: 10px;
+      :deep(.el-input) .el-input__wrapper{
+        border-radius: 30px;
+      }
     }
   }
   // 设置区域
