@@ -102,7 +102,8 @@ export default {
       }
       this.saveTimeout = setTimeout(() => {
         saveFileSetting({
-          serviceId: this.serviceId,
+          space: this.space,
+          service: this.service,
           ...this.currentNode,
           variables: this.currentNode.variables.filter(v => v.name.trim().length > 0)
         })

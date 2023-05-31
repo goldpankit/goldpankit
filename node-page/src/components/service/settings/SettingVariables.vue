@@ -154,7 +154,8 @@ export default {
       const variables = this.variables.filter(v => v.name.trim().length > 0 && v.message.trim().length > 0)
       // 请求保存
       saveVariables({
-        serviceId: this.serviceId,
+        space: this.space,
+        service: this.service,
         variables: variables.map(item => {
           const copyItem = JSON.parse(JSON.stringify(item))
           // 输入类型去掉选项
@@ -191,7 +192,6 @@ export default {
               options: item.options == null ? [] : item.options
             }
           })
-          console.log('初始化变量', this.variables)
         })
         .catch(e => {
           console.log('e', e)
