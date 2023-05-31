@@ -31,7 +31,8 @@
             <SettingVariables
               ref="variables"
               v-show="currentTab === 'variables'"
-              :service-id="serviceId"
+              :space="route.space"
+              :service="route.service"
             />
           </div>
         </template>

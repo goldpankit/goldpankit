@@ -100,7 +100,10 @@ export default {
   name: "SettingVariables",
   components: {VariableInput, I18nInput, InputTypeSelect, CompilerSelect},
   props: {
-    serviceId: {
+    space: {
+      required: true
+    },
+    service: {
       required: true
     }
   },
@@ -176,7 +179,10 @@ export default {
     },
     // 获取变量配置
     fetchVariables () {
-      fetchConfig(this.serviceId)
+      fetchConfig({
+        space: this.space,
+        service: this.service
+      })
         .then(data => {
           this.variables = data.variables.map(item => {
             return {
