@@ -40,9 +40,9 @@ request
 
 // 查询服务文件
 request
-  .get('/service/:serviceId/files')
+  .post('/service/files')
   .data ((req) => {
-    return service.getFileTree(req.params.serviceId)
+    return service.getFileTree(req.body.space, req.body.service)
   })
 
 // 保存文件配置

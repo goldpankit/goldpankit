@@ -64,9 +64,9 @@ module.exports = {
     return null
   },
   // 获取服务文件树
-  getFileTree(serviceId) {
-    const service = cache.services.get(serviceId)
-    return this.__getFileTree(service.codespace, service.codespace)
+  getFileTree(space, service) {
+    const serviceConfig = cache.services.get(space, service)
+    return this.__getFileTree(serviceConfig.codespace, serviceConfig.codespace)
   },
   // 保存服务文件
   saveFileSetting (fileSettings) {
