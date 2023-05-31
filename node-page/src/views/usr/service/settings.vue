@@ -97,7 +97,7 @@ export default {
     // 编译服务
     compile () {
       compile({
-        serviceId: this.service.id,
+        ...this.route,
         projectId: this.currentProject.id
       })
         .then(() => {
