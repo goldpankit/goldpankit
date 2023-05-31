@@ -17,8 +17,8 @@ export function push (id) {
   return request.get(`/service/${id}/push`)
 }
 // 获取服务信息
-export function getProfile (id) {
-  return request.get(`/service/profile/${id}`)
+export function getProfile (data) {
+  return request.post('/service/profile', data)
 }
 // 获取服务文件
 export function fetchFiles (id) {

@@ -4,7 +4,10 @@
       <h2>Create Space</h2>
       <el-form>
         <el-form-item label="Space Name" required>
-          <el-input v-model="form.name" placeholder="type your space name."/>
+          <el-input v-model="form.name" />
+        </el-form-item>
+        <el-form-item label="Homepage">
+          <el-input v-model="form.homepage" />
         </el-form-item>
         <el-form-item label="Description" required>
           <i18n-input v-model="form.description" type="textarea"/>
@@ -27,6 +30,7 @@ export default {
     return {
       form: {
         name: '',
+        homepage: '',
         description: ''
       }
     }
@@ -35,7 +39,7 @@ export default {
     create () {
       create(this.form)
         .then(data => {
-          this.$router.push({ name: 'CreateService', query: { space_id: data } })
+          this.$router.push({ name: 'CreateService', query: { space: this.form.name } })
         })
         .catch(e => {
           console.log('e', e)

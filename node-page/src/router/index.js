@@ -71,7 +71,7 @@ const router = createRouter({
           component: () => import('@/views/usr/service/create.vue')
         },
         {
-          path: '/usr/service/settings',
+          path: '/usr/service/:space/:service/settings',
           name: 'ServiceSettings',
           component: () => import('@/views/usr/service/settings.vue')
         },

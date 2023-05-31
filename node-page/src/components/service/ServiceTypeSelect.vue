@@ -1,10 +1,9 @@
 <template>
   <el-select class="service-type-select">
-    <el-option value="framework" label="Framework Service"/>
-    <el-option value="common" label="Common Service"/>
-    <el-option value="logic" label="Logic Service"/>
-    <el-option value="page" label="Page Service"/>
-    <el-option value="issue" label="Issue Service"/>
+    <el-option value="MAIN" label="Main Service"/>
+    <el-option value="COMMON" label="Common Service"/>
+<!--    <el-option value="LOGIC" label="Logic Service"/>-->
+<!--    <el-option value="PAGE" label="Page Service"/>-->
   </el-select>
 </template>
 

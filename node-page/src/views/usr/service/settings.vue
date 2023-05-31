@@ -65,9 +65,13 @@ export default {
   components: {SettingVariables, DirectorySelect, SettingFiles},
   data () {
     return {
+      // 路由参数
+      route: {
+        space: '',
+        service: ''
+      },
       loading: true,
       currentTab: 'variables',
-      serviceId: null,
       service: null,
       directorySelect: {
         value: ''
@@ -96,7 +100,10 @@ export default {
     // 获取服务信息
     getProfile () {
       this.loading = true
-      getProfile(this.serviceId)
+      getProfile({
+        spaceName: this.route.space,
+        serviceName: this.route.service
+      })
         .then(data => {
           this.service = data
         })
@@ -132,7 +139,8 @@ export default {
     }
   },
   created () {
-    this.serviceId = this.$route.query.service_id
+    this.route.space = this.$route.params.space
+    this.route.service = this.$route.params.service
     this.getProfile()
   }
 }

@@ -12,23 +12,12 @@
         <el-form-item label="Service Type" required>
           <ServiceTypeSelect v-model="form.type"/>
         </el-form-item>
-        <el-form-item v-if="form.type === 'framework'" label="Version" required>
-          <VersionSelect v-model="form.version"/>
-        </el-form-item>
-        <template v-else>
-          <el-form-item label="Follow Framework Service" required>
-            <FrameworkServiceSelect v-model="form.followServiceId" :space-name="spaceName" />
-          </el-form-item>
-          <el-form-item label="Follow Framework Version" required>
-            <VersionSelect v-model="form.version"/>
+        <!-- 为子服务时需选择跟随服务 -->
+        <template v-if="form.type !== 'MAIN'">
+          <el-form-item label="Main Service" required>
+            <FrameworkServiceSelect v-model="form.mainServiceName" :space-name="spaceName" />
           </el-form-item>
         </template>
-        <el-form-item label="Default Compiler" required>
-          <CompilerSelect v-model="form.compiler"/>
-        </el-form-item>
-        <el-form-item label="Supported Databases">
-          <DatabaseSelect v-model="form.supportedDatabases"/>
-        </el-form-item>
         <el-form-item label="Repository">
           <el-input v-model="form.repository"/>
         </el-form-item>
@@ -50,9 +39,9 @@ import CompilerSelect from "../../../components/common/CompilerSelect.vue";
 import ServiceTypeSelect from "../../../components/service/ServiceTypeSelect.vue";
 import DatabaseSelect from "../../../components/database/DatabaseSelect.vue";
 import VersionSelect from "../../../components/common/VersionSelect.vue";
+import FrameworkServiceSelect from "../../../components/service/FrameworkServiceSelect.vue";
 import { fetchByName } from "../../../api/service.space";
 import { create } from "../../../api/service";
-import FrameworkServiceSelect from "../../../components/service/FrameworkServiceSelect.vue";
 
 export default {
   components: {
@@ -63,12 +52,10 @@ export default {
       spaceName: null,
       space: null,
       form: {
-        followServiceId: null,
         name: '',
-        type: 'framework',
-        version: 'v1',
-        compiler: 'static',
-        supportedDatabases: [],
+        type: 'MAIN',
+        mainServiceName: null,
+        repository: '',
         description: ''
       }
     }
@@ -77,7 +64,7 @@ export default {
     // 创建服务
     create () {
       create({
-        spaceId: this.space.id,
+        spaceName: this.space.name,
         ...this.form
       })
         .then(data => {
@@ -99,7 +86,7 @@ export default {
     }
   },
   created () {
-    this.spaceName = this.$route.query.space_name
+    this.spaceName = this.$route.query.space
     this.fetchSpace()
   }
 }
