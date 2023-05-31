@@ -16,39 +16,11 @@ request
     return service.getServiceConfig(req.params.serviceId)
   })
 
-// 推送服务
-request
-  .get('/service/:serviceId/push')
-  .data(req => {
-    return service.push(req.params.serviceId)
-  })
-
-// 初始化服务
-request
-  .post('/service/initialize')
-  .data((req) => {
-    service.initialize(req.body)
-  })
-
 // 查询服务信息
 request
-  .get('/service/profile/:serviceId')
+  .post('/service/profile')
   .data ((req) => {
-    const serviceId = req.params.serviceId
-    // 读取本地服务配置
-    const serviceConfig = cache.services.get(serviceId)
-    return axios.get(`/service/profile/${serviceId}`)
-      .then(data => {
-        return {
-          ...data,
-          local: serviceConfig == null ? null : {
-            ...serviceConfig
-          }
-        }
-      })
-      .catch(e => {
-        return Promise.reject(e)
-      })
+    return service.getProfile(req.body.spaceName, req.body.serviceName)
   })
 
 // 查询服务文件

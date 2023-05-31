@@ -32,6 +32,25 @@ module.exports = {
         return Promise.reject(e)
       })
   },
+  // 获取服务简要信息
+  getProfile(spaceName, serviceName) {
+    // 读取本地服务配置
+    const serviceConfig = cache.services.get(spaceName, serviceName)
+    // 远程获取服务简介
+    return serviceApi.fetchProfile({ spaceName, serviceName })
+      .then(data => {
+        return {
+          ...data,
+          // 补充本地配置信息
+          local: serviceConfig == null ? null : {
+            ...serviceConfig
+          }
+        }
+      })
+      .catch(e => {
+        return Promise.reject(e)
+      })
+  },
   // 获取服务配置信息
   getServiceConfig(serviceId) {
     const service = cache.services.get(serviceId)
@@ -72,33 +91,33 @@ module.exports = {
     config.variables = dto.variables
     fs.rewrite(configPath, fs.toJSONFileString(config))
   },
-  // 推送服务
-  push(serviceId) {
-    // 获取服务文件
-    const service = cache.services.get(serviceId)
-    const files = fs.getFilesWithChildren(service.codespace, service.codespace).map(fullpath => {
-      const filetype = fs.isDirectory(fullpath) ? 'DIRECTORY' : 'FILE'
-      const relativePath = fullpath.replace(service.codespace + '/', '')
-      const fileSetting = this.__getFileSettings(service.codespace, relativePath)
-      return {
-        serviceId,
-        filepath: relativePath,
-        filetype,
-        contentType: fs.getContentType(fullpath),
-        content: filetype === 'DIRECTORY' ? null : fs.readFile(fullpath),
-        compiler: fileSetting.compiler,
-        variables: JSON.stringify(fileSetting.variables),
-        enableExpress: fileSetting.enableExpress
-      }
-    })
-    // 获取服务变量
-    const serviceConfig = this.getServiceConfig(serviceId)
-    const variables = serviceConfig.variables
-    return serviceApi.push({
-      serviceId,
-      files,
-      variables
-    })
+  // 发布服务版本
+  publish(serviceId) {
+    // // 获取服务文件
+    // const service = cache.services.get(serviceId)
+    // const files = fs.getFilesWithChildren(service.codespace, service.codespace).map(fullpath => {
+    //   const filetype = fs.isDirectory(fullpath) ? 'DIRECTORY' : 'FILE'
+    //   const relativePath = fullpath.replace(service.codespace + '/', '')
+    //   const fileSetting = this.__getFileSettings(service.codespace, relativePath)
+    //   return {
+    //     serviceId,
+    //     filepath: relativePath,
+    //     filetype,
+    //     contentType: fs.getContentType(fullpath),
+    //     content: filetype === 'DIRECTORY' ? null : fs.readFile(fullpath),
+    //     compiler: fileSetting.compiler,
+    //     variables: JSON.stringify(fileSetting.variables),
+    //     enableExpress: fileSetting.enableExpress
+    //   }
+    // })
+    // // 获取服务变量
+    // const serviceConfig = this.getServiceConfig(serviceId)
+    // const variables = serviceConfig.variables
+    // return serviceApi.push({
+    //   serviceId,
+    //   files,
+    //   variables
+    // })
   },
   // 安装服务
   install (dto) {

@@ -5,7 +5,7 @@ const CACHE = {}
 class ArrayCache {
   #cacheKey
   #uniqueField
-  constructor(cacheKey, uniqueField="id") {
+  constructor(cacheKey, uniqueField) {
     this.#cacheKey = cacheKey
     this.#uniqueField = uniqueField
     this.#checkFile()
@@ -14,7 +14,17 @@ class ArrayCache {
   save (data) {
     const config = this.#read()
     const list = config[this.#cacheKey]
-    const target = list.find(item => item[this.#uniqueField] == data[this.#uniqueField])
+    // 获取目标数据
+    const queryArgs = []
+    if (typeof this.#uniqueField === 'string') {
+      queryArgs.push(data[this.#uniqueField])
+    }
+    if (this.#uniqueField instanceof Array) {
+      for (const uniqueField of this.#uniqueField) {
+        queryArgs.push(data[uniqueField])
+      }
+    }
+    const target = this.get.apply(this, queryArgs)
     // 修改
     if (target != null) {
       Object.assign(target, data)
@@ -26,10 +36,27 @@ class ArrayCache {
     this.#rewrite(config)
   }
   // 获取
-  get (unique) {
+  get () {
     const config = this.#read()
-    const list = config[this.#cacheKey]
-    return list.find(item => item[this.#uniqueField] == unique)
+    // 如果#cacheKey为字符串，则根据单key来处理
+    if (typeof this.#uniqueField === 'string') {
+      const unique = arguments[0]
+      const list = config[this.#cacheKey]
+      return list.find(item => item[this.#uniqueField] === unique)
+    }
+    // 如果#cacheKey为数组，则根据多key来处理
+    if (this.#uniqueField instanceof Array) {
+      const uniqueValues = [...arguments].join('-')
+      const list = config[this.#cacheKey]
+      return list.find(item => {
+        const itemUniqueValues = []
+        for (const uniqueField of this.#uniqueField) {
+          itemUniqueValues.push(item[uniqueField])
+        }
+        return itemUniqueValues.join('-') === uniqueValues
+      })
+    }
+    return null
   }
   // 搜索
   search () {
@@ -37,10 +64,24 @@ class ArrayCache {
     return config[this.#cacheKey]
   }
   // 删除
-  remove (unique) {
+  remove () {
     const config = this.#read()
     const list = config[this.#cacheKey]
-    const index = list.findIndex(item => item[this.#uniqueField] === unique)
+    const uniqueValue = [...arguments].join('-')
+    let index = -1;
+    if (typeof this.#uniqueField === 'string') {
+      index = list.findIndex(item => item[this.#uniqueField] === uniqueValue)
+    }
+    if (this.#uniqueField instanceof Array) {
+      index = list.findIndex(item => {
+        const itemUniqueValues = []
+        for (const uniqueField of this.#uniqueField) {
+          itemUniqueValues.push(item[uniqueField])
+        }
+        return itemUniqueValues.join('-') === uniqueValue
+      })
+    }
+
     if (index === -1) {
       return
     }
@@ -87,6 +128,6 @@ module.exports = {
   get (key) {
     return CACHE[key]
   },
-  services: new ArrayCache('services'),
-  projects: new ArrayCache('projects'),
+  services: new ArrayCache('services', ['space', 'name']),
+  projects: new ArrayCache('projects', 'name'),
 }

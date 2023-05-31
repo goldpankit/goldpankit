@@ -1,9 +1,9 @@
 const request = require('../../utils/request.axios')
 
 module.exports = {
-    // 初始化
-    initialize (id) {
-        return request.get(`/service/initialize/${id}`)
+    // 查询服务简要信息
+    fetchProfile (data) {
+        return request.post('/service/profile', data)
     },
     // 安装代码
     install (data) {
@@ -12,9 +12,5 @@ module.exports = {
     // 编译代码
     compile (data) {
         return request.post('/service/compile', data)
-    },
-    // 推送服务
-    push (data) {
-        return request.post('/service/push', data)
-    },
+    }
 }
