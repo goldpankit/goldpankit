@@ -8,29 +8,30 @@ const userProject = require('./user.project')
 module.exports = {
   // 初始化
   initialize(extConfig) {
-    // 配置
+    // 读取配置结构
     const config = JSON.parse(JSON.stringify(Const.SERVICE_CONFIG_CONTENT))
-    // 配置文件
+    // 获取配置文件路径
     const codespace = extConfig.codespace
     const configPath = this.__getConfigPath(codespace)
     // 合并配置
     for (const key in config) {
       config[key] = extConfig[key] || config[key]
     }
-    return serviceApi.initialize(config.id)
-      .then(() => {
-        // 初始化服务文件
-        fs.createFile(configPath, fs.toJSONFileString(config), true)
-        // 添加本地服务记录
-        cache.services.save({
-          id: config.id,
-          codespace
-        })
-        return Promise.resolve()
-      })
-      .catch(e => {
-        return Promise.reject(e)
-      })
+    // 合并当前服务配置
+    if (fs.exists(configPath)) {
+      const currentConfig = fs.readJSONFile(configPath)
+      config.variables = currentConfig.variables
+      config.translator = currentConfig.translator
+      config.settings = currentConfig.settings
+    }
+    // 初始化服务文件
+    fs.createFile(configPath, fs.toJSONFileString(config), true)
+    // 添加本地服务记录
+    cache.services.save({
+      space: config.space,
+      name: config.name,
+      codespace: extConfig.codespace
+    })
   },
   // 获取服务简要信息
   getProfile(spaceName, serviceName) {
@@ -52,10 +53,15 @@ module.exports = {
       })
   },
   // 获取服务配置信息
-  getServiceConfig(serviceId) {
-    const service = cache.services.get(serviceId)
-    const configPath = this.__getConfigPath(service.codespace)
-    return fs.readJSONFile(configPath)
+  getServiceConfig(dto) {
+    if (dto.spaceName != null && dto.serviceName != null) {
+      const service = cache.services.get(dto.spaceName, dto.serviceName)
+      return this.__getServiceConfig(service.codespace)
+    }
+    if (dto.codespace != null) {
+      return this.__getServiceConfig(dto.codespace)
+    }
+    return null
   },
   // 获取服务文件树
   getFileTree(serviceId) {
@@ -264,5 +270,10 @@ module.exports = {
       object.merge(targetSettings, settings)
     }
     return settings
+  },
+  // 获取服务配置
+  __getServiceConfig (codespace) {
+    const configPath = this.__getConfigPath(codespace)
+    return fs.readJSONFile(configPath)
   }
 }

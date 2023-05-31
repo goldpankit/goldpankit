@@ -6,15 +6,12 @@ module.exports = {
   SERVICE_CONFIG_FILE: `${PROJECT_NAME}.json`,
   // 服务配置文件内容
   SERVICE_CONFIG_CONTENT: {
-    id: null,
-    name: '',
-    type: '',
+    space: '', // 服务空间名称
+    name: '', // 服务名称
     version: '1.0.0', // 版本号
     compiler: 'static', // 编译器
-    description: '', // 模版描述
-    build: `${process.cwd()}/.${PROJECT_NAME}/build`,
+    supportedDatabases: [], // 支持的数据库
     variables: [], // 全局变量
-    select: [], // 忘了
     translator: [ // 翻译器，将代码翻译成模版
       // {path: '*', source: 'ruoyi', target: '${projectEnName}' },
     ],
@@ -30,7 +27,7 @@ module.exports = {
   // 本地全局配置目录
   LOCAL_CONFIG_DIRECTORY: `.${PROJECT_NAME}`,
   // 本地全局配置文件
-  LOCAL_CONFIG_FILE: `${PROJECT_NAME}.json`,
+  LOCAL_CONFIG_FILE: `data.json`,
   // 本地全局配置内容
   LOCAL_CONFIG_FILE_CONTENT: {
     // 服务列表

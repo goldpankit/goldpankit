@@ -24,10 +24,10 @@ class ArrayCache {
         queryArgs.push(data[uniqueField])
       }
     }
-    const target = this.get.apply(this, queryArgs)
+    const targetIndex = this.getIndex.apply(this, queryArgs)
     // 修改
-    if (target != null) {
-      Object.assign(target, data)
+    if (targetIndex !== -1) {
+      Object.assign(list[targetIndex], data)
     }
     // 添加
     else {
@@ -35,20 +35,24 @@ class ArrayCache {
     }
     this.#rewrite(config)
   }
-  // 获取
+  // 获取数据
   get () {
     const config = this.#read()
+    return config[this.#cacheKey][this.getIndex.apply(this, [...arguments])]
+  }
+  // 获取坐标
+  getIndex() {
+    const config = this.#read()
+    const list = config[this.#cacheKey]
     // 如果#cacheKey为字符串，则根据单key来处理
     if (typeof this.#uniqueField === 'string') {
       const unique = arguments[0]
-      const list = config[this.#cacheKey]
-      return list.find(item => item[this.#uniqueField] === unique)
+      return list.findIndex(item => item[this.#uniqueField] === unique)
     }
     // 如果#cacheKey为数组，则根据多key来处理
     if (this.#uniqueField instanceof Array) {
       const uniqueValues = [...arguments].join('-')
-      const list = config[this.#cacheKey]
-      return list.find(item => {
+      return list.findIndex(item => {
         const itemUniqueValues = []
         for (const uniqueField of this.#uniqueField) {
           itemUniqueValues.push(item[uniqueField])
@@ -56,7 +60,7 @@ class ArrayCache {
         return itemUniqueValues.join('-') === uniqueValues
       })
     }
-    return null
+    return -1
   }
   // 搜索
   search () {

@@ -1,6 +1,4 @@
 const request = require('../utils/request.define')
-const axios = require('../utils/request.axios')
-const cache = require('../core/utils/cache')
 const service = require('../core/service')
 
 // 创建服务
@@ -9,11 +7,28 @@ request.post('/service/create').proxy()
 // 搜索服务
 request.post('/service/search').proxy()
 
-// 获取服务配置
+// 初始化服务
 request
-  .get('/service/:serviceId/config')
+  .post('/service/initialize')
   .data(req => {
-    return service.getServiceConfig(req.params.serviceId)
+    return service.initialize(req.body)
+  })
+
+
+/**
+ * 获取服务配置
+ * 1. 存在spaceName和serviceName时读取本地服务配置后获取codespace再读取服务完整配置。
+ * 2. 存在codespace时直接根据codespace读取服务完整配置
+ * req.body = {
+ *   spaceName: '',
+ *   serviceName: '',
+ *   codespace: ''
+ * }
+ */
+request
+  .post('/service/config')
+  .data(req => {
+    return service.getServiceConfig(req.body)
   })
 
 // 查询服务信息
