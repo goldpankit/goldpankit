@@ -173,16 +173,17 @@ module.exports = {
       throw new Error('Please select a project.')
     }
     // 获取服务信息
-    const service = this.getServiceConfig(dto.serviceId)
+    console.log('dto', dto)
+    const serviceConfig = this.getServiceConfig({ space: dto.space, service: dto.service })
     return serviceApi.compile({
-      defaultCompiler: service.compiler,
-      variables: service.variables.map(item => {
+      defaultCompiler: serviceConfig.compiler,
+      variables: serviceConfig.variables.map(item => {
         return {
           ...item,
           value: item.defaultValue
         }
       }),
-      files: this.__getFileConfigList(dto.serviceId)
+      files: this.__getFileConfigList(dto.space, dto.service)
     })
       .then(data => {
         // 写入文件
@@ -206,14 +207,14 @@ module.exports = {
     return `${codespace}/${Const.SERVICE_CONFIG_DIRECTORY}/${Const.SERVICE_CONFIG_FILE}`
   },
   // 获取文件配置列表
-  __getFileConfigList (serviceId) {
-    const service = cache.services.get(serviceId)
-    const fullpaths = fs.getFilesWithChildren(service.codespace)
+  __getFileConfigList (space, service) {
+    const serviceConfig = cache.services.get(space, service)
+    const fullpaths = fs.getFilesWithChildren(serviceConfig.codespace)
     const configs = []
     for (const fullpath of fullpaths) {
       // 获取文件配置
-      const relativePath = fullpath.replace(service.codespace + '/', '')
-      const fileSettings = this.__getFileSettings(service.codespace, relativePath)
+      const relativePath = fullpath.replace(serviceConfig.codespace + '/', '')
+      const fileSettings = this.__getFileSettings(serviceConfig.codespace, relativePath)
       // 构建文件对象
       const isDirectory = fs.isDirectory(fullpath)
       configs.push({

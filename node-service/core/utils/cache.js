@@ -133,5 +133,5 @@ module.exports = {
     return CACHE[key]
   },
   services: new ArrayCache('services', ['space', 'name']),
-  projects: new ArrayCache('projects', 'name'),
+  projects: new ArrayCache('projects', 'id'),
 }
