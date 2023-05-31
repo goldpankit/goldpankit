@@ -6,7 +6,6 @@ module.exports = {
   SERVICE_CONFIG_FILE: `${PROJECT_NAME}.json`,
   // 服务配置文件内容
   SERVICE_CONFIG_CONTENT: {
-    space: '', // 服务空间名称
     name: '', // 服务名称
     version: '1.0.0', // 版本号
     compiler: 'static', // 编译器

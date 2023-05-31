@@ -173,7 +173,6 @@ module.exports = {
       throw new Error('Please select a project.')
     }
     // 获取服务信息
-    console.log('dto', dto)
     const serviceConfig = this.getServiceConfig({ space: dto.space, service: dto.service })
     return serviceApi.compile({
       defaultCompiler: serviceConfig.compiler,
