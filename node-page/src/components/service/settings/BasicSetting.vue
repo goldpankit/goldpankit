@@ -118,7 +118,6 @@ export default {
     }
   },
   created () {
-    console.log(this.space, this.service)
     fetchConfig({
       space: this.space,
       service: this.service

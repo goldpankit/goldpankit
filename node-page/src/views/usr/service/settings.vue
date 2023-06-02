@@ -5,9 +5,8 @@
         <div class="header">
           <h2>{{service.space.name}}·{{service.name}}</h2>
           <div v-if="initialized" class="opera">
-<!--            <el-button type="important" @click="push">Push</el-button>-->
             <el-button type="primary" :disabled="currentProject == null" @click="compile">Compile</el-button>
-            <el-button type="primary" @click="push">Publish</el-button>
+            <el-button type="primary" @click="$refs.publishWindow.open(route.space, route.service)">Publish</el-button>
           </div>
         </div>
         <p
@@ -24,17 +23,17 @@
           </ul>
           <div class="tab-content">
             <BasicSetting
-              v-show="currentTab === 'basic'"
+              v-if="currentTab === 'basic'"
               :space="route.space"
               :service="route.service"
             />
             <SettingFiles
-              v-show="currentTab === 'files'"
+              v-else-if="currentTab === 'files'"
               :space="route.space"
               :service="route.service"
             />
             <SettingVariables
-              v-show="currentTab === 'variables'"
+              v-else-if="currentTab === 'variables'"
               :space="route.space"
               :service="route.service"
             />
@@ -48,6 +47,7 @@
         </template>
       </div>
     </div>
+    <PublishWindow ref="publishWindow"/>
   </div>
 </template>
 
@@ -60,9 +60,10 @@ import InitializeView from "../../../components/service/settings/InitializeView.
 import BasicSetting from "../../../components/service/settings/BasicSetting.vue";
 import {getProfile, push} from "../../../api/service";
 import {compile} from "../../../api/service.compile";
+import PublishWindow from "../../../components/service/PublishWindow.vue";
 
 export default {
-  components: {BasicSetting, InitializeView, SettingVariables, DirectorySelect, SettingFiles},
+  components: {PublishWindow, BasicSetting, InitializeView, SettingVariables, DirectorySelect, SettingFiles},
   data () {
     return {
       // 路由参数

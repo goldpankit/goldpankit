@@ -40,3 +40,7 @@ export function saveFileSetting (data) {
 export function saveVariables (data) {
   return request.post('/service/variables/save', data)
 }
+// 发布版本
+export function publish (data) {
+  return request.post('/service/version/publish', data)
+}

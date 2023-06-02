@@ -166,7 +166,7 @@ export default {
     padding: 0 0 20px 20px;
     overflow: hidden;
     h4 {
-      margin-top: 5px;
+      margin-top: 15px;
     }
     .content-wrap {
       padding: 20px 0;
