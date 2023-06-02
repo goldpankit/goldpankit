@@ -7,6 +7,9 @@ request.post('/service/create').proxy()
 // 搜索服务
 request.post('/service/search').proxy()
 
+// 主服务详情
+request.post('/service/main/detail').proxy()
+
 // 初始化服务
 request
   .post('/service/initialize')
