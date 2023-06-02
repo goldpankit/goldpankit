@@ -63,6 +63,19 @@ module.exports = {
     }
     return null
   },
+  // 保存服务配置信息
+  saveServiceConfig(dto) {
+    const service = cache.services.get(dto.space, dto.service)
+    const serviceConfig =  this.__getServiceConfig(service.codespace)
+    // 读取配置结构
+    const newConfig = JSON.parse(JSON.stringify(Const.SERVICE_CONFIG_CONTENT))
+    // 合并配置
+    object.merge(dto, newConfig, ['version', 'compiler', 'supportedDatabases'])
+    object.merge(serviceConfig, newConfig, ['name', 'variables', 'translator', 'settings'])
+    // 写入配置文件
+    const configPath = this.__getConfigPath(service.codespace)
+    fs.rewrite(configPath, fs.toJSONFileString(newConfig))
+  },
   // 获取服务文件树
   getFileTree(space, service) {
     const serviceConfig = cache.services.get(space, service)
@@ -274,6 +287,9 @@ module.exports = {
   // 获取服务配置
   __getServiceConfig (codespace) {
     const configPath = this.__getConfigPath(codespace)
-    return fs.readJSONFile(configPath)
+    return {
+      ...fs.readJSONFile(configPath),
+      codespace
+    }
   }
 }

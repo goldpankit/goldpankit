@@ -31,6 +31,20 @@ request
     return service.getServiceConfig(req.body)
   })
 
+/**
+ * 保存服务配置
+ * req.body = {
+ *   space: '',
+ *   service: '',
+ *   ...配置信息
+ * }
+ */
+request
+  .post('/service/config/save')
+  .data(req => {
+    return service.saveServiceConfig(req.body)
+  })
+
 // 查询服务信息
 request
   .post('/service/profile')
