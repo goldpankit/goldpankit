@@ -18,18 +18,22 @@
       <div class="main">
         <template v-if="initialized">
           <ul class="tabs">
-<!--            <li :class="{ selected: currentTab === 'basic' }" @click="currentTab = 'basic'">Basic</li>-->
+            <li :class="{ selected: currentTab === 'basic' }" @click="currentTab = 'basic'">Basic</li>
             <li :class="{ selected: currentTab === 'variables' }" @click="currentTab = 'variables'">Variables</li>
             <li :class="{ selected: currentTab === 'files' }" @click="currentTab = 'files'">Files</li>
           </ul>
           <div class="tab-content">
+            <BasicSetting
+              v-show="currentTab === 'basic'"
+              :space="route.space"
+              :service="route.service"
+            />
             <SettingFiles
               v-show="currentTab === 'files'"
               :space="route.space"
               :service="route.service"
             />
             <SettingVariables
-              ref="variables"
               v-show="currentTab === 'variables'"
               :space="route.space"
               :service="route.service"
@@ -53,11 +57,12 @@ import SettingFiles from "../../../components/service/settings/SettingFiles.vue"
 import DirectorySelect from "../../../components/common/DirectorySelect.vue";
 import SettingVariables from "../../../components/service/settings/SettingVariables.vue";
 import InitializeView from "../../../components/service/settings/InitializeView.vue";
+import BasicSetting from "../../../components/service/settings/BasicSetting.vue";
 import {getProfile, push} from "../../../api/service";
 import {compile} from "../../../api/service.compile";
 
 export default {
-  components: {InitializeView, SettingVariables, DirectorySelect, SettingFiles},
+  components: {BasicSetting, InitializeView, SettingVariables, DirectorySelect, SettingFiles},
   data () {
     return {
       // 路由参数
@@ -66,7 +71,7 @@ export default {
         service: ''
       },
       loading: true,
-      currentTab: 'files',
+      currentTab: 'basic',
       service: null
     }
   },

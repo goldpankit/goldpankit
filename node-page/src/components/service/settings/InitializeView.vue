@@ -62,7 +62,7 @@ export default {
     initialize () {
       initialize(this.form)
         .then(() => {
-          this.service.initialized = true
+          this.$emit('initialized', this.form)
         })
         .catch(e => {
           console.log('e', e)
