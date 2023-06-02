@@ -1,0 +1,11 @@
+{
+  "name": "",
+  "version": "1.0.1",
+  "compiler": "static",
+  "supportedDatabases": [
+    "mysql"
+  ],
+  "variables": [],
+  "translator": [],
+  "settings": []
+}

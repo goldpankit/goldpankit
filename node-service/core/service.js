@@ -65,15 +65,14 @@ module.exports = {
   },
   // 保存服务配置信息
   saveServiceConfig(dto) {
-    const service = cache.services.get(dto.space, dto.service)
-    const serviceConfig =  this.__getServiceConfig(service.codespace)
+    const serviceConfig =  this.getServiceConfig({ space: dto.space, service: dto.service })
     // 读取配置结构
     const newConfig = JSON.parse(JSON.stringify(Const.SERVICE_CONFIG_CONTENT))
     // 合并配置
     object.merge(dto, newConfig, ['version', 'compiler', 'supportedDatabases'])
     object.merge(serviceConfig, newConfig, ['name', 'variables', 'translator', 'settings'])
     // 写入配置文件
-    const configPath = this.__getConfigPath(service.codespace)
+    const configPath = this.__getConfigPath(serviceConfig.codespace)
     fs.rewrite(configPath, fs.toJSONFileString(newConfig))
   },
   // 获取服务文件树
@@ -111,32 +110,34 @@ module.exports = {
     fs.rewrite(configPath, fs.toJSONFileString(config))
   },
   // 发布服务版本
-  publish(serviceId) {
-    // // 获取服务文件
-    // const service = cache.services.get(serviceId)
-    // const files = fs.getFilesWithChildren(service.codespace, service.codespace).map(fullpath => {
-    //   const filetype = fs.isDirectory(fullpath) ? 'DIRECTORY' : 'FILE'
-    //   const relativePath = fullpath.replace(service.codespace + '/', '')
-    //   const fileSetting = this.__getFileSettings(service.codespace, relativePath)
-    //   return {
-    //     serviceId,
-    //     filepath: relativePath,
-    //     filetype,
-    //     contentType: fs.getContentType(fullpath),
-    //     content: filetype === 'DIRECTORY' ? null : fs.readFile(fullpath),
-    //     compiler: fileSetting.compiler,
-    //     variables: JSON.stringify(fileSetting.variables),
-    //     enableExpress: fileSetting.enableExpress
-    //   }
-    // })
-    // // 获取服务变量
-    // const serviceConfig = this.getServiceConfig(serviceId)
-    // const variables = serviceConfig.variables
-    // return serviceApi.push({
-    //   serviceId,
-    //   files,
-    //   variables
-    // })
+  publish(dto) {
+    // 获取服务文件
+    const serviceConfig = this.getServiceConfig({ space: dto.space, service: dto.service })
+    const files = fs.getFilesWithChildren(serviceConfig.codespace, serviceConfig.codespace).map(fullpath => {
+      const filetype = fs.isDirectory(fullpath) ? 'DIRECTORY' : 'FILE'
+      const relativePath = fullpath.replace(serviceConfig.codespace + '/', '')
+      const fileSetting = this.__getFileSettings(serviceConfig.codespace, relativePath)
+      return {
+        filepath: relativePath,
+        filetype,
+        contentType: fs.getContentType(fullpath),
+        content: filetype === 'DIRECTORY' ? null : fs.readFile(fullpath),
+        compiler: fileSetting.compiler,
+        variables: JSON.stringify(fileSetting.variables),
+        enableExpress: fileSetting.enableExpress
+      }
+    })
+    // 获取服务变量
+    return serviceApi.publish({
+      space: dto.space,
+      service: dto.service,
+      version: serviceConfig.version,
+      compiler: serviceConfig.compiler,
+      variables: JSON.stringify(serviceConfig.variables),
+      supportedDatabases: serviceConfig.supportedDatabases.join(','),
+      publishDescription: dto.publishDescription,
+      files
+    })
   },
   // 安装服务
   install (dto) {

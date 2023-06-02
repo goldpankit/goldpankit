@@ -12,5 +12,9 @@ module.exports = {
     // 编译代码
     compile (data) {
         return request.post('/service/compile', data)
+    },
+    // 发布版本
+    publish (data) {
+        return request.post('/service/version/publish', data)
     }
 }
