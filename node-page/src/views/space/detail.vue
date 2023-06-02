@@ -15,8 +15,8 @@
             <li>Issues</li>
           </ul>
           <div class="detail">
-            <ul v-show="currentFrameworkService == null" class="service-list">
-              <li v-for="service in frameworkServices" @click="currentFrameworkService = service">
+            <ul v-show="currentMainService == null" class="service-list">
+              <li v-for="service in mainServices" @click="currentMainService = service">
                 <h4>{{service.name}}</h4>
                 <p>{{service.description}}</p>
                 <section class="infos">
@@ -32,19 +32,19 @@
               </li>
             </ul>
             <ServiceDetail
-              v-if="currentFrameworkService != null && currentFrameworkServiceVersion == null"
-              :framework-service="currentFrameworkService"
+              v-if="currentMainService != null && currentMainServiceVersion == null"
+              :framework-service="currentMainService"
               @install="handleServiceInstall"
-              @back="currentFrameworkService = null"
+              @back="currentMainService = null"
             />
             <ServiceInstaller
-              v-if="currentFrameworkServiceVersion != null"
+              v-if="currentMainServiceVersion != null"
               :space="space"
-              :service="currentFrameworkService"
-              :service-version="currentFrameworkServiceVersion"
+              :service="currentMainService"
+              :service-version="currentMainServiceVersion"
               :with-breadcrumbs="true"
               :with-install-button="true"
-              @back="currentFrameworkServiceVersion = null"
+              @back="currentMainServiceVersion = null"
             />
           </div>
         </div>
@@ -100,12 +100,12 @@ export default {
     return {
       spaceName: null,
       // 当前选择的框架服务
-      currentFrameworkService: null,
+      currentMainService: null,
       // 当前选择的框架服务版本
-      currentFrameworkServiceVersion: null,
+      currentMainServiceVersion: null,
       space: null,
       // 框架服务列表
-      frameworkServices: []
+      mainServices: []
     }
   },
   methods: {
@@ -124,10 +124,10 @@ export default {
     fetchServiceList () {
       search({
         spaceName: this.spaceName,
-        serviceTypes: ['framework']
+        serviceTypes: ['MAIN']
       })
         .then(data => {
-          this.frameworkServices = data
+          this.mainServices = data
         })
         .catch(e => {
           console.log('e', e)
@@ -135,7 +135,7 @@ export default {
     },
     // 服务安装
     handleServiceInstall (version) {
-      this.currentFrameworkServiceVersion = version
+      this.currentMainServiceVersion = version
     }
   },
   created () {

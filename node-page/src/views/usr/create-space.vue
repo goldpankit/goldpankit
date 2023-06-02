@@ -9,6 +9,9 @@
         <el-form-item label="Homepage">
           <el-input v-model="form.homepage" />
         </el-form-item>
+        <el-form-item label="Introduce" required>
+          <i18n-input v-model="form.introduce" type="textarea" maxlength="200"/>
+        </el-form-item>
         <el-form-item label="Description" required>
           <i18n-input v-model="form.description" type="textarea"/>
         </el-form-item>
@@ -31,6 +34,7 @@ export default {
       form: {
         name: '',
         homepage: '',
+        introduce: '',
         description: ''
       }
     }

@@ -120,6 +120,9 @@ export default {
           font-size: var(--font-size-middle);
           margin-bottom: 10px;
         }
+        & > p {
+          font-size: var(--font-size);
+        }
         .infos {
           display: flex;
           margin-top: 10px;
