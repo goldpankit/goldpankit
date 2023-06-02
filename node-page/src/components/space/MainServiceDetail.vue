@@ -3,15 +3,15 @@
     <div class="nav">
       <div class="title">
         <el-button class="button-icon" icon="ArrowLeftBold" @click="$emit('back')"></el-button>
-        <h4>{{frameworkService.name}}</h4>
+        <h4>{{service}}</h4>
       </div>
       <ul>
         <li
-          v-for="version in versions"
+          v-for="version in majorVersions"
           :key="version"
           :class="{ selected: version === currentVersion }"
           @click="currentVersion = version"
-        >{{version}}</li>
+        >v{{version}}</li>
       </ul>
     </div>
     <div class="install">
@@ -24,7 +24,7 @@
       <ul class="service-dimensions">
         <li class="selected">Readme</li>
         <li>Sub Services</li>
-        <li>Files</li>
+        <li>Structure</li>
       </ul>
       <ul class="service-list">
         <li>
@@ -65,21 +65,42 @@
 
 <script>
 import { mapState } from 'vuex'
+import {fetchMainServiceDetail} from "../../api/service";
 export default {
-  name: "ServiceDetail",
+  name: "MainServiceDetail",
   props: {
-    frameworkService: {
+    space: {
+      required: true
+    },
+    service: {
       required: true
     }
   },
   data () {
     return {
       currentVersion: 'v3',
-      versions: ['v3', 'v2', 'v1']
+      majorVersions: []
     }
   },
   computed: {
     ...mapState(['currentProject'])
+  },
+  methods: {
+    // 查询详情
+    fetchDetail () {
+      fetchMainServiceDetail({
+        space: this.space,
+        service: this.service
+      })
+        .then(data => {
+          this.majorVersions = data.majorVersions
+          this.currentVersion = this.majorVersions[0]
+        })
+        .catch(e => {})
+    }
+  },
+  created () {
+    this.fetchDetail()
   }
 }
 </script>

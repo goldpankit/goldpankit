@@ -31,9 +31,10 @@
                 </div>
               </li>
             </ul>
-            <ServiceDetail
+            <MainServiceDetail
               v-if="currentMainService != null && currentMainServiceVersion == null"
-              :framework-service="currentMainService"
+              :space="space.name"
+              :service="currentMainService.name"
               @install="handleServiceInstall"
               @back="currentMainService = null"
             />
@@ -89,13 +90,13 @@
 </template>
 
 <script>
-import ServiceDetail from "../../components/space/ServiceDetail.vue";
+import MainServiceDetail from "../../components/space/MainServiceDetail.vue";
 import ServiceInstaller from "../../components/space/ServiceInstaller.vue";
 import {fetchByName} from "../../api/service.space";
 import {search} from "../../api/service";
 
 export default {
-  components: {ServiceInstaller, ServiceDetail},
+  components: {ServiceInstaller, MainServiceDetail},
   data () {
     return {
       spaceName: null,

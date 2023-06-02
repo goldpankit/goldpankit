@@ -12,9 +12,9 @@ export function search (data) {
 export function initialize (data) {
   return request.post('/service/initialize', data)
 }
-// 推送服务
-export function push (id) {
-  return request.get(`/service/${id}/push`)
+// 查询主服务详情
+export function fetchMainServiceDetail (data) {
+  return request.post('/service/main/detail', data)
 }
 // 获取服务信息
 export function getProfile (data) {
