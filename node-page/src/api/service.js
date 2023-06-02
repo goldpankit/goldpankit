@@ -28,6 +28,10 @@ export function fetchFiles (space, service) {
 export function fetchConfig (data) {
   return request.post('/service/config', data)
 }
+// 保存服务配置
+export function saveConfig (data) {
+  return request.post('/service/config/save', data)
+}
 // 保存服务文件配置
 export function saveFileSetting (data) {
   return request.post('/service/file/setting/save', data)

@@ -36,7 +36,7 @@
 import CompilerSelect from "../../common/CompilerSelect.vue";
 import DatabaseSelect from "../../database/DatabaseSelect.vue";
 import DirectorySelect from "../../common/DirectorySelect.vue";
-import {fetchConfig, initialize} from "../../../api/service";
+import {fetchConfig, initialize, saveConfig} from "../../../api/service";
 
 export default {
   name: "BasicSetting",
@@ -55,9 +55,9 @@ export default {
         changing: false,
         value: ''
       },
+      // 原始form内容
+      originForm: null,
       form: {
-        space: '',
-        name: '',
         version: '',
         compiler: '',
         supportedDatabases: [],
@@ -103,6 +103,18 @@ export default {
       if (this.newCodespace.changing) {
         return
       }
+      // 保存配置
+      saveConfig({
+        space: this.space,
+        service: this.service,
+        ...this.form
+      })
+        .then(() => {
+          this.originForm = JSON.parse(JSON.stringify(this.form))
+        })
+        .catch(e => {
+          console.log('e', e)
+        })
     }
   },
   created () {
@@ -116,6 +128,7 @@ export default {
         this.form.compiler = config.compiler
         this.form.supportedDatabases = config.supportedDatabases
         this.form.codespace = config.codespace
+        this.originForm = JSON.parse(JSON.stringify(this.form))
       })
       .catch(e => {
         console.log('e', e)
