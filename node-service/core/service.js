@@ -145,7 +145,6 @@ module.exports = {
     if (project == null) {
       throw new Error('Please select a project.')
     }
-    console.log('dto', dto)
     return serviceApi.install({
       space: dto.space,
       service: dto.service,
@@ -154,27 +153,29 @@ module.exports = {
     })
       .then(data => {
         // 写入文件
-        fs.writeFiles(data, project.codespace)
+        fs.writeFiles(data.files, project.codespace)
+        // 获取配置格式
+        const config = JSON.parse(JSON.stringify(Const.PROJECT_CONFIG_FILE_CONTENT))
         // 获取项目配置
         const configPath = userProject.getConfigPath(projectId)
         let projectConfig = fs.readJSONFile(configPath)
-        if (projectConfig == null) {
-          projectConfig = JSON.parse(JSON.stringify(Const.PROJECT_CONFIG_FILE_CONTENT))
+        if (projectConfig != null) {
+          object.merge(projectConfig, config)
         }
         // 写入项目配置文件
-        if (dto.service.type === 'framework') {
-          projectConfig.space = dto.space.name
-          projectConfig.framework[dto.service.name] = {
-            version: dto.service.version || "",
+        if (data.version.serviceType === 'MAIN') {
+          config.space = dto.space
+          config.main[dto.service] = {
+            version: dto.version,
             variables: this.__getSimpleVariables(dto.variables)
           }
         } else {
-          projectConfig.services[dto.service.name] = {
-            version: dto.service.version || "",
+          config.services[dto.service] = {
+            version: dto.version,
             variables: this.__getSimpleVariables(dto.variables)
           }
         }
-        fs.createFile(userProject.getConfigPath(projectId), fs.toJSONFileString(projectConfig), true)
+        fs.createFile(userProject.getConfigPath(projectId), fs.toJSONFileString(config), true)
         return Promise.resolve()
       })
       .catch(e => {

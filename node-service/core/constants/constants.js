@@ -43,8 +43,8 @@ module.exports = {
   PROJECT_CONFIG_FILE: `${PROJECT_NAME}.json`,
   // 项目配置内容
   PROJECT_CONFIG_FILE_CONTENT: {
-    space: '',
-    framework: {
+    space: '', // 空间名称
+    main: { // 主服务信息
     //   eva: {
     //     version: 'v3.0.0',
     //     variables: {
@@ -52,7 +52,7 @@ module.exports = {
     //     }
     //   }
     },
-    services: {
+    services: { // 子服务信息
     //   alipay: {
     //     version: 'v1.2.1',
     //     variables: {}
