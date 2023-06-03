@@ -5,7 +5,7 @@
         <div class="header">
           <div class="title">
             <h2>{{project.name}}</h2>
-            <p class="service-info">{{space.name}} · {{framework.name}}</p>
+            <p class="service-info">{{space}} · {{mainService.name}} · {{mainService.version}}</p>
           </div>
           <div class="info">
             <em>{{version}}</em>
@@ -22,19 +22,20 @@
             <!-- 服务列表 -->
             <ul class="service-list">
               <li
-                v-for="service in services"
+                v-for="service in subServices"
                 :key="service.id"
                 :class="{ selected: currentService != null && currentService.id === service.id }"
                 @click="selectService(service)"
               >
                 <h5>{{service.name}}</h5>
                 <p>集成支付宝支付，提供完善健全的支付接口</p>
+                <p class="text-info-1 text-mini">Last publish: {{service.lastPublishTime}}</p>
               </li>
             </ul>
           </div>
           <!-- 服务信息 -->
           <div v-if="currentService != null" class="setting-wrap">
-            <h3>Xxx Service</h3>
+            <h3>{{currentService.name}}</h3>
             <div class="main">
               <ul class="service-dimensions">
                 <li :class="{selected: currentServiceDimension === 'readme'}" @click="currentServiceDimension = 'readme'">Readme</li>
@@ -45,9 +46,10 @@
                 <ServiceInstaller
                   ref="installer"
                   v-show="currentServiceDimension === 'install'"
-                  :service="currentService"
-                  :project-service="projectService"
                   :space="space"
+                  :service="currentService.name"
+                  :version="currentService.lastVersion"
+                  :project-service="projectService"
                 />
               </div>
             </div>
@@ -79,23 +81,21 @@
 
 <script>
 import { mapState } from 'vuex'
-import {search} from "../api/service";
-import {compile} from "../api/service.compile";
-import {fetchById} from "../api/user.project";
-import {fetchByName} from "../api/service.space";
 import ServiceInstaller from "../components/space/ServiceInstaller.vue";
+import {fetchSubServices} from "../api/service";
+import {fetchById} from "../api/user.project";
 
 export default {
   components: {ServiceInstaller},
   data () {
     return {
-      version: 'v1',
-      services: [],
+      space: null,
+      mainService: null,
       currentService: null,
+      version: 'v1',
+      subServices: [],
       currentServiceDimension: 'readme',
-      project: null,
-      framework: null,
-      space: null
+      project: null
     }
   },
   computed: {
@@ -119,43 +119,35 @@ export default {
       fetchById(this.currentProject.id)
         .then(data => {
           this.project = data
-          console.log('this.project', this.project)
-          // 获取框架服务信息
-          let frameworkName = null
-          for (const key in this.project.framework) {
-            frameworkName = key
+          // 获取空间信息
+          this.space = this.project.space
+          // 获取主服务信息
+          let mainName = null
+          for (const key in this.project.main) {
+            mainName = key
             break
           }
-          this.framework = {
-            name: frameworkName,
-            ...this.project.framework
+          this.mainService = {
+            name: mainName,
+            ...this.project.main[mainName]
           }
-          this.fetchSpace()
+          // 查询子服务
+          this.searchSubServices()
         })
         .catch(e => {
           console.log('e', e)
         })
     },
-    // 查询服务空间
-    fetchSpace () {
-      fetchByName(this.project.space)
-        .then(data => {
-          this.space = data
-          this.searchSubServices()
-        })
-        .catch(e => {
-          console.log('e' ,e)
-        })
-    },
     // 查询子服务
     searchSubServices () {
-      search({
-        spaceName: this.space.name,
-        followServiceName: this.framework.name,
-        serviceTypes: ['common', 'page', 'logic', 'issue']
+      console.log(this.mainService)
+      fetchSubServices({
+        space: this.space,
+        service: this.mainService.name,
+        majorVersion: this.mainService.version.split('.')[0]
       })
         .then(data => {
-          this.services = data
+          this.subServices = data
         })
         .catch(e => {
           console.log('e', e)

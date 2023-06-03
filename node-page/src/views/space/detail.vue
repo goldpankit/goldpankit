@@ -125,7 +125,7 @@ export default {
     // 查询服务列表
     fetchServiceList () {
       search({
-        spaceName: this.spaceName,
+        space: this.spaceName,
         serviceTypes: ['MAIN']
       })
         .then(data => {

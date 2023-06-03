@@ -16,6 +16,10 @@ export function initialize (data) {
 export function fetchMainServiceDetail (data) {
   return request.post('/service/main/detail', data)
 }
+// 查询子服务列表
+export function fetchSubServices (data) {
+  return request.post('/service/main/subs', data)
+}
 // 获取服务信息
 export function fetchProfile (data) {
   return request.post('/service/profile', data)
