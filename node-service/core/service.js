@@ -20,15 +20,13 @@ module.exports = {
     // 合并当前服务配置
     if (fs.exists(configPath)) {
       const currentConfig = fs.readJSONFile(configPath)
-      config.variables = currentConfig.variables
-      config.translator = currentConfig.translator
-      config.settings = currentConfig.settings
+      object.merge(currentConfig, config, ['variables', 'translator', 'settings'])
     }
     // 初始化服务文件
     fs.createFile(configPath, fs.toJSONFileString(config), true)
     // 添加本地服务记录
     cache.services.save({
-      space: config.space,
+      space: extConfig.space,
       name: config.name,
       codespace: extConfig.codespace
     })
@@ -37,6 +35,7 @@ module.exports = {
   getProfile(spaceName, serviceName) {
     // 读取本地服务配置
     const serviceConfig = cache.services.get(spaceName, serviceName)
+    console.log(spaceName, serviceName, serviceConfig)
     // 远程获取服务简介
     return serviceApi.fetchProfile({ spaceName, serviceName })
       .then(data => {
