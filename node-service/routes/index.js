@@ -1,9 +1,10 @@
 const service = require('./service')
 const serviceSpace = require('./service.space')
 const serviceCompile = require('./service.compile')
+const serviceVersion = require('./service.version')
 const userProject = require('./user.project')
 const localFile = require('./local.file')
 const db = require('./db')
 module.exports = {
-  service, serviceSpace, serviceCompile, userProject, localFile, db
+  service, serviceSpace, serviceCompile, serviceVersion, userProject, localFile, db
 };

@@ -145,8 +145,11 @@ module.exports = {
     if (project == null) {
       throw new Error('Please select a project.')
     }
+    console.log('dto', dto)
     return serviceApi.install({
-      id: dto.service.id,
+      space: dto.space,
+      service: dto.service,
+      version: dto.version,
       variables: dto.variables
     })
       .then(data => {
