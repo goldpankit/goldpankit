@@ -4,7 +4,7 @@
       <div class="service-info">
         <h3>{{service.name}}</h3>
         <p>{{service.description}}</p>
-        <p class="text-mini text-info-1">Last publish: 3 weeks ago</p>
+        <p class="text-mini text-info-1">Last publish: {{service.lastPublishTime}}</p>
       </div>
     </li>
   </ul>

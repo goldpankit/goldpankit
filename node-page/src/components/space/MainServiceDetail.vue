@@ -22,11 +22,12 @@
     </div>
     <div class="content-wrap">
       <ul class="service-dimensions">
-        <li class="selected">Readme</li>
-        <li>Sub Services</li>
-        <li>Structure</li>
+        <li :class="{ selected: currentDim === 'readme' }" @click="currentDim = 'readme'">Readme</li>
+        <li :class="{ selected: currentDim === 'subServices' }" @click="currentDim = 'subServices'">Sub Services</li>
+        <li :class="{ selected: currentDim === 'structure' }" @click="currentDim = 'structure'">Structure</li>
       </ul>
-      <SubServiceListView :services="majorVersionDetail.subServices"/>
+      <SubServiceListView v-show="currentDim === 'subServices'" :services="majorVersionDetail.subServices"/>
+      <ServiceStructureView v-show="currentDim === 'structure'" :nodes="majorVersionDetail.structure"/>
     </div>
   </div>
 </template>
@@ -35,9 +36,10 @@
 import { mapState } from 'vuex'
 import SubServiceListView from "./SubServiceListView.vue";
 import {fetchMainServiceDetail} from "../../api/service";
+import ServiceStructureView from "./ServiceStructureView.vue";
 export default {
   name: "MainServiceDetail",
-  components: {SubServiceListView},
+  components: {ServiceStructureView, SubServiceListView},
   props: {
     space: {
       required: true
@@ -49,6 +51,7 @@ export default {
   data () {
     return {
       currentVersion: 'v3',
+      currentDim: 'readme',
       majorVersions: [],
       // 大版本详情
       majorVersionDetail: null
