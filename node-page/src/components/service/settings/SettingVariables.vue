@@ -77,6 +77,9 @@
           <el-form-item label="Required">
             <el-switch v-model="currentVariable.required" @change="saveVariables"/>
           </el-form-item>
+          <el-form-item label="Hidden">
+            <el-switch v-model="currentVariable.hidden" @change="saveVariables"/>
+          </el-form-item>
           <el-form-item label="Compiler">
             <CompilerSelect v-model="currentVariable.compiler" @change="saveVariables"/>
           </el-form-item>
@@ -127,6 +130,7 @@ export default {
         message: varName,
         inputType: 'input',
         required: false,
+        hidden: false,
         defaultValue: '',
         compiler: 'static',
         remark: '',

@@ -28,12 +28,12 @@
               :service="route.service"
             />
             <SettingFiles
-              v-else-if="currentTab === 'files'"
+              v-show="currentTab === 'files'"
               :space="route.space"
               :service="route.service"
             />
             <SettingVariables
-              v-else-if="currentTab === 'variables'"
+              v-show="currentTab === 'variables'"
               :space="route.space"
               :service="route.service"
             />

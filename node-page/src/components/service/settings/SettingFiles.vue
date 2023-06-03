@@ -7,7 +7,15 @@
       <el-tree
         :data="files"
         @node-click="handleNodeClick"
-      />
+      >
+        <template #default="{ node, data }">
+          <span class="node-label">
+            <el-icon v-if="data.type === 'FILE'"><Document /></el-icon>
+            <el-icon v-else-if="data.type === 'DIRECTORY'"><Folder /></el-icon>
+            <span class="filename" :class="{ 'flag-file': isFlagFile(data) }">{{data.label}}</span>
+          </span>
+        </template>
+      </el-tree>
     </div>
     <div class="file-setting">
       <h4>File Setting</h4>
@@ -68,6 +76,7 @@
 import CompilerSelect from "../../common/CompilerSelect.vue";
 import InputTypeSelect from "../../common/InputTypeSelect.vue";
 import {fetchFiles, saveFileSetting} from "../../../api/service";
+import {sortFiles} from "../../../utils/file";
 
 export default {
   name: "SettingFiles",
@@ -92,6 +101,8 @@ export default {
       fetchFiles(this.space, this.service)
         .then(data => {
           this.files = data
+          console.log('files', this.files)
+          sortFiles(this.files)
         })
         .catch(e => {
           console.log('e', e)
@@ -134,6 +145,12 @@ export default {
     handleNodeClick (node) {
       console.log('node', node)
       this.currentNode = node
+    },
+    // 是否为重点标记文件
+    isFlagFile (node) {
+      return (node.compiler != null && node.compiler !== '') ||
+        (node.enableExpress != null && node.enableExpress !== '') ||
+        (node.variables.length > 0)
     }
   },
   created () {
@@ -152,10 +169,29 @@ export default {
     flex-shrink: 0;
     border-right: 1px solid var(--border-default-color);
     padding: 10px 15px 0 15px;
+    overflow: auto;
     .search-wrap {
       margin-bottom: 10px;
       :deep(.el-input) .el-input__wrapper{
         border-radius: 30px;
+      }
+    }
+    // 节点
+    :deep(.node-label) {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      .el-icon {
+        margin-right: 5px;
+      }
+      .filename {
+        flex-grow: 1;
+        color: #005980;
+        word-break: break-all;
+        &.flag-file {
+          color: var(--primary-color-match-2);
+        }
       }
     }
   }

@@ -67,8 +67,8 @@ export default {
         spaceName: this.space.name,
         ...this.form
       })
-        .then(data => {
-          this.$router.push({ name: 'ServiceSettings', query: { service_id: data } })
+        .then(() => {
+          this.$router.push({ name: 'ServiceSettings', query: { space: this.space.name, service: this.form.name } })
         })
         .catch(e => {
           console.log('e', e)

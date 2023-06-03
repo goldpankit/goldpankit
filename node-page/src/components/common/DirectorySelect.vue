@@ -32,7 +32,7 @@
           </template>
           <template v-else>
             <el-icon>
-              <Folder v-if="file.type === 'directory'"/>
+              <Folder v-if="file.type === 'DIRECTORY'"/>
               <Document v-else/>
             </el-icon>
             <p>{{ file.path }}</p>
@@ -45,6 +45,7 @@
 
 <script>
 import {fetchFiles, fetchRuntimeRoot, createDirectory} from "../../api/local.file";
+import {sortFiles} from "../../utils/file";
 
 export default {
   name: "DirectorySelect",
@@ -65,7 +66,7 @@ export default {
     createDirectory () {
       this.files.push({
         path: '',
-        type: 'directory',
+        type: 'DIRECTORY',
         __creatable: true,
         __working_create: false
       })
@@ -79,7 +80,7 @@ export default {
       createDirectory(this.__getAbsolutePath(file.path))
         .then(() => {
           file.__creatable = false
-          this.__sortFiles()
+          sortFiles(this.files)
         })
         .catch(e => {
           console.log('e', e)
@@ -119,9 +120,8 @@ export default {
     __fetchFiles () {
       fetchFiles(this.__getAbsolutePath())
         .then(data => {
-          console.log('files', data)
           this.files = data
-          this.__sortFiles()
+          sortFiles(this.files)
         })
         .catch(e => {
           console.log('e', e)
@@ -143,23 +143,6 @@ export default {
     // 获取绝对路径
     __getAbsolutePath (path) {
       return `/${this.paths.join('/')}${path == null ? '' : '/' + path}`
-    },
-    // 文件排序
-    __sortFiles () {
-      this.files = this.files.sort((item1, item2) => {
-        // 都是目录，比较path
-        if (item1.type === 'directory' && item2.type === 'directory') {
-          if (item1.path > item2.path) {
-            return -1
-          }
-          return 1
-        }
-        // 一个目录一个文件，目录排在前面
-        if (item1.type === 'directory') {
-          return -1
-        }
-        return 1
-      })
     }
   },
   created () {

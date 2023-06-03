@@ -16,6 +16,8 @@
 </template>
 
 <script>
+import {sortFiles} from "../../utils/file";
+
 export default {
   name: "ServiceStructureView",
   props: {
@@ -95,49 +97,8 @@ export default {
       // 将剩余没有找到目录的文件添加到跟节点
       roots.push.apply(roots, files)
       // 整体排序
-      this.sortFiles(roots)
+      sortFiles(roots)
       return roots
-    }
-  },
-  methods: {
-    // 排序文件
-    sortFiles (files) {
-      if (files == null || files.length === 0) {
-        return
-      }
-      files.sort((item1, item2) => {
-        if (item1.type === 'DIRECTORY' && item2.type === 'DIRECTORY') {
-          if(item1.path.toLowerCase() < item2.path.toLowerCase()) {
-            return -1
-          }
-          return 1
-        }
-        if (item1.type === 'DIRECTORY') {
-          return -1
-        }
-        if (item2.type === 'DIRECTORY') {
-          return 1
-        }
-        if(item1.path.toLowerCase() < item2.path.toLowerCase()) {
-          return -1
-        }
-        return 1
-      })
-      for (const file of files) {
-        this.sortFiles(file.children)
-      }
-    },
-    // 获取描述
-    getDescription (node, nodeChildren) {
-      if (node.description != null && node.description !== '') {
-        return node.description
-      }
-      if (node.children == null || node.children.length === 0) {
-        return ''
-      }
-      for (const subNode of node.children) {
-
-      }
     }
   }
 }

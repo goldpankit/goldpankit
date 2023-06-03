@@ -11,13 +11,15 @@
         tips: Install the service by filling out the form below and clicking the Install button at the bottom.
       </p>
       <el-form>
-        <el-form-item
-          v-for="variable in variables"
-          :key="variable.name"
-          :label="variable.message"
-        >
-          <VariableInput :variable="variable"/>
-        </el-form-item>
+        <template v-for="variable in variables">
+          <el-form-item
+            v-if="variable.hidden"
+            :key="variable.name"
+            :label="variable.message"
+          >
+            <VariableInput :variable="variable"/>
+          </el-form-item>
+        </template>
       </el-form>
       <div v-if="withInstallButton" class="install">
         <el-button type="important" :disabled="currentProject == null" @click="install">
