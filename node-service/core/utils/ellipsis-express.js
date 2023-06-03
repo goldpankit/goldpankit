@@ -73,10 +73,19 @@ class EllipsisExpress {
   }
 
   /**
+   * 判断是否为省略号表达式
+   */
+  isEllipsis (content) {
+    const startIndex = content.indexOf('/...\n')
+    const endIndex = content.indexOf('\n.../')
+    return startIndex !== -1 && endIndex !== -1 && endIndex > startIndex
+  }
+
+  /**
    * 合并多余省略号
    * @param markLines
    */
-  #mergeEllipsis (markLines) {
+  #mergeSyntax (markLines) {
     const newMarkLines = []
     for (const line of markLines) {
       if (line === '___diff___' && newMarkLines[newMarkLines.length - 1] === '___diff___') {
@@ -152,8 +161,8 @@ class EllipsisExpress {
             markLines.unshift(lastDiff.markLines[lineIndex])
           }
         }
-        // 合并省略号
-        markLines = this.#mergeEllipsis(markLines)
+        // 合并语法
+        markLines = this.#mergeSyntax(markLines)
         diffGroup.push({
           markLines,
           diffGroups: this.#getDiffLineGroups(lines)

@@ -1,6 +1,7 @@
 const fs = require('fs')
 const path = require('path')
 const root = process.cwd()
+const ee = require('./ellipsis-express')
 const Const = require('../constants/constants')
 module.exports = {
   getRuntimeRoot() {
@@ -17,7 +18,14 @@ module.exports = {
       const relativePath = file.filepath
       // 创建文件
       if (file.filetype !== 'DIRECTORY') {
-        this.createFile(`${codespace}/${relativePath}`, file.content, true)
+        const filepath = `${codespace}/${relativePath}`
+        let content = file.content
+        // 如果内容为省略号表达式，则将合并后的内容写入新文件
+        if (ee.isEllipsis(content)) {
+          const originContent = this.readFile(filepath)
+          content = ee.merge(content, originContent)
+        }
+        this.createFile(filepath, content, true)
         fileCount++
       }
     }
