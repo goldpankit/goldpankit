@@ -32,6 +32,7 @@ class Request {
         // 结果为非Promise
         res.send(this.#buildSuccess(result));
       } catch (e) {
+        console.error(e)
         res.send(this.#buildError(e));
         throw e
       }

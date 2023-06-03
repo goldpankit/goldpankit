@@ -235,10 +235,10 @@ module.exports = {
       const isDirectory = fs.isDirectory(fullpath)
       configs.push({
         filepath: relativePath,
-        content: fs.readFile(fullpath),
+        content: isDirectory ? null : fs.readFile(fullpath),
         enableExpress: fileSettings.enableExpress,
         compiler: fileSettings.compiler,
-        filetype: isDirectory ? 'directory' : 'file',
+        filetype: isDirectory ? 'DIRECTORY' : 'FILE',
         variables: JSON.stringify(fileSettings.variables)
       })
     }
@@ -261,7 +261,7 @@ module.exports = {
       const isDirectory = fs.isDirectory(fullpath)
       const fileObject = {
         label: file,
-        type: isDirectory ? 'directory' : 'file',
+        type: isDirectory ? 'DIRECTORY' : 'FILE',
         contentType: isDirectory ? undefined : fs.getContentType(fullpath),
         path: fullpath,
         relativePath,
@@ -271,7 +271,7 @@ module.exports = {
         children: isDirectory ? [] : undefined
       }
       filePool.push(fileObject);
-      if (fileObject.type === 'directory') {
+      if (fileObject.type === 'DIRECTORY') {
         fileObject.children = this.__getFileTree(fullpath, codespace);
       }
     });
