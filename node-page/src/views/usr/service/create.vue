@@ -3,7 +3,7 @@
     <div class="wrap">
       <h2>Create Service</h2>
       <section class="tip" v-if="space != null">
-        Create Service for <em>{{space.name}}</em>.
+        Create Service for <em>{{space}}</em>.
       </section>
       <el-form>
         <el-form-item label="Service Name" required>
@@ -15,7 +15,7 @@
         <!-- 为子服务时需选择跟随服务 -->
         <template v-if="form.type !== 'MAIN'">
           <el-form-item label="Main Service" required>
-            <FrameworkServiceSelect v-model="form.mainServiceName" :space-name="spaceName" />
+            <MainServiceSelect v-model="form.mainServiceName" :space="space" />
           </el-form-item>
         </template>
         <el-form-item label="Repository">
@@ -39,17 +39,15 @@ import CompilerSelect from "../../../components/common/CompilerSelect.vue";
 import ServiceTypeSelect from "../../../components/service/ServiceTypeSelect.vue";
 import DatabaseSelect from "../../../components/database/DatabaseSelect.vue";
 import VersionSelect from "../../../components/common/VersionSelect.vue";
-import FrameworkServiceSelect from "../../../components/service/FrameworkServiceSelect.vue";
-import { fetchByName } from "../../../api/service.space";
+import MainServiceSelect from "../../../components/service/MainServiceSelect.vue";
 import { create } from "../../../api/service";
 
 export default {
   components: {
-    FrameworkServiceSelect,
+    MainServiceSelect,
     VersionSelect, DatabaseSelect, ServiceTypeSelect, CompilerSelect, SpaceSelect, I18nInput},
   data () {
     return {
-      spaceName: null,
       space: null,
       form: {
         name: '',
@@ -64,21 +62,14 @@ export default {
     // 创建服务
     create () {
       create({
-        spaceName: this.space.name,
+        spaceName: this.space,
         ...this.form
       })
         .then(() => {
-          this.$router.push({ name: 'ServiceSettings', query: { space: this.space.name, service: this.form.name } })
-        })
-        .catch(e => {
-          console.log('e', e)
-        })
-    },
-    // 查询服务空间
-    fetchSpace() {
-      fetchByName(this.spaceName)
-        .then(data => {
-          this.space = data
+          this.$router.push({
+            name: 'ServiceSettings',
+            query: { space: this.space, service: this.form.name }
+          })
         })
         .catch(e => {
           console.log('e', e)
@@ -86,8 +77,7 @@ export default {
     }
   },
   created () {
-    this.spaceName = this.$route.query.space
-    this.fetchSpace()
+    this.space = this.$route.query.space
   }
 }
 </script>

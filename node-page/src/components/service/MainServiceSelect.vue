@@ -1,9 +1,9 @@
 <template>
-  <el-select class="framework-service-select">
+  <el-select class="main-service-select">
     <el-option
       v-for="service in services"
       :key="service.name"
-      :value="service.id"
+      :value="service.name"
       :label="service.name"
     />
   </el-select>
@@ -13,9 +13,9 @@
 import {search} from "../../api/service";
 
 export default {
-  name: "FrameworkServiceSelect",
+  name: "MainServiceSelect",
   props: {
-    spaceName: {
+    space: {
       required: true
     }
   },
@@ -27,8 +27,8 @@ export default {
   methods: {
     fetchServices () {
       search({
-        spaceName: this.spaceName,
-        serviceTypes: ['framework']
+        space: this.space,
+        serviceTypes: ['MAIN']
       })
         .then(data => {
           this.services = data
@@ -45,7 +45,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.framework-service-select {
+.main-service-select {
   width: 100%;
 }
 </style>
