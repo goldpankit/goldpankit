@@ -17,7 +17,7 @@ export function fetchMainServiceDetail (data) {
   return request.post('/service/main/detail', data)
 }
 // 获取服务信息
-export function getProfile (data) {
+export function fetchProfile (data) {
   return request.post('/service/profile', data)
 }
 // 获取服务文件

@@ -43,6 +43,7 @@
           <InitializeView
             :space-name="service.space.name"
             :service-name="service.name"
+            @initialized="fetchProfile"
           />
         </template>
       </div>
@@ -58,9 +59,9 @@ import DirectorySelect from "../../../components/common/DirectorySelect.vue";
 import SettingVariables from "../../../components/service/settings/SettingVariables.vue";
 import InitializeView from "../../../components/service/settings/InitializeView.vue";
 import BasicSetting from "../../../components/service/settings/BasicSetting.vue";
-import {getProfile, push} from "../../../api/service";
-import {compile} from "../../../api/service.compile";
 import PublishWindow from "../../../components/service/PublishWindow.vue";
+import {fetchProfile} from "../../../api/service";
+import {compile} from "../../../api/service.compile";
 
 export default {
   components: {PublishWindow, BasicSetting, InitializeView, SettingVariables, DirectorySelect, SettingFiles},
@@ -84,9 +85,9 @@ export default {
   },
   methods: {
     // 获取服务信息
-    getProfile () {
+    fetchProfile () {
       this.loading = true
-      getProfile({
+      fetchProfile({
         spaceName: this.route.space,
         serviceName: this.route.service
       })
@@ -112,22 +113,12 @@ export default {
         .catch(e => {
           console.log('e', e)
         })
-    },
-    // 推送服务代码
-    push () {
-      push(this.serviceId)
-        .then(data => {
-          console.log('推送成功', data)
-        })
-        .catch(e => {
-          console.log('e', e)
-        })
     }
   },
   created () {
-    this.route.space = this.$route.params.space
-    this.route.service = this.$route.params.service
-    this.getProfile()
+    this.route.space = this.$route.query.space
+    this.route.service = this.$route.query.service
+    this.fetchProfile()
   }
 }
 </script>

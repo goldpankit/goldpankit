@@ -61,12 +61,12 @@
             <el-button
               type="primary"
               size="large"
-              @click="$router.push({ name: 'CreateService', query: { space_name: spaceName } })"
+              @click="$router.push({ name: 'CreateService', query: { space: spaceName } })"
             >Create New Service</el-button>
             <el-button
               type="primary"
               size="large"
-              @click="$router.push({ name: 'CreateService', query: { space_name: spaceName } })"
+              @click="$router.push({ name: 'CreateService', query: { space: spaceName } })"
             >Create New Issue</el-button>
           </div>
           <ul>

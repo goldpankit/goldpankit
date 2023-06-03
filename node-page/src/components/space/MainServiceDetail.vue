@@ -1,5 +1,5 @@
 <template>
-  <div class="service-detail">
+  <div v-if="majorVersionDetail != null" class="service-detail">
     <div class="nav">
       <div class="title">
         <el-button class="button-icon" icon="ArrowLeftBold" @click="$emit('back')"></el-button>
@@ -26,48 +26,18 @@
         <li>Sub Services</li>
         <li>Structure</li>
       </ul>
-      <ul class="service-list">
-        <li>
-          <div class="service-info">
-            <h3>日志管理/操作日志</h3>
-            <p>为每一次增删改操作增加操作日志</p>
-            <p class="text-mini text-info-1">Last publish: 3 weeks ago</p>
-          </div>
-        </li>
-        <li>
-          <div class="service-info">
-            <h3>字典管理</h3>
-            <p>可以将数据常量定义在字典里，通过提供的接口或service来获取，提高项目业务常量的实时修改。</p>
-          </div>
-        </li>
-        <li>
-          <div class="service-info">
-            <h3>部门管理</h3>
-            <p>企业部门的管理功能，支持用户设定至部门</p>
-          </div>
-        </li>
-        <li>
-          <div class="service-info">
-            <h3>定时任务</h3>
-            <p>通过spring自带的定时实现定时任务，可支持任务的分片功能</p>
-          </div>
-        </li>
-        <li>
-          <div class="service-info">
-            <h3>消息通知</h3>
-            <p>可实现业务操作后添加消息通知，通过轮询的方式定时获取消息送达用户。</p>
-          </div>
-        </li>
-      </ul>
+      <SubServiceListView :services="majorVersionDetail.subServices"/>
     </div>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
+import SubServiceListView from "./SubServiceListView.vue";
 import {fetchMainServiceDetail} from "../../api/service";
 export default {
   name: "MainServiceDetail",
+  components: {SubServiceListView},
   props: {
     space: {
       required: true
@@ -79,7 +49,9 @@ export default {
   data () {
     return {
       currentVersion: 'v3',
-      majorVersions: []
+      majorVersions: [],
+      // 大版本详情
+      majorVersionDetail: null
     }
   },
   computed: {
@@ -95,8 +67,11 @@ export default {
         .then(data => {
           this.majorVersions = data.majorVersions
           this.currentVersion = this.majorVersions[0]
+          this.majorVersionDetail = data.defaultMajorVersion
         })
-        .catch(e => {})
+        .catch(e => {
+          console.log('e', e)
+        })
     }
   },
   created () {
@@ -176,37 +151,6 @@ export default {
       }
       &:hover {
         color: var(--font-color);
-      }
-    }
-  }
-  // 服务列表
-  ul.service-list {
-    border: 1px solid var(--border-default-color);
-    border-top: 0;
-    padding: 0 20px;
-    & > li {
-      background-color: var(--color-light);
-      padding: 15px 0;
-      display: flex;
-      border-bottom: 1px solid var(--border-default-color);
-      &:last-of-type {
-        border-bottom: 0;
-      }
-      .service-info {
-        flex-grow: 1;
-        h3 {
-          font-size: var(--font-size-middle);
-          margin-bottom: 10px;
-        }
-        p {
-          font-size: var(--font-size);
-        }
-      }
-      ul {
-        flex-shrink: 0;
-        display: flex;
-        align-items: center;
-        margin-left: 30px;
       }
     }
   }
