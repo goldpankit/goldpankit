@@ -9,8 +9,8 @@
         <li
           v-for="version in majorVersions"
           :key="version"
-          :class="{ selected: version === currentVersion }"
-          @click="currentVersion = version"
+          :class="{ selected: version === currentMajorVersion }"
+          @click="currentMajorVersion = version"
         >v{{version}}</li>
       </ul>
     </div>
@@ -50,7 +50,8 @@ export default {
   },
   data () {
     return {
-      currentVersion: 'v3',
+      currentMajorVersion: '',
+      currentVersion: '',
       currentDim: 'readme',
       majorVersions: [],
       // 大版本详情
@@ -69,8 +70,9 @@ export default {
       })
         .then(data => {
           this.majorVersions = data.majorVersions
-          this.currentVersion = this.majorVersions[0]
+          this.currentMajorVersion = this.majorVersions[0]
           this.majorVersionDetail = data.defaultMajorVersion
+          this.currentVersion = this.majorVersionDetail.version
         })
         .catch(e => {
           console.log('e', e)

@@ -28,7 +28,8 @@
 </template>
 
 <script>
-import {fetchConfig, publish, saveConfig} from "../../api/service";
+import {fetchConfig, saveConfig} from "../../api/service";
+import {publish} from "../../api/service.version";
 
 export default {
   name: "PublishWindow",

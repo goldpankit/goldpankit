@@ -146,6 +146,16 @@ export default {
 <style scoped lang="scss">
 .service-structure-tree {
   padding-top: 10px;
+  :deep(.el-tree-node) {
+    min-height: 40px;
+    border-bottom: 1px solid var(--border-default-color);
+    .el-tree-node__content {
+      min-height: 40px;
+    }
+    &:last-of-type {
+      border-bottom: 0;
+    }
+  }
   :deep(.node-label) {
     width: 100%;
     display: flex;

@@ -3,7 +3,7 @@
     <div v-if="withBreadcrumbs" class="nav">
       <div class="title">
         <el-button class="button-icon" icon="ArrowLeftBold" @click="$emit('back')"></el-button>
-        <h4>{{service.name}}{{serviceVersion == null ? '' : ' · ' + serviceVersion.toUpperCase()}} · Install</h4>
+        <h4>{{service}}{{version == null ? '' : ' · ' + version.toUpperCase()}} · Install</h4>
       </div>
     </div>
     <div class="content-wrap">
@@ -32,9 +32,10 @@
 import {mapState} from "vuex";
 import InstallCheckbox from "../service/installer/Checkbox.vue";
 import InstallInput from "../service/installer/Input.vue";
-import {install} from "../../api/service.compile";
 import InstallRadio from "../service/installer/Radio.vue";
 import VariableInput from "../service/installer/VariableInput.vue";
+import {install} from "../../api/service.compile";
+import {fetchVersion} from "../../api/service.version";
 
 export default {
   name: "ServiceInstaller",
@@ -46,11 +47,11 @@ export default {
     service: {
       required: true
     },
+    version: {
+      required: true
+    },
     // 项目安装服务信息（项目安装完服务后的记录）
     projectService: {},
-    serviceVersion: {
-      required: false
-    },
     withBreadcrumbs: {
       default: false
     },
@@ -67,11 +68,31 @@ export default {
     ...mapState(['currentProject'])
   },
   methods: {
+    // 获取版本信息
+    fetchVersion () {
+      fetchVersion({
+        space: this.space,
+        service: this.service,
+        version: this.version
+      })
+        .then(data => {
+          this.variables = JSON.parse(data.variables).map(item => {
+            return {
+              ...item,
+              value: this.__getVariableValue(item)
+            }
+          })
+        })
+        .catch(e => {
+          console.log('e', e)
+        })
+    },
     // 安装服务
     install () {
       install({
         space: this.space,
         service: this.service,
+        version: this.version,
         projectId: this.currentProject.id,
         variables: this.variables
       })
@@ -89,18 +110,13 @@ export default {
         value = this.projectService.variables[variable.name]
       }
       if (value == null) {
-        value = variable.inputType === 'checkbox' ? [] : ''
+        value = variable.defaultValue
       }
       return value
     }
   },
   created () {
-    this.variables = JSON.parse(this.service.variables).map(item => {
-      return {
-        ...item,
-        value: this.__getVariableValue(item)
-      }
-    })
+    this.fetchVersion()
   }
 }
 </script>

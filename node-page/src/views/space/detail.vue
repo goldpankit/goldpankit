@@ -40,12 +40,13 @@
             />
             <ServiceInstaller
               v-if="currentMainServiceVersion != null"
-              :space="space"
-              :service="currentMainService"
-              :service-version="currentMainServiceVersion"
+              :space="space.name"
+              :service="currentMainService.name"
+              :version="currentMainServiceVersion"
               :with-breadcrumbs="true"
               :with-install-button="true"
               @back="currentMainServiceVersion = null"
+              @success="$router.push({name: 'Workbench'})"
             />
           </div>
         </div>
