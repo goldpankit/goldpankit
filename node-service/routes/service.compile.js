@@ -1,6 +1,16 @@
 const request = require('../utils/request.define')
 const service = require('../core/service')
-// 安装服务
+/**
+ * 安装服务
+ * req.body = {
+ *   projectId: '', // 当前选择的项目ID
+ *   database: '', // 当前选择的数据库名称
+ *   space: '',
+ *   service: '',
+ *   version: '',
+ *   variables: []
+ * }
+ */
 request
   .post('/service/install')
   .data(req => {

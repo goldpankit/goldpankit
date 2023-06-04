@@ -5,6 +5,7 @@ const object = require('./utils/object')
 const fs = require('./utils/fs')
 const serviceApi = require("./api/service");
 const userProject = require('./user.project')
+const serviceBuild = require('./service.build')
 module.exports = {
   // 初始化
   initialize(extConfig) {
@@ -178,6 +179,12 @@ module.exports = {
           }
         }
         fs.createFile(userProject.getConfigPath(projectId), fs.toJSONFileString(config), true)
+        // 执行命令
+        const database = project.databases.find(database => database.name === dto.database)
+        const builds = data.version.builds == null || data.version.builds === '' ? [] : JSON.parse(data.version.builds)
+        if (builds.length > 0) {
+          serviceBuild.build(project, database, builds)
+        }
         return Promise.resolve()
       })
       .catch(e => {
