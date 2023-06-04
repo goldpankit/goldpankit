@@ -3,7 +3,19 @@ const mysql = require('mysql');
 class MySQL {
   constructor() {
   }
-  // 连接测试
+
+  /**
+   * 测试排解
+   * config = {
+   *  host: '',
+   *  port: '',
+   *  user: '',
+   *  password: '',
+   *  database: ''
+   * }
+   * @param config 连接配置
+   * @returns {Promise<void>}
+   */
   testConnect (config) {
     return this.connect(config)
       .then(conn => {
@@ -25,11 +37,26 @@ class MySQL {
         }
         resolve(connection)
       })
-      // if (test) {
-      //   connection.end()
-      // }
     })
 
+  }
+  // 执行SQL
+  exec (config, sql) {
+    return this.connect(config)
+      .then(conn => {
+        return new Promise((resolve, reject) => {
+          conn.query(sql, function (error, results) {
+            conn.end()
+            if (error) {
+              return reject(error.sqlMessage)
+            }
+            return resolve(results)
+          })
+        })
+      })
+      .catch(e => {
+        return Promise.reject(e)
+      })
   }
 }
 
