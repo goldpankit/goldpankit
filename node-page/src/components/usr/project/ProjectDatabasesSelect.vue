@@ -1,22 +1,19 @@
 <template>
-  <div class="user-projects">
+  <div class="project-databases">
     <div class="title">
-      <h2>My Projects</h2>
-      <el-button type="primary" @click="$router.push({ name: 'CreateProject' })">
+      <h2>{{currentProject.name}} Databases</h2>
+      <el-button type="primary"  @click="$router.push({ name: 'ProjectDatabases', query: { project_id: currentProject.id } })">
         <el-icon :size="20"><Plus /></el-icon>
       </el-button>
     </div>
     <ul>
-      <li v-for="project in projects">
-        <div class="avatar">{{project.name.substring(0,1)}}</div>
+      <li v-for="database in databases">
         <div class="info">
-          <h3>{{project.name}}</h3>
-          <p>{{project.codespace}}</p>
-          <p class="text-info-1">3 databases</p>
+          <h3>{{database.name}}</h3>
+          <p class="text-info-1 text-mini">{{database.type}}</p>
         </div>
         <div class="opera">
-          <el-button @click="$router.push({ name: 'ProjectDatabases', query: { project_id: project.id } })">Databases</el-button>
-          <el-button @click="setCurrentProject(project)">Use It</el-button>
+          <el-button @click="setCurrentDatabase(database.name)">Use It</el-button>
         </div>
       </li>
     </ul>
@@ -24,37 +21,37 @@
 </template>
 
 <script>
-import { mapMutations } from "vuex";
-import {search} from "../../../api/user.project";
+import {mapMutations, mapState} from "vuex";
 
 export default {
-  name: "UserProjects",
+  name: "ProjectDatabasesSelect",
   data () {
     return {
-      projects: []
+      databases: []
     }
   },
+  computed: {
+    ...mapState(['currentProject', 'currentDatabase'])
+  },
   methods: {
-    ...mapMutations(['setCurrentProject']),
-    search () {
-      search()
-        .then(data => {
-          this.projects = data
-        })
-        .catch(e => {
-          console.log('e')
-        })
+    ...mapMutations(['setCurrentDatabase']),
+    // 获取当前项目数据库
+    fetchDatabases () {
+      if (this.currentProject == null) {
+        return
+      }
+      this.databases = this.currentProject.databases
     }
   },
   created () {
-    this.search()
+    this.fetchDatabases()
   }
 }
 </script>
 
 <style scoped lang="scss">
 // 我的项目
-.user-projects {
+.project-databases {
   background: var(--color-light);
   padding: 30px;
   .title {
@@ -62,6 +59,7 @@ export default {
     justify-content: space-between;
     padding-bottom: 15px;
     .el-button {
+      flex-shrink: 0;
       padding: 0;
       width: 40px;
       height: 40px;
@@ -88,16 +86,13 @@ export default {
     }
     .info {
       flex-grow: 1;
-      h3 {
-        margin-bottom: 15px;
-      }
-      p {
-        margin-top: 5px;
-      }
+      //h3 {
+      //  margin-bottom: 5px;
+      //}
     }
     .opera {
       flex-shrink: 0;
-      width: 200px;
+      width: 100px;
       display: flex;
       justify-content: flex-end;
     }

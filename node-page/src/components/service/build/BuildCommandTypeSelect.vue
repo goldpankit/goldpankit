@@ -1,7 +1,7 @@
 <template>
   <el-select class="build-command-type-select">
-    <el-option value="NODE" label="Node"/>
-    <el-option value="MYSQL" label="MySQL"/>
+    <el-option value="Node" label="Node"/>
+    <el-option value="MySQL" label="MySQL"/>
   </el-select>
 </template>
 

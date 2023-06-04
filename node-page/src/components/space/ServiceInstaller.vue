@@ -67,7 +67,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['currentProject'])
+    ...mapState(['currentProject', 'currentDatabase'])
   },
   methods: {
     // 获取版本信息
@@ -92,10 +92,11 @@ export default {
     // 安装服务
     install () {
       install({
+        projectId: this.currentProject.id,
+        database: this.currentDatabase,
         space: this.space,
         service: this.service,
         version: this.version,
-        projectId: this.currentProject.id,
         variables: this.variables
       })
         .then(() => {

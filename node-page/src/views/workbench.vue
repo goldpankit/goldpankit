@@ -5,7 +5,7 @@
         <div class="header">
           <div class="title">
             <h2>{{project.name}}</h2>
-            <p class="service-info">{{space}} · {{mainService.name}} · {{mainService.version}}</p>
+            <p class="service-info">{{space}} · {{mainService.name}} · v{{mainService.version}}</p>
           </div>
           <div class="info">
             <em>{{version}}</em>
@@ -28,6 +28,7 @@
                 @click="selectService(service)"
               >
                 <h5>{{service.name}}</h5>
+                <p>{{service.lastVersion}}</p>
                 <p>集成支付宝支付，提供完善健全的支付接口</p>
                 <p class="text-info-1 text-mini">Last publish: {{service.lastPublishTime}}</p>
               </li>
@@ -142,7 +143,6 @@ export default {
     },
     // 查询子服务
     searchSubServices () {
-      console.log(this.mainService)
       fetchSubServices({
         space: this.space,
         service: this.mainService.name,
