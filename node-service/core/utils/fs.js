@@ -11,6 +11,29 @@ module.exports = {
   getFiles (dir) {
     return fs.readdirSync(dir)
   },
+  // 删除代码文件
+  deleteFiles (files, codespace) {
+    let fileCount = 0
+    for (const file of files) {
+      const relativePath = file.filepath
+      // 删除文件
+      if (file.filetype !== 'DIRECTORY') {
+        const filepath = `${codespace}/${relativePath}`
+        let content = file.content
+        // 如果内容为省略号表达式，则对原始内容进行反向合并后写入文件
+        if (ee.isEllipsis(content)) {
+          const originContent = this.readFile(filepath)
+          content = ee.revertMerge(content, originContent)
+          this.createFile(filepath, content, true)
+          fileCount++
+          continue
+        }
+        this.deleteFile(filepath)
+        fileCount++
+      }
+    }
+    return fileCount
+  },
   // 写入代码文件
   writeFiles (files, codespace) {
     let fileCount = 0

@@ -182,6 +182,35 @@ module.exports = {
         return Promise.reject(e)
       })
   },
+  // 卸载服务
+  uninstall (dto) {
+    const projectId = dto.projectId
+    const project = cache.projects.get(projectId)
+    if (project == null) {
+      throw new Error('Please select a project.')
+    }
+    return serviceApi.install({
+      space: dto.space,
+      service: dto.service,
+      version: dto.version,
+      variables: dto.variables
+    })
+      .then(data => {
+        // 删除文件
+        fs.deleteFiles(data.files, project.codespace)
+        // 获取项目配置
+        const configPath = userProject.getConfigPath(projectId)
+        let projectConfig = fs.readJSONFile(configPath)
+        // 删除项目配置中服务的配置
+        delete projectConfig.services[dto.service]
+        // 重新写入项目配置文件中
+        fs.createFile(userProject.getConfigPath(projectId), fs.toJSONFileString(projectConfig), true)
+        return Promise.resolve()
+      })
+      .catch(e => {
+        return Promise.reject(e)
+      })
+  },
   // 编译服务代码
   compile(dto) {
     // 获取项目信息

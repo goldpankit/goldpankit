@@ -73,6 +73,26 @@ class EllipsisExpress {
   }
 
   /**
+   * 反向合并
+   */
+  revertMerge (express, targetContent) {
+    const contentLines = express.split('\n')
+    const revertContentLines = []
+    for (const line of contentLines) {
+      if (line.startsWith('+')) {
+        revertContentLines.push(`-${line.substring(1)}`)
+        continue
+      }
+      if (line.startsWith('-')) {
+        revertContentLines.push(`+${line.substring(1)}`)
+        continue
+      }
+      revertContentLines.push(line)
+    }
+    return this.merge(revertContentLines.join('\n'), targetContent)
+  }
+
+  /**
    * 判断是否为省略号表达式
    */
   isEllipsis (content) {

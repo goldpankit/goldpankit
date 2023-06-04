@@ -7,6 +7,13 @@ request
     return service.install(req.body)
   })
 
+// 卸载服务
+request
+  .post('/service/uninstall')
+  .data(req => {
+    return service.uninstall(req.body)
+  })
+
 // 编译服务文件
 request
   .post('/service/compile')
