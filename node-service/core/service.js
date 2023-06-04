@@ -68,7 +68,7 @@ module.exports = {
     // 读取配置结构
     const newConfig = JSON.parse(JSON.stringify(Const.SERVICE_CONFIG_CONTENT))
     // 合并配置
-    object.merge(dto, newConfig, ['version', 'compiler', 'supportedDatabases'])
+    object.merge(dto, newConfig, ['version', 'compiler', 'supportedDatabases', 'builds'])
     object.merge(serviceConfig, newConfig, ['name', 'variables', 'translator', 'settings'])
     // 写入配置文件
     const configPath = this.__getConfigPath(serviceConfig.codespace)

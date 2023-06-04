@@ -9,12 +9,13 @@ module.exports = {
     name: '', // 服务名称
     version: '1.0.0', // 版本号
     compiler: 'static', // 编译器
-    supportedDatabases: [], // 支持的数据库
-    variables: [], // 全局变量
-    translator: [ // 翻译器，将代码翻译成模版
+    supportedDatabases: [], // 支持的数据库列表
+    builds: [], // 构建列表
+    variables: [], // 服务变量列表
+    translator: [ // 翻译器列表，将代码翻译成模版
       // {path: '*', source: 'ruoyi', target: '${projectEnName}' },
     ],
-    settings: [] // 文件设置，设置内容见SERVICE_FILE_CONFIG_CONTENT
+    settings: [] // 文件设置列表，设置内容见SERVICE_FILE_CONFIG_CONTENT
   },
   // 服务文件配置
   SERVICE_FILE_CONFIG_CONTENT: {
