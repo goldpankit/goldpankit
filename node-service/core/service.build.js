@@ -2,9 +2,6 @@ const mysql = require('./utils/db/mysql')
 const nc = require('./utils/node-command')
 module.exports = {
   build (project, database, builds) {
-    console.log('project', project)
-    console.log('database', database)
-    console.log('builds', builds)
     if (builds == null || builds.length === 0) {
       return
     }
