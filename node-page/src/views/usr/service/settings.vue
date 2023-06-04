@@ -5,8 +5,8 @@
         <div class="header">
           <h2>{{service.space.name}}·{{service.name}}</h2>
           <div v-if="initialized" class="opera">
-            <el-button type="primary" :disabled="currentProject == null" @click="compile">Compile</el-button>
-            <el-button type="primary" @click="$refs.publishWindow.open(route.space, route.service)">Publish</el-button>
+            <el-button type="important" :disabled="currentProject == null" @click="compile">Compile</el-button>
+            <el-button type="important" @click="$refs.publishWindow.open(route.space, route.service)">Publish</el-button>
           </div>
         </div>
         <p

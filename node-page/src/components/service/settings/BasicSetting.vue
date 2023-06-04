@@ -11,6 +11,9 @@
         <el-form-item label="Supported Databases" prop="supportedDatabases">
           <DatabaseSelect v-model="form.supportedDatabases" @change="saveConfig"/>
         </el-form-item>
+        <el-form-item label="Auto Build" prop="builds">
+          <BuildList :builds="form.builds" @save="saveConfig"/>
+        </el-form-item>
         <el-form-item label="Code Space" prop="codespace">
           <div v-if="!newCodespace.changing" class="codespace-wrap">
             <p>{{form.codespace}}</p>
@@ -37,10 +40,11 @@ import CompilerSelect from "../../common/CompilerSelect.vue";
 import DatabaseSelect from "../../database/DatabaseSelect.vue";
 import DirectorySelect from "../../common/DirectorySelect.vue";
 import {fetchConfig, initialize, saveConfig} from "../../../api/service";
+import BuildList from "../build/BuildList.vue";
 
 export default {
   name: "BasicSetting",
-  components: {DirectorySelect, DatabaseSelect, CompilerSelect},
+  components: {BuildList, DirectorySelect, DatabaseSelect, CompilerSelect},
   props: {
     space: {
       required: true
@@ -61,6 +65,7 @@ export default {
         version: '',
         compiler: '',
         supportedDatabases: [],
+        builds: [],
         codespace: ''
       }
     }
@@ -91,6 +96,13 @@ export default {
             this.form.version = config.version || this.form.version
             this.form.compiler = config.compiler || this.form.compiler
             this.form.supportedDatabases = config.supportedDatabases || this.form.supportedDatabases
+            this.form.builds = config.builds || this.form.builds
+            this.form.builds = this.form.builds.map(item => {
+              return {
+                ...item,
+                id: '' + Math.random()
+              }
+            })
           }
         })
         .catch(e => {
@@ -107,7 +119,14 @@ export default {
       saveConfig({
         space: this.space,
         service: this.service,
-        ...this.form
+        ...this.form,
+        builds: this.form.builds.map(item => {
+          return {
+            name: item.name,
+            type: item.type,
+            content: item.content
+          }
+        })
       })
         .then(() => {
           this.originForm = JSON.parse(JSON.stringify(this.form))

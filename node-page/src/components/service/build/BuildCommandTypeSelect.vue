@@ -1,13 +1,18 @@
 <template>
-$END$
+  <el-select class="build-command-type-select">
+    <el-option value="NODE" label="Node"/>
+    <el-option value="MYSQL" label="MySQL"/>
+  </el-select>
 </template>
 
 <script>
 export default {
-name: "BuildCommandTypeSelect"
+  name: "BuildCommandTypeSelect"
 }
 </script>
 
-<style scoped>
-
+<style scoped lang="scss">
+.build-command-type-select {
+  width: 100%;
+}
 </style>
