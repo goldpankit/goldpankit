@@ -46,7 +46,7 @@
               :with-breadcrumbs="true"
               :with-install-button="true"
               @back="currentMainServiceVersion = null"
-              @success="$router.push({name: 'Workbench'})"
+              @installed="$router.push({name: 'Workbench'})"
             />
           </div>
         </div>

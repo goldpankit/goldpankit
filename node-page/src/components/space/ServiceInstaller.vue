@@ -36,7 +36,7 @@ import InstallCheckbox from "../service/installer/Checkbox.vue";
 import InstallInput from "../service/installer/Input.vue";
 import InstallRadio from "../service/installer/Radio.vue";
 import VariableInput from "../service/installer/VariableInput.vue";
-import {install} from "../../api/service.compile";
+import {install, uninstall} from "../../api/service.compile";
 import {fetchVersion} from "../../api/service.version";
 
 export default {
@@ -99,7 +99,23 @@ export default {
         variables: this.variables
       })
         .then(() => {
-          this.$emit('success')
+          this.$emit('installed')
+        })
+        .catch(e => {
+          this.$emit('error', e)
+        })
+    },
+    // 安装服务
+    uninstall () {
+      uninstall({
+        space: this.space,
+        service: this.service,
+        version: this.version,
+        projectId: this.currentProject.id,
+        variables: this.variables
+      })
+        .then(() => {
+          this.$emit('uninstalled')
         })
         .catch(e => {
           this.$emit('error', e)

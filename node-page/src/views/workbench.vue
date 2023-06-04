@@ -50,6 +50,8 @@
                   :service="currentService.name"
                   :version="currentService.lastVersion"
                   :project-service="projectService"
+                  @installed="fetchProject"
+                  @uninstalled="fetchProject"
                 />
               </div>
             </div>
@@ -62,7 +64,7 @@
                 >REINSTALL</el-button>
                 <el-button
                   size="large"
-                  @click="$refs.installer.install()"
+                  @click="$refs.installer.uninstall()"
                 >UNINSTALL</el-button>
               </template>
               <el-button
