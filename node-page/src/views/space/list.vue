@@ -73,7 +73,6 @@ export default {
     // 空间列表
     ul.space-list {
       width: 100%;
-      box-shadow: var(--page-shadow);
       & > li {
         margin-bottom: 20px;
         padding: 50px 30px;
@@ -83,6 +82,7 @@ export default {
         flex-direction: column;
         justify-content: space-between;
         font-size: var(--font-size-middle);
+        box-shadow: var(--page-shadow);
         border-radius: 30px;
         h3 {
           font-size: var(--font-size-title);

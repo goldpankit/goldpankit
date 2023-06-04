@@ -50,7 +50,7 @@ export default {
       form: {
         space: this.spaceName,
         name: this.serviceName,
-        version: 'v1.0.0',
+        version: '1.0.0',
         compiler: 'static',
         supportedDatabases: [],
         codespace: ''

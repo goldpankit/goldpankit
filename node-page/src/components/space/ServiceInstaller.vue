@@ -13,7 +13,7 @@
       <el-form>
         <template v-for="variable in variables">
           <el-form-item
-            v-if="variable.hidden"
+            v-if="!variable.hidden"
             :key="variable.name"
             :label="variable.message"
           >
@@ -52,8 +52,8 @@ export default {
     version: {
       required: true
     },
-    // 项目安装服务信息（项目安装完服务后的记录）
-    projectService: {},
+    // 项目配置信息（项目安装完服务后的配置信息）
+    projectConfig: {},
     withBreadcrumbs: {
       default: false
     },
@@ -67,7 +67,15 @@ export default {
     }
   },
   computed: {
-    ...mapState(['currentProject', 'currentDatabase'])
+    ...mapState(['currentProject', 'currentDatabase']),
+    unique () {
+      return [this.space, this.service, this.version]
+    }
+  },
+  watch: {
+    unique () {
+      this.fetchVersion()
+    }
   },
   methods: {
     // 获取版本信息
@@ -84,6 +92,7 @@ export default {
               value: this.__getVariableValue(item)
             }
           })
+          console.log('this.variables', this.variables)
         })
         .catch(e => {
           console.log('e', e)
@@ -125,8 +134,21 @@ export default {
     // 获取默认值
     __getVariableValue (variable) {
       let value = null
-      if (this.projectService != null) {
-        value = this.projectService.variables[variable.name]
+      if (this.projectConfig != null) {
+        const service = this.projectConfig.services[this.service]
+        // 从自身服务中获取
+        if (service != null) {
+          value = service.variables[variable.name]
+        }
+        // 从主服务中获取
+        if (value == null) {
+          let mainService = null
+          for (const key in this.projectConfig.main) {
+            mainService = key
+            break
+          }
+          value = this.projectConfig.main[mainService].variables[variable.name]
+        }
       }
       if (value == null) {
         value = variable.defaultValue

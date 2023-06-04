@@ -62,7 +62,7 @@ export default {
     // 创建服务
     create () {
       create({
-        spaceName: this.space,
+        space: this.space,
         ...this.form
       })
         .then(() => {

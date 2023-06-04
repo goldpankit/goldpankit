@@ -24,7 +24,7 @@
               <li
                 v-for="service in subServices"
                 :key="service.id"
-                :class="{ selected: currentService != null && currentService.id === service.id }"
+                :class="{ selected: currentService != null && currentService.name === service.name }"
                 @click="selectService(service)"
               >
                 <h5>{{service.name}}</h5>
@@ -50,7 +50,7 @@
                   :space="space"
                   :service="currentService.name"
                   :version="currentService.lastVersion"
-                  :project-service="projectService"
+                  :project-config="project"
                   @installed="fetchProject"
                   @uninstalled="fetchProject"
                 />
@@ -108,12 +108,6 @@ export default {
         return false
       }
       return this.project.services[this.currentService.name] != null
-    },
-    projectService () {
-      if (this.currentService == null) {
-        return null
-      }
-      return this.project.services[this.currentService.name]
     }
   },
   methods: {
