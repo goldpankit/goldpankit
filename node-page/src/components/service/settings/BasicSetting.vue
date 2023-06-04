@@ -97,12 +97,6 @@ export default {
             this.form.compiler = config.compiler || this.form.compiler
             this.form.supportedDatabases = config.supportedDatabases || this.form.supportedDatabases
             this.form.builds = config.builds || this.form.builds
-            this.form.builds = this.form.builds.map(item => {
-              return {
-                ...item,
-                id: '' + Math.random()
-              }
-            })
           }
         })
         .catch(e => {
@@ -142,9 +136,11 @@ export default {
       service: this.service
     })
       .then(config => {
-        this.form.version = config.version
-        this.form.compiler = config.compiler
-        this.form.supportedDatabases = config.supportedDatabases
+        // 需给定默认值，防止用户自行篡改配置文件
+        this.form.version = config.version || '1.0.0'
+        this.form.compiler = config.compiler || 'freemarker'
+        this.form.supportedDatabases = config.supportedDatabases || []
+        this.form.builds = config.builds || []
         this.form.codespace = config.codespace
         this.originForm = JSON.parse(JSON.stringify(this.form))
       })

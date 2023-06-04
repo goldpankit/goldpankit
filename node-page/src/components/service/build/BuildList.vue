@@ -4,7 +4,7 @@
       <p>tips: The following builds are performed after the service is installed</p>
       <el-button type="primary" @click="create">Create</el-button>
     </div>
-    <el-collapse v-if="builds.length > 0" v-model="activeNames" @change="handleChange">
+    <el-collapse v-if="builds.length > 0" v-model="actives" @change="handleChange">
       <el-collapse-item
         v-for="(build,index) in builds"
         :key="build.id"
@@ -20,7 +20,7 @@
             <div v-else class="edit">
               <el-form :model="build">
                 <el-form-item label="Name" required>
-                  <el-input class="name" v-model="build.name" @click.stop @input="handleSave"/>
+                  <el-input class="name" v-model="build.name" @click.stop @keypress.stop @input="handleSave"/>
                 </el-form-item>
                 <el-form-item label="Type" required>
                   <BuildCommandTypeSelect class="type" v-model="build.type" @change="handleSave"/>
@@ -48,6 +48,7 @@
 </template>
 
 <script>
+import { ref } from 'vue'
 import BuildCommandTypeSelect from "./BuildCommandTypeSelect.vue";
 import Empty from "../../common/Empty.vue";
 
@@ -62,8 +63,19 @@ export default {
   },
   data () {
     return {
-      activeNames: [],
+      actives: [],
       varIndex: 1
+    }
+  },
+  watch: {
+    builds: {
+      immediate: true,
+      handler () {
+        this.builds.forEach(item => {
+          item.id = '' + Math.random()
+          item.__readonly = true
+        })
+      }
     }
   },
   methods: {
@@ -77,12 +89,12 @@ export default {
         content: '',
         __readonly: false
       })
-      this.activeNames.push(id)
+      this.actives.push(id)
     },
     // 打开/隐藏
-    handleChange (activeNames) {
+    handleChange (actives) {
       for (const build of this.builds) {
-        const exists = activeNames.find(name => name === build.name) != null
+        const exists = actives.find(id => id === build.id) != null
         build.__readonly = !exists
       }
     },
