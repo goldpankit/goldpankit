@@ -78,7 +78,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['currentProject']),
+    ...mapState(['currentProject', 'currentDatabase']),
     initialized () {
       return this.service.local && this.service.local.codespace
     }
@@ -105,7 +105,8 @@ export default {
     compile () {
       compile({
         ...this.route,
-        projectId: this.currentProject.id
+        projectId: this.currentProject.id,
+        database: this.currentDatabase
       })
         .then(() => {
           console.log('编译成功')

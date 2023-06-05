@@ -14,16 +14,21 @@
     v-model="variable[valueKey]"
     :options="variable.options"
   />
+  <TableSelect
+    v-else-if="variable.inputType === 'table'"
+    v-model="variable[valueKey]"
+  />
 </template>
 
 <script>
 import InstallInput from "./Input.vue";
 import InstallRadio from "./Radio.vue";
 import InstallCheckbox from "./Checkbox.vue";
+import TableSelect from "../../common/TableSelect.vue";
 
 export default {
   name: "VariableInput",
-  components: {InstallCheckbox, InstallRadio, InstallInput},
+  components: {TableSelect, InstallCheckbox, InstallRadio, InstallInput},
   props: {
     variable: {
       required: true

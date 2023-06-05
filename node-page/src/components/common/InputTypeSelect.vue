@@ -4,6 +4,7 @@
     <el-option value="textarea" label="Textarea"/>
     <el-option value="checkbox" label="Checkbox"/>
     <el-option value="radio" label="Radio"/>
+    <el-option value="table" label="Table"/>
   </el-select>
 </template>
 
