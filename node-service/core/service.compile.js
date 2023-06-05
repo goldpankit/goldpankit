@@ -72,7 +72,6 @@ class Kit {
         }
         fs.createFile(userProject.getConfigPath(projectId), fs.toJSONFileString(config), true)
         // 执行命令
-        const database = project.databases.find(database => database.name === dto.database)
         const builds = data.version.builds == null || data.version.builds === '' ? [] : JSON.parse(data.version.builds)
         if (builds.length > 0) {
           serviceBuild.build(project, database, builds)
@@ -164,6 +163,10 @@ class Kit {
       .then(data => {
         // 写入文件
         fs.writeFiles(data, project.codespace)
+        // 执行命令
+        if (serviceConfig.builds.length > 0) {
+          serviceBuild.build(project, database, serviceConfig.builds)
+        }
         return Promise.resolve()
       })
       .catch(e => {
@@ -203,6 +206,7 @@ class Kit {
     return configs
   }
 
+  // 获取安装/编译变量
   #getVariables (database, variables, valueKey='value') {
     return variables.map(item => {
       return new Promise((resolve, reject) => {
