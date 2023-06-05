@@ -85,7 +85,7 @@ export default {
       this.builds.push({
         id,
         name: this.__generateBuildName(),
-        type: 'NODE',
+        type: 'Node',
         content: '',
         __readonly: false
       })
