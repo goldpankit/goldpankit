@@ -27,7 +27,10 @@
                 :class="{ selected: currentService != null && currentService.name === service.name }"
                 @click="selectService(service)"
               >
-                <h5>{{service.name}}</h5>
+                <h5>
+                  {{service.name}}
+                  <em v-if="hasNewVersion(service)">Upgradable</em>
+                </h5>
                 <p>{{service.lastVersion}}</p>
                 <p>集成支付宝支付，提供完善健全的支付接口</p>
                 <p class="text-info-1 text-mini">Last publish: {{service.lastPublishTime}}</p>
@@ -59,6 +62,14 @@
             <div class="opera">
               <template v-if="installed">
                 <el-button
+                  v-if="hasNewVersion(currentService)"
+                  type="primary"
+                  size="large"
+                  icon="Upload"
+                  @click="$refs.installer.install()"
+                >UPGRADE</el-button>
+                <el-button
+                  v-else
                   type="primary"
                   size="large"
                   @click="$refs.installer.install()"
@@ -152,6 +163,14 @@ export default {
     // 选择服务
     selectService (service) {
       this.currentService = service
+    },
+    // 是否可升级
+    hasNewVersion (service) {
+      const serviceConfig = this.project.services[service.name]
+      if (serviceConfig == null) {
+        return false
+      }
+      return serviceConfig.version !== service.lastVersion
     }
   },
   created () {
@@ -256,6 +275,13 @@ export default {
           h5 {
             font-size: var(--font-size-middle);
             margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            em {
+              color: var(--primary-color-match-2);
+              font-size: var(--font-size-mini);
+            }
           }
           p {
             color: var(--color-gray);
