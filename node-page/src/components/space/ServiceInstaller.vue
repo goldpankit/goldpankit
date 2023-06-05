@@ -118,10 +118,11 @@ export default {
     // 安装服务
     uninstall () {
       uninstall({
+        projectId: this.currentProject.id,
+        database: this.currentDatabase,
         space: this.space,
         service: this.service,
         version: this.version,
-        projectId: this.currentProject.id,
         variables: this.variables
       })
         .then(() => {
