@@ -6,6 +6,7 @@ const fs = require('./utils/fs')
 const serviceApi = require("./api/service");
 const userProject = require('./user.project')
 const serviceBuild = require('./service.build')
+const mysql = require('./utils/db/mysql')
 module.exports = {
   // 初始化
   initialize(extConfig) {
@@ -229,9 +230,21 @@ module.exports = {
     }
     // 获取服务信息
     const serviceConfig = this.getServiceConfig({ space: dto.space, service: dto.service })
+    // 获取数据库信息
+    const database = project.databases.find(db => db.name === dto.database)
     return serviceApi.compile({
       defaultCompiler: serviceConfig.compiler,
-      variables: serviceConfig.variables.map(item => {
+      variables: serviceConfig.variables.map(async item => {
+        // 输入类型为表，则查询出表信息
+        if (item.inputType === 'table') {
+          item.defaultValue = await mysql.getTable({
+            host: database.host,
+            port: database.port,
+            user: database.username,
+            password: database.password,
+            database: database.schema
+          })
+        }
         return {
           ...item,
           value: item.defaultValue

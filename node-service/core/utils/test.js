@@ -1,9 +1,23 @@
-const db = require('./db/mysql')
+const mysql = require('./db/mysql')
 const nc = require('./node-command')
 
-nc.exec('/Users/caesar/Downloads/test', 'npm install mysql')
-  .then(() => {
-    console.log('node command exec completed.')
+// nc.exec('/Users/caesar/Downloads/test', 'npm install mysql')
+//   .then(() => {
+//     console.log('node command exec completed.')
+//   })
+//   .catch(e => {
+//     console.log('e', e)
+//   })
+
+mysql.getTable({
+  host: 'localhost',
+  port: 3306,
+  user: 'root',
+  password: 'local@123',
+  database: 'db_eva'
+}, 'SYSTEM_USER')
+  .then(table => {
+    console.log(JSON.stringify(table, null, 2))
   })
   .catch(e => {
     console.log('e', e)
