@@ -7,6 +7,7 @@ const serviceApi = require("./api/service");
 const userProject = require('./user.project')
 const serviceBuild = require('./service.build')
 const mysql = require('./utils/db/mysql')
+const {resolve} = require("path");
 module.exports = {
   // 初始化
   initialize(extConfig) {
@@ -232,26 +233,43 @@ module.exports = {
     const serviceConfig = this.getServiceConfig({ space: dto.space, service: dto.service })
     // 获取数据库信息
     const database = project.databases.find(db => db.name === dto.database)
-    return serviceApi.compile({
-      defaultCompiler: serviceConfig.compiler,
-      variables: serviceConfig.variables.map(async item => {
+    // 组装变量
+    const variables = serviceConfig.variables.map(item => {
+      return new Promise((resolve, reject) => {
         // 输入类型为表，则查询出表信息
         if (item.inputType === 'table') {
-          item.defaultValue = await mysql.getTable({
+          mysql.getTable({
             host: database.host,
             port: database.port,
             user: database.username,
             password: database.password,
             database: database.schema
-          })
+          }, item.defaultValue)
+            .then(table => {
+              resolve({
+                ...item,
+                value: JSON.stringify(table)
+              })
+            })
+            .catch(e => {
+              reject(e)
+            })
+          return
         }
-        return {
+        resolve({
           ...item,
           value: item.defaultValue
-        }
-      }),
-      files: this.__getFileConfigList(dto.space, dto.service)
+        })
+      })
     })
+    return Promise.all(variables)
+      .then(vars => {
+        return serviceApi.compile({
+          defaultCompiler: serviceConfig.compiler,
+          variables: vars,
+          files: this.__getFileConfigList(dto.space, dto.service)
+        })
+      })
       .then(data => {
         // 写入文件
         fs.writeFiles(data, project.codespace)
