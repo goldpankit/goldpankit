@@ -60,24 +60,40 @@ class MySQL {
       })
   }
   // 获取所有表
-  getTables (config) {
+  getTables (config, withFields = false) {
     return new Promise((resolve, reject) => {
       this.connect(config)
         .then(conn => {
-          return new Promise((resolve, reject) => {
+          return new Promise((tableResolve, tableReject) => {
             conn.query(
               `SELECT * FROM information_schema.TABLES WHERE TABLE_SCHEMA = '${config.database}' ORDER BY TABLE_NAME ASC`,
-              (error, tables, fields) => {
+              (error, tables) => {
                 if (error) {
                   conn.end()
                   reject(error.sqlMessage)
                 }
-                resolve({conn, config, tables})
+                // 如果需要携带字段，则将tables等信息带入下一次then
+                if (withFields) {
+                  tableResolve({conn, config, tables})
+                  return
+                }
+                // 不需要携带字段，则断开连接，返回tables
+                conn.end()
+                resolve(tables.map(table => {
+                  return {
+                    name: table.TABLE_NAME,
+                    comment: table.TABLE_COMMENT
+                  }
+                }))
+                tableResolve({})
               }
             )
           })
         })
         .then(({conn, config, tables}) => {
+          if (tables == null) {
+            return
+          }
           // 查询表字段
           const queryFieldPromises = []
           for (const table of tables) {
@@ -97,6 +113,10 @@ class MySQL {
             .finally(() => {
               conn.end()
             })
+        })
+        .catch(e => {
+          console.log('e', e)
+          throw e
         })
     })
   }
@@ -140,7 +160,7 @@ class MySQL {
   // 获取表字段
   #getFields (conn, database, table) {
     return new Promise((resolve, reject) => {
-      conn.query(`SELECT * FROM information_schema.columns WHERE table_name='${table}' AND table_schema='${database}' ORDER BY COLUMN_NAME ASC`, function (error, results, fields) {
+      conn.query(`SELECT * FROM information_schema.columns WHERE table_name='${table}' AND table_schema='${database}' ORDER BY ORDINAL_POSITION ASC`, function (error, results, fields) {
         if (error) {
           reject(error.sqlMessage)
           return

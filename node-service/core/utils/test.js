@@ -9,13 +9,13 @@ const nc = require('./node-command')
 //     console.log('e', e)
 //   })
 
-mysql.getTable({
+mysql.getTables({
   host: 'localhost',
   port: 3306,
   user: 'root',
   password: 'local@123',
   database: 'db_eva'
-}, 'SYSTEM_USER')
+}, true)
   .then(table => {
     console.log(JSON.stringify(table, null, 2))
   })
