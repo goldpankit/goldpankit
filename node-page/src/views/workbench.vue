@@ -32,7 +32,7 @@
                   <em v-if="hasNewVersion(service)">Upgradable</em>
                 </h5>
                 <p>{{service.lastVersion}}</p>
-                <p>集成支付宝支付，提供完善健全的支付接口</p>
+                <p>{{service.description}}</p>
                 <p class="text-info-1 text-mini">Last publish: {{service.lastPublishTime}}</p>
               </li>
             </ul>
@@ -54,8 +54,8 @@
                   :service="currentService.name"
                   :version="currentService.lastVersion"
                   :project-config="project"
-                  @installed="fetchProject"
-                  @uninstalled="fetchProject"
+                  @installed="fetchProject()"
+                  @uninstalled="fetchProject()"
                 />
               </div>
             </div>
@@ -112,6 +112,11 @@ export default {
       project: null
     }
   },
+  watch: {
+    currentProject () {
+      this.fetchProject(true)
+    }
+  },
   computed: {
     ...mapState(['currentProject']),
     installed () {
@@ -123,7 +128,7 @@ export default {
   },
   methods: {
     // 查询项目信息
-    fetchProject () {
+    fetchProject (withSubServices = false) {
       fetchById(this.currentProject.id)
         .then(data => {
           this.project = data
@@ -140,7 +145,9 @@ export default {
             ...this.project.main[mainName]
           }
           // 查询子服务
-          this.searchSubServices()
+          if (withSubServices) {
+            this.searchSubServices()
+          }
         })
         .catch(e => {
           console.log('e', e)
@@ -155,6 +162,9 @@ export default {
       })
         .then(data => {
           this.subServices = data
+          if (this.subServices.length > 0) {
+            this.selectService(this.subServices[0])
+          }
         })
         .catch(e => {
           console.log('e', e)
@@ -174,7 +184,7 @@ export default {
     }
   },
   created () {
-    this.fetchProject()
+    this.fetchProject(true)
   }
 }
 </script>

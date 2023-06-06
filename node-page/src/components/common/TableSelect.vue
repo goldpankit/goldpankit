@@ -1,5 +1,5 @@
 <template>
-  <el-select class="table-select" popper-class="table-select__popper">
+  <el-select class="table-select" popper-class="table-select__popper" @change="handleChange">
     <el-option
       v-for="table in tables"
       :key="table.name"
@@ -12,16 +12,27 @@
       </p>
     </el-option>
   </el-select>
+  <ul v-if="selected != null" class="field-settings">
+    <li>
+      <FieldSetting :table="selected"/>
+    </li>
+    <li>
+      <FieldSetting :table="selected"/>
+    </li>
+  </ul>
 </template>
 
 <script>
 import {fetchTables} from "../../api/db";
 import {mapState} from "vuex";
+import FieldSetting from "../service/installer/FieldSetting.vue";
 
 export default {
   name: "TableSelect",
+  components: {FieldSetting},
   data () {
     return {
+      selected: null,
       tables: []
     }
   },
@@ -29,6 +40,11 @@ export default {
     ...mapState(['currentProject', 'currentDatabase'])
   },
   methods: {
+    handleChange (value) {
+      this.selected = this.tables.find(table => table.name === value)
+      this.$emit('update:modelValue', value)
+      this.$emit('change', value)
+    },
     // 查询表
     fetchTables () {
       const database = this.currentProject.databases.find(db => db.name === this.currentDatabase)
@@ -58,6 +74,9 @@ export default {
 
 <style scoped lang="scss">
 .table-select {
+  width: 100%;
+}
+.field-settings {
   width: 100%;
 }
 </style>

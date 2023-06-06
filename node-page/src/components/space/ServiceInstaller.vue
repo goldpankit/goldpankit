@@ -38,10 +38,12 @@ import InstallRadio from "../service/installer/Radio.vue";
 import VariableInput from "../service/installer/VariableInput.vue";
 import {install, uninstall} from "../../api/service.compile";
 import {fetchVersion} from "../../api/service.version";
+import MySqlFieldSelect from "../database/MySqlFieldSelect.vue";
+import FieldSetting from "../service/installer/FieldSetting.vue";
 
 export default {
   name: "ServiceInstaller",
-  components: {VariableInput, InstallRadio, InstallInput, InstallCheckbox},
+  components: {FieldSetting, MySqlFieldSelect, VariableInput, InstallRadio, InstallInput, InstallCheckbox},
   props: {
     space: {
       required: true
