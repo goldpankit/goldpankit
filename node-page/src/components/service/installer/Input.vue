@@ -1,5 +1,5 @@
 <template>
-  <el-input class="install-input" size="large"/>
+  <el-input class="install-input"/>
 </template>
 
 <script>

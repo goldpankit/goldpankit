@@ -32,7 +32,7 @@
               :space="route.space"
               :service="route.service"
             />
-            <SettingVariables
+            <VariableSettings
               v-show="currentTab === 'variables'"
               :space="route.space"
               :service="route.service"
@@ -56,15 +56,17 @@
 import {mapState} from "vuex";
 import SettingFiles from "../../../components/service/settings/SettingFiles.vue";
 import DirectorySelect from "../../../components/common/DirectorySelect.vue";
-import SettingVariables from "../../../components/service/settings/SettingVariables.vue";
 import InitializeView from "../../../components/service/settings/InitializeView.vue";
 import BasicSetting from "../../../components/service/settings/BasicSetting.vue";
 import PublishWindow from "../../../components/service/PublishWindow.vue";
 import {fetchProfile} from "../../../api/service";
 import {compile} from "../../../api/service.compile";
+import VariableSettings from "../../../components/service/settings/VariableSettings.vue";
 
 export default {
-  components: {PublishWindow, BasicSetting, InitializeView, SettingVariables, DirectorySelect, SettingFiles},
+  components: {
+    VariableSettings,
+    PublishWindow, BasicSetting, InitializeView, DirectorySelect, SettingFiles},
   data () {
     return {
       // 路由参数
@@ -178,7 +180,7 @@ export default {
       border-bottom: 1px solid var(--border-default-color);
       padding-bottom: 10px;
       li {
-        margin-right: 10px;
+        margin-right: 30px;
         cursor: pointer;
         &.selected {
           font-weight: bold;

@@ -2,21 +2,21 @@
   <div class="tree">
     <div class="variables-wrap">
       <div class="tools">
-        <el-button icon="Plus" type="primary" @click="createVariable">Add</el-button>
+        <el-button icon="Plus" type="primary" @click="createVariable">Add Variable</el-button>
+        <el-button icon="Plus" type="primary" @click="createVariable">Add Group</el-button>
       </div>
-      <ul class="variables">
-        <li
-          v-for="variable in variables"
-          :key="variable.name"
-          :class="{ selected: currentVariable != null && currentVariable.name === variable.name }"
-          @click="selectVariable(variable)"
-        >
+      <el-tree
+        class="variables"
+        :data="variables"
+        @node-click="selectVariable"
+      >
+        <template #default="{ node, data }">
           <div class="title">
-            <span>{{variable.message}}</span>
-            <em :class="`type-${variable.inputType}`">{{__getInputTypeLabel(variable.inputType)}}</em>
+            <span>{{data.label}}</span>
+            <em :class="`type-${data.inputType}`">{{__getScopeLabel(data.scope)}} · {{__getInputTypeLabel(data.inputType)}}</em>
           </div>
-        </li>
-      </ul>
+        </template>
+      </el-tree>
     </div>
     <div class="variable-setting">
       <h4>Variable Setting</h4>
@@ -24,15 +24,15 @@
         <el-form v-if="currentVariable != null">
           <el-form-item label="Scope" required>
             <el-radio-group v-model="currentVariable.scope" @change="saveVariables">
-              <el-radio-button value="Service" label="Service" />
-              <el-radio-button value="Table" label="Table" />
+              <el-radio label="service" border>Service</el-radio>
+              <el-radio label="table_field" border>Table Field</el-radio>
             </el-radio-group>
+          </el-form-item>
+          <el-form-item label="Label" required>
+            <I18nInput v-model="currentVariable.label" @input="saveVariables"/>
           </el-form-item>
           <el-form-item label="Name" required>
             <el-input v-model="currentVariable.name" @input="saveVariables"/>
-          </el-form-item>
-          <el-form-item label="Message" required>
-            <I18nInput v-model="currentVariable.message" @input="saveVariables"/>
           </el-form-item>
           <el-form-item label="Input Type" required>
             <InputTypeSelect v-model="currentVariable.inputType" @change="saveVariables"/>
@@ -54,14 +54,14 @@
               </div>
             </template>
             <el-table :data="currentVariable.options">
-              <el-table-column label="*Value" min-width="120px">
-                <template #default="{ row }">
-                  <el-input v-model="row.value" @input="saveVariables"/>
-                </template>
-              </el-table-column>
               <el-table-column label="*Label" min-width="200px">
                 <template #default="{ row }">
                   <el-input v-model="row.label" type="textarea" :rows="1" @input="saveVariables"/>
+                </template>
+              </el-table-column>
+              <el-table-column label="*Value" min-width="120px">
+                <template #default="{ row }">
+                  <el-input v-model="row.value" @input="saveVariables"/>
                 </template>
               </el-table-column>
               <el-table-column label="Remark" min-width="150px">
@@ -101,11 +101,11 @@
 import CompilerSelect from "../../common/CompilerSelect.vue";
 import InputTypeSelect from "../../common/InputTypeSelect.vue";
 import I18nInput from "../../common/I18nInput.vue";
-import {fetchConfig, saveVariables} from "../../../api/service";
 import VariableInput from "../installer/VariableInput.vue";
+import {fetchConfig, saveVariables} from "../../../api/service";
 
 export default {
-  name: "SettingVariables",
+  name: "VariableSettings",
   components: {VariableInput, I18nInput, InputTypeSelect, CompilerSelect},
   props: {
     space: {
@@ -131,9 +131,9 @@ export default {
     createVariable () {
       const varName = this.__generateVariableName()
       const newVar = {
-        scope: 'Service',
+        scope: 'service',
         name: varName,
-        message: varName,
+        label: varName,
         inputType: 'input',
         required: false,
         hidden: false,
@@ -161,7 +161,7 @@ export default {
     // 保存变量
     saveVariables () {
       // 过滤掉无效的变量
-      const variables = this.variables.filter(v => v.name.trim().length > 0 && v.message.trim().length > 0)
+      const variables = this.variables.filter(v => v.name.trim().length > 0 && v.label.trim().length > 0)
       // 请求保存
       saveVariables({
         space: this.space,
@@ -202,6 +202,7 @@ export default {
               options: item.options == null ? [] : item.options
             }
           })
+          console.log(this.variables)
         })
         .catch(e => {
           console.log('e', e)
@@ -217,12 +218,22 @@ export default {
         }
       }
     },
+    // 获取作用域
+    __getScopeLabel (scopeType) {
+      const scopeTypes = {
+        service: 'Service',
+        table_field: 'Table Field'
+      }
+      return scopeTypes[scopeType]
+    },
+    // 获取输入类型
     __getInputTypeLabel(inputType) {
       const inputTypes = {
         input: 'Input',
         radio: 'Radio',
         checkbox: 'Checkbox',
         textarea: 'Textarea',
+        table: 'Table'
       }
       return inputTypes[inputType]
     }
@@ -244,44 +255,33 @@ export default {
     padding-top: 10px;
     .tools {
       display: flex;
-      justify-content: flex-end;
       padding-bottom: 10px;
-      padding-right: 10px;
     }
     // 变量列表
-    ul.variables {
-      & > li {
-        border-top: 1px solid var(--border-default-color);
-        cursor: pointer;
-        &.selected {
-          .title span {
-            color: var(--primary-color-match-2);
-            font-weight: bold;
-          }
+    .variables {
+      :deep(.title) {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+        span {
+          flex-grow: 1;
+          word-break: break-all;
         }
-        .title {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: 10px 0;
-          span {
-            flex-grow: 1;
-            word-break: break-all;
-          }
-          em {
-            flex-shrink: 0;
-            font-style: normal;
-            margin-right: 5px;
-            font-size: var(--font-size-mini);
-            color: var(--color-gray-1);
-            border-radius: 5px;
-            font-weight: bold;
-          }
+        em {
+          flex-shrink: 0;
+          font-style: normal;
+          margin-right: 5px;
+          font-size: var(--font-size-mini);
+          color: var(--color-gray-1);
+          border-radius: 5px;
+          font-weight: bold;
         }
-        .content {
-          height: 0;
-          overflow: hidden;
-        }
+      }
+      .content {
+        height: 0;
+        overflow: hidden;
       }
     }
   }
