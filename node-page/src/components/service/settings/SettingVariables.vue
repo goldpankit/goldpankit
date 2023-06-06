@@ -15,7 +15,6 @@
             <span>{{variable.message}}</span>
             <em :class="`type-${variable.inputType}`">{{__getInputTypeLabel(variable.inputType)}}</em>
           </div>
-          <div class="content">Hello</div>
         </li>
       </ul>
     </div>
@@ -23,6 +22,12 @@
       <h4>Variable Setting</h4>
       <div class="content-wrap">
         <el-form v-if="currentVariable != null">
+          <el-form-item label="Scope" required>
+            <el-radio-group v-model="currentVariable.scope" @change="saveVariables">
+              <el-radio-button value="Service" label="Service" />
+              <el-radio-button value="Table" label="Table" />
+            </el-radio-group>
+          </el-form-item>
           <el-form-item label="Name" required>
             <el-input v-model="currentVariable.name" @input="saveVariables"/>
           </el-form-item>
@@ -126,6 +131,7 @@ export default {
     createVariable () {
       const varName = this.__generateVariableName()
       const newVar = {
+        scope: 'Service',
         name: varName,
         message: varName,
         inputType: 'input',

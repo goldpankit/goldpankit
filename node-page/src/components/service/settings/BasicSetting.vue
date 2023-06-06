@@ -11,7 +11,10 @@
         <el-form-item label="Supported Databases" prop="supportedDatabases">
           <DatabaseSelect v-model="form.supportedDatabases" @change="saveConfig"/>
         </el-form-item>
-        <el-form-item label="Auto Build" prop="builds">
+        <el-form-item label="Install Builds" prop="builds">
+          <BuildList :builds="form.builds" @save="saveConfig"/>
+        </el-form-item>
+        <el-form-item label="Uninstall Builds" prop="builds">
           <BuildList :builds="form.builds" @save="saveConfig"/>
         </el-form-item>
         <el-form-item label="Code Space" prop="codespace">
@@ -39,8 +42,8 @@
 import CompilerSelect from "../../common/CompilerSelect.vue";
 import DatabaseSelect from "../../database/DatabaseSelect.vue";
 import DirectorySelect from "../../common/DirectorySelect.vue";
-import {fetchConfig, initialize, saveConfig} from "../../../api/service";
 import BuildList from "../build/BuildList.vue";
+import {fetchConfig, initialize, saveConfig} from "../../../api/service";
 
 export default {
   name: "BasicSetting",
@@ -65,6 +68,7 @@ export default {
         version: '',
         compiler: '',
         supportedDatabases: [],
+        tableFieldDefinitions: [],
         builds: [],
         codespace: ''
       }
