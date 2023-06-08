@@ -57,8 +57,10 @@ export default {
     }
   },
   methods: {
+    // 切换表选择
     handleChange (value) {
       this.selected = this.tables.find(table => table.name === value)
+      // 清空表字段变量组的值（可能是默认值，取决于valueKey属性）
       this.fieldVariableGroup.forEach(group => {
         group[this.valueKey] = []
       })
@@ -80,8 +82,21 @@ export default {
       })
         .then(tables => {
           this.tables = tables
+          // 填充默认选中的table
           if (this.modelValue != null) {
             this.selected = this.tables.find(v => v.name === this.modelValue)
+          }
+          // 填充字段的默认数据
+          for (const group of this.fieldVariableGroup) {
+            const cacheFields = group[this.valueKey]
+            for (const cacheField of cacheFields) {
+              const targetField = this.selected.fields.find(f => f.name === cacheField.name)
+              if (targetField == null) {
+                continue
+              }
+              // 将已安装的值赋给对应的表字段
+              Object.assign(targetField, cacheField)
+            }
           }
         })
         .catch(e => {

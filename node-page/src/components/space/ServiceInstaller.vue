@@ -129,12 +129,11 @@ export default {
             }
             // 表字段变量组
             if (item.type === 'group' && item.scope === 'table_field') {
-              item.value = []
+              item.value = this.__getVariableValue(item)
               return item
             }
             return item
           })
-          console.log('this.variables', this.variables)
         })
         .catch(e => {
           console.log('e', e)
@@ -177,22 +176,36 @@ export default {
     // 获取默认值
     __getVariableValue (variable) {
       let value = null
+      // 项目已安装，则从项目已安装信息中获取
       if (this.projectConfig != null) {
         const service = this.projectConfig.services[this.service]
         // 从自身服务中获取
         if (service != null) {
           value = service.variables[variable.name]
         }
-        // 从主服务中获取
-        if (value == null) {
+        // 如果没有获取到值 && 变量为变量类型 || 服务变量组类型，则还可以从主服务中获取
+        if (value == null &&
+            (variable.type === 'variable' ||
+            (variable.type === 'group' && variable.scope === 'service'))
+        ) {
           let mainService = null
           for (const key in this.projectConfig.main) {
             mainService = key
             break
           }
-          value = this.projectConfig.main[mainService].variables[variable.name]
+          /**
+           * 此处存在漏洞，例如主服务中存在queryFields，子服务中也存在queryFields，但他们想要表达的不是同一层含义。
+           * 对比默认值和主服务中的值，如果类型不匹配，则不视为是同一层含义，此时将value置为null。
+           * 但这样依然可能存在类型相同但含义不同的情况，为少数情况，暂不做处理
+           */
+          const valueFromMain = this.projectConfig.main[mainService].variables[variable.name]
+          value = valueFromMain
+          if (valueFromMain != null && valueFromMain.constructor !== variable.defaultValue.constructor) {
+            value = null
+          }
         }
       }
+      // 如果从已安装的自身服务和主服务中均为获取到，则使用默认值
       if (value == null) {
         value = variable.defaultValue
       }
