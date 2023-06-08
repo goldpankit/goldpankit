@@ -32,7 +32,7 @@
               :space="route.space"
               :service="route.service"
             />
-            <VariableSettings
+            <Variables
               v-show="currentTab === 'variables'"
               :space="route.space"
               :service="route.service"
@@ -59,13 +59,13 @@ import DirectorySelect from "../../../components/common/DirectorySelect.vue";
 import InitializeView from "../../../components/service/settings/InitializeView.vue";
 import BasicSetting from "../../../components/service/settings/BasicSetting.vue";
 import PublishWindow from "../../../components/service/PublishWindow.vue";
+import Variables from "../../../components/service/settings/Variables/Variables.vue";
 import {fetchProfile} from "../../../api/service";
 import {compile} from "../../../api/service.compile";
-import VariableSettings from "../../../components/service/settings/VariableSettings.vue";
 
 export default {
   components: {
-    VariableSettings,
+    Variables,
     PublishWindow, BasicSetting, InitializeView, DirectorySelect, SettingFiles},
   data () {
     return {

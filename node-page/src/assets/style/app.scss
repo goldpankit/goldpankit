@@ -44,5 +44,9 @@ html {
   .button-icon {
     padding-left: 10px;
     padding-right: 10px;
+    &.el-button--small {
+      padding-left: 5px;
+      padding-right: 5px;
+    }
   }
 }
