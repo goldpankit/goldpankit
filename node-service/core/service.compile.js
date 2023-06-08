@@ -151,9 +151,10 @@ class Kit {
     // 获取数据库信息
     const database = project.databases.find(db => db.name === dto.database)
     // 组装变量
-    const variables = this.#getVariables(database, serviceConfig.variables, 'defaultValue')
+    const variables = this.#getVariables(database, dto.variables)
     return Promise.all(variables)
       .then(vars => {
+        console.log('vars', vars)
         return serviceApi.compile({
           defaultCompiler: serviceConfig.compiler,
           variables: vars,
@@ -207,7 +208,7 @@ class Kit {
   }
 
   // 获取安装/编译变量
-  #getVariables (database, variables, valueKey='value') {
+  #getVariables (database, variables) {
     return variables.map(item => {
       return new Promise((resolve, reject) => {
         // 输入类型为表，则查询出表信息
@@ -218,11 +219,11 @@ class Kit {
             user: database.username,
             password: database.password,
             database: database.schema
-          }, item[valueKey])
+          }, item.value || item.defaultValue)
             .then(table => {
               resolve({
                 ...item,
-                value: JSON.stringify(table)
+                value: table
               })
             })
             .catch(e => {
@@ -232,7 +233,7 @@ class Kit {
         }
         resolve({
           ...item,
-          value: item[valueKey]
+          value: item.value || item.defaultValue
         })
       })
     })

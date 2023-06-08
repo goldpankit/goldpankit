@@ -12,7 +12,7 @@ request
 request
   .post('/db/mysql/tables')
   .data(req => {
-    return mysql.getTables(req.body)
+    return mysql.getTables(req.body, true)
   })
 
 module.exports = request.router
