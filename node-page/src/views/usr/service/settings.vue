@@ -33,6 +33,7 @@
               :service="route.service"
             />
             <Variables
+              ref="variables"
               v-show="currentTab === 'variables'"
               :space="route.space"
               :service="route.service"
@@ -105,10 +106,13 @@ export default {
     },
     // 编译服务
     compile () {
+      const variables = this.$refs.variables.variables
+      console.log('variables', variables)
       compile({
         ...this.route,
         projectId: this.currentProject.id,
-        database: this.currentDatabase
+        database: this.currentDatabase,
+        variables
       })
         .then(() => {
           console.log('编译成功')

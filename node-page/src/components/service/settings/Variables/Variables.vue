@@ -36,6 +36,7 @@
         <VariableSettingForm
           v-if="currentVariable != null && currentVariable.type === 'variable'"
           :variable="currentVariable"
+          :variables="variables"
           :with-group="isGroupVariable"
           @change="saveVariables"
         />

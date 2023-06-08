@@ -55,7 +55,7 @@
       </el-table>
     </el-form-item>
     <el-form-item label="Default Value">
-      <VariableInput :variable="variable" value-key="defaultValue" @change="handleChange"/>
+      <VariableInput :variable="variable" :variables="variables" value-key="defaultValue" @change="handleChange"/>
     </el-form-item>
     <el-form-item label="Required">
       <el-switch v-model="variable.required" @change="handleChange"/>
@@ -81,7 +81,12 @@ export default {
   name: "VariableSettingForm",
   components: {VariableInput, CompilerSelect, InputTypeSelect},
   props: {
+    // 当前设置的变量
     variable: {
+      required: true
+    },
+    // 所有变量
+    variables: {
       required: true
     },
     // 是否为组变量
