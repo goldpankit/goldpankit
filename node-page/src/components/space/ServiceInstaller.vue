@@ -127,6 +127,11 @@ export default {
               })
               return item
             }
+            // 表字段变量组
+            if (item.type === 'group' && item.scope === 'table_field') {
+              item.value = []
+              return item
+            }
             return item
           })
           console.log('this.variables', this.variables)

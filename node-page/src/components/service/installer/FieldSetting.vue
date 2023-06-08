@@ -1,13 +1,17 @@
 <template>
-  <h5>{{variableSetting.label}}</h5>
-  <MySqlFieldSelect :table="table" placeholder="Select fields"/>
-  <el-table>
-    <el-table-column label="字段名" fixed></el-table-column>
+  <h5>{{group.label}}</h5>
+  <MySqlFieldSelect @update:modelValue="handleSelect" :model-value="group.value" :table="table" placeholder="Select fields"/>
+  <el-table size="small" :data="group.value">
+    <el-table-column label="字段名" width="100px" prop="name" fixed></el-table-column>
     <el-table-column
-      v-for="variable in variableSetting.children"
+      v-for="variable in group.children"
       :key="variable.name"
       :label="variable.label"
-    ></el-table-column>
+    >
+      <template #default="{ row }">
+        <el-input v-model="row[variable.name]"/>
+      </template>
+    </el-table-column>
   </el-table>
 </template>
 
@@ -21,8 +25,18 @@ export default {
     table: {
       required: true
     },
-    variableSetting: {
+    group: {
       required: true
+    }
+  },
+  methods: {
+    handleSelect (fields) {
+      for (const field of fields) {
+        for (const variable of this.group.children) {
+          field[variable.name] = field[variable.name] || ''
+        }
+      }
+      this.group.value = fields
     }
   }
 }

@@ -3,6 +3,8 @@
     class="mysql-field-select"
     popper-class="mysql-field-select__popper"
     :multiple="multiple"
+    :model-value="modelValue == null ? [] : modelValue.map(f => f.name)"
+    @update:modelValue="handleInput"
   >
     <el-option v-for="field in table.fields" :value="field.name" :label="field.name">
       <p class="option-content">
@@ -17,11 +19,25 @@
 export default {
   name: "MySqlFieldSelect",
   props: {
+    modelValue: {},
     table: {
       required: true
     },
     multiple: {
       default: true
+    }
+  },
+  methods: {
+    handleInput (fieldNames) {
+      this.$emit('update:modelValue',
+        fieldNames
+          // 找到field对象
+          .map(name => {
+            return this.table.fields.find(field => field.name === name)
+          })
+          // 过滤掉未找到的对象
+          .filter(field => field != null)
+      )
     }
   }
 }

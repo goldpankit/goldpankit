@@ -44,6 +44,7 @@
               <ul class="service-dimensions">
                 <li :class="{selected: currentServiceDimension === 'readme'}" @click="currentServiceDimension = 'readme'">Readme</li>
                 <li :class="{selected: currentServiceDimension === 'install'}" @click="currentServiceDimension = 'install'">Install</li>
+                <li :class="{selected: currentServiceDimension === 'issues'}" @click="currentServiceDimension = 'issues'">Issues</li>
               </ul>
               <div class="dimension-content">
                 <div v-show="currentServiceDimension === 'readme'">Readme</div>
@@ -252,7 +253,7 @@ export default {
     overflow: hidden;
     display: flex;
     .service-wrap {
-      width: 350px;
+      width: 300px;
       flex-shrink: 0;
       box-sizing: border-box;
       display: flex;

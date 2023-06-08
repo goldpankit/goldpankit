@@ -19,7 +19,7 @@
   </el-select>
   <ul v-if="selected != null && fieldVariableGroup.length > 0" class="field-settings">
     <li v-for="group of fieldVariableGroup" :key="group.label">
-      <FieldSetting :table="selected" :variable-setting="group"/>
+      <FieldSetting :table="selected" :group="group"/>
     </li>
   </ul>
 </template>
@@ -47,24 +47,17 @@ export default {
   },
   computed: {
     ...mapState(['currentProject', 'currentDatabase']),
-    // 获取字段变量组
+    // 获取表字段变量组，组中包含了表字段的扩展变量
     fieldVariableGroup () {
-      // 自定义表字段变量组
-      const groups = this.variables.filter(v => v.type === 'group' && v.scope === 'table_field')
-      // 基础组：根变量中的表字段变量
-      const basicGroup = {
-        label: '基础设置',
-        children: this.variables.filter(v => v.scope === 'table_field' &&  v.type === 'variable')
-      }
-      if (basicGroup.children.length > 0) {
-        groups.unshift(basicGroup)
-      }
-      return groups
+      return this.variables.filter(v => v.type === 'group' && v.scope === 'table_field')
     }
   },
   methods: {
     handleChange (value) {
       this.selected = this.tables.find(table => table.name === value)
+      this.fieldVariableGroup.forEach(group => {
+        group.value = []
+      })
       this.$emit('update:modelValue', value)
       this.$emit('change', value)
     },
@@ -91,6 +84,11 @@ export default {
   },
   created () {
     this.fetchTables()
+    const json = {
+      queryFields: [
+        { name: '', type: '',  }
+      ]
+    }
   }
 }
 </script>
