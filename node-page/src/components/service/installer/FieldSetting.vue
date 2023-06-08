@@ -1,7 +1,7 @@
 <template>
   <h5>{{group.label}}</h5>
-  <MySqlFieldSelect @update:modelValue="handleSelect" :model-value="group.value" :table="table" placeholder="Select fields"/>
-  <el-table size="small" :data="group.value">
+  <MySqlFieldSelect @update:modelValue="handleSelect" :model-value="group[valueKey]" :table="table" placeholder="Select fields"/>
+  <el-table size="small" :data="group[valueKey]">
     <el-table-column label="字段名" width="100px" prop="name" fixed></el-table-column>
     <el-table-column
       v-for="variable in group.children"
@@ -22,6 +22,9 @@ export default {
   name: "FieldSetting",
   components: {MySqlFieldSelect},
   props: {
+    valueKey: {
+      default: 'value'
+    },
     table: {
       required: true
     },
@@ -36,7 +39,7 @@ export default {
           field[variable.name] = field[variable.name] || ''
         }
       }
-      this.group.value = fields
+      this.group[this.valueKey] = fields
     }
   }
 }

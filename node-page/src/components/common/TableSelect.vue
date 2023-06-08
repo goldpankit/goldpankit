@@ -19,7 +19,7 @@
   </el-select>
   <ul v-if="selected != null && fieldVariableGroup.length > 0" class="field-settings">
     <li v-for="group of fieldVariableGroup" :key="group.label">
-      <FieldSetting :table="selected" :group="group"/>
+      <FieldSetting :value-key="valueKey" :table="selected" :group="group"/>
     </li>
   </ul>
 </template>
@@ -34,6 +34,10 @@ export default {
   components: {FieldSetting},
   props: {
     modelValue: {},
+    // 值字段
+    valueKey: {
+      default: 'value'
+    },
     // 变量列表，用于查找表字段变量
     variables: {
       required: true
@@ -56,7 +60,7 @@ export default {
     handleChange (value) {
       this.selected = this.tables.find(table => table.name === value)
       this.fieldVariableGroup.forEach(group => {
-        group.value = []
+        group[this.valueKey] = []
       })
       this.$emit('update:modelValue', value)
       this.$emit('change', value)
@@ -76,6 +80,9 @@ export default {
       })
         .then(tables => {
           this.tables = tables
+          if (this.modelValue != null) {
+            this.selected = this.tables.find(v => v.name === this.modelValue)
+          }
         })
         .catch(e => {
           console.log('e', e)

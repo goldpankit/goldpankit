@@ -17,6 +17,7 @@
   <TableSelect
     v-else-if="variable.inputType === 'table'"
     :variables="variables"
+    :value-key="valueKey"
     v-model="variable[valueKey]"
   />
 </template>

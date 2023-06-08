@@ -107,7 +107,6 @@ export default {
     // 编译服务
     compile () {
       const variables = this.$refs.variables.variables
-      console.log('variables', variables)
       compile({
         ...this.route,
         projectId: this.currentProject.id,
