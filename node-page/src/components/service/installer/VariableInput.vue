@@ -16,6 +16,7 @@
   />
   <TableSelect
     v-else-if="variable.inputType === 'table'"
+    :variables="variables"
     v-model="variable[valueKey]"
   />
 </template>
@@ -30,9 +31,13 @@ export default {
   name: "VariableInput",
   components: {TableSelect, InstallCheckbox, InstallRadio, InstallInput},
   props: {
+    // 当前变量
     variable: {
       required: true
     },
+    // 变量列表，用于实现TableSelect的字段变量
+    variables: {},
+    // 变量值字段
     valueKey: {
       default: 'value'
     }
@@ -40,23 +45,6 @@ export default {
   computed: {
     inputType () {
       return this.variable.inputType
-    }
-  },
-  watch: {
-    inputType (newValue) {
-      // // 数组类型
-      // if (newValue === 'checkbox') {
-      //   if (typeof this.variable[this.valueKey] === 'string') {
-      //     this.variable[this.valueKey] = []
-      //   }
-      // }
-      // // 非数组类型
-      // else {
-      //   const value = this.variable[this.valueKey]
-      //   if (value instanceof Array) {
-      //     this.variable[this.valueKey] = value[0] || ''
-      //   }
-      // }
     }
   }
 }

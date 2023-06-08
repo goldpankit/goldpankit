@@ -1,11 +1,13 @@
 <template>
-  <h5>查询条件字段设置</h5>
+  <h5>{{variableSetting.label}}</h5>
   <MySqlFieldSelect :table="table" placeholder="Select fields"/>
   <el-table>
     <el-table-column label="字段名" fixed></el-table-column>
-    <el-table-column label="是否必填"></el-table-column>
-    <el-table-column label="输入类型"></el-table-column>
-    <el-table-column label="验证方式"></el-table-column>
+    <el-table-column
+      v-for="variable in variableSetting.children"
+      :key="variable.name"
+      :label="variable.label"
+    ></el-table-column>
   </el-table>
 </template>
 
@@ -17,6 +19,9 @@ export default {
   components: {MySqlFieldSelect},
   props: {
     table: {
+      required: true
+    },
+    variableSetting: {
       required: true
     }
   }

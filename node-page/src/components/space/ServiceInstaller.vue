@@ -27,7 +27,7 @@
               </template>
             </template>
             <!-- 根变量 -->
-            <VariableInput v-if="variable.type === 'variable'" :variable="variable"/>
+            <VariableInput v-if="variable.type === 'variable'" :variable="variable" :variables="variables"/>
             <!-- 服务变量组 -->
             <ul v-else-if="variable.type === 'group'" class="group-vars">
               <li v-for="v of variable.children" :key="`${variable.name}_${v.name}`">

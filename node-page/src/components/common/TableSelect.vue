@@ -12,12 +12,9 @@
       </p>
     </el-option>
   </el-select>
-  <ul v-if="selected != null" class="field-settings">
-    <li>
-      <FieldSetting :table="selected"/>
-    </li>
-    <li>
-      <FieldSetting :table="selected"/>
+  <ul v-if="selected != null && fieldVariableGroup.length > 0" class="field-settings">
+    <li v-for="group of fieldVariableGroup" :key="group.label">
+      <FieldSetting :table="selected" :variable-setting="group"/>
     </li>
   </ul>
 </template>
@@ -30,6 +27,12 @@ import FieldSetting from "../service/installer/FieldSetting.vue";
 export default {
   name: "TableSelect",
   components: {FieldSetting},
+  props: {
+    // 变量列表，用于查找表字段变量
+    variables: {
+      required: true
+    }
+  },
   data () {
     return {
       selected: null,
@@ -37,7 +40,21 @@ export default {
     }
   },
   computed: {
-    ...mapState(['currentProject', 'currentDatabase'])
+    ...mapState(['currentProject', 'currentDatabase']),
+    // 获取字段变量组
+    fieldVariableGroup () {
+      // 自定义表字段变量组
+      const groups = this.variables.filter(v => v.type === 'group' && v.scope === 'table_field')
+      // 基础组：根变量中的表字段变量
+      const basicGroup = {
+        label: '基础设置',
+        children: this.variables.filter(v => v.scope === 'table_field' &&  v.type === 'variable')
+      }
+      if (basicGroup.children.length > 0) {
+        groups.unshift(basicGroup)
+      }
+      return groups
+    }
   },
   methods: {
     handleChange (value) {
