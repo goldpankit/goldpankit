@@ -44,19 +44,19 @@ export default {
   },
   watch: {
     inputType (newValue) {
-      // 数组类型
-      if (newValue === 'checkbox') {
-        if (typeof this.variable[this.valueKey] === 'string') {
-          this.variable[this.valueKey] = []
-        }
-      }
-      // 非数组类型
-      else {
-        const value = this.variable[this.valueKey]
-        if (value instanceof Array) {
-          this.variable[this.valueKey] = value[0] || ''
-        }
-      }
+      // // 数组类型
+      // if (newValue === 'checkbox') {
+      //   if (typeof this.variable[this.valueKey] === 'string') {
+      //     this.variable[this.valueKey] = []
+      //   }
+      // }
+      // // 非数组类型
+      // else {
+      //   const value = this.variable[this.valueKey]
+      //   if (value instanceof Array) {
+      //     this.variable[this.valueKey] = value[0] || ''
+      //   }
+      // }
     }
   }
 }

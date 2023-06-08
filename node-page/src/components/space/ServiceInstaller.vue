@@ -11,13 +11,30 @@
         tips: Install the service by filling out the form below and clicking the Install button at the bottom.
       </p>
       <el-form>
-        <template v-for="variable in variables">
+        <template v-for="variable in serviceVariables">
           <el-form-item
             v-if="!variable.hidden"
             :key="variable.name"
-            :label="variable.message"
+            :label="variable.label"
           >
-            <VariableInput :variable="variable"/>
+            <template #label>
+              <template v-if="variable.type === 'variable'">{{variable.label}}</template>
+              <template v-else>
+                <div class="label-wrap">
+                  <span>{{variable.label}}</span>
+                  <el-icon><ArrowRight /></el-icon>
+                </div>
+              </template>
+            </template>
+            <!-- 根变量 -->
+            <VariableInput v-if="variable.type === 'variable'" :variable="variable"/>
+            <!-- 服务变量组 -->
+            <ul v-else-if="variable.type === 'group'" class="group-vars">
+              <li v-for="v of variable.children" :key="`${variable.name}_${v.name}`">
+                <label class="text-info-1 text-mini">{{v.label}}</label>
+                <VariableInput :variable="v"/>
+              </li>
+            </ul>
           </el-form-item>
         </template>
       </el-form>
@@ -70,6 +87,10 @@ export default {
   },
   computed: {
     ...mapState(['currentProject', 'currentDatabase']),
+    // 服务变量集
+    serviceVariables () {
+      return this.variables.filter(v => v.scope === 'service')
+    },
     unique () {
       return [this.space, this.service, this.version]
     }
@@ -89,10 +110,24 @@ export default {
       })
         .then(data => {
           this.variables = JSON.parse(data.variables).map(item => {
-            return {
-              ...item,
-              value: this.__getVariableValue(item)
+            // 根服务变量
+            if (item.type === 'variable' && item.scope === 'service') {
+              return {
+                ...item,
+                value: this.__getVariableValue(item)
+              }
             }
+            // 根服务变量组
+            if (item.type === 'group' && item.scope === 'service') {
+              item.children = item.children.map(v => {
+                return {
+                  ...v,
+                  value: this.__getVariableValue(v)
+                }
+              })
+              return item
+            }
+            return item
           })
           console.log('this.variables', this.variables)
         })
@@ -191,10 +226,23 @@ export default {
     .write-tip {
       margin-bottom: 10px;
     }
+    // 变量表单
     .el-form {
       padding: 30px;
       box-shadow: var(--form-shadow);
       border-radius: var(--radius-page);
+      :deep(.el-form-item__label) {
+        padding-right: 0;
+        .label-wrap {
+          width: 100%;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+      }
+      .group-vars {
+        width: 100%;
+      }
     }
     // 安装按钮
     .install {

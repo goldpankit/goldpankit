@@ -95,7 +95,7 @@ export default {
     },
     // 添加选项
     createOption () {
-      this.currentVariable.options.push({
+      this.variable.options.push({
         value: '',
         label: '',
         remark: ''
@@ -103,7 +103,7 @@ export default {
     },
     // 删除选项
     deleteOption (index) {
-      this.currentVariable.options.splice(index, 1)
+      this.variable.options.splice(index, 1)
     }
   }
 }

@@ -133,21 +133,14 @@ export default {
         variables: variables.map(item => {
           // 变量组
           if (item.type === 'group') {
+            const copyItem = JSON.parse(JSON.stringify(item))
+            copyItem.children = copyItem.children.map(v => {
+              return this.__getSaveVariable(v)
+            })
             return item
           }
           // 变量
-          const copyItem = JSON.parse(JSON.stringify(item))
-          // 输入类型去掉选项
-          if (copyItem.inputType === 'input') {
-            delete copyItem.options
-          }
-          // 选项类型过滤掉无效选项
-          else {
-            copyItem.options = copyItem.options.filter(
-              opt => opt.value.trim().length > 0 && opt.label.trim().length > 0
-            )
-          }
-          return copyItem
+          return this.__getSaveVariable(item)
         })
       })
         .then(data => {
@@ -168,18 +161,37 @@ export default {
             const variable = JSON.parse(JSON.stringify(item))
             // 变量组增加children，防止用户自行修改
             if (variable.type === 'group') {
-              variable.children = variable.children == null ? [] : variable.children
+              variable.children = variable.children == null ? [] : variable.children.map(v => {
+                // 无论是可选变量还是输入变量，都增加options，在保存时会根据类型自动过滤该属性
+                v.options = v.options == null ? [] : v.options
+                return v
+              })
               return variable
             }
             // 无论是可选变量还是输入变量，都增加options，在保存时会根据类型自动过滤该属性
             variable.options = variable.options == null ? [] : variable.options
             return variable
           })
-          console.log(this.variables)
         })
         .catch(e => {
           console.log('e', e)
         })
+    },
+    // 获取保存变量内容
+    __getSaveVariable (variable) {
+      // 变量
+      const copyVariable = JSON.parse(JSON.stringify(variable))
+      // 输入类型去掉选项
+      if (copyVariable.inputType === 'input') {
+        delete copyVariable.options
+      }
+      // 选项类型过滤掉无效选项
+      else {
+        copyVariable.options = copyVariable.options.filter(
+          opt => opt.value.trim().length > 0 && opt.label.trim().length > 0
+        )
+      }
+      return copyVariable
     },
     // 生成变量名
     __generateVariableName (scope) {
