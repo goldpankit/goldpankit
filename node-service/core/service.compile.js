@@ -211,30 +211,46 @@ class Kit {
   #getVariables (database, variables) {
     return variables.map(item => {
       return new Promise((resolve, reject) => {
-        // 输入类型为表，则查询出表信息
-        if (item.inputType === 'table') {
-          mysql.getTable({
-            host: database.host,
-            port: database.port,
-            user: database.username,
-            password: database.password,
-            database: database.schema
-          }, item.value || item.defaultValue)
-            .then(table => {
-              resolve({
-                ...item,
-                value: table
+        try { // 输入类型为表，则查询出表信息
+          if (item.inputType === 'table') {
+            mysql.getTable({
+              host: database.host,
+              port: database.port,
+              user: database.username,
+              password: database.password,
+              database: database.schema
+            }, item.value || item.defaultValue)
+              .then(table => {
+                resolve({
+                  ...item,
+                  value: table
+                })
+              })
+              .catch(e => {
+                reject(e)
+              })
+            return
+          }
+          // 如果为服务变量组，则修改子变量值
+          if (item.type === 'group' && item.scope === 'service') {
+            resolve({
+              ...item,
+              children: item.children.map(v => {
+                return {
+                  ...v,
+                  value: v.value || v.defaultValue
+                }
               })
             })
-            .catch(e => {
-              reject(e)
-            })
-          return
+            return
+          }
+          resolve({
+            ...item,
+            value: item.value || item.defaultValue
+          })
+        } catch (e) {
+          reject(e)
         }
-        resolve({
-          ...item,
-          value: item.value || item.defaultValue
-        })
       })
     })
   }
