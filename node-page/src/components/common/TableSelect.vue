@@ -1,5 +1,10 @@
 <template>
-  <el-select class="table-select" popper-class="table-select__popper" @change="handleChange">
+  <el-select
+    class="table-select"
+    popper-class="table-select__popper"
+    :model-value="modelValue"
+    @change="handleChange"
+  >
     <el-option
       v-for="table in tables"
       :key="table.name"
@@ -28,6 +33,7 @@ export default {
   name: "TableSelect",
   components: {FieldSetting},
   props: {
+    modelValue: {},
     // 变量列表，用于查找表字段变量
     variables: {
       required: true
