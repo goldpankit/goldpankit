@@ -27,20 +27,19 @@ module.exports = {
                 continue
             }
             // 执行翻译
-            let content = fs.readFile(absolutePath)
-            let newContent = content
-            let newFilepath = `${targetDirectory}/${relativePath}`
+            let newContent = fs.readFile(absolutePath)
+            let newFilepath = relativePath
             for (const translator of translators) {
-                console.log('source', translator.source)
+                console.log(translator.source, translator.target)
                 // 不满足翻译器路径的直接跳过
                 if (!new RegExp(translator.path).test(relativePath)) {
                     continue
                 }
-                newContent = content.replace(new RegExp(translator.source, 'g'), translator.target)
-                newFilepath = relativePath.replace(new RegExp(translator.source, 'g'), translator.target)
-                newFilepath = `${targetDirectory}/${newFilepath}`
+                newContent = newContent.replace(new RegExp(translator.source, 'g'), translator.target)
+                newFilepath = newFilepath.replace(new RegExp(translator.source, 'g'), translator.target)
             }
             // 写入翻译文件
+            newFilepath = `${targetDirectory}/${newFilepath}`
             fs.createFile(newFilepath, newContent, true)
             // 翻译配置
             // TODO
