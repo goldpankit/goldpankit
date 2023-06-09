@@ -12,7 +12,7 @@
           <DatabaseSelect v-model="form.supportedDatabases" @change="saveConfig"/>
         </el-form-item>
         <el-form-item label="Translator" prop="translator">
-          <TranslatorSetting :translator="form.translator"/>
+          <TranslatorSetting :space="space" :service="service" :translator="form.translator" @save="saveConfig"/>
         </el-form-item>
         <el-form-item label="Install Builds" prop="builds">
           <BuildList :builds="form.builds" @save="saveConfig"/>
@@ -128,6 +128,11 @@ export default {
         space: this.space,
         service: this.service,
         ...this.form,
+        translator: {
+          ...this.form.translator,
+          settings: this.form.translator.settings
+            .filter(t => t.path.trim().length > 0 && t.source.trim().length > 0)
+        },
         builds: this.form.builds.map(item => {
           return {
             name: item.name,

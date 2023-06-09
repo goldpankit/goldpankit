@@ -44,3 +44,8 @@ export function saveFileSetting (data) {
 export function saveVariables (data) {
   return request.post('/service/variables/save', data)
 }
+
+// 翻译服务
+export function translate (data) {
+  return request.post('/service/translate', data)
+}
