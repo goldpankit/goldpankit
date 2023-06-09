@@ -11,6 +11,9 @@
         <el-form-item label="Supported Databases" prop="supportedDatabases">
           <DatabaseSelect v-model="form.supportedDatabases" @change="saveConfig"/>
         </el-form-item>
+        <el-form-item label="Translator" prop="translator">
+          <TranslatorSetting :translator="form.translator"/>
+        </el-form-item>
         <el-form-item label="Install Builds" prop="builds">
           <BuildList :builds="form.builds" @save="saveConfig"/>
         </el-form-item>
@@ -39,15 +42,16 @@
 </template>
 
 <script>
-import CompilerSelect from "../../common/CompilerSelect.vue";
-import DatabaseSelect from "../../database/DatabaseSelect.vue";
-import DirectorySelect from "../../common/DirectorySelect.vue";
-import BuildList from "../build/BuildList.vue";
-import {fetchConfig, initialize, saveConfig} from "../../../api/service";
+import CompilerSelect from "../../../common/CompilerSelect.vue";
+import DatabaseSelect from "../../../database/DatabaseSelect.vue";
+import DirectorySelect from "../../../common/DirectorySelect.vue";
+import BuildList from "../../build/BuildList.vue";
+import TranslatorSetting from "./TranslatorSetting.vue";
+import {fetchConfig, initialize, saveConfig} from "../../../../api/service";
 
 export default {
   name: "BasicSetting",
-  components: {BuildList, DirectorySelect, DatabaseSelect, CompilerSelect},
+  components: {TranslatorSetting, BuildList, DirectorySelect, DatabaseSelect, CompilerSelect},
   props: {
     space: {
       required: true
@@ -70,6 +74,10 @@ export default {
         supportedDatabases: [],
         tableFieldDefinitions: [],
         builds: [],
+        translator: {
+          output: '',
+          settings: []
+        },
         codespace: ''
       }
     }
@@ -79,6 +87,7 @@ export default {
     initialize () {
       initialize(this.form)
         .then(() => {
+          this.newCodespace.changing = false
           this.$emit('initialized', this.form)
         })
         .catch(e => {
@@ -101,6 +110,7 @@ export default {
             this.form.compiler = config.compiler || this.form.compiler
             this.form.supportedDatabases = config.supportedDatabases || this.form.supportedDatabases
             this.form.builds = config.builds || this.form.builds
+            this.form.translator = config.translator || this.form.translator
           }
         })
         .catch(e => {
@@ -146,6 +156,7 @@ export default {
         this.form.supportedDatabases = config.supportedDatabases || []
         this.form.builds = config.builds || []
         this.form.codespace = config.codespace
+        this.form.translator = config.translator
         this.originForm = JSON.parse(JSON.stringify(this.form))
       })
       .catch(e => {
