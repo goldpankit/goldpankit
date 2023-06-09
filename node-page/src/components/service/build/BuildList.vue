@@ -8,7 +8,6 @@
       <el-collapse-item
         v-for="(build,index) in builds"
         :key="build.id"
-        :title="build.type"
         :name="build.id"
       >
         <template #title>
@@ -117,7 +116,7 @@ export default {
           return buildName
         }
       }
-    },
+    }
   }
 }
 </script>

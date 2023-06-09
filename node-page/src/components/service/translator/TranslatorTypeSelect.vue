@@ -1,18 +1,18 @@
 <template>
-  <el-select class="build-command-type-select">
-    <el-option value="Node" label="Node"/>
-    <el-option value="MySQL" label="MySQL"/>
+  <el-select class="translator-type-select">
+    <el-option value="pattern" label="Pattern"/>
+    <el-option value="code" label="Code"/>
   </el-select>
 </template>
 
 <script>
 export default {
-  name: "BuildCommandTypeSelect"
+  name: "TranslatorTypeSelect"
 }
 </script>
 
 <style scoped lang="scss">
-.build-command-type-select {
+.translator-type-select {
   width: 100%;
 }
 </style>

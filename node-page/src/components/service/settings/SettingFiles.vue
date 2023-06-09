@@ -110,6 +110,7 @@ export default {
     },
     // 保存文件配置
     saveFileSetting () {
+      console.log('save')
       if (this.saveTimeout != null) {
         clearTimeout(this.saveTimeout)
       }
@@ -117,7 +118,11 @@ export default {
         saveFileSetting({
           space: this.space,
           service: this.service,
-          ...this.currentNode,
+          type: this.currentNode.type,
+          path: this.currentNode.path,
+          relativePath: this.currentNode.relativePath,
+          compiler: this.currentNode.compiler,
+          enableExpress: this.currentNode.enableExpress,
           variables: this.currentNode.variables.filter(v => v.name.trim().length > 0)
         })
           .then(() => {

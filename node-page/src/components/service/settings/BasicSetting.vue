@@ -133,7 +133,8 @@ export default {
         translator: {
           ...this.form.translator,
           settings: this.form.translator.settings
-            .filter(t => t.code.trim().length > 0)
+            .filter(t => (t.type === 'code' && t.code.trim().length > 0) ||
+              (t.type === 'pattern' && t.source.trim() !== '' && t.target.trim() !== ''))
             .map(t => {
               return {
                 name: t.name,

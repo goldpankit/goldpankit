@@ -17,12 +17,16 @@
           <div class="title-wrap">
             <div v-if="item.__readonly" class="view">
               <p class="name">{{item.name}}</p>
+              <p class="path">{{item.path}}</p>
               <p class="type">{{item.type}}</p>
             </div>
             <div v-else class="edit">
               <el-form :model="item">
                 <el-form-item label="Name" required>
                   <el-input class="name" v-model="item.name" @click.stop @keypress.stop @input="handleSave"/>
+                </el-form-item>
+                <el-form-item label="Path" required>
+                  <el-input class="path" v-model="item.path" @click.stop @keypress.stop @input="handleSave"/>
                 </el-form-item>
                 <el-form-item label="Type" required>
                   <TranslatorTypeSelect class="type" v-model="item.type" @change="handleSave"/>
@@ -58,9 +62,9 @@
         </template>
         <!-- 编码翻译 -->
         <template v-else-if="item.type === 'code'">
-          <p>function translate(filepath, content) {</p>
+          <p>function translate(filepath, content, fileSetting) {</p>
           <el-input
-            v-model="item.content"
+            v-model="item.code"
             type="textarea"
             :rows="5"
             @input="handleSave"
@@ -173,6 +177,14 @@ export default {
   },
   created () {
     console.log('translator', this.translator)
+      // {
+      //   "name": "logback %处理",
+      //   "path": ".*logback.xml",
+      //   "type": "pattern",
+      //   "source": "\\%",
+      //   "target": "<#noparse>%</#noparse>",
+      //   "code": ""
+      // }
   }
 }
 </script>
@@ -211,17 +223,25 @@ export default {
         .el-form-item {
           flex-direction: row;
           .name {
+            width: 100px;
             .el-input__inner {
               color: var(--primary-color-match-2);
               font-weight: bold;
             }
           }
+          .path {
+            width: 120px;
+          }
         }
       }
       .name {
-        width: 150px;
+        width: 100px;
         font-weight: bold;
         color: var(--primary-color-match-2);
+        margin-right: 10px;
+      }
+      .path {
+        width: 120px;
         margin-right: 10px;
       }
       .type {

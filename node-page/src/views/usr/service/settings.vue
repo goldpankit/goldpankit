@@ -58,7 +58,7 @@ import {mapState} from "vuex";
 import SettingFiles from "../../../components/service/settings/SettingFiles.vue";
 import DirectorySelect from "../../../components/common/DirectorySelect.vue";
 import InitializeView from "../../../components/service/settings/InitializeView.vue";
-import BasicSetting from "../../../components/service/settings/BasicSetting/BasicSetting.vue";
+import BasicSetting from "../../../components/service/settings/BasicSetting.vue";
 import PublishWindow from "../../../components/service/PublishWindow.vue";
 import Variables from "../../../components/service/settings/Variables/Variables.vue";
 import {fetchProfile} from "../../../api/service";
