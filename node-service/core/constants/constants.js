@@ -12,9 +12,12 @@ module.exports = {
     supportedDatabases: [], // 支持的数据库列表
     builds: [], // 构建列表
     variables: [], // 服务变量列表
-    translator: [ // 翻译器列表，将代码翻译成模版
-      // {path: '*', source: 'ruoyi', target: '${projectEnName}' },
-    ],
+    translator: { // 翻译器
+      output: '', // 翻译输出路径
+      settings: [ // 翻译器列表，将代码翻译成模版
+        // {path: '*', source: 'ruoyi', target: '${projectEnName}' },
+      ]
+    },
     settings: [] // 文件设置列表，设置内容见SERVICE_FILE_CONFIG_CONTENT
   },
   // 服务文件配置
@@ -59,6 +62,10 @@ module.exports = {
     //     variables: {}
     //   }
     }
+  },
+  // 翻译器
+  TRANSLATOR: {
+    DEFAULT_OUTPUT_PATH: `.${PROJECT_NAME}/translated`
   },
   // 监听、推送服务文件时忽略的目录
   IGNORE_DIRS: ['.DS_Store',`.${PROJECT_NAME}`, '.idea', '.vscode', 'node_modules', '.git', '.github'],

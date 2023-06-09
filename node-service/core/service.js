@@ -7,15 +7,14 @@ const serviceApi = require("./api/service");
 module.exports = {
   // 初始化
   initialize(extConfig) {
-    // 读取配置结构
-    const config = JSON.parse(JSON.stringify(Const.SERVICE_CONFIG_CONTENT))
     // 获取配置文件路径
     const codespace = extConfig.codespace
+    // 读取配置结构
+    const config = JSON.parse(JSON.stringify(Const.SERVICE_CONFIG_CONTENT))
+    config.translator.output = Const.TRANSLATOR.DEFAULT_OUTPUT_PATH
     const configPath = this.__getConfigPath(codespace)
     // 合并配置
-    for (const key in config) {
-      config[key] = extConfig[key] || config[key]
-    }
+    object.merge(extConfig, config)
     // 合并当前服务配置
     if (fs.exists(configPath)) {
       const currentConfig = fs.readJSONFile(configPath)
