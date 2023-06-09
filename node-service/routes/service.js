@@ -1,5 +1,6 @@
 const request = require('../utils/request.define')
 const service = require('../core/service')
+const serviceTranslator = require('../core/service.translator')
 
 // 创建服务
 request.post('/service/create').proxy()
@@ -49,6 +50,19 @@ request
   .post('/service/config/save')
   .data(req => {
     return service.saveServiceConfig(req.body)
+  })
+
+/**
+ * 翻译服务
+ * req.body = {
+ *   space: '',
+ *   service: ''
+ * }
+ */
+request
+  .post('/service/translate')
+  .data(req => {
+    return serviceTranslator.translate(req.body)
   })
 
 // 查询服务信息
