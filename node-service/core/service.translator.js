@@ -1,6 +1,10 @@
 const service = require('./service')
 const fs = require("./utils/fs");
-module.exports = {
+
+class Translator {
+    constructor() {
+    }
+
     /**
      * 根据翻译器配置翻译空间代码
      * dto = {
@@ -21,28 +25,84 @@ module.exports = {
         // 删除已翻译目录
         fs.deleteDirectory(targetDirectory, true)
         for (const absolutePath of files) {
-            const relativePath = absolutePath.replace(serviceConfig.codespace + '/', '')
             // 目录，直接跳过
             if (fs.isDirectory(absolutePath)) {
                 continue
             }
-            // 执行翻译
-            let newContent = fs.readFile(absolutePath)
-            let newFilepath = relativePath
-            for (const translator of translators) {
-                console.log(translator.source, translator.target)
-                // 不满足翻译器路径的直接跳过
-                if (!new RegExp(translator.path).test(relativePath)) {
-                    continue
-                }
-                newContent = newContent.replace(new RegExp(translator.source, 'g'), translator.target)
-                newFilepath = newFilepath.replace(new RegExp(translator.source, 'g'), translator.target)
+            // 服务空间相对路径
+            const relativePath = absolutePath.replace(serviceConfig.codespace + '/', '')
+            // 服务空间相对路径为xxx-vue的翻译空间相对路径可能为${path}-vue，此处需要获取翻译空间相对路径，
+            // 获取配置信息时需要根据翻译相对路径来获取，因为在进行服务文件配置时，配置的是翻译后的文件路径
+            // 在翻译路径时，构建虚拟文件，content设置为空，文件设置给定一个空对象（减少使用方的判断）
+            let vfile = {
+                filepath: relativePath,
+                content: ''
             }
+            let translatedFilepath = this.#translate(translators, vfile, {}).filepath
+            // 获取文件设置
+            const fileSetting = service.getFileSetting(serviceConfig.codespace, translatedFilepath)
+            // 修改文件编译器设置为真实编译器
+            fileSetting.compiler = fileSetting._actualCompiler
+            delete fileSetting._actualCompiler
+            // 执行翻译
+            let file = {
+                filepath: relativePath,
+                content: fs.readFile(absolutePath)
+            }
+            const outputFile = this.#translate(translators, file, fileSetting)
             // 写入翻译文件
-            newFilepath = `${targetDirectory}/${newFilepath}`
-            fs.createFile(newFilepath, newContent, true)
+            fs.createFile(`${targetDirectory}/${outputFile.filepath}`, outputFile.content, true)
             // 翻译配置
             // TODO
         }
     }
+
+    // 根据翻译器列表对文件进行翻译
+    #translate (translators, file, fileSetting) {
+        let relativePath = file.filepath
+        for (const translator of translators) {
+            // 不满足翻译器路径的直接跳过
+            if (!new RegExp(translator.path).test(relativePath)) {
+                continue
+            }
+            // 正则翻译
+            if (translator.type === 'pattern') {
+                file = this.#translateByPattern(file.filepath, file.content, translator)
+            }
+            // 自定义代码翻译
+            else if (translator.type === 'code') {
+                file = this.#translateByCode(file.filepath, file.content, fileSetting, translator.code)
+                if (file == null || file.filepath == null || file.content == null) {
+                    throw new Error('translator must return filepath and content like return { filepath, content }.')
+                }
+            }
+        }
+        return file
+    }
+
+    /**
+     * 根据代码翻译
+     * 注意：此处使用eval实现，在翻译器自定义代码中可访问以下参数
+     * @param filepath 当前翻译的文件相对路径（相对服务空间）
+     * @param content 当前翻译的文件内容
+     * @param fileSetting 文件设置
+     * @param code 翻译器代码
+     */
+    #translateByCode(filepath, content, fileSetting, code) {
+        return eval(`(function translate() {
+          ${code}
+        })()`)
+    }
+
+    // 根据正则表达式翻译
+    #translateByPattern (filepath, content, translator) {
+        filepath = filepath.replace(new RegExp(translator.source, 'g'), translator.target)
+        if (content !== null && content !== '') {
+            content = content.replace(new RegExp(translator.source, 'g'), translator.target)
+        }
+        return {
+            filepath, content
+        }
+    }
 }
+module.exports = new Translator()

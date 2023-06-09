@@ -186,12 +186,18 @@ class Kit {
 
   // 获取文件配置列表
   #getFileConfigList (space, serviceName) {
-    const serviceConfig = cache.services.get(space, serviceName)
-    const fullpaths = fs.getFilesWithChildren(serviceConfig.codespace)
+    const serviceConfig = service.getServiceConfig({ space: space, service: serviceName})
+    // 获取文件真实存放的路径
+    let fileStoragePath = serviceConfig.codespace
+    if (serviceConfig.translator.settings.length > 0) {
+      fileStoragePath = `${fileStoragePath}/${Const.TRANSLATOR.DEFAULT_OUTPUT_PATH}`
+    }
+    const fullpaths = fs.getFilesWithChildren(fileStoragePath)
     const configs = []
     for (const fullpath of fullpaths) {
       // 获取文件配置
-      const relativePath = fullpath.replace(serviceConfig.codespace + '/', '')
+      const relativePath = fullpath.replace(fileStoragePath + '/', '')
+      // 获取问及爱你配置，需使用service配置中的codespace
       const fileSettings = service.getFileSetting(serviceConfig.codespace, relativePath)
       // 构建文件对象
       const isDirectory = fs.isDirectory(fullpath)

@@ -33,7 +33,6 @@ module.exports = {
   getProfile(spaceName, serviceName) {
     // 读取本地服务配置
     const serviceConfig = cache.services.get(spaceName, serviceName)
-    console.log(spaceName, serviceName, serviceConfig)
     // 远程获取服务简介
     return serviceApi.fetchProfile({ spaceName, serviceName })
       .then(data => {
@@ -75,8 +74,13 @@ module.exports = {
   },
   // 获取服务文件树
   getFileTree(space, service) {
-    const serviceConfig = cache.services.get(space, service)
-    return this.__getFileTree(serviceConfig.codespace, serviceConfig.codespace)
+    const serviceConfig = this.getServiceConfig({ space, service})
+    // 获取文件真实存放的路径
+    let fileStoragePath = serviceConfig.codespace
+    if (serviceConfig.translator.settings.length > 0) {
+      fileStoragePath = `${fileStoragePath}/${Const.TRANSLATOR.DEFAULT_OUTPUT_PATH}`
+    }
+    return this.__getFileTree(fileStoragePath, fileStoragePath, serviceConfig.codespace)
   },
   // 保存服务文件
   saveFileSetting (fileSettings) {
@@ -142,29 +146,56 @@ module.exports = {
   getFileSetting (codespace, fileRelativePath) {
     const configPath = this.__getConfigPath(codespace)
     const config = fs.readJSONFile(configPath)
-    const settings = JSON.parse(JSON.stringify(Const.SERVICE_FILE_CONFIG_CONTENT))
+    const setting = JSON.parse(JSON.stringify(Const.SERVICE_FILE_CONFIG_CONTENT))
     let targetSettings = config.settings.find(file => file.path === fileRelativePath)
     if (targetSettings != null) {
-      object.merge(targetSettings, settings)
+      object.merge(targetSettings, setting)
     }
-    return settings
+    // 没有设置过的文件不会产生配置文件，此时path为空，此处设定path值
+    setting.path = fileRelativePath
+    // 如果当前文件的编译模式为空，找出实际编译模式（为空时继承上级编译模式）
+    setting._actualCompiler = setting.compiler
+    if (setting.compiler == null || setting.compiler === '') {
+      // 先按照路径的层级进行倒序排列，然后依次startsWith，找出最近的上级节点
+      config.settings.sort((item1, item2) => {
+        const item1Level = item1.path.split('/').length
+        const item2Level = item2.path.split('/').length
+        return item2Level - item1Level
+      })
+      for (const item of config.settings) {
+        if (setting.path.startsWith(item.path) && item.compiler != null && item.compiler !== '') {
+          setting._actualCompiler = item.compiler
+          break
+        }
+      }
+      // 如果没有匹配到上级设置了编译器，则使用服务编译器
+      if (setting._actualCompiler == null || setting._actualCompiler === '') {
+        setting._actualCompiler = config.compiler
+      }
+    }
+    return setting
   },
   // 获取文件配置目录
   __getConfigPath (codespace) {
     return `${codespace}/${Const.SERVICE_CONFIG_DIRECTORY}/${Const.SERVICE_CONFIG_FILE}`
   },
-  // 获取文件树
-  __getFileTree (absolutePath, codespace) {
+  /**
+   * 获取文件树
+   * @param directoryPath 当前查询的目录路径
+   * @param fileStoragePath 真实服务代码空间路径（存在翻译器时真实代码空间不是codespace）
+   * @param codespace 服务代码空间路径
+   */
+  __getFileTree (directoryPath, fileStoragePath, codespace) {
     let filePool = []
-    const files = fs.getFiles(absolutePath)
+    const files = fs.getFiles(directoryPath)
     files.forEach(file => {
-      const fullpath = path.join(absolutePath, file)
+      const fullpath = path.join(directoryPath, file)
       // 忽略文件
       if (Const.IGNORE_DIRS.findIndex(f => file === f || file.startsWith(`${f}/`)) !== -1) {
         return
       }
       // 获取文件配置
-      const relativePath = fullpath.replace(codespace + '/', '')
+      const relativePath = fullpath.replace(fileStoragePath + '/', '')
       const fileSettings = this.getFileSetting(codespace, relativePath)
       // 构建文件对象
       const isDirectory = fs.isDirectory(fullpath)
@@ -181,7 +212,7 @@ module.exports = {
       }
       filePool.push(fileObject);
       if (fileObject.type === 'DIRECTORY') {
-        fileObject.children = this.__getFileTree(fullpath, codespace);
+        fileObject.children = this.__getFileTree(fullpath, fileStoragePath, codespace);
       }
     });
     return filePool

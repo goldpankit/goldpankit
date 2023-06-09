@@ -12,7 +12,7 @@
           <DatabaseSelect v-model="form.supportedDatabases" @change="saveConfig"/>
         </el-form-item>
         <el-form-item label="Translator" prop="translator">
-          <TranslatorSetting :space="space" :service="service" :translator="form.translator" @save="saveConfig"/>
+          <TranslatorList :space="space" :service="service" :translator="form.translator" @save="saveConfig"/>
         </el-form-item>
         <el-form-item label="Install Builds" prop="builds">
           <BuildList :builds="form.builds" @save="saveConfig"/>
@@ -42,16 +42,16 @@
 </template>
 
 <script>
-import CompilerSelect from "../../../common/CompilerSelect.vue";
-import DatabaseSelect from "../../../database/DatabaseSelect.vue";
-import DirectorySelect from "../../../common/DirectorySelect.vue";
-import BuildList from "../../build/BuildList.vue";
-import TranslatorSetting from "./TranslatorSetting.vue";
-import {fetchConfig, initialize, saveConfig} from "../../../../api/service";
+import CompilerSelect from "../../common/CompilerSelect.vue";
+import DatabaseSelect from "../../database/DatabaseSelect.vue";
+import DirectorySelect from "../../common/DirectorySelect.vue";
+import BuildList from "../build/BuildList.vue";
+import TranslatorList from "../translator/TranslatorList.vue";
+import {fetchConfig, initialize, saveConfig} from "../../../api/service";
 
 export default {
   name: "BasicSetting",
-  components: {TranslatorSetting, BuildList, DirectorySelect, DatabaseSelect, CompilerSelect},
+  components: {TranslatorList, BuildList, DirectorySelect, DatabaseSelect, CompilerSelect},
   props: {
     space: {
       required: true
@@ -74,6 +74,7 @@ export default {
         supportedDatabases: [],
         tableFieldDefinitions: [],
         builds: [],
+        unbuilds: [],
         translator: {
           output: '',
           settings: []
@@ -110,6 +111,7 @@ export default {
             this.form.compiler = config.compiler || this.form.compiler
             this.form.supportedDatabases = config.supportedDatabases || this.form.supportedDatabases
             this.form.builds = config.builds || this.form.builds
+            this.form.unbuilds = config.unbuilds || this.form.unbuilds
             this.form.translator = config.translator || this.form.translator
           }
         })
@@ -131,7 +133,17 @@ export default {
         translator: {
           ...this.form.translator,
           settings: this.form.translator.settings
-            .filter(t => t.path.trim().length > 0 && t.source.trim().length > 0)
+            .filter(t => t.code.trim().length > 0)
+            .map(t => {
+              return {
+                name: t.name,
+                path: t.path.trim().length === 0 ? '.*' : t.path,
+                type: t.type,
+                source: t.type === 'pattern' ? t.source : '',
+                target: t.type === 'pattern' ? t.target : '',
+                code: t.type === 'code' ? t.code : ''
+              }
+            })
         },
         builds: this.form.builds.map(item => {
           return {
@@ -160,6 +172,7 @@ export default {
         this.form.compiler = config.compiler || 'freemarker'
         this.form.supportedDatabases = config.supportedDatabases || []
         this.form.builds = config.builds || []
+        this.form.unbuilds = config.unbuilds || []
         this.form.codespace = config.codespace
         this.form.translator = config.translator
         this.originForm = JSON.parse(JSON.stringify(this.form))
