@@ -115,9 +115,14 @@ module.exports = {
   publish(dto) {
     // 获取服务文件
     const serviceConfig = this.getServiceConfig({ space: dto.space, service: dto.service })
-    const files = fs.getFilesWithChildren(serviceConfig.codespace, serviceConfig.codespace).map(fullpath => {
+    let fileStoragePath = serviceConfig.codespace
+    if (serviceConfig.translator.settings.length > 0) {
+      fileStoragePath = `${fileStoragePath}/${Const.TRANSLATOR.DEFAULT_OUTPUT_PATH}`
+    }
+    // 获取文件
+    const files = fs.getFilesWithChildren(fileStoragePath, fileStoragePath).map(fullpath => {
       const filetype = fs.isDirectory(fullpath) ? 'DIRECTORY' : 'FILE'
-      const relativePath = fullpath.replace(serviceConfig.codespace + '/', '')
+      const relativePath = fullpath.replace(fileStoragePath + '/', '')
       const fileSetting = this.getFileSetting(serviceConfig.codespace, relativePath)
       const fileInfo = filetype === 'DIRECTORY' ? { encode: null, content: null } : fs.readFile(fullpath)
       return {
@@ -130,7 +135,7 @@ module.exports = {
         enableExpress: fileSetting.enableExpress
       }
     })
-    // 获取服务变量
+    // 执行发布
     return serviceApi.publish({
       space: dto.space,
       service: dto.service,
