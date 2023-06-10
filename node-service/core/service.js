@@ -119,11 +119,12 @@ module.exports = {
       const filetype = fs.isDirectory(fullpath) ? 'DIRECTORY' : 'FILE'
       const relativePath = fullpath.replace(serviceConfig.codespace + '/', '')
       const fileSetting = this.getFileSetting(serviceConfig.codespace, relativePath)
+      const fileInfo = filetype === 'DIRECTORY' ? { encode: null, content: null } : fs.readFile(fullpath)
       return {
         filepath: relativePath,
         filetype,
-        contentType: fs.getContentType(fullpath),
-        content: filetype === 'DIRECTORY' ? null : fs.readFile(fullpath),
+        contentEncode: fileInfo.encode,
+        content: fileInfo.content,
         compiler: fileSetting.compiler,
         variables: JSON.stringify(fileSetting.variables),
         enableExpress: fileSetting.enableExpress
@@ -202,7 +203,6 @@ module.exports = {
       const fileObject = {
         label: file,
         type: isDirectory ? 'DIRECTORY' : 'FILE',
-        contentType: isDirectory ? undefined : fs.getContentType(fullpath),
         path: fullpath,
         relativePath,
         compiler: fileSettings.compiler,

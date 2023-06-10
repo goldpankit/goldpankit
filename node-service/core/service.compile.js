@@ -35,10 +35,8 @@ class Kit {
     const database = project.databases.find(db => db.name === dto.database)
     // 组装变量
     const variables = this.#getVariables(database, dto.variables)
-    console.log('variables', dto.variables)
     return Promise.all(variables)
       .then(vars => {
-        console.log('vars', vars)
         return serviceApi.install({
           space: dto.space,
           service: dto.service,
@@ -154,7 +152,6 @@ class Kit {
     const variables = this.#getVariables(database, dto.variables)
     return Promise.all(variables)
       .then(vars => {
-        console.log('vars', vars)
         return serviceApi.compile({
           defaultCompiler: serviceConfig.compiler,
           variables: vars,
@@ -201,9 +198,11 @@ class Kit {
       const fileSettings = service.getFileSetting(serviceConfig.codespace, relativePath)
       // 构建文件对象
       const isDirectory = fs.isDirectory(fullpath)
+      const fileInfo = isDirectory ? { encode: null, content: null } : fs.readFile(fullpath)
       configs.push({
         filepath: relativePath,
-        content: isDirectory ? null : fs.readFile(fullpath),
+        content: fileInfo.content,
+        contentEncode: fileInfo.encode,
         enableExpress: fileSettings.enableExpress,
         compiler: fileSettings.compiler,
         filetype: isDirectory ? 'DIRECTORY' : 'FILE',

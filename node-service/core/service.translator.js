@@ -24,35 +24,45 @@ class Translator {
         const files = fs.getFilesWithChildren(serviceConfig.codespace)
         // 删除已翻译目录
         fs.deleteDirectory(targetDirectory, true)
+        // 循环文件逐个翻译
         for (const absolutePath of files) {
             // 目录，直接跳过
             if (fs.isDirectory(absolutePath)) {
                 continue
             }
+            const fileInfo = fs.readFile(absolutePath)
             // 服务空间相对路径
             const relativePath = absolutePath.replace(serviceConfig.codespace + '/', '')
+            // 翻译路径
             // 服务空间相对路径为xxx-vue的翻译空间相对路径可能为${path}-vue，此处需要获取翻译空间相对路径，
             // 获取配置信息时需要根据翻译相对路径来获取，因为在进行服务文件配置时，配置的是翻译后的文件路径
             // 在翻译路径时，构建虚拟文件，content设置为空，文件设置给定一个空对象（减少使用方的判断）
-            let vfile = {
-                filepath: relativePath,
-                content: ''
+            let translateFilepathFile = {
+                filepath: relativePath
             }
-            let translatedFilepath = this.#translate(translators, vfile, {}).filepath
-            // 获取文件设置
+            let translatedFilepath = this.#translate(translators, translateFilepathFile, {}).filepath
+            // 根据翻译路径获取文件设置
             const fileSetting = service.getFileSetting(serviceConfig.codespace, translatedFilepath)
             // 修改文件编译器设置为真实编译器
             fileSetting.compiler = fileSetting._actualCompiler
             delete fileSetting._actualCompiler
-            // 执行翻译
-            let file = {
+            // 翻译文件内容
+            let translateContentFile = {
                 filepath: relativePath,
-                content: fs.readFile(absolutePath)
+                content: fileInfo.content
             }
-            const outputFile = this.#translate(translators, file, fileSetting)
+            let translatedContent = ''
+            // 文本文件进行翻译
+            if (fileInfo.encode === 'utf-8') {
+                translatedContent = this.#translate(translators, translateContentFile, fileSetting).content
+            }
+            // 二进制文件不做翻译，将其转为Buffer对象
+            else {
+                translatedContent = Buffer.from(translateContentFile.content, 'base64')
+            }
             // 写入翻译文件
-            fs.createFile(`${targetDirectory}/${outputFile.filepath}`, outputFile.content, true)
-            // 翻译配置
+            fs.createFile(`${targetDirectory}/${translatedFilepath}`, translatedContent, true)
+            // 翻译配置路径（用户可能先定义变量再执行翻译，此时需要将配置的path修改为翻译后的path）
             // TODO
         }
     }
@@ -72,7 +82,7 @@ class Translator {
             // 自定义代码翻译
             else if (translator.type === 'code') {
                 file = this.#translateByCode(file.filepath, file.content, fileSetting, translator.code)
-                if (file == null || file.filepath == null || file.content == null) {
+                if (file == null || (file.filepath == null && file.content == null)) {
                     throw new Error('translator must return filepath and content like return { filepath, content }.')
                 }
             }
@@ -96,8 +106,10 @@ class Translator {
 
     // 根据正则表达式翻译
     #translateByPattern (filepath, content, translator) {
-        filepath = filepath.replace(new RegExp(translator.source, 'g'), translator.target)
-        if (content !== null && content !== '') {
+        if (filepath != null && filepath !== '') {
+            filepath = filepath.replace(new RegExp(translator.source, 'g'), translator.target)
+        }
+        if (content != null && content !== '') {
             content = content.replace(new RegExp(translator.source, 'g'), translator.target)
         }
         return {

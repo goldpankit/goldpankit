@@ -43,8 +43,12 @@ module.exports = {
       if (file.filetype !== 'DIRECTORY') {
         const filepath = `${codespace}/${relativePath}`
         let content = file.content
+        // 二进制文件
+        if (file.contentEncode === 'base64') {
+          content = Buffer.from(content, 'base64')
+        }
         // 如果内容为省略号表达式，则将合并后的内容写入新文件
-        if (ee.isEllipsis(content)) {
+        else if (ee.isEllipsis(content)) {
           const originContent = this.readFile(filepath)
           content = ee.merge(content, originContent)
         }
@@ -79,8 +83,18 @@ module.exports = {
   isFile(filepath) {
     return fs.statSync(filepath).isFile()
   },
+  /**
+   * 读取文件
+   * @param filepath
+   * @returns {string}
+   */
   readFile(filepath) {
-    return fs.readFileSync(filepath).toString()
+    const buffer = fs.readFileSync(filepath)
+    const encode = this.getContentEncode(buffer)
+    return {
+      encode,
+      content: buffer.toString(encode)
+    }
   },
   readJSONFile(filepath) {
     if (!this.exists(filepath)) {
@@ -142,16 +156,14 @@ module.exports = {
     }
     return filepath.split('/').pop()
   },
-  getContentType(filepath) {
-    let filetype = this.getFilename(filepath)
-    if (filetype.indexOf('.') !== -1) {
-      filetype = `.${filetype.split('.').pop()}`
+  /**
+   * 获取文件编码，
+   */
+  getContentEncode (buffer) {
+    if(buffer.toString('utf-8').indexOf('�') !== -1) {
+      return 'base64'
     }
-    filetype = Const.FILE_TYPE_MAP[filetype.toLowerCase()]
-    if (filetype == null) {
-      return 'FILE'
-    }
-    return filetype
+    return 'utf-8'
   },
   toJSONFileString (json) {
     return JSON.stringify(json, null, 2)
