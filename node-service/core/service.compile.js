@@ -8,6 +8,7 @@ const userProject = require("./user.project");
 const object = require("./utils/object");
 const serviceBuild = require("./service.build");
 const mysql = require("./utils/db/mysql");
+const serviceTranslator = require('./service.translator')
 
 class Kit {
   constructor() {
@@ -146,6 +147,10 @@ class Kit {
     }
     // 获取服务信息
     const serviceConfig = service.getServiceConfig({ space: dto.space, service: dto.service })
+    // 如果存在翻译器，则先进行翻译
+    if (serviceConfig.translator.settings.length > 0) {
+      serviceTranslator.translate({ space: dto.space, service: dto.service })
+    }
     // 获取数据库信息
     const database = project.databases.find(db => db.name === dto.database)
     // 组装变量
