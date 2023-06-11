@@ -7,6 +7,7 @@ import 'element-plus/dist/index.css'
 import I18nInput from "./components/common/I18nInput.vue";
 import './assets/style/app.scss'
 import store from './store'
+import VueKonva from 'vue-konva';
 
 const app = createApp(App)
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
@@ -14,6 +15,7 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
 }
 app.component('I18nInput', I18nInput)
 
+app.use(VueKonva)
 app.use(router)
 app.use(store)
 app.use(ElementUI, {
