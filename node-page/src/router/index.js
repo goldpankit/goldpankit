@@ -53,7 +53,7 @@ const router = createRouter({
         {
           path: '/usr/project/:database/models',
           name: 'DatabaseModels',
-          component: () => import('@/views/usr/project/database-query-models2.vue')
+          component: () => import('@/views/usr/project/database-query-models.vue')
         },
         {
           path: '/usr/space/create',
