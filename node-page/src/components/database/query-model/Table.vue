@@ -3,10 +3,30 @@
     <v-rect :config="config">
     </v-rect>
     <!-- 表头 -->
-    <v-rect :config="{ ...config, height: 30,fill: '#3d6596'}"/>
+    <v-rect :config="tableHeaderConfig"/>
     <!-- 表头文字 -->
     <v-text :config="tableNameConfig"/>
-    <v-rect :config="{ ...config, y: 80, height: 30,fill: '#f2f2f2'}"/>
+    <v-rect
+      v-for="(field,index) in table.fields"
+      :key="field"
+      :config="{
+        y: index * 30 + tableHeaderConfig.height,
+        width,
+        height: 30,
+        fill: '#fff'
+      }"
+    />
+    <v-text
+      v-for="(field,index) in table.fields"
+      :key="field"
+      :config="{
+        text: field,
+        x: 10,
+        y: index * 30 + tableHeaderConfig.height + 8,
+        fontSize: 15,
+        fill: '#333'
+      }"
+    />
   </v-layer>
 </template>
 
@@ -19,27 +39,43 @@ export default {
     },
     y: {
       default: 0
+    },
+    width: {
+      default: 200
+    },
+    table: {
+      required: true
     }
   },
   data () {
+    const _this = this
     return {
       layerConfig: {
-        x: this.x,
-        y: this.y,
+        x: _this.x,
+        y: _this.y,
         draggable: true
       },
       config: {
-        x: 0,
-        y: 0,
-        width: 200,
+        width: _this.width,
         height: 300,
-        fill: '#eee'
+        fill: '#fff',
+        // 阴影
+        shadowBlur: 1
       },
-      tableNameConfig: {
-        text: 'user',
+      tableHeaderConfig: {
+        width: _this.width,
+        height: 30,
+        fill: '#3d6596'
+      }
+    }
+  },
+  computed: {
+    tableNameConfig () {
+      return {
+        text: this.table.name,
         x: 10,
-        y: 5,
-        fontSize: 20,
+        y: 8,
+        fontSize: 15,
         fill: '#fff'
       }
     }

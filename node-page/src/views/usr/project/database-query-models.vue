@@ -3,9 +3,14 @@
     <v-stage
       :config="configKonva"
     >
-      <Table v-for="(table,index) in tables" :key="table.name" :x="index * 220 + 50" :y="80"/>
+      <Table
+        v-for="(table,index) in tables"
+        :key="table.name"
+        :x="index * 220 + 50"
+        :y="80"
+        :table="table"
+      />
     </v-stage>
-    <Table/>
   </div>
 </template>
 
