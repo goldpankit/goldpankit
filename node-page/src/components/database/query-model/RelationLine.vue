@@ -39,15 +39,24 @@ export default {
         // perfectDrawEnabled: true,
         // 线条的点集[x1,y1,x2,y2...]
         // points: [...point1, ...point2],
+        stroke: '#ccc',
         // 线条粗细
-        stroke: 5
+        strokeWidth: 1,
       }
     }
   },
   methods: {
     initPoints () {
+      const points = []
+      if (this.start.y !== this.end.y) {
+        points.push(this.start.x + ((this.end.x - this.start.x) / 2))
+        points.push(this.start.y)
+        points.push(this.start.x + ((this.end.x - this.start.x) / 2))
+        points.push(this.end.y)
+      }
       this.lineConfig.points = [
         this.start.x, this.start.y,
+        ...points,
         this.end.x, this.end.y
       ]
     }
