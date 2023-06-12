@@ -1,9 +1,9 @@
 <template>
-  <v-layer :config="layerConfig">
+  <v-layer ref="table" :config="layerConfig">
     <v-rect :config="config">
     </v-rect>
     <!-- 表头 -->
-    <v-rect :config="tableHeaderConfig"/>
+    <v-rect :config="tableHeaderConfig" @mouseover="handleMouseover" @mouseleave="handleMouseleave"/>
     <!-- 表头文字 -->
     <v-text :config="tableNameConfig"/>
     <v-rect
@@ -78,6 +78,26 @@ export default {
         fontSize: 15,
         fill: '#fff'
       }
+    }
+  },
+  methods: {
+    handleMouseover (e) {
+      const tableNode = this.$refs.table.getNode()
+      tableNode.draggable(true)
+      const node = e.target
+      // 改变颜色
+      node.setAttr('fill', 'red')
+      // 改变光标
+      window.document.body.style.cursor = 'move'
+    },
+    handleMouseleave (e) {
+      const tableNode = this.$refs.table.getNode()
+      tableNode.draggable(false)
+      const node = e.target
+      // 改变颜色
+      node.setAttr('fill', '#3d6596')
+      // 改变光标
+      window.document.body.style.cursor = 'default'
     }
   }
 }
