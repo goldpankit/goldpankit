@@ -13,6 +13,10 @@ export default {
     // 结束坐标
     end: {
       required: true
+    },
+    // 线索引，用于控制颜色
+    index: {
+      default: 0
     }
   },
   computed: {
@@ -47,6 +51,15 @@ export default {
   },
   methods: {
     initPoints () {
+      const colors = [
+        '#b274a8',
+        '#a86f6f',
+        '#98b763',
+        '#70ab81',
+        '#6ca69d',
+        '#6f93ad',
+        '#797cbb'
+      ]
       const points = []
       if (this.start.y !== this.end.y) {
         points.push(this.start.x + ((this.end.x - this.start.x) / 2))
@@ -54,6 +67,7 @@ export default {
         points.push(this.start.x + ((this.end.x - this.start.x) / 2))
         points.push(this.end.y)
       }
+      this.lineConfig.stroke = colors[this.index]
       this.lineConfig.points = [
         this.start.x, this.start.y,
         ...points,
@@ -68,5 +82,7 @@ export default {
 </script>
 
 <style scoped>
-
+body {
+  color: #ffa7a7;
+}
 </style>

@@ -5,6 +5,11 @@
   >
     <v-rect :config="config">
     </v-rect>
+    <!-- 关联关系 -->
+    <v-text
+      v-if="relation != null"
+      :config="{ ...tableNameConfig, text: relation.joinType, color: '#333333', y: 20 }"
+    />
     <!-- 表头 -->
     <v-rect
       :config="tableHeaderConfig"
@@ -22,8 +27,8 @@
         height: 30,
         fill: '#fff'
       }"
-      @mousedown="handleFieldMouseDown"
-      @mouseup="handleFieldMouseUp"
+      @mousedown="handleFieldMouseDown(field)"
+      @mouseup="handleFieldMouseUp(field)"
     />
     <v-text
       v-for="(field,index) in table.fields"
@@ -56,6 +61,9 @@ export default {
       default: 30
     },
     table: {
+      required: true
+    },
+    relations: {
       required: true
     }
   },
@@ -90,6 +98,11 @@ export default {
         fontSize: 15,
         fill: '#fff'
       }
+    },
+    relation () {
+      console.log(this.table.name)
+      console.log(this.relations.map(item => item.endTable))
+      return this.relations.find(r => r.endTable === this.table.name)
     }
   },
   methods: {
@@ -115,18 +128,18 @@ export default {
       return this.$refs.table.getNode()
     },
     // 处理字段按下
-    handleFieldMouseDown () {
+    handleFieldMouseDown (field) {
       // 禁用表拖动
       const tableNode = this.$refs.table.getNode()
       tableNode.draggable(false)
-      this.$emit('field:mousedown')
+      this.$emit('field:mousedown', { table: this.table, field })
     },
     // 处理字段按下弹起
-    handleFieldMouseUp () {
+    handleFieldMouseUp (field) {
       // 开启表拖动
       const tableNode = this.$refs.table.getNode()
       tableNode.draggable(true)
-      this.$emit('field:mouseup')
+      this.$emit('field:mouseup', { table: this.table, field })
     }
   }
 }

@@ -3,6 +3,7 @@
     <v-stage
       ref="stage"
       :config="configKonva"
+      @mouseup="$refs.stage.getNode().draggable(true)"
     >
       <Table
         v-for="(table,index) in tables"
@@ -12,12 +13,13 @@
         :x="index * 220 + 50"
         :y="80"
         :table="table"
+        :relations="relations"
         @dragmove="handleDragmove"
         @field:mousedown="handleFieldMouseDown"
         @field:mouseup="handleFieldMouseUp"
       />
       <v-layer>
-        <RelationLine v-for="line in relationLines" :end="line.end" :start="line.start"/>
+        <RelationLine v-for="(line,index) in relationLines" :index="index" :end="line.end" :start="line.start"/>
       </v-layer>
     </v-stage>
   </div>
@@ -56,16 +58,24 @@ export default {
         }
       ],
       relations: [
-        {
-          startTable: 'user',
-          endTable: 'order',
-          fields: {
-            id: 'user_id',
-            create_time: 'create_time'
-          }
-        }
+        // {
+        //   startTable: 'user',
+        //   endTable: 'order',
+        //   joinType: 'INNER JOIN',
+        //   fields: {
+        //     id: 'user_id',
+        //     create_time: 'create_time'
+        //   }
+        // }
       ],
-      relationLines: []
+      relationLines: [],
+      // 拖动关联时的数据
+      relationRuntime: {
+        startTable: null,
+        startField: null,
+        endTable: null,
+        endField: null
+      }
     }
   },
   methods: {
@@ -94,16 +104,36 @@ export default {
       }
     },
     // 处理字段按下
-    handleFieldMouseDown () {
+    handleFieldMouseDown ({ table, field }) {
       // 禁用stage拖动，用于实现字段拖动关联
       const stageNode = this.$refs.stage.getNode()
       stageNode.draggable(false)
+      this.relationRuntime.startTable = table
+      this.relationRuntime.startField = field
     },
     // 处理字段按下弹起
-    handleFieldMouseUp () {
+    handleFieldMouseUp ({ table, field }) {
       // 开启stage拖动，用于恢复整体拖动
       const stageNode = this.$refs.stage.getNode()
       stageNode.draggable(true)
+      this.relationRuntime.endTable = table
+      this.relationRuntime.endField = field
+      // 添加关联
+      let relation = this.relations.find(
+        r => r.startTable === this.relationRuntime.startTable.name &&
+        r.endTable === this.relationRuntime.endTable.name
+      )
+      if (relation == null) {
+        relation = {
+          startTable: this.relationRuntime.startTable.name,
+          endTable: this.relationRuntime.endTable.name,
+          joinType: 'INNER JOIN',
+          fields: {}
+        }
+        this.relations.push(relation)
+      }
+      relation.fields[this.relationRuntime.startField] = this.relationRuntime.endField
+      this.computeRelationLines()
     },
     __getFieldPosition (table, field, withWidth=true) {
       const stageNode = this.$refs.stage.getNode()
