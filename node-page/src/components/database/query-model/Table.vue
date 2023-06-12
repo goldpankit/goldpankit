@@ -1,16 +1,23 @@
 <template>
-  <v-layer ref="table" :config="layerConfig">
+  <v-layer
+    ref="table"
+    :config="layerConfig"
+  >
     <v-rect :config="config">
     </v-rect>
     <!-- 表头 -->
-    <v-rect :config="tableHeaderConfig" @mouseover="handleMouseover" @mouseleave="handleMouseleave"/>
+    <v-rect
+      :config="tableHeaderConfig"
+      @mouseover="handleMouseover"
+      @mouseleave="handleMouseleave"
+    />
     <!-- 表头文字 -->
     <v-text :config="tableNameConfig"/>
     <v-rect
       v-for="(field,index) in table.fields"
       :key="field"
       :config="{
-        y: index * 30 + tableHeaderConfig.height,
+        y: index * fieldHeight + tableHeaderConfig.height,
         width,
         height: 30,
         fill: '#fff'
@@ -22,7 +29,7 @@
       :config="{
         text: field,
         x: 10,
-        y: index * 30 + tableHeaderConfig.height + 8,
+        y: index * fieldHeight + tableHeaderConfig.height + 8,
         fontSize: 15,
         fill: '#333'
       }"
@@ -42,6 +49,9 @@ export default {
     },
     width: {
       default: 200
+    },
+    fieldHeight: {
+      default: 30
     },
     table: {
       required: true
@@ -64,7 +74,7 @@ export default {
       },
       tableHeaderConfig: {
         width: _this.width,
-        height: 30,
+        height: _this.fieldHeight,
         fill: '#3d6596'
       }
     }
@@ -98,6 +108,12 @@ export default {
       node.setAttr('fill', '#3d6596')
       // 改变光标
       window.document.body.style.cursor = 'default'
+    },
+    handleDragmove (e) {
+      // this.$emit('dragmove')
+    },
+    getNode () {
+      return this.$refs.table.getNode()
     }
   }
 }
