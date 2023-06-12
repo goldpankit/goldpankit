@@ -13,6 +13,8 @@
         :y="80"
         :table="table"
         @dragmove="handleDragmove"
+        @field:mousedown="handleFieldMouseDown"
+        @field:mouseup="handleFieldMouseUp"
       />
       <v-layer>
         <RelationLine v-for="line in relationLines" :end="line.end" :start="line.start"/>
@@ -90,6 +92,18 @@ export default {
           })
         }
       }
+    },
+    // 处理字段按下
+    handleFieldMouseDown () {
+      // 禁用stage拖动，用于实现字段拖动关联
+      const stageNode = this.$refs.stage.getNode()
+      stageNode.draggable(false)
+    },
+    // 处理字段按下弹起
+    handleFieldMouseUp () {
+      // 开启stage拖动，用于恢复整体拖动
+      const stageNode = this.$refs.stage.getNode()
+      stageNode.draggable(true)
     },
     __getFieldPosition (table, field, withWidth=true) {
       const stageNode = this.$refs.stage.getNode()

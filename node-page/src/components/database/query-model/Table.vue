@@ -22,6 +22,8 @@
         height: 30,
         fill: '#fff'
       }"
+      @mousedown="handleFieldMouseDown"
+      @mouseup="handleFieldMouseUp"
     />
     <v-text
       v-for="(field,index) in table.fields"
@@ -63,7 +65,7 @@ export default {
       layerConfig: {
         x: _this.x,
         y: _this.y,
-        draggable: true
+        draggable: false
       },
       config: {
         width: _this.width,
@@ -109,11 +111,22 @@ export default {
       // 改变光标
       window.document.body.style.cursor = 'default'
     },
-    handleDragmove (e) {
-      // this.$emit('dragmove')
-    },
     getNode () {
       return this.$refs.table.getNode()
+    },
+    // 处理字段按下
+    handleFieldMouseDown () {
+      // 禁用表拖动
+      const tableNode = this.$refs.table.getNode()
+      tableNode.draggable(false)
+      this.$emit('field:mousedown')
+    },
+    // 处理字段按下弹起
+    handleFieldMouseUp () {
+      // 开启表拖动
+      const tableNode = this.$refs.table.getNode()
+      tableNode.draggable(true)
+      this.$emit('field:mouseup')
     }
   }
 }
