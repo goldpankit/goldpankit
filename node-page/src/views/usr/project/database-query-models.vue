@@ -1,6 +1,7 @@
 <template>
   <div class="database-query-models">
     <v-stage
+      ref="stage"
       :config="configKonva"
     >
       <Table
@@ -91,9 +92,11 @@ export default {
       }
     },
     __getFieldPosition (table, field, withWidth=true) {
+      const stageNode = this.$refs.stage.getNode()
+      const stagePosition = stageNode.getAbsolutePosition()
       const fieldIndex = table.fields.findIndex(f => f === field)
-      const y = table.y + 30 + (fieldIndex + 1) * 30 - 15
-      const x = table.x + (withWidth ? table.width : 0)
+      const y = table.y + 30 + (fieldIndex + 1) * 30 - 15 - stagePosition.y
+      const x = table.x + (withWidth ? table.width : 0) - stagePosition.x
       return { x, y }
     }
   },
