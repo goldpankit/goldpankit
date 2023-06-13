@@ -17,10 +17,10 @@
       @mouseleave="handleMouseleave"
     />
     <!-- 表头文字 -->
-    <v-text :config="tableNameConfig"/>
+    <v-text :config="tableNameConfig" @mouseover="handleMouseover" @mouseleave="handleMouseleave"/>
     <v-rect
       v-for="(field,index) in table.fields"
-      :key="field"
+      :key="field.name"
       :config="{
         y: index * fieldHeight + tableHeaderConfig.height,
         width,
@@ -34,12 +34,14 @@
       v-for="(field,index) in table.fields"
       :key="field"
       :config="{
-        text: field,
+        text: field.name,
         x: 10,
         y: index * fieldHeight + tableHeaderConfig.height + 8,
         fontSize: 15,
         fill: '#333'
       }"
+      @mousedown="handleFieldMouseDown(field)"
+      @mouseup="handleFieldMouseUp(field)"
     />
   </v-layer>
 </template>
@@ -100,8 +102,6 @@ export default {
       }
     },
     relation () {
-      console.log(this.table.name)
-      console.log(this.relations.map(item => item.endTable))
       return this.relations.find(r => r.endTable === this.table.name)
     }
   },
@@ -109,18 +109,12 @@ export default {
     handleMouseover (e) {
       const tableNode = this.$refs.table.getNode()
       tableNode.draggable(true)
-      const node = e.target
-      // 改变颜色
-      node.setAttr('fill', 'red')
       // 改变光标
       window.document.body.style.cursor = 'move'
     },
     handleMouseleave (e) {
       const tableNode = this.$refs.table.getNode()
       tableNode.draggable(false)
-      const node = e.target
-      // 改变颜色
-      node.setAttr('fill', '#3d6596')
       // 改变光标
       window.document.body.style.cursor = 'default'
     },
