@@ -49,8 +49,8 @@ module.exports = {
         }
         // 如果内容为省略号表达式，则将合并后的内容写入新文件
         else if (ee.isEllipsis(content)) {
-          const originContent = this.readFile(filepath)
-          content = ee.merge(content, originContent)
+          const fileInfo = this.readFile(filepath)
+          content = ee.merge(content, fileInfo.content)
         }
         this.createFile(filepath, content, true)
         fileCount++

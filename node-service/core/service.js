@@ -4,7 +4,7 @@ const cache = require('./utils/cache')
 const object = require('./utils/object')
 const fs = require('./utils/fs')
 const serviceApi = require("./api/service");
-const serviceTranslator = require('./service.translator')
+// const serviceTranslator = require('./service.translator')
 module.exports = {
   // 初始化
   initialize(extConfig) {
@@ -120,7 +120,7 @@ module.exports = {
     // 如果存在翻译器，自动翻译，且服务代码空间指定为翻译代码空间
     if (serviceConfig.translator.settings.length > 0) {
       fileStoragePath = `${fileStoragePath}/${Const.TRANSLATOR.DEFAULT_OUTPUT_PATH}`
-      serviceTranslator.translate({ space: dto.space, service: dto.service })
+      // serviceTranslator.translate({ space: dto.space, service: dto.service })
     }
     // 获取文件
     const files = fs.getFilesWithChildren(fileStoragePath, fileStoragePath).map(fullpath => {

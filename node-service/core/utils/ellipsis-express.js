@@ -12,6 +12,9 @@ class EllipsisExpress {
    * @param targetContent
    */
   merge (express, targetContent) {
+    if (targetContent == null) {
+      return ''
+    }
     const diffGroups = this.#parse(express)
     // console.log('diffGroups', JSON.stringify(diffGroups, null, 2))
     const contentLines = targetContent.split('\n')
