@@ -3,28 +3,29 @@
     ref="table"
     :config="layerConfig"
   >
-    <v-rect :config="config">
+    <v-rect ref="background" :config="config">
     </v-rect>
-    <!-- 关联关系 -->
-    <v-text
-      v-if="relation != null"
-      :config="{ ...tableNameConfig, text: relation.joinType, color: '#333333', y: 20 }"
-    />
     <!-- 表头 -->
     <v-rect
       :config="tableHeaderConfig"
-      @mouseover="handleMouseover"
-      @mouseleave="handleMouseleave"
+      @mouseover="handleHeaderMouseover"
+      @mouseleave="handleHeaderMouseleave"
+      @click="selectTable"
     />
     <!-- 表头文字 -->
-    <v-text :config="tableNameConfig" @mouseover="handleMouseover" @mouseleave="handleMouseleave"/>
+    <v-text
+      :config="tableNameConfig"
+      @mouseover="handleHeaderMouseover"
+      @mouseleave="handleHeaderMouseleave"
+      @click="selectTable"
+    />
     <v-rect
       v-for="(field,index) in table.fields"
       :key="field.name"
       :config="{
         y: index * fieldHeight + tableHeaderConfig.height,
         width,
-        height: 30,
+        height: fieldHeight,
         fill: '#fff'
       }"
       @mousedown="handleFieldMouseDown(field)"
@@ -59,6 +60,9 @@ export default {
     width: {
       default: 200
     },
+    height: {
+      default: 300
+    },
     fieldHeight: {
       default: 30
     },
@@ -67,6 +71,9 @@ export default {
     },
     relations: {
       required: true
+    },
+    selected: {
+      default: false
     }
   },
   data () {
@@ -75,18 +82,20 @@ export default {
       layerConfig: {
         x: _this.x,
         y: _this.y,
-        draggable: false
+        draggable: false,
       },
       config: {
         width: _this.width,
-        height: 300,
+        height: _this.height,
         fill: '#fff',
-        // 阴影
-        shadowBlur: 1
+        stroke: '#ccc',
+        strokeWidth: 1,
       },
       tableHeaderConfig: {
-        width: _this.width,
-        height: _this.fieldHeight,
+        x: 1,
+        y: 1,
+        width: _this.width - 2,
+        height: _this.fieldHeight - 2,
         fill: '#3d6596'
       }
     }
@@ -105,14 +114,38 @@ export default {
       return this.relations.find(r => r.endTable === this.table.name)
     }
   },
+  watch: {
+    selected (newValue) {
+      if (newValue) {
+        this.select()
+        return
+      }
+      this.select(false)
+    }
+  },
   methods: {
-    handleMouseover (e) {
+    selectTable (e) {
+      this.$emit('table:select', this.table.name)
+    },
+    // 选择/取消选择表
+    select (selected=true) {
+      const background = this.$refs.background.getNode()
+      if (selected) {
+        background.setAttr('stroke', '#3d6596')
+        background.setAttr('strokeWidth', 5)
+      } else {
+        background.setAttr('stroke', '#ccc')
+        background.setAttr('strokeWidth', 1)
+      }
+    },
+    // 鼠标进入表头
+    handleHeaderMouseover (e) {
       const tableNode = this.$refs.table.getNode()
       tableNode.draggable(true)
       // 改变光标
       window.document.body.style.cursor = 'move'
     },
-    handleMouseleave (e) {
+    handleHeaderMouseleave (e) {
       const tableNode = this.$refs.table.getNode()
       tableNode.draggable(false)
       // 改变光标

@@ -27,26 +27,58 @@
         ref="stage"
         :config="configKonva"
         @mouseup="$refs.stage.getNode().draggable(true)"
+        @click="globalClick"
       >
         <Table
           v-for="table in tables"
           :ref="table.name"
           :key="table.name"
           :width="table.width"
+          :height="table.height"
+          :field-height="fieldHeight"
           :x="table.x"
           :y="table.y"
           :table="table"
           :relations="relations"
+          :selected="selectData.table === table.name"
           @dragmove="moveTable"
           @field:mousedown="handleFieldMouseDown"
           @field:mouseup="handleFieldMouseUp"
+          @table:select="handleTableSelect"
         />
         <v-layer>
           <RelationLine v-for="(line,index) in relationLines" :index="index" :end="line.end" :start="line.start"/>
         </v-layer>
       </v-stage>
     </div>
-    <div class="setting"></div>
+    <div class="setting" :class="{ show: currentTable != null }">
+      <h4>Table Setting</h4>
+      <el-form v-if="currentTable != null">
+        <el-form-item label="Alias">
+          <el-input/>
+        </el-form-item>
+        <el-form-item label="Join Type">
+          <el-select>
+            <el-option value="INNER JOIN">INNER JOIN</el-option>
+            <el-option value="LEFT JOIN">LEFT JOIN</el-option>
+            <el-option value="RIGHT JOIN">RIGHT JOIN</el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="Fields">
+          <el-table :data="currentTable.fields">
+            <el-table-column label="Name" width="150px" prop="name" fixed></el-table-column>
+            <el-table-column label="Comment" width="150px" prop="comment"></el-table-column>
+            <el-table-column label="Type" width="100px" prop="type"></el-table-column>
+            <el-table-column label="length" width="80px" prop="length"></el-table-column>
+            <el-table-column label="Decimal" width="90px" prop="decimal"></el-table-column>
+            <el-table-column label="Default Value" width="125px" prop="defaultValue"></el-table-column>
+            <el-table-column label="Required" width="100px" prop="required"></el-table-column>
+            <el-table-column label="Primary Key" width="125px" prop="isPrimaryKey"></el-table-column>
+            <el-table-column label="Auto Increment" width="145px" prop="isAutoIncrement"></el-table-column>
+          </el-table>
+        </el-form-item>
+      </el-form>
+    </div>
   </div>
 </template>
 
@@ -61,6 +93,7 @@ export default {
   data () {
     return {
       reloaded: true,
+      fieldHeight: 30,
       configKonva: {
         // 设计区宽度
         width: 860,
@@ -82,6 +115,10 @@ export default {
         // }
       ],
       relationLines: [],
+      // 选择数据
+      selectData: {
+        table: null
+      },
       // 拖送数据
       dragData: {
         source: null
@@ -96,9 +133,22 @@ export default {
     }
   },
   computed: {
-    ...mapState(['currentProject', 'currentDatabase'])
+    ...mapState(['currentProject', 'currentDatabase']),
+    currentTable () {
+      if (this.selectData.table == null) {
+        return null
+      }
+      return this.tableList.find(t => t.name === this.selectData.table)
+    }
   },
   methods: {
+    // 全局点击
+    globalClick (e) {
+      // 如果点击的是空白部分，则清空选择
+      if (e.target.nodeType === 'Stage') {
+        this.selectData.table = null
+      }
+    },
     // 移动表
     moveTable () {
       for (const table of this.tables) {
@@ -133,13 +183,18 @@ export default {
       this.relationRuntime.startTable = table
       this.relationRuntime.startField = field
     },
-    // 处理字段按下弹起
+    // 处理字段按下弹起（添加字段关联）
     handleFieldMouseUp ({ table, field }) {
       // 开启stage拖动，用于恢复整体拖动
       const stageNode = this.$refs.stage.getNode()
       stageNode.draggable(true)
+      // 记录结束表个字段
       this.relationRuntime.endTable = table
       this.relationRuntime.endField = field
+      // 如果开始表和结束表是同一个，则不做关联操作
+      if (this.relationRuntime.startTable.name === this.relationRuntime.endTable.name) {
+        return
+      }
       // 添加关联
       let relation = this.relations.find(
         r => r.startTable === this.relationRuntime.startTable.name &&
@@ -156,6 +211,10 @@ export default {
       }
       relation.fields[this.relationRuntime.startField.name] = this.relationRuntime.endField.name
       this.computeRelationLines()
+    },
+    // 处理表格选中
+    handleTableSelect (tableName) {
+      this.selectData.table = tableName
     },
     // 查询数据库表
     fetchTables () {
@@ -178,16 +237,13 @@ export default {
     handleDragStart (e) {
       this.dragData.source = e.target.getAttribute('name')
     },
-    handleStateDragover () {
-      console.log('handleStateDragover')
-    },
     // stage拖拽放下
     __handleStageDrop (stage) {
       const position = stage.getPointerPosition()
       const target = this.tableList.find(table => table.name === this.dragData.source)
       const size = {
         width: 200,
-        height: 300
+        height: (target.fields.length + 1) * this.fieldHeight
       }
       const newTable = {
         ...target,
@@ -203,7 +259,7 @@ export default {
       const stageNode = this.$refs.stage.getNode()
       const stagePosition = stageNode.getAbsolutePosition()
       const fieldIndex = table.fields.findIndex(f => f.name === field)
-      const y = table.y + 30 + (fieldIndex + 1) * 30 - 15 - stagePosition.y
+      const y = table.y + this.fieldHeight + (fieldIndex + 1) * this.fieldHeight - 15 - stagePosition.y
       const x = table.x + (withWidth ? table.width : 0) - stagePosition.x
       return { x, y }
     },
@@ -244,6 +300,7 @@ export default {
   height: 100%;
   display: flex;
   background: #eee;
+  position: relative;
   .table-wrap {
     flex-shrink: 0;
     width: 220px;
@@ -281,9 +338,21 @@ export default {
     flex-grow: 1;
   }
   .setting {
-    width: 300px;
+    position: absolute;
+    background: #fff;
+    padding: 30px;
+    top: 0;
+    right: 0;
+    height: 100%;
+    width: 800px;
     flex-shrink: 0;
-    border-left: 1px solid #ccc;
+    overflow-y: auto;
+    box-shadow: -2px 0 10px #ccc;
+    transform: translateX(2000px);
+    transition: all ease .3s;
+    &.show {
+      transform: translateX(0);
+    }
   }
 }
 </style>
