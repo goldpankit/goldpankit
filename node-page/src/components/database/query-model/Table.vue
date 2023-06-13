@@ -125,7 +125,7 @@ export default {
   },
   methods: {
     selectTable (e) {
-      this.$emit('table:select', this.table.name)
+      this.$emit('table:select', this.table.id)
     },
     // 选择/取消选择表
     select (selected=true) {
@@ -140,14 +140,13 @@ export default {
     },
     // 鼠标进入表头
     handleHeaderMouseover (e) {
-      const tableNode = this.$refs.table.getNode()
-      tableNode.draggable(true)
+      this.getNode().draggable(true)
       // 改变光标
       window.document.body.style.cursor = 'move'
     },
+    // 鼠标离开表头
     handleHeaderMouseleave (e) {
-      const tableNode = this.$refs.table.getNode()
-      tableNode.draggable(false)
+      this.getNode().draggable(false)
       // 改变光标
       window.document.body.style.cursor = 'default'
     },
@@ -157,15 +156,13 @@ export default {
     // 处理字段按下
     handleFieldMouseDown (field) {
       // 禁用表拖动
-      const tableNode = this.$refs.table.getNode()
-      tableNode.draggable(false)
+      this.getNode().draggable(false)
       this.$emit('field:mousedown', { table: this.table, field })
     },
     // 处理字段按下弹起
     handleFieldMouseUp (field) {
       // 开启表拖动
-      const tableNode = this.$refs.table.getNode()
-      tableNode.draggable(true)
+      this.getNode().draggable(true)
       this.$emit('field:mouseup', { table: this.table, field })
     }
   }

@@ -31,7 +31,7 @@
       >
         <Table
           v-for="table in tables"
-          :ref="table.name"
+          :ref="table.id"
           :key="table.name"
           :width="table.width"
           :height="table.height"
@@ -40,14 +40,14 @@
           :y="table.y"
           :table="table"
           :relations="relations"
-          :selected="selectData.table === table.name"
+          :selected="selectData.table === table.id"
           @dragmove="moveTable"
           @field:mousedown="handleFieldMouseDown"
           @field:mouseup="handleFieldMouseUp"
           @table:select="handleTableSelect"
         />
         <v-layer>
-          <RelationLine v-for="(line,index) in relationLines" :index="index" :end="line.end" :start="line.start"/>
+          <RelationLine v-for="(line,index) in relationLines" :end="line.end" :start="line.start"/>
         </v-layer>
       </v-stage>
     </div>
@@ -64,7 +64,7 @@
             <el-option value="RIGHT JOIN">RIGHT JOIN</el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="Fields">
+        <el-form-item label="Query Fields">
           <el-table :data="currentTable.fields">
             <el-table-column label="Name" width="150px" prop="name" fixed></el-table-column>
             <el-table-column label="Comment" width="150px" prop="comment"></el-table-column>
@@ -96,7 +96,7 @@ export default {
       fieldHeight: 30,
       configKonva: {
         // 设计区宽度
-        width: 860,
+        width: 1260,
         // 设计区高度
         height: 1000,
         draggable: true
@@ -138,7 +138,7 @@ export default {
       if (this.selectData.table == null) {
         return null
       }
-      return this.tableList.find(t => t.name === this.selectData.table)
+      return this.tables.find(t => t.id === this.selectData.table)
     }
   },
   methods: {
@@ -152,7 +152,7 @@ export default {
     // 移动表
     moveTable () {
       for (const table of this.tables) {
-        const position = this.$refs[table.name][0].getNode().getAbsolutePosition()
+        const position = this.$refs[table.id][0].getNode().getAbsolutePosition()
         table.x = position.x
         table.y = position.y
       }
@@ -162,8 +162,8 @@ export default {
     computeRelationLines () {
       this.relationLines = []
       for (const relation of this.relations) {
-        const startTable = this.tables.find(t => t.name === relation.startTable)
-        const endTable = this.tables.find(t => t.name === relation.endTable)
+        const startTable = this.tables.find(t => t.id === relation.startTable)
+        const endTable = this.tables.find(t => t.id === relation.endTable)
         for (const startField in relation.fields) {
           const endField = relation.fields[startField]
           const startPosition = this.__getFieldPosition(startTable, startField)
@@ -192,18 +192,18 @@ export default {
       this.relationRuntime.endTable = table
       this.relationRuntime.endField = field
       // 如果开始表和结束表是同一个，则不做关联操作
-      if (this.relationRuntime.startTable.name === this.relationRuntime.endTable.name) {
+      if (this.relationRuntime.startTable.id === this.relationRuntime.endTable.id) {
         return
       }
       // 添加关联
       let relation = this.relations.find(
-        r => r.startTable === this.relationRuntime.startTable.name &&
-        r.endTable === this.relationRuntime.endTable.name
+        r => r.startTable === this.relationRuntime.startTable.id &&
+        r.endTable === this.relationRuntime.endTable.id
       )
       if (relation == null) {
         relation = {
-          startTable: this.relationRuntime.startTable.name,
-          endTable: this.relationRuntime.endTable.name,
+          startTable: this.relationRuntime.startTable.id,
+          endTable: this.relationRuntime.endTable.id,
           joinType: 'INNER JOIN',
           fields: {}
         }
@@ -213,8 +213,8 @@ export default {
       this.computeRelationLines()
     },
     // 处理表格选中
-    handleTableSelect (tableName) {
-      this.selectData.table = tableName
+    handleTableSelect (tableId) {
+      this.selectData.table = tableId
     },
     // 查询数据库表
     fetchTables () {
@@ -227,7 +227,12 @@ export default {
         database: database.schema
       })
         .then(tables => {
-          this.tableList = tables
+          this.tableList = tables.map(t => {
+            return {
+              ...t,
+              id: '' + Math.random()
+            }
+          })
         })
         .catch(e => {
           console.log('e', e)
@@ -250,6 +255,7 @@ export default {
         ...size,
         x: position.x - size.width / 2,
         y: position.y - size.height / 2,
+        id: '' + Math.random()
       }
       this.tables.push(newTable)
       // 重新渲染，使新添加的元素绘制在stage中
