@@ -95,7 +95,7 @@
             <el-table-column label="Name" width="150px" prop="name" fixed></el-table-column>
             <el-table-column label="SQL" prop="name">
               <template #default="{ row, $index }">
-                <el-input type="textarea" :rows="1" :value="`AS ${row.name}${$index === currentTable.fields.length - 1 ? '' : ','}`"/>
+                <el-input type="textarea" :rows="1" :value="`${row.name} AS ${row.name}${$index === currentTable.fields.length - 1 ? '' : ','}`"/>
               </template>
             </el-table-column>
 <!--            <el-table-column label="Comment" width="150px" prop="comment"></el-table-column>-->
