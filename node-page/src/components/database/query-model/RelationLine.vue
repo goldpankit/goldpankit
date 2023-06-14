@@ -55,10 +55,9 @@ export default {
   methods: {
     // 高亮
     highlight (highlight=true) {
-      console.log('highlight', highlight)
       const node = this.$refs.line.getNode()
       if (highlight) {
-        node.setAttr('stroke', '#3d6596')
+        node.setAttr('stroke', '#FC777D')
         node.setAttr('strokeWidth', 3)
         node.zIndex(100)
       } else {

@@ -65,30 +65,27 @@
       <h4>Table Setting</h4>
       <el-form v-if="currentTable != null">
         <el-form-item label="Alias">
-          <el-input/>
+          <el-input v-model="currentTable.alias"/>
         </el-form-item>
-        <el-form-item label="Join SQL">
-          <div class="join-sql">
-            <el-select>
+        <el-form-item v-if="currentTableJoins.length > 0" label="Join SQL">
+          <div v-for="(join,index) in currentTableJoins" :key="join.joinTable + index" class="join-sql">
+            <el-select v-model="join.joinType">
               <el-option value="INNER JOIN">INNER JOIN</el-option>
               <el-option value="LEFT JOIN">LEFT JOIN</el-option>
               <el-option value="RIGHT JOIN">RIGHT JOIN</el-option>
             </el-select>
-            <em>{{currentTable.name}}</em>
-            <em>{{currentTable.name}}</em>
+            <em>{{join.joinTable.name}}</em>
+            <em>{{join.joinTable.alias}}</em>
             <em>ON</em>
+            <ul class="on-sql">
+              <li v-for="on in join.ons">
+                <em>{{currentTable.alias}}.</em>
+                <el-select v-model="on.startField">
+                </el-select>
+                <el-input :value="`= ${join.joinTable.alias}.${on.endField}`"/>
+              </li>
+            </ul>
           </div>
-          <ul class="on-sql">
-            <li>
-              <em>a.</em>
-              <el-select>
-                <el-option value="INNER JOIN">INNER JOIN</el-option>
-                <el-option value="LEFT JOIN">LEFT JOIN</el-option>
-                <el-option value="RIGHT JOIN">RIGHT JOIN</el-option>
-              </el-select>
-              <el-input/>
-            </li>
-          </ul>
         </el-form-item>
         <el-form-item label="Query Fields">
           <el-table :data="currentTable.fields">
@@ -170,6 +167,30 @@ export default {
         return null
       }
       return this.tables.find(t => t.id === this.selectData.table)
+    },
+    // 当前表joins
+    currentTableJoins () {
+      if (this.currentTable == null || this.currentTable.type !== 'MAIN') {
+        return []
+      }
+      const relations = this.relations.filter(r => r.startTable.id === this.currentTable.id || r.endTable.id === this.currentTable.id)
+      const joins = []
+      for (const relation of relations) {
+        const ons = []
+        for (const startField in relation.fields) {
+          const endField = relation.fields[startField]
+          ons.push({
+            startField,
+            endField
+          })
+        }
+        joins.push({
+          joinTable: relation.endTable,
+          joinType: relation.joinType,
+          ons
+        })
+      }
+      return joins
     }
   },
   methods: {
@@ -193,8 +214,8 @@ export default {
     computeRelationLines () {
       this.relationLines = []
       for (const relation of this.relations) {
-        const startTable = this.tables.find(t => t.id === relation.startTable)
-        const endTable = this.tables.find(t => t.id === relation.endTable)
+        const startTable = this.tables.find(t => t.id === relation.startTable.id)
+        const endTable = this.tables.find(t => t.id === relation.endTable.id)
         for (const startField in relation.fields) {
           const endField = relation.fields[startField]
           const startPosition = this.__getFieldPosition(startTable, startField)
@@ -228,13 +249,13 @@ export default {
       }
       // 添加关联
       let relation = this.relations.find(
-        r => r.startTable === this.relationRuntime.startTable.id &&
-        r.endTable === this.relationRuntime.endTable.id
+        r => r.startTable.id === this.relationRuntime.startTable.id &&
+        r.endTable.id === this.relationRuntime.endTable.id
       )
       if (relation == null) {
         relation = {
-          startTable: this.relationRuntime.startTable.id,
-          endTable: this.relationRuntime.endTable.id,
+          startTable: this.relationRuntime.startTable,
+          endTable: this.relationRuntime.endTable,
           joinType: 'INNER JOIN',
           fields: {}
         }
@@ -261,6 +282,7 @@ export default {
           this.tableList = tables.map(t => {
             return {
               ...t,
+              alias: t.name,
               id: '' + Math.random()
             }
           })
@@ -284,6 +306,7 @@ export default {
       const newTable = {
         ...target,
         ...size,
+        // 第一个表标记为主表
         type: this.tables.length === 0 ? 'MAIN' : 'SUB',
         x: position.x - size.width / 2,
         y: position.y - size.height / 2,
@@ -293,6 +316,7 @@ export default {
       // 重新渲染，使新添加的元素绘制在stage中
       this.__render()
     },
+    // 获取字段坐标
     __getFieldPosition (table, field, withWidth=true) {
       const stageNode = this.$refs.stage.getNode()
       const stagePosition = stageNode.getAbsolutePosition()
@@ -436,7 +460,7 @@ export default {
     &.show {
       transform: translateX(0);
     }
-    .join-sql, .on-sql {
+    .join-sql {
       em {
         color: var(--primary-color-match-2);
         margin-left: 10px;
@@ -447,24 +471,28 @@ export default {
           margin-right: 5px;
         }
       }
-      .el-select {
+      .el-select,.el-input {
         width: 130px;
         margin-right: 5px;
-      }
-    }
-    .on-sql {
-      width: 100%;
-      li {
-        margin-top: 10px;
-        padding-left: 30px;
-        display: flex;
-        align-items: center;
-        .el-select {
-          width: 100px;
-          margin-right: 5px;
+        border: 0;
+        :deep(.el-input__wrapper) {
+          box-shadow: none;
         }
-        .el-input {
-          width: 300px;
+      }
+      .on-sql {
+        width: 100%;
+        & > li {
+          margin-top: 10px;
+          padding-left: 30px;
+          display: flex;
+          align-items: center;
+          .el-select {
+            width: 100px;
+            margin-right: 5px;
+          }
+          .el-input {
+            width: 300px;
+          }
         }
       }
     }
