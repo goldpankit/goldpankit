@@ -339,7 +339,7 @@ export default {
   display: flex;
   position: relative;
   background: var(--background-color);
-  border-top: 10px solid;
+  border-top: 5px solid;
   border-image: linear-gradient(to right, var(--primary-color), var(--primary-color-match-2), var(--primary-color-match-1)) 1;
   .table-wrap {
     flex-shrink: 0;
@@ -430,7 +430,7 @@ export default {
     width: 800px;
     flex-shrink: 0;
     overflow-y: auto;
-    box-shadow: -2px 0 10px #000;
+    box-shadow: -2px 0 10px #333;
     transform: translateX(2000px);
     transition: all ease .3s;
     &.show {
