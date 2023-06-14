@@ -22,6 +22,16 @@
       </div>
     </div>
     <div class="designer-wrap">
+      <ul class="line-types">
+        <li class="selected">
+          <em class="join-line"></em>
+          <label>Join Line</label>
+        </li>
+        <li>
+          <em class="aggregate-line"></em>
+          <label>Aggregate Line</label>
+        </li>
+      </ul>
       <v-stage
         v-if="reloaded"
         ref="stage"
@@ -57,24 +67,45 @@
         <el-form-item label="Alias">
           <el-input/>
         </el-form-item>
-        <el-form-item label="Join Type">
-          <el-select>
-            <el-option value="INNER JOIN">INNER JOIN</el-option>
-            <el-option value="LEFT JOIN">LEFT JOIN</el-option>
-            <el-option value="RIGHT JOIN">RIGHT JOIN</el-option>
-          </el-select>
+        <el-form-item label="Join SQL">
+          <div class="join-sql">
+            <el-select>
+              <el-option value="INNER JOIN">INNER JOIN</el-option>
+              <el-option value="LEFT JOIN">LEFT JOIN</el-option>
+              <el-option value="RIGHT JOIN">RIGHT JOIN</el-option>
+            </el-select>
+            <em>{{currentTable.name}}</em>
+            <em>{{currentTable.name}}</em>
+            <em>ON</em>
+          </div>
+          <ul class="on-sql">
+            <li>
+              <em>a.</em>
+              <el-select>
+                <el-option value="INNER JOIN">INNER JOIN</el-option>
+                <el-option value="LEFT JOIN">LEFT JOIN</el-option>
+                <el-option value="RIGHT JOIN">RIGHT JOIN</el-option>
+              </el-select>
+              <el-input/>
+            </li>
+          </ul>
         </el-form-item>
         <el-form-item label="Query Fields">
           <el-table :data="currentTable.fields">
             <el-table-column label="Name" width="150px" prop="name" fixed></el-table-column>
-            <el-table-column label="Comment" width="150px" prop="comment"></el-table-column>
-            <el-table-column label="Type" width="100px" prop="type"></el-table-column>
-            <el-table-column label="length" width="80px" prop="length"></el-table-column>
-            <el-table-column label="Decimal" width="90px" prop="decimal"></el-table-column>
-            <el-table-column label="Default Value" width="125px" prop="defaultValue"></el-table-column>
-            <el-table-column label="Required" width="100px" prop="required"></el-table-column>
-            <el-table-column label="Primary Key" width="125px" prop="isPrimaryKey"></el-table-column>
-            <el-table-column label="Auto Increment" width="145px" prop="isAutoIncrement"></el-table-column>
+            <el-table-column label="SQL" prop="name">
+              <template #default="{ row, $index }">
+                <el-input type="textarea" :rows="1" :value="`AS ${row.name}${$index === currentTable.fields.length - 1 ? '' : ','}`"/>
+              </template>
+            </el-table-column>
+<!--            <el-table-column label="Comment" width="150px" prop="comment"></el-table-column>-->
+<!--            <el-table-column label="Type" width="100px" prop="type"></el-table-column>-->
+<!--            <el-table-column label="length" width="80px" prop="length"></el-table-column>-->
+<!--            <el-table-column label="Decimal" width="90px" prop="decimal"></el-table-column>-->
+<!--            <el-table-column label="Default Value" width="125px" prop="defaultValue"></el-table-column>-->
+<!--            <el-table-column label="Required" width="100px" prop="required"></el-table-column>-->
+<!--            <el-table-column label="Primary Key" width="125px" prop="isPrimaryKey"></el-table-column>-->
+<!--            <el-table-column label="Auto Increment" width="145px" prop="isAutoIncrement"></el-table-column>-->
           </el-table>
         </el-form-item>
       </el-form>
@@ -342,6 +373,48 @@ export default {
   }
   .designer-wrap {
     flex-grow: 1;
+    position: relative;
+    .line-types {
+      display: flex;
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      li {
+        width: 100px;
+        height: 50px;
+        background: var(--background-color);
+        margin-right: 10px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        border-radius: 10px;
+        &.selected {
+          background: #fff;
+          label {
+            color: var(--font-color);
+            font-weight: bold;
+          }
+        }
+        label {
+          margin-top: 5px;
+          font-size: var(--font-size-mini);
+          color: var(--color-gray);
+        }
+        &:last-of-type {
+          margin-right: 0;
+        }
+      }
+      .join-line, .aggregate-line {
+        display: block;
+        width: 50px;
+        height: 3px;
+        background: #ccc;
+      }
+      .aggregate-line {
+        background: #436b47;
+      }
+    }
   }
   .setting {
     position: absolute;
@@ -358,6 +431,38 @@ export default {
     transition: all ease .3s;
     &.show {
       transform: translateX(0);
+    }
+    .join-sql, .on-sql {
+      em {
+        color: var(--primary-color-match-2);
+        margin-left: 10px;
+        font-weight: bold;
+        font-style: normal;
+        &.none-margin {
+          margin-left: 0;
+          margin-right: 5px;
+        }
+      }
+      .el-select {
+        width: 130px;
+        margin-right: 5px;
+      }
+    }
+    .on-sql {
+      width: 100%;
+      li {
+        margin-top: 10px;
+        padding-left: 30px;
+        display: flex;
+        align-items: center;
+        .el-select {
+          width: 100px;
+          margin-right: 5px;
+        }
+        .el-input {
+          width: 300px;
+        }
+      }
     }
   }
 }
