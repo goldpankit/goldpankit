@@ -37,8 +37,8 @@
       :config="{
         text: field.name,
         x: 10,
-        y: index * fieldHeight + tableHeaderConfig.height + 8,
-        fontSize: 15,
+        y: index * fieldHeight + tableHeaderConfig.height + 10,
+        fontSize: 13,
         fill: '#333'
       }"
       @mousedown="handleFieldMouseDown(field)"
@@ -90,13 +90,6 @@ export default {
         fill: '#fff',
         stroke: '#ccc',
         strokeWidth: 1,
-      },
-      tableHeaderConfig: {
-        x: 1,
-        y: 1,
-        width: _this.width - 2,
-        height: _this.fieldHeight - 2,
-        fill: '#3d6596'
       }
     }
   },
@@ -108,6 +101,15 @@ export default {
         y: 8,
         fontSize: 15,
         fill: '#fff'
+      }
+    },
+    tableHeaderConfig () {
+      return {
+        x: 1,
+        y: 1,
+        width: this.width - 2,
+        height: this.fieldHeight - 2,
+        fill: this.table.type === 'MAIN' ? '#FC777D' : '#333'
       }
     },
     relation () {
@@ -131,7 +133,7 @@ export default {
     select (selected=true) {
       const background = this.$refs.background.getNode()
       if (selected) {
-        background.setAttr('stroke', '#3d6596')
+        background.setAttr('stroke', this.table.type === 'MAIN' ? '#FC777D' : '#333')
         background.setAttr('strokeWidth', 5)
       } else {
         background.setAttr('stroke', '#ccc')

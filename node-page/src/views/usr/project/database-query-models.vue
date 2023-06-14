@@ -284,6 +284,7 @@ export default {
       const newTable = {
         ...target,
         ...size,
+        type: this.tables.length === 0 ? 'MAIN' : 'SUB',
         x: position.x - size.width / 2,
         y: position.y - size.height / 2,
         id: '' + Math.random()
@@ -336,31 +337,30 @@ export default {
 .database-query-models {
   height: 100%;
   display: flex;
-  background: #eee;
   position: relative;
   .table-wrap {
     flex-shrink: 0;
-    width: 220px;
+    width: 255px;
     box-sizing: border-box;
-    border-right: 1px solid #ccc;
     display: flex;
     flex-direction: column;
     .block {
       border-top: 1px solid #ccc;
-      padding: 20px;
       flex-grow: 1;
       display: flex;
       flex-direction: column;
       overflow: hidden;
+      padding: 20px 0;
       h4 {
         flex-shrink: 0;
         margin-bottom: 10px;
+        padding: 0 20px;
       }
       ul {
         flex-grow: 1;
         overflow-y: auto;
         li {
-          padding: 5px 0;
+          padding: 5px 20px;
         }
       }
       &:first-of-type {
@@ -374,6 +374,7 @@ export default {
   .designer-wrap {
     flex-grow: 1;
     position: relative;
+    background: #eee;
     .line-types {
       display: flex;
       position: absolute;
