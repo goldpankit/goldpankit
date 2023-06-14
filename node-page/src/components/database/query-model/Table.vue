@@ -87,9 +87,7 @@ export default {
       config: {
         width: _this.width,
         height: _this.height,
-        fill: '#fff',
-        stroke: '#ccc',
-        strokeWidth: 1,
+        fill: '#fafafa'
       }
     }
   },
@@ -105,11 +103,11 @@ export default {
     },
     tableHeaderConfig () {
       return {
-        x: 1,
-        y: 1,
-        width: this.width - 2,
-        height: this.fieldHeight - 2,
-        fill: this.table.type === 'MAIN' ? '#FC777D' : '#333'
+        x: 0,
+        y: 0,
+        width: this.width,
+        height: this.fieldHeight,
+        fill: this.table.type === 'MAIN' ? '#FC777D' : '#666'
       }
     },
     relation () {
@@ -133,11 +131,10 @@ export default {
     select (selected=true) {
       const background = this.$refs.background.getNode()
       if (selected) {
-        background.setAttr('stroke', this.table.type === 'MAIN' ? '#FC777D' : '#333')
+        background.setAttr('stroke', this.table.type === 'MAIN' ? '#FC777D' : '#FC777D')
         background.setAttr('strokeWidth', 5)
       } else {
-        background.setAttr('stroke', '#ccc')
-        background.setAttr('strokeWidth', 1)
+        background.setAttr('strokeWidth', 0)
       }
     },
     // 鼠标进入表头
