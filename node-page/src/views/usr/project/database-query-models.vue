@@ -38,6 +38,7 @@
         v-model:selected-table-id="designer.selectedTableId"
         :line-type="lineType"
         :tables="designer.tables"
+        :aggregates="designer.aggregates"
         :joins="designer.joins"
         :drag-data="designer.dragData"
       />
@@ -181,8 +182,9 @@ export default {
       position: absolute;
       top: 20px;
       left: 20px;
+      z-index: 100;
       li {
-        width: 100px;
+        width: 120px;
         height: 50px;
         background: var(--background-color);
         margin-right: 10px;
@@ -194,7 +196,7 @@ export default {
         &.selected {
           background: #fff;
           label {
-            color: var(--font-color);
+            color: var(--primary-color-match-2);
             font-weight: bold;
           }
         }

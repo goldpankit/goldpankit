@@ -24,7 +24,12 @@
       @table:select="handleTableSelect"
     />
     <v-layer>
-      <RelationLine v-for="line in relationLines" :end="line.end" :start="line.start"/>
+      <RelationLine
+        v-for="line in relationLines"
+        :line-type="line.type"
+        :start="line.start"
+        :end="line.end"
+      />
     </v-layer>
   </v-stage>
 </template>
@@ -55,11 +60,7 @@ export default {
     },
     // 聚合关系
     aggregates: {
-      startTable: null,
-      endTable: null,
-      startField: null,
-      endField: null,
-      function: null
+      type: Array
     },
     // 拖动数据（外部执行拖动时的数据信息）
     dragData: {}
@@ -100,20 +101,32 @@ export default {
         table.x = position.x
         table.y = position.y
       }
-      this.computeRelationLines()
+      this.computeRelations()
     },
     // 计算关联线
-    computeRelationLines () {
+    computeRelations () {
       this.relationLines = []
+      // 计算join关系线
       for (const join of this.joins) {
         for (const on of join.ons) {
           const startPosition = this.__getFieldPosition(join.table, on.startField)
           const endPosition = this.__getFieldPosition(join.joinTable, on.endField, false)
           this.relationLines.push({
             start: startPosition,
-            end: endPosition
+            end: endPosition,
+            type: 'join'
           })
         }
+      }
+      // 计算聚合关系线
+      for (const aggregate of this.aggregates) {
+        const startPosition = this.__getFieldPosition(aggregate.table, aggregate.field)
+        const endPosition = this.__getFieldPosition(aggregate.targetTable, aggregate.targetField, false)
+        this.relationLines.push({
+          start: startPosition,
+          end: endPosition,
+          type: 'aggregate'
+        })
       }
     },
     // 处理字段按下
@@ -142,8 +155,8 @@ export default {
         return
       }
       // 如果为聚合函数关联
-      if (this.lineType === '') {
-
+      if (this.lineType === 'aggregate') {
+        this.__addAggregate()
       }
     },
     // 处理表格选中
@@ -175,7 +188,30 @@ export default {
         endField: this.relationRuntime.endField,
         relationType: 'AND'
       })
-      this.computeRelationLines()
+      this.computeRelations()
+    },
+    // 添加聚合关系
+    __addAggregate () {
+      // 如果开始表和结束表是同一个，则不做关联操作
+      if (this.relationRuntime.startTable.id === this.relationRuntime.endTable.id) {
+        return
+      }
+      // 添加聚合
+      let aggregate = this.aggregates.find(
+        r => r.table.id === this.relationRuntime.startTable.id &&
+          r.targetTable.id === this.relationRuntime.endTable.id
+      )
+      if (aggregate == null) {
+        aggregate = {
+          table: this.relationRuntime.startTable,
+          targetTable: this.relationRuntime.endTable,
+          field: this.relationRuntime.startField,
+          targetField: this.relationRuntime.endField,
+          function: 'COUNT'
+        }
+        this.aggregates.push(aggregate)
+      }
+      this.computeRelations()
     },
     // stage拖拽放下
     __handleStageDrop (stage) {
