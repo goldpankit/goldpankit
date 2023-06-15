@@ -1,5 +1,9 @@
 <template>
   <div class="table-setting" :class="{ visible: table != null }">
+    <div class="toolbar">
+      <el-button ico="Edit" @click="edit">Edit</el-button>
+      <el-button type="primary">Execute</el-button>
+    </div>
     <div class="wrap" v-if="table != null">
       <SQLLine><em>SELECT</em></SQLLine>
       <SQLLine v-for="(field,index) in table.fields" :key="field.name" type="field" indent="20">
@@ -22,14 +26,15 @@
             <em>ON</em>
           </SQLLine>
           <ul class="join-ons">
-            <SQLLine v-for="on in join.ons" indent="20">
+            <SQLLine v-for="(on,index) in join.ons" indent="20">
+              <DynamicWidthInput v-if="index !== 0" v-model="on.relationType"/>
               <DynamicWidthInput v-model="table.alias"/>
               <span>.</span>
-              <span>{{on.startField}}</span>
+              <span>{{on.startField.name}}</span>
               <span>=</span>
               <DynamicWidthInput v-model="join.joinTable.alias"/>
               <span>.</span>
-              <span>{{on.endField}}</span>
+              <span>{{on.endField.name}}</span>
             </SQLLine>
           </ul>
         </li>
@@ -54,6 +59,11 @@ export default {
     tableJoins: {
       type: Array
     }
+  },
+  methods: {
+    edit () {
+      console.log(this.$el.querySelector('.wrap').innerText)
+    }
   }
 }
 </script>
@@ -73,6 +83,10 @@ export default {
   transform: translateX(2000px);
   transition: all ease .3s;
   letter-spacing: 1px;
+  .toolbar {
+    display: flex;
+    justify-content: flex-end;
+  }
   &.visible {
     transform: translateX(0);
   }

@@ -16,7 +16,7 @@
       :x="table.x"
       :y="table.y"
       :table="table"
-      :relations="relations"
+      :relations="joins"
       :selected="selectedTableId === table.id"
       @dragmove="moveTable"
       @field:mousedown="handleFieldMouseDown"
@@ -40,14 +40,26 @@ export default {
   props: {
     // 已选中的表ID
     selectedTableId: {},
+    // 关系线类型
+    lineType: {
+      default: 'join'
+    },
     // 设计器中的表
     tables: {
       type: Array
     },
-    // 关系
-    relations: {
+    // joins
+    joins: {
       type: Array,
       required: true
+    },
+    // 聚合关系
+    aggregates: {
+      startTable: null,
+      endTable: null,
+      startField: null,
+      endField: null,
+      function: null
     },
     // 拖动数据（外部执行拖动时的数据信息）
     dragData: {}
@@ -93,13 +105,10 @@ export default {
     // 计算关联线
     computeRelationLines () {
       this.relationLines = []
-      for (const relation of this.relations) {
-        const startTable = this.tables.find(t => t.id === relation.startTable.id)
-        const endTable = this.tables.find(t => t.id === relation.endTable.id)
-        for (const startField in relation.fields) {
-          const endField = relation.fields[startField]
-          const startPosition = this.__getFieldPosition(startTable, startField)
-          const endPosition = this.__getFieldPosition(endTable, endField, false)
+      for (const join of this.joins) {
+        for (const on of join.ons) {
+          const startPosition = this.__getFieldPosition(join.table, on.startField)
+          const endPosition = this.__getFieldPosition(join.joinTable, on.endField, false)
           this.relationLines.push({
             start: startPosition,
             end: endPosition
@@ -128,25 +137,45 @@ export default {
         return
       }
       // 添加关联
-      let relation = this.relations.find(
-        r => r.startTable.id === this.relationRuntime.startTable.id &&
-          r.endTable.id === this.relationRuntime.endTable.id
-      )
-      if (relation == null) {
-        relation = {
-          startTable: this.relationRuntime.startTable,
-          endTable: this.relationRuntime.endTable,
-          joinType: 'INNER JOIN',
-          fields: {}
-        }
-        this.relations.push(relation)
+      if (this.lineType === 'join') {
+        this.__addJoinRelation()
+        return
       }
-      relation.fields[this.relationRuntime.startField.name] = this.relationRuntime.endField.name
-      this.computeRelationLines()
+      // 如果为聚合函数关联
+      if (this.lineType === '') {
+
+      }
     },
     // 处理表格选中
     handleTableSelect (tableId) {
       this.$emit('update:selectedTableId', tableId)
+    },
+    // 添加join关系
+    __addJoinRelation () {
+      // 如果开始表和结束表是同一个，则不做关联操作
+      if (this.relationRuntime.startTable.id === this.relationRuntime.endTable.id) {
+        return
+      }
+      // 添加关联
+      let join = this.joins.find(
+        r => r.table.id === this.relationRuntime.startTable.id &&
+          r.joinTable.id === this.relationRuntime.endTable.id
+      )
+      if (join == null) {
+        join = {
+          table: this.relationRuntime.startTable,
+          joinTable: this.relationRuntime.endTable,
+          joinType: 'INNER JOIN',
+          ons: []
+        }
+        this.joins.push(join)
+      }
+      join.ons.push({
+        startField: this.relationRuntime.startField,
+        endField: this.relationRuntime.endField,
+        relationType: 'AND'
+      })
+      this.computeRelationLines()
     },
     // stage拖拽放下
     __handleStageDrop (stage) {
@@ -163,7 +192,9 @@ export default {
         x: position.x - size.width / 2,
         y: position.y - size.height / 2,
         // 增加设计器元素ID
-        id: '' + Math.random()
+        id: '' + Math.random(),
+        // 添加joins，用于存放join关系
+        joins: []
       }
       this.tables.push(newTable)
       // 重新渲染，使新添加的元素绘制在stage中
@@ -173,7 +204,7 @@ export default {
     __getFieldPosition (table, field, withWidth=true) {
       const stageNode = this.$refs.stage.getNode()
       const stagePosition = stageNode.getAbsolutePosition()
-      const fieldIndex = table.fields.findIndex(f => f.name === field)
+      const fieldIndex = table.fields.findIndex(f => f.name === field.name)
       const y = table.y + this.fieldHeight + (fieldIndex + 1) * this.fieldHeight - 15 - stagePosition.y
       const x = table.x + (withWidth ? table.width : 0) - stagePosition.x
       return { x, y }

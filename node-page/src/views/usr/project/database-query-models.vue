@@ -24,11 +24,11 @@
     <div class="designer-wrap">
       <!-- 线条类型 -->
       <ul class="line-types">
-        <li class="selected">
+        <li :class="{selected: lineType === 'join'}" @click="lineType = 'join'">
           <em class="join-line"></em>
           <label>Join Line</label>
         </li>
-        <li>
+        <li :class="{selected: lineType === 'aggregate'}" @click="lineType = 'aggregate'">
           <em class="aggregate-line"></em>
           <label>Aggregate Line</label>
         </li>
@@ -36,8 +36,9 @@
       <!-- 设计器 -->
       <QueryModelDesigner
         v-model:selected-table-id="designer.selectedTableId"
+        :line-type="lineType"
         :tables="designer.tables"
-        :relations="designer.relations"
+        :joins="designer.joins"
         :drag-data="designer.dragData"
       />
     </div>
@@ -63,12 +64,16 @@ export default {
     return {
       // 表集合
       tables: [],
+      // 关联线类型
+      lineType: 'join',
       // 设计器数据
       designer: {
         // 表
         tables: [],
-        // 关系
-        relations: [],
+        // 关联关系
+        joins: [],
+        // 聚合关系
+        aggregates: [],
         // 当前选中的表
         selectedTableId: null,
         // 拖动数据
@@ -89,24 +94,7 @@ export default {
       if (this.currentTable == null || this.currentTable.type !== 'MAIN') {
         return []
       }
-      const relations = this.designer.relations.filter(r => r.startTable.id === this.currentTable.id || r.endTable.id === this.currentTable.id)
-      const joins = []
-      for (const relation of relations) {
-        const ons = []
-        for (const startField in relation.fields) {
-          const endField = relation.fields[startField]
-          ons.push({
-            startField,
-            endField
-          })
-        }
-        joins.push({
-          joinTable: relation.endTable,
-          joinType: relation.joinType,
-          ons
-        })
-      }
-      return joins
+      return this.designer.joins.filter(r => r.table.id === this.currentTable.id || r.joinTable.id === this.currentTable.id)
     }
   },
   methods: {
