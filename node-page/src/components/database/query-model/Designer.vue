@@ -179,6 +179,7 @@ export default {
           table: this.relationRuntime.startTable,
           joinTable: this.relationRuntime.endTable,
           joinType: 'INNER JOIN',
+          relation: 'ONE-TO-ONE',
           ons: []
         }
         this.joins.push(join)

@@ -51,6 +51,10 @@ export default {
       color: var(--primary-color-match-2);
       font-style: normal;
     }
+    // 关系
+    :deep(.relation) {
+      background: #e5ffda;
+    }
   }
   // 操作
   .opera {

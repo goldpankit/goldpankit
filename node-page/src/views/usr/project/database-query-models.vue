@@ -47,6 +47,7 @@
     <TableSetting
       :table="currentTable"
       :table-joins="currentTableJoins"
+      :aggregates="currentTableAggregates"
     />
   </div>
 </template>
@@ -96,6 +97,13 @@ export default {
         return []
       }
       return this.designer.joins.filter(r => r.table.id === this.currentTable.id || r.joinTable.id === this.currentTable.id)
+    },
+    // 当前表的聚合函数列
+    currentTableAggregates () {
+      if (this.currentTable == null || this.currentTable.type !== 'MAIN') {
+        return []
+      }
+      return this.designer.aggregates.filter(agg => agg.table.id === this.currentTable.id)
     }
   },
   methods: {
@@ -176,7 +184,7 @@ export default {
   .designer-wrap {
     flex-grow: 1;
     position: relative;
-    background: #333;
+    background: var(--primary-color);
     .line-types {
       display: flex;
       position: absolute;
@@ -214,9 +222,11 @@ export default {
         width: 50px;
         height: 3px;
         background: #ccc;
+        border: 5px solid var(--primary-color);
+        box-sizing: content-box;
       }
       .aggregate-line {
-        background: #436b47;
+        background: var(--primary-color-match-1);
       }
     }
   }

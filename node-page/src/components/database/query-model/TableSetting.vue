@@ -6,13 +6,37 @@
     </div>
     <div class="wrap" v-if="table != null">
       <SQLLine><em>SELECT</em></SQLLine>
-      <SQLLine v-for="(field,index) in table.fields" :key="field.name" type="field" indent="20">
-        <DynamicWidthInput v-model="table.alias"/>
-        <span>.</span>
-        <span>{{field.name}}</span>
-        <em>AS</em>
-        <span>{{field.name}}{{table.fields.length === index + 1 ? '' : ','}}</span>
-      </SQLLine>
+      <template v-for="(field,index) in table.fields">
+        <template v-if="getAggregate(field)">
+          <SQLLine indent="20">(</SQLLine>
+          <SQLLine indent="40"><em>SELECT</em></SQLLine>
+          <SQLLine indent="60">
+            <DynamicWidthInput v-model="getAggregate(field).function"/>
+            <span>(</span>
+            <DynamicWidthInput v-model="getAggregate(field).targetTable.alias"/>
+            <span>.</span>
+            <span>{{getAggregate(field).targetField.name}}</span>
+            <span>)</span>
+          </SQLLine>
+          <SQLLine indent="40">
+            <em>FROM</em>
+            <span>{{getAggregate(field).targetTable.name}}</span>
+            <DynamicWidthInput v-model="getAggregate(field).targetTable.alias"/>
+          </SQLLine>
+          <SQLLine indent="20" type="field">
+            <span>)</span>
+            <em>AS</em>
+            <span>{{field.name}}{{table.fields.length === index + 1 ? '' : ','}}</span>
+          </SQLLine>
+        </template>
+        <SQLLine v-else :key="field.name" type="field" indent="20">
+          <DynamicWidthInput v-model="table.alias"/>
+          <span>.</span>
+          <span>{{field.name}}</span>
+          <em>AS</em>
+          <span>{{field.name}}{{table.fields.length === index + 1 ? '' : ','}}</span>
+        </SQLLine>
+      </template>
       <SQLLine>
         <p><em>FROM</em> {{table.name}} <em>AS</em></p>
         <DynamicWidthInput v-model="table.alias"/>
@@ -24,6 +48,8 @@
             <span>{{join.joinTable.name}}</span>
             <DynamicWidthInput v-model="join.joinTable.alias"/>
             <em>ON</em>
+            <span>#</span>
+            <DynamicWidthInput v-model="join.relation" class="relation"/>
           </SQLLine>
           <ul class="join-ons">
             <SQLLine v-for="(on,index) in join.ons" indent="20">
@@ -58,11 +84,24 @@ export default {
     // 表join信息
     tableJoins: {
       type: Array
+    },
+    // 聚合信息
+    aggregates: {
+      type: Array
     }
   },
   methods: {
     edit () {
       console.log(this.$el.querySelector('.wrap').innerText)
+    },
+    // 获取聚合语句
+    getAggregate (field) {
+      const aggregate = this.aggregates.find(agg => agg.field.name === field.name)
+      if (aggregate == null) {
+        return null
+      }
+      return aggregate
+      // return `(SELECT ${aggregate.function}(${aggregate.targetTable.alias}.${aggregate.targetField.name})) FROM ${aggregate.targetTable.name} ${aggregate.targetTable.alias}`
     }
   }
 }
