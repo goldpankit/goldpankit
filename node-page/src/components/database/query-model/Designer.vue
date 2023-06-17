@@ -7,7 +7,7 @@
     @click="globalClick"
   >
     <Table
-      v-for="table in tables"
+      v-for="table in model.tables"
       :ref="table.id"
       :key="table.name"
       :width="table.width"
@@ -16,8 +16,8 @@
       :x="table.x"
       :y="table.y"
       :table="table"
-      :relations="joins"
-      :selected="selectedTableId === table.id"
+      :relations="model.joins"
+      :selected="model.selectedTableId === table.id"
       @dragmove="moveTable"
       @field:mousedown="handleFieldMouseDown"
       @field:mouseup="handleFieldMouseUp"
@@ -43,28 +43,7 @@ export default {
   name: "QueryModelDesigner",
   components: {Table, RelationLine},
   props: {
-    model: {},
-    // 已选中的表ID
-    selectedTableId: {},
-    // 关系线类型
-    lineType: {
-      default: 'join'
-    },
-    // 设计器中的表
-    tables: {
-      type: Array
-    },
-    // joins
-    joins: {
-      type: Array,
-      required: true
-    },
-    // 聚合关系
-    aggregates: {
-      type: Array
-    },
-    // 拖动数据（外部执行拖动时的数据信息）
-    dragData: {}
+    model: {}
   },
   data () {
     return {
@@ -87,18 +66,22 @@ export default {
       }
     }
   },
+  watch: {
+    model () {
+      this.__render()
+    }
+  },
   methods: {
     // 全局点击
     globalClick (e) {
       // 如果点击的是空白部分，则清空选择
       if (e.target.nodeType === 'Stage') {
         this.model.selectedTableId = null
-        this.$emit('update:selectedTableId', null)
       }
     },
     // 移动表
     moveTable () {
-      for (const table of this.tables) {
+      for (const table of this.model.tables) {
         const position = this.$refs[table.id][0].getNode().getAbsolutePosition()
         table.x = position.x
         table.y = position.y
@@ -109,7 +92,7 @@ export default {
     computeRelations () {
       this.relationLines = []
       // 计算join关系线
-      for (const join of this.joins) {
+      for (const join of this.model.joins) {
         for (const on of join.ons) {
           const startPosition = this.__getFieldPosition(join.table, on.startField)
           const endPosition = this.__getFieldPosition(join.joinTable, on.endField, false)
@@ -121,7 +104,7 @@ export default {
         }
       }
       // 计算聚合关系线
-      for (const aggregate of this.aggregates) {
+      for (const aggregate of this.model.aggregates) {
         const startPosition = this.__getFieldPosition(aggregate.table, aggregate.field)
         const endPosition = this.__getFieldPosition(aggregate.targetTable, aggregate.targetField, false)
         this.relationLines.push({
@@ -152,18 +135,18 @@ export default {
         return
       }
       // 添加关联
-      if (this.lineType === 'join') {
+      if (this.model.lineType === 'join') {
         this.__addJoinRelation()
         return
       }
       // 如果为聚合函数关联
-      if (this.lineType === 'aggregate') {
+      if (this.model.lineType === 'aggregate') {
         this.__addAggregate()
       }
     },
     // 处理表格选中
     handleTableSelect (tableId) {
-      this.$emit('update:selectedTableId', tableId)
+      this.model.selectedTableId = tableId
     },
     // 添加join关系
     __addJoinRelation () {
@@ -172,7 +155,7 @@ export default {
         return
       }
       // 添加关联
-      let join = this.joins.find(
+      let join = this.model.joins.find(
         r => r.table.id === this.relationRuntime.startTable.id &&
           r.joinTable.id === this.relationRuntime.endTable.id
       )
@@ -184,7 +167,7 @@ export default {
           relation: 'ONE-TO-ONE',
           ons: []
         }
-        this.joins.push(join)
+        this.model.joins.push(join)
       }
       join.ons.push({
         startField: this.relationRuntime.startField,
@@ -200,7 +183,7 @@ export default {
         return
       }
       // 添加聚合
-      let aggregate = this.aggregates.find(
+      let aggregate = this.model.aggregates.find(
         r => r.table.id === this.relationRuntime.startTable.id &&
           r.targetTable.id === this.relationRuntime.endTable.id
       )
@@ -212,7 +195,7 @@ export default {
           targetField: this.relationRuntime.endField,
           function: 'COUNT'
         }
-        this.aggregates.push(aggregate)
+        this.model.aggregates.push(aggregate)
       }
       this.computeRelations()
     },
@@ -221,13 +204,13 @@ export default {
       const position = stage.getPointerPosition()
       const size = {
         width: 200,
-        height: (this.dragData.fields.length + 1) * this.fieldHeight
+        height: (this.model.dragData.fields.length + 1) * this.fieldHeight
       }
       const newTable = {
-        ...this.dragData,
+        ...this.model.dragData,
         ...size,
         // 第一个表标记为主表
-        type: this.tables.length === 0 ? 'MAIN' : 'SUB',
+        type: this.model.tables.length === 0 ? 'MAIN' : 'SUB',
         x: position.x - size.width / 2,
         y: position.y - size.height / 2,
         // 增加设计器元素ID
@@ -237,7 +220,7 @@ export default {
         // 添加是否展示子字段
         visible: true
       }
-      this.tables.push(newTable)
+      this.model.tables.push(newTable)
       // 重新渲染，使新添加的元素绘制在stage中
       this.__render()
     },

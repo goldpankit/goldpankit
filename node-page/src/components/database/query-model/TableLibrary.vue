@@ -88,6 +88,8 @@ export default {
     confirmCreate () {
       this.queryModels.push({
         ...this.newModel,
+        // 当前选择的关系线类型
+        lineType: 'join',
         // 表
         tables: [],
         // 关联关系
@@ -145,6 +147,9 @@ export default {
       overflow-y: auto;
       li {
         padding: 5px 20px;
+        &.selected {
+          color: var(--primary-color-match-2);
+        }
       }
     }
     &:first-of-type {

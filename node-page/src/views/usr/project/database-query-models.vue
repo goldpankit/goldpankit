@@ -21,12 +21,7 @@
       <!-- 设计器 -->
       <QueryModelDesigner
         v-if="currentModel != null"
-        v-model:selected-table-id="currentModel.selectedTableId"
-        :line-type="lineType"
-        :tables="currentModel.tables"
-        :aggregates="currentModel.aggregates"
-        :joins="currentModel.joins"
-        :drag-data="currentModel.dragData"
+        :model="currentModel"
       />
     </div>
     <!-- 表设置 -->
