@@ -251,6 +251,7 @@ export default {
             stage.setPointersPositions(e);
             this.__handleStageDrop(stage)
           })
+          this.computeRelations()
         })
       })
     }
