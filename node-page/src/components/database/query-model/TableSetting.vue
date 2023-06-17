@@ -5,7 +5,7 @@
       <el-button type="primary">Execute</el-button>
     </div>
     <div class="wrap" v-if="table != null">
-      <SQLLine><em>SELECT</em></SQLLine>
+      <SQLLine type="select"><em>SELECT</em></SQLLine>
       <template v-for="(field,index) in table.fields">
         <template v-if="getAggregate(field)">
           <SQLLine indent="20" :visible="field.visible">(</SQLLine>
@@ -27,6 +27,11 @@
             <span>)</span>
             <em>AS</em>
             <span>{{field.name}}{{table.fields.length === index + 1 ? '' : ','}}</span>
+            <template v-if="table.isVirtual">
+              <span class="comment">#</span>
+              <DynamicWidthInput v-model="field.type" class="comment"/>
+              <DynamicWidthInput v-model="field.comment" class="comment"/>
+            </template>
           </SQLLine>
         </template>
         <SQLLine
@@ -41,6 +46,11 @@
           <span>{{field.name}}</span>
           <em>AS</em>
           <span>{{field.name}}{{table.fields.length === index + 1 ? '' : ','}}</span>
+          <template v-if="table.isVirtual">
+            <span class="comment">#</span>
+            <DynamicWidthInput v-model="field.type" class="comment"/>
+            <DynamicWidthInput v-model="field.comment" class="comment"/>
+          </template>
         </SQLLine>
       </template>
       <SQLLine v-if="!table.isVirtual">
@@ -57,7 +67,7 @@
             <DynamicWidthInput v-model="join.joinTable.alias"/>
             <em>ON</em>
             <span>#</span>
-            <DynamicWidthInput v-model="join.relation" class="relation"/>
+            <DynamicWidthInput v-model="join.relation" class="comment"/>
           </SQLLine>
           <ul class="join-ons">
             <SQLLine v-for="(on,index) in join.ons" indent="20">

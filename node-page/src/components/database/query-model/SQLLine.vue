@@ -8,6 +8,9 @@
         <el-button v-show="visible" icon="View" @click="$emit('update:visible', false)"></el-button>
         <el-button v-show="!visible" icon="Hide" @click="$emit('update:visible', true)"></el-button>
       </li>
+      <li v-if="type === 'select'">
+        <el-button icon="Plus" @click="$emit('create-field')"></el-button>
+      </li>
     </ul>
   </div>
 </template>
@@ -65,8 +68,12 @@ export default {
       font-style: normal;
     }
     // 关系
-    :deep(.relation) {
+    :deep(.dynamic-width-input.comment) {
       background: #e5ffda;
+    }
+    // 注释
+    :deep(span.comment) {
+      color: var(--color-gray);
     }
   }
   // 操作
