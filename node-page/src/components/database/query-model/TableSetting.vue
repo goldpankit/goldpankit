@@ -5,8 +5,11 @@
       <el-button type="primary">Execute</el-button>
     </div>
     <div class="wrap" v-if="table != null">
+      <!-- 查询语句 -->
       <SQLLine type="select" @field:create="createVirtualField"><em>SELECT</em></SQLLine>
+      <!-- 字段列表 -->
       <template v-for="(field,index) in table.fields">
+        <!-- 聚合字段 -->
         <template v-if="getAggregate(field)">
           <SQLLine indent="20" :visible="field.visible">(</SQLLine>
           <SQLLine indent="40" :visible="field.visible"><em>SELECT</em></SQLLine>
@@ -18,41 +21,55 @@
             <span>{{getAggregate(field).targetField.name}}</span>
             <span>)</span>
           </SQLLine>
+          <!-- 聚合表 -->
           <SQLLine indent="40" :visible="field.visible">
             <em>FROM</em>
             <span>{{getAggregate(field).targetTable.name}}</span>
             <DynamicWidthInput v-model="getAggregate(field).targetTable.alias"/>
           </SQLLine>
+          <!-- 聚合表别名的等信息 -->
           <SQLLine
             indent="20"
-            :type="table.isVirtual ? 'virtual-field': 'field'"
+            :type="field.isVirtual ? 'virtual-field': 'field'"
             v-model:visible="field.visible"
             @field:delete="deleteVirtualField(index)"
           >
             <span>)</span>
             <em>AS</em>
-            <span>{{field.name}}{{table.fields.length === index + 1 ? '' : ','}}</span>
-            <template v-if="table.isVirtual">
+            <DynamicWidthInput v-model="field.name"/>
+            <span>{{table.fields.length === index + 1 ? '' : ','}}</span>
+            <!-- 虚拟字段展示类型和注释 -->
+            <template v-if="field.isVirtual">
               <span class="comment">#</span>
               <DynamicWidthInput v-model="field.type" class="comment"/>
               <DynamicWidthInput v-model="field.comment" class="comment"/>
             </template>
           </SQLLine>
         </template>
+        <!-- 非聚合字段 -->
         <SQLLine
           v-else
           :key="field.name"
-          :type="table.isVirtual ? 'virtual-field': 'field'"
+          :type="field.isVirtual ? 'virtual-field': 'field'"
           v-model:visible="field.visible"
           indent="20"
           @field:delete="deleteVirtualField(index)"
         >
           <DynamicWidthInput v-model="table.alias"/>
           <span>.</span>
-          <span>{{field.name}}</span>
-          <em>AS</em>
-          <span>{{field.name}}{{table.fields.length === index + 1 ? '' : ','}}</span>
-          <template v-if="table.isVirtual">
+          <!-- 非虚拟字段 -->
+          <template v-if="!field.isVirtual">
+            <span>{{field.name}}</span>
+            <em>AS</em>
+            <DynamicWidthInput v-model="field.name"/>
+            <span>{{table.fields.length === index + 1 ? '' : ','}}</span>
+          </template>
+          <!-- 虚拟字段 -->
+          <template v-else>
+            <DynamicWidthInput v-model="field.name"/>
+            <em>AS</em>
+            <DynamicWidthInput v-model="field.name"/>
+            <span>{{table.fields.length === index + 1 ? '' : ','}}</span>
             <span class="comment">#</span>
             <DynamicWidthInput v-model="field.type" class="comment"/>
             <DynamicWidthInput v-model="field.comment" class="comment"/>
@@ -124,7 +141,8 @@ export default {
       this.table.fields.push({
         name: 'virtual1',
         type: 'int',
-        comment: 'Virtual field 1'
+        comment: 'Virtual field 1',
+        isVirtual: true
       })
       this.$emit('field:change')
     },
@@ -163,6 +181,7 @@ export default {
   .toolbar {
     display: flex;
     justify-content: flex-end;
+    margin-bottom: 10px;
   }
   &.visible {
     transform: translateX(0);

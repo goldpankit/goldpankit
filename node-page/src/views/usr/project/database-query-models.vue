@@ -115,7 +115,13 @@ export default {
           this.tables = tables.map(t => {
             return {
               ...t,
-              alias: t.name
+              alias: t.name,
+              fields: t.fields.map(f => {
+                return {
+                  ...f,
+                  isVirtual: false
+                }
+              })
             }
           })
         })
