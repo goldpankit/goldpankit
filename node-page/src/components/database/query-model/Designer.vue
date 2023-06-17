@@ -231,7 +231,9 @@ export default {
         // 增加设计器元素ID
         id: '' + Math.random(),
         // 添加joins，用于存放join关系
-        joins: []
+        joins: [],
+        // 添加是否展示子字段
+        visible: true
       }
       this.tables.push(newTable)
       // 重新渲染，使新添加的元素绘制在stage中

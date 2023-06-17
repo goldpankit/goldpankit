@@ -1,10 +1,13 @@
 <template>
-  <div class="sql-line" :style="{ 'padding-left': indent + 'px' }">
+  <div class="sql-line" :class="{'sql-line__hide': !visible}" :style="{ 'padding-left': indent + 'px' }">
     <p class="code">
       <slot></slot>
     </p>
     <ul class="opera">
-      <li v-if="type === 'field'"><el-button icon="Hide"></el-button></li>
+      <li v-if="type === 'field'">
+        <el-button v-show="visible" icon="View" @click="$emit('update:visible', false)"></el-button>
+        <el-button v-show="!visible" icon="Hide" @click="$emit('update:visible', true)"></el-button>
+      </li>
     </ul>
   </div>
 </template>
@@ -15,8 +18,13 @@ export default {
   props: {
     // 类型(field字段)
     type: {},
+    // 缩进
     indent: {
       default: 0
+    },
+    // 是否展示
+    visible: {
+      default: true
     }
   }
 }
@@ -29,6 +37,11 @@ export default {
   padding: 5px 10px 5px 0;
   letter-spacing: 1px;
   justify-content: space-between;
+  &.sql-line__hide {
+    .code {
+      opacity: .35;
+    }
+  }
   &:hover {
     background: var(--background-color);
     .opera {

@@ -8,9 +8,9 @@
       <SQLLine><em>SELECT</em></SQLLine>
       <template v-for="(field,index) in table.fields">
         <template v-if="getAggregate(field)">
-          <SQLLine indent="20">(</SQLLine>
-          <SQLLine indent="40"><em>SELECT</em></SQLLine>
-          <SQLLine indent="60">
+          <SQLLine indent="20" :visible="field.visible">(</SQLLine>
+          <SQLLine indent="40" :visible="field.visible"><em>SELECT</em></SQLLine>
+          <SQLLine indent="60" :visible="field.visible">
             <DynamicWidthInput v-model="getAggregate(field).function"/>
             <span>(</span>
             <DynamicWidthInput v-model="getAggregate(field).targetTable.alias"/>
@@ -18,18 +18,24 @@
             <span>{{getAggregate(field).targetField.name}}</span>
             <span>)</span>
           </SQLLine>
-          <SQLLine indent="40">
+          <SQLLine indent="40" :visible="field.visible">
             <em>FROM</em>
             <span>{{getAggregate(field).targetTable.name}}</span>
             <DynamicWidthInput v-model="getAggregate(field).targetTable.alias"/>
           </SQLLine>
-          <SQLLine indent="20" type="field">
+          <SQLLine indent="20" type="field" v-model:visible="field.visible">
             <span>)</span>
             <em>AS</em>
             <span>{{field.name}}{{table.fields.length === index + 1 ? '' : ','}}</span>
           </SQLLine>
         </template>
-        <SQLLine v-else :key="field.name" type="field" indent="20">
+        <SQLLine
+          v-else
+          :key="field.name"
+          type="field"
+          v-model:visible="field.visible"
+          indent="20"
+        >
           <DynamicWidthInput v-model="table.alias"/>
           <span>.</span>
           <span>{{field.name}}</span>
@@ -38,7 +44,9 @@
         </SQLLine>
       </template>
       <SQLLine>
-        <p><em>FROM</em> {{table.name}} <em>AS</em></p>
+        <em>FROM</em>
+        <span>{{table.name}}</span>
+        <em>AS</em>
         <DynamicWidthInput v-model="table.alias"/>
       </SQLLine>
       <ul class="joins">
@@ -101,7 +109,6 @@ export default {
         return null
       }
       return aggregate
-      // return `(SELECT ${aggregate.function}(${aggregate.targetTable.alias}.${aggregate.targetField.name})) FROM ${aggregate.targetTable.name} ${aggregate.targetTable.alias}`
     }
   }
 }
