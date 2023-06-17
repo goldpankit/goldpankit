@@ -5,7 +5,7 @@
       <el-button type="primary">Execute</el-button>
     </div>
     <div class="wrap" v-if="table != null">
-      <SQLLine type="select"><em>SELECT</em></SQLLine>
+      <SQLLine type="select" @field:create="createVirtualField"><em>SELECT</em></SQLLine>
       <template v-for="(field,index) in table.fields">
         <template v-if="getAggregate(field)">
           <SQLLine indent="20" :visible="field.visible">(</SQLLine>
@@ -23,7 +23,12 @@
             <span>{{getAggregate(field).targetTable.name}}</span>
             <DynamicWidthInput v-model="getAggregate(field).targetTable.alias"/>
           </SQLLine>
-          <SQLLine indent="20" type="field" v-model:visible="field.visible">
+          <SQLLine
+            indent="20"
+            :type="table.isVirtual ? 'virtual-field': 'field'"
+            v-model:visible="field.visible"
+            @field:delete="deleteVirtualField(index)"
+          >
             <span>)</span>
             <em>AS</em>
             <span>{{field.name}}{{table.fields.length === index + 1 ? '' : ','}}</span>
@@ -37,9 +42,10 @@
         <SQLLine
           v-else
           :key="field.name"
-          type="field"
+          :type="table.isVirtual ? 'virtual-field': 'field'"
           v-model:visible="field.visible"
           indent="20"
+          @field:delete="deleteVirtualField(index)"
         >
           <DynamicWidthInput v-model="table.alias"/>
           <span>.</span>
@@ -109,8 +115,23 @@ export default {
     }
   },
   methods: {
+    // 编辑
     edit () {
       console.log(this.$el.querySelector('.wrap').innerText)
+    },
+    // 创建虚拟字段
+    createVirtualField () {
+      this.table.fields.push({
+        name: 'virtual1',
+        type: 'int',
+        comment: 'Virtual field 1'
+      })
+      this.$emit('field:change')
+    },
+    // 删除虚拟字段
+    deleteVirtualField (index) {
+      this.table.fields.splice(index, 1)
+      this.$emit('field:change')
     },
     // 获取聚合语句
     getAggregate (field) {

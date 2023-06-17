@@ -21,6 +21,7 @@
       <!-- 设计器 -->
       <QueryModelDesigner
         v-if="currentModel != null"
+        ref="designer"
         :model="currentModel"
       />
     </div>
@@ -29,6 +30,7 @@
       :table="currentTable"
       :table-joins="currentTableJoins"
       :aggregates="currentTableAggregates"
+      @field:change="$refs.designer.render()"
     />
   </div>
 </template>

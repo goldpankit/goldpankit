@@ -103,7 +103,7 @@ export default {
   },
   watch: {
     model () {
-      this.__render()
+      this.render()
     }
   },
   methods: {
@@ -210,7 +210,7 @@ export default {
       }
       this.model.tables.push(newTable)
       // 重新渲染，使新添加的元素绘制在stage中
-      this.__render()
+      this.render()
     },
     // 添加虚拟表
     confirmCreateVirtualTable () {
@@ -234,7 +234,7 @@ export default {
       }
       this.model.tables.push(newTable)
       // 重新渲染，使新添加的元素绘制在stage中
-      this.__render()
+      this.render()
     },
     // 添加join关系
     __addJoinRelation () {
@@ -297,7 +297,7 @@ export default {
       return { x, y }
     },
     // 渲染
-    __render () {
+    render () {
       this.rendered = false
       this.$nextTick(() => {
         this.rendered = true
@@ -319,7 +319,7 @@ export default {
     }
   },
   mounted () {
-    this.__render()
+    this.render()
   }
 }
 </script>
