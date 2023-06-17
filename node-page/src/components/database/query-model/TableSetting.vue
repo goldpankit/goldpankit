@@ -43,7 +43,7 @@
           <span>{{field.name}}{{table.fields.length === index + 1 ? '' : ','}}</span>
         </SQLLine>
       </template>
-      <SQLLine>
+      <SQLLine v-if="!table.isVirtual">
         <em>FROM</em>
         <span>{{table.name}}</span>
         <em>AS</em>

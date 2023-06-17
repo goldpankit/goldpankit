@@ -1,4 +1,30 @@
 <template>
+  <!-- 提醒和创建虚拟表 -->
+  <div v-if="model.tables.length === 0" class="empty-tip" @dragover.prevent @drop="handleDrop">
+    <div class="wrap">
+      <p>Drag and drop the table on the left here or fill out the form below to create a virtual table.</p>
+      <el-table :data="virtualTable.fields">
+        <el-table-column prop="name" label="*Name">
+          <template #default="{ row }">
+            <el-input v-model="row.name"/>
+          </template>
+        </el-table-column>
+        <el-table-column prop="type" label="*Type">
+          <template #default="{ row }">
+            <el-input v-model="row.type"/>
+          </template>
+        </el-table-column>
+        <el-table-column prop="comment" label="*Comment">
+          <template #default="{ row }">
+            <el-input v-model="row.comment"/>
+          </template>
+        </el-table-column>
+      </el-table>
+      <div class="opera">
+        <el-button type="important" @click="confirmCreateVirtualTable">Confirm Create</el-button>
+      </div>
+    </div>
+  </div>
   <v-stage
     v-if="rendered"
     ref="stage"
@@ -63,6 +89,15 @@ export default {
         startField: null,
         endTable: null,
         endField: null
+      },
+      // 虚拟表数据
+      virtualTable: {
+        name: 'test',
+        alias: 'test',
+        comment: '',
+        fields: [
+          { name: 'regisCount', type: 'int', comment: '注册数' }
+        ]
       }
     }
   },
@@ -148,6 +183,59 @@ export default {
     handleTableSelect (tableId) {
       this.model.selectedTableId = tableId
     },
+    // stage拖拽放下
+    handleDrop (e) {
+      const stage = this.$refs.stage.getNode()
+      stage.setPointersPositions(e);
+      const position = stage.getPointerPosition()
+      const size = {
+        width: 200,
+        height: (this.model.dragData.fields.length + 1) * this.fieldHeight
+      }
+      const newTable = {
+        ...this.model.dragData,
+        ...size,
+        // 非虚拟表
+        isVirtual: false,
+        // 第一个表标记为主表
+        type: this.model.tables.length === 0 ? 'MAIN' : 'SUB',
+        x: position.x - size.width / 2,
+        y: position.y - size.height / 2,
+        // 增加设计器元素ID
+        id: '' + Math.random(),
+        // 添加joins，用于存放join关系
+        joins: [],
+        // 添加是否展示子字段
+        visible: true
+      }
+      this.model.tables.push(newTable)
+      // 重新渲染，使新添加的元素绘制在stage中
+      this.__render()
+    },
+    // 添加虚拟表
+    confirmCreateVirtualTable () {
+      const size = {
+        width: 200,
+        height: (this.virtualTable.fields.length + 1) * this.fieldHeight
+      }
+      const newTable = {
+        ...this.virtualTable,
+        ...size,
+        // 虚拟表
+        isVirtual: true,
+        // 第一个表标记为主表
+        type: this.model.tables.length === 0 ? 'MAIN' : 'SUB',
+        x: 100,
+        y: 100,
+        // 增加设计器元素ID
+        id: '' + Math.random(),
+        // 添加joins，用于存放join关系
+        joins: []
+      }
+      this.model.tables.push(newTable)
+      // 重新渲染，使新添加的元素绘制在stage中
+      this.__render()
+    },
     // 添加join关系
     __addJoinRelation () {
       // 如果开始表和结束表是同一个，则不做关联操作
@@ -199,31 +287,6 @@ export default {
       }
       this.computeRelations()
     },
-    // stage拖拽放下
-    __handleStageDrop (stage) {
-      const position = stage.getPointerPosition()
-      const size = {
-        width: 200,
-        height: (this.model.dragData.fields.length + 1) * this.fieldHeight
-      }
-      const newTable = {
-        ...this.model.dragData,
-        ...size,
-        // 第一个表标记为主表
-        type: this.model.tables.length === 0 ? 'MAIN' : 'SUB',
-        x: position.x - size.width / 2,
-        y: position.y - size.height / 2,
-        // 增加设计器元素ID
-        id: '' + Math.random(),
-        // 添加joins，用于存放join关系
-        joins: [],
-        // 添加是否展示子字段
-        visible: true
-      }
-      this.model.tables.push(newTable)
-      // 重新渲染，使新添加的元素绘制在stage中
-      this.__render()
-    },
     // 获取字段坐标
     __getFieldPosition (table, field, withWidth=true) {
       const stageNode = this.$refs.stage.getNode()
@@ -248,8 +311,7 @@ export default {
           // 放下时增加表
           container.addEventListener('drop', (e) => {
             e.preventDefault();
-            stage.setPointersPositions(e);
-            this.__handleStageDrop(stage)
+            this.handleDrop(e)
           })
           this.computeRelations()
         })
@@ -262,6 +324,35 @@ export default {
 }
 </script>
 
-<style scoped>
-
+<style scoped lang="scss">
+.empty-tip {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+  .wrap {
+    width: 500px;
+    padding: 20px;
+    box-sizing: border-box;
+    p {
+      font-size: var(--font-size-middle);
+      text-align: center;
+      line-height: 25px;
+    }
+    .el-table {
+      margin-top: 20px;
+    }
+    .opera {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+    }
+  }
+}
 </style>

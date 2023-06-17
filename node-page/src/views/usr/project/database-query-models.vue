@@ -8,12 +8,12 @@
     />
     <div class="designer-wrap">
       <!-- 线条类型 -->
-      <ul class="line-types">
-        <li :class="{selected: lineType === 'join'}" @click="lineType = 'join'">
+      <ul v-if="currentModel != null" class="line-types">
+        <li :class="{selected: currentModel.lineType === 'join'}" @click="currentModel.lineType = 'join'">
           <em class="join-line"></em>
           <label>Join Line</label>
         </li>
-        <li :class="{selected: lineType === 'aggregate'}" @click="lineType = 'aggregate'">
+        <li :class="{selected: currentModel.lineType === 'aggregate'}" @click="currentModel.lineType = 'aggregate'">
           <em class="aggregate-line"></em>
           <label>Aggregate Line</label>
         </li>
