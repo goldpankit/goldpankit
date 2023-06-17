@@ -1,26 +1,11 @@
 <template>
   <div class="database-query-models">
-    <div class="table-wrap">
-      <div class="block">
-        <h4>Query Models</h4>
-        <ul>
-          <li>user</li>
-          <li>order</li>
-        </ul>
-      </div>
-      <div class="block">
-        <h4>Tables</h4>
-        <ul>
-          <li
-            v-for="table in tables"
-            :key="table.name"
-            :name="table.name"
-            draggable="true"
-            @dragstart="handleDragStart"
-          >{{table.name}}</li>
-        </ul>
-      </div>
-    </div>
+    <TableLibrary
+      :query-models="queryModels"
+      :tables="tables"
+      @table:drag="handleDragStart"
+      v-model:current-model="currentModel"
+    />
     <div class="designer-wrap">
       <!-- 线条类型 -->
       <ul class="line-types">
@@ -35,12 +20,13 @@
       </ul>
       <!-- 设计器 -->
       <QueryModelDesigner
-        v-model:selected-table-id="designer.selectedTableId"
+        v-if="currentModel != null"
+        v-model:selected-table-id="currentModel.selectedTableId"
         :line-type="lineType"
-        :tables="designer.tables"
-        :aggregates="designer.aggregates"
-        :joins="designer.joins"
-        :drag-data="designer.dragData"
+        :tables="currentModel.tables"
+        :aggregates="currentModel.aggregates"
+        :joins="currentModel.joins"
+        :drag-data="currentModel.dragData"
       />
     </div>
     <!-- 表设置 -->
@@ -58,16 +44,23 @@ import Table from "../../../components/database/query-model/Table.vue";
 import RelationLine from "../../../components/database/query-model/RelationLine.vue";
 import TableSetting from "../../../components/database/query-model/TableSetting.vue";
 import QueryModelDesigner from "../../../components/database/query-model/Designer.vue";
+import TableLibrary from "../../../components/database/query-model/TableLibrary.vue";
 import {fetchTables} from "../../../api/db";
 
 export default {
-  components: {QueryModelDesigner, TableSetting, RelationLine, Table},
+  components: {
+    TableLibrary,
+    QueryModelDesigner, TableSetting, RelationLine, Table},
   data () {
     return {
+      // 查询模型
+      queryModels: [],
       // 表集合
       tables: [],
       // 关联线类型
       lineType: 'join',
+      // 当前选中的模型
+      currentModel: null,
       // 设计器数据
       designer: {
         // 表
@@ -86,30 +79,30 @@ export default {
   computed: {
     ...mapState(['currentProject', 'currentDatabase']),
     currentTable () {
-      if (this.designer.selectedTableId == null) {
+      if (this.currentModel == null || this.currentModel.selectedTableId == null) {
         return null
       }
-      return this.designer.tables.find(t => t.id === this.designer.selectedTableId)
+      return this.currentModel.tables.find(t => t.id === this.currentModel.selectedTableId)
     },
     // 当前表joins
     currentTableJoins () {
       if (this.currentTable == null || this.currentTable.type !== 'MAIN') {
         return []
       }
-      return this.designer.joins.filter(r => r.table.id === this.currentTable.id || r.joinTable.id === this.currentTable.id)
+      return this.currentModel.joins.filter(r => r.table.id === this.currentTable.id || r.joinTable.id === this.currentTable.id)
     },
     // 当前表的聚合函数列
     currentTableAggregates () {
       if (this.currentTable == null || this.currentTable.type !== 'MAIN') {
         return []
       }
-      return this.designer.aggregates.filter(agg => agg.table.id === this.currentTable.id)
+      return this.currentModel.aggregates.filter(agg => agg.table.id === this.currentTable.id)
     }
   },
   methods: {
     // 开始拖动表放置在设计器中
-    handleDragStart (e) {
-      this.designer.dragData = this.tables.find(t => t.name === e.target.getAttribute('name'))
+    handleDragStart (tableName) {
+      this.currentModel.dragData = this.tables.find(t => t.name === tableName)
     },
     // 查询数据库表
     fetchTables () {
@@ -148,38 +141,9 @@ export default {
   background: var(--background-color);
   border-top: 5px solid;
   border-image: linear-gradient(to right, var(--primary-color), var(--primary-color-match-2), var(--primary-color-match-1)) 1;
-  .table-wrap {
-    flex-shrink: 0;
+  .table-library {
     width: 255px;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    .block {
-      border-top: 1px solid #ccc;
-      flex-grow: 1;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      padding: 20px 0;
-      h4 {
-        flex-shrink: 0;
-        margin-bottom: 10px;
-        padding: 0 20px;
-      }
-      ul {
-        flex-grow: 1;
-        overflow-y: auto;
-        li {
-          padding: 5px 20px;
-        }
-      }
-      &:first-of-type {
-        flex-grow: 0;
-        flex-shrink: 0;
-        height: 300px;
-        border-top: 0;
-      }
-    }
+    flex-shrink: 0;
   }
   .designer-wrap {
     flex-grow: 1;

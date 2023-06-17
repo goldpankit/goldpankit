@@ -43,6 +43,7 @@ export default {
   name: "QueryModelDesigner",
   components: {Table, RelationLine},
   props: {
+    model: {},
     // 已选中的表ID
     selectedTableId: {},
     // 关系线类型
@@ -91,6 +92,7 @@ export default {
     globalClick (e) {
       // 如果点击的是空白部分，则清空选择
       if (e.target.nodeType === 'Stage') {
+        this.model.selectedTableId = null
         this.$emit('update:selectedTableId', null)
       }
     },
