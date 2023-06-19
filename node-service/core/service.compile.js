@@ -157,6 +157,7 @@ class Kit {
     const variables = this.#getVariables(database, dto.variables)
     return Promise.all(variables)
       .then(vars => {
+        console.log('vars', vars)
         return serviceApi.compile({
           defaultCompiler: serviceConfig.compiler,
           variables: vars,
@@ -221,7 +222,8 @@ class Kit {
   #getVariables (database, variables) {
     return variables.map(item => {
       return new Promise((resolve, reject) => {
-        try { // 输入类型为表，则查询出表信息
+        try {
+          // 输入类型为表，则查询出表信息
           if (item.inputType === 'table') {
             mysql.getTable({
               host: database.host,
@@ -239,6 +241,64 @@ class Kit {
               .catch(e => {
                 reject(e)
               })
+            return
+          }
+          // 如果类型为查询模型，则查询出模型信息
+          if (item.inputType === 'query_model') {
+            const modelName = item.value || item.defaultValue
+            const model = database.models.find(model => model.name === modelName)
+            // 主表
+            const mainTable = model.tables.find(t => t.type === 'MAIN')
+            // 子表
+            const subTables = model.tables.filter(t => t.type !== 'MAIN')
+            // join
+            const joins = model.joins.map(join => {
+              const joinTable = model.tables.find(t => t.name === join.joinTable)
+              const ons = join.ons.map((on,index) => {
+                const relationText = index === 0 ? '' : on.relation
+                return `${relationText} ${mainTable.alias}.${on.startField} = ${joinTable.alias}.${on.endField}`
+              })
+              return `${join.joinType} ${join.joinTable} ON
+  ${ons.join('\n  ')}`
+            })
+            // 查询字段
+            const fields = []
+            for (const table of model.tables) {
+              for (const field of table.fields) {
+                const agg = model.aggregates.find(
+                  agg => agg.table.toLowerCase() === table.name.toLowerCase() &&
+                    agg.field.toLowerCase() === field.name.toLowerCase()
+                )
+                if (agg == null) {
+                  fields.push(`${table.alias}.${field.name} AS ${field.alias}`)
+                } else {
+                  const targetTable = model.tables.find(t => t.name.toLowerCase() === agg.targetTable.toLowerCase())
+                  const targetField = targetTable.fields.find(f => f.name.toLowerCase() === agg.targetField.toLowerCase())
+                    fields.push(`(
+    SELECT
+      ${agg.function}(${targetTable.alias}.${agg.targetField})
+    FROM ${targetTable.name} ${targetTable.alias}
+  ) AS ${field.alias}`)
+                }
+              }
+            }
+            resolve({
+              ...item,
+              value: {
+                name: model.name,
+                comment: model.comment,
+                mainTable,
+                subTables,
+                joins: model.joins,
+                aggregates: model.aggregates,
+                sql: {
+                  fields: fields.join(',\n  '),
+                  joins: joins.join('\n'),
+                  where: '',
+                  orderBy: ''
+                }
+              }
+            })
             return
           }
           // 如果为服务变量组，则修改子变量值
