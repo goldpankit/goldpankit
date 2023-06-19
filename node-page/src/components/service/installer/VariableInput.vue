@@ -20,6 +20,12 @@
     :value-key="valueKey"
     v-model="variable[valueKey]"
   />
+  <QueryModelSelect
+    v-else-if="variable.inputType === 'query_model'"
+    :variables="variables"
+    :value-key="valueKey"
+    v-model="variable[valueKey]"
+  />
 </template>
 
 <script>
@@ -27,10 +33,11 @@ import InstallInput from "./Input.vue";
 import InstallRadio from "./Radio.vue";
 import InstallCheckbox from "./Checkbox.vue";
 import TableSelect from "../../common/TableSelect.vue";
+import QueryModelSelect from "../../common/QueryModelSelect.vue";
 
 export default {
   name: "VariableInput",
-  components: {TableSelect, InstallCheckbox, InstallRadio, InstallInput},
+  components: {QueryModelSelect, TableSelect, InstallCheckbox, InstallRadio, InstallInput},
   props: {
     // 当前变量
     variable: {
