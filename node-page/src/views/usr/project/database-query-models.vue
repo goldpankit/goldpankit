@@ -23,6 +23,7 @@
         v-if="currentModel != null"
         ref="designer"
         :model="currentModel"
+        :field-height="30"
         @change="saveModel"
       />
     </div>
@@ -52,6 +53,7 @@ export default {
     QueryModelDesigner, TableSetting, RelationLine, Table},
   data () {
     return {
+      fieldHeight: 30,
       // 查询模型
       queryModels: [],
       // 表集合
@@ -59,20 +61,7 @@ export default {
       // 关联线类型
       lineType: 'join',
       // 当前选中的模型
-      currentModel: null,
-      // 设计器数据
-      designer: {
-        // 表
-        tables: [],
-        // 关联关系
-        joins: [],
-        // 聚合关系
-        aggregates: [],
-        // 当前选中的表
-        selectedTableId: null,
-        // 拖动数据
-        dragData: null
-      }
+      currentModel: null
     }
   },
   computed: {
@@ -192,11 +181,132 @@ export default {
               })
             }
           })
+          // 查询模型
+          this.fetchModels()
         })
         .catch(e => {
           console.log('e', e)
         })
     },
+    // 查询模型
+    fetchModels () {
+      console.log(this.currentProject.databases)
+      const models = this.currentProject.databases.find(db => db.name === this.currentDatabase).models
+      this.queryModels = models.map(model => {
+        model.tables = model.tables.map(table => {
+          const dbTable = this.tables.find(tb => tb.name.toLowerCase() === table.name.toLowerCase())
+          // 如果表不存在，则返回null（表已被删除）
+          if (dbTable == null) {
+            return null
+          }
+          // 获取字段信息
+          const fields = dbTable.fields.map(f => {
+            const mField = table.fields.find(dbField => dbField.name === f.name)
+            return this.__modelField2field(mField, f)
+          })
+          // 计算表尺寸
+          const tableSize = {
+            width: 200,
+            height: (fields.length + 1) * this.fieldHeight
+          }
+          return {
+            id: '' + Math.random(),
+            ...table,
+            fields,
+            ...tableSize,
+            // 添加joins，用于存放join关系
+            joins: []
+          }
+        })
+        // 过滤掉不存在的表
+        model.tables = model.tables.filter(t => t != null)
+        // 如果模型中不存在表，则返回null
+        if (model.tables.length === 0) {
+          return null
+        }
+        // join处理
+        model.joins.map(join => {
+          return this.__modelJoin2join(model, join)
+        })
+        model.joins = model.joins.filter(join => join != null)
+        // 聚合函数处理
+        model.aggregates.map(agg => {
+          return this.__modelAggregate2Aggregate(model, agg)
+        })
+        model.aggregates = model.aggregates.filter(agg => agg != null)
+        return model
+      })
+      // 过滤掉无效的模型
+      this.queryModels = this.queryModels.filter(m => m != null)
+    },
+    // 模型字段转字段详情, modelField: 查询模型中的字段信息，dbField: 数据库字段信息
+    __modelField2field (modelField, dbField) {
+      // 没有模型字段，但有表字段（新增的表字段）
+      if (dbField != null && modelField == null) {
+        return {
+          ...dbField,
+          alias: dbField.name,
+          isVirtual: false
+        }
+      }
+      // 整合模型字段和表字段信息
+      const basicInfo = dbField == null ? {} : {...dbField}
+      return {
+        ...basicInfo,
+        alias: modelField.alias,
+        isVirtual: modelField.isVirtual,
+        type: modelField.isVirtual ? modelField.type : basicInfo.type,
+        comment: modelField.isVirtual ? modelField.comment : basicInfo.comment,
+      }
+    },
+    // 模型join转join详情
+    __modelJoin2join (model, modelJoin) {
+      const table = model.tables.find(t => t.name.toLowerCase() === modelJoin.table.toLowerCase())
+      const joinTable = model.tables.find(t => t.name.toLowerCase() === modelJoin.joinTable.toLowerCase())
+      if (table == null || joinTable == null) {
+        return null
+      }
+      modelJoin.table = table
+      modelJoin.joinTable = joinTable
+      const ons = []
+      for (const on of modelJoin.ons) {
+        const startField = table.fields.find(f => f.name.toLowerCase() === on.startField.toLowerCase())
+        const endField = joinTable.fields.find(f => f.name.toLowerCase() === on.endField.toLowerCase())
+        if (startField == null || endField == null) {
+          continue
+        }
+        ons.push({
+          startField,
+          endField,
+          relation: on.relation
+        })
+      }
+      if (ons.length === 0) {
+        return null
+      }
+      modelJoin.ons = ons
+      return modelJoin
+    },
+    // 模型join转join详情
+    __modelAggregate2Aggregate (model, modelAggregate) {
+      // 查询表信息
+      const table = model.tables.find(t => t.name.toLowerCase() === modelAggregate.table.toLowerCase())
+      const targetTable = model.tables.find(t => t.name.toLowerCase() === modelAggregate.targetTable.toLowerCase())
+      if (table == null || targetTable == null) {
+        return null
+      }
+      modelAggregate.table = table
+      modelAggregate.targetTable = targetTable
+      // 查询字段信息
+      const field = table.fields.find(f => f.name.toLowerCase() === modelAggregate.field.toLowerCase())
+      const targetField = targetTable.fields.find(f => f.name.toLowerCase() === modelAggregate.targetField.toLowerCase())
+      if (field == null || targetField == null) {
+        return null
+      }
+      modelAggregate.field = field
+      modelAggregate.targetField = targetField
+      return modelAggregate
+    }
   },
   created () {
     this.fetchTables()

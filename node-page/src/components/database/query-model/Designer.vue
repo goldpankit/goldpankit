@@ -69,12 +69,14 @@ export default {
   name: "QueryModelDesigner",
   components: {Table, RelationLine},
   props: {
-    model: {}
+    model: {},
+    fieldHeight: {
+      default: 30
+    }
   },
   data () {
     return {
       rendered: true,
-      fieldHeight: 30,
       configKonva: {
         // 设计区宽度
         width: 1260,
@@ -148,6 +150,7 @@ export default {
           type: 'aggregate'
         })
       }
+      console.log('this.relationLines', this.relationLines)
     },
     // 处理字段按下
     handleFieldMouseDown ({ table, field }) {
@@ -323,8 +326,8 @@ export default {
       const stageNode = this.$refs.stage.getNode()
       const stagePosition = stageNode.getAbsolutePosition()
       const fieldIndex = table.fields.findIndex(f => f.name === field.name)
-      const y = table.y + this.fieldHeight + (fieldIndex + 1) * this.fieldHeight - 15 - stagePosition.y
       const x = table.x + (withWidth ? table.width : 0) - stagePosition.x
+      const y = table.y + this.fieldHeight + (fieldIndex + 1) * this.fieldHeight - 15 - stagePosition.y
       return { x, y }
     }
   },
