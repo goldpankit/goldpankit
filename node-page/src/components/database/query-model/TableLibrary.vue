@@ -101,6 +101,7 @@ export default {
         // 拖动数据
         dragData: null
       })
+      this.selectModel(this.queryModels[this.queryModels.length - 1])
       this.$refs.routerViewWindow.back()
     },
     // 选择模型

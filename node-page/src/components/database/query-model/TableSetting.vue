@@ -36,7 +36,7 @@
           >
             <span>)</span>
             <em>AS</em>
-            <DynamicWidthInput v-model="field.name"/>
+            <DynamicWidthInput v-model="field.alias"/>
             <span>{{table.fields.length === index + 1 ? '' : ','}}</span>
             <!-- 虚拟字段展示类型和注释 -->
             <template v-if="field.isVirtual">
@@ -61,7 +61,7 @@
           <template v-if="!field.isVirtual">
             <span>{{field.name}}</span>
             <em>AS</em>
-            <DynamicWidthInput v-model="field.name"/>
+            <DynamicWidthInput v-model="field.alias"/>
             <span>{{table.fields.length === index + 1 ? '' : ','}}</span>
           </template>
           <!-- 虚拟字段 -->
@@ -94,7 +94,7 @@
           </SQLLine>
           <ul class="join-ons">
             <SQLLine v-for="(on,index) in join.ons" indent="20">
-              <DynamicWidthInput v-if="index !== 0" v-model="on.relationType"/>
+              <DynamicWidthInput v-if="index !== 0" v-model="on.relation"/>
               <DynamicWidthInput v-model="table.alias"/>
               <span>.</span>
               <span>{{on.startField.name}}</span>
@@ -140,6 +140,7 @@ export default {
     createVirtualField () {
       this.table.fields.push({
         name: 'virtual1',
+        alias: 'virtual1',
         type: 'int',
         comment: 'Virtual field 1',
         isVirtual: true

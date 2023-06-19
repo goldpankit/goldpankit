@@ -172,11 +172,13 @@ export default {
       // 添加关联
       if (this.model.lineType === 'join') {
         this.__addJoinRelation()
+        this.$emit('change')
         return
       }
       // 如果为聚合函数关联
       if (this.model.lineType === 'aggregate') {
         this.__addAggregate()
+        this.$emit('change')
       }
     },
     // 处理表格选中
@@ -194,6 +196,14 @@ export default {
       }
       const newTable = {
         ...this.model.dragData,
+        // 字段
+        fields: this.model.dragData.fields.map(f => {
+          return {
+            ...f,
+            alias: f.name
+          }
+        }),
+        // 尺寸
         ...size,
         // 非虚拟表
         isVirtual: false,
@@ -204,13 +214,12 @@ export default {
         // 增加设计器元素ID
         id: '' + Math.random(),
         // 添加joins，用于存放join关系
-        joins: [],
-        // 添加是否展示子字段
-        visible: true
+        joins: []
       }
       this.model.tables.push(newTable)
       // 重新渲染，使新添加的元素绘制在stage中
       this.render()
+      this.$emit('change')
     },
     // 添加虚拟表
     confirmCreateVirtualTable () {
@@ -235,6 +244,28 @@ export default {
       this.model.tables.push(newTable)
       // 重新渲染，使新添加的元素绘制在stage中
       this.render()
+      this.$emit('change')
+    },
+    // 渲染
+    render () {
+      this.rendered = false
+      this.$nextTick(() => {
+        this.rendered = true
+        this.$nextTick(() => {
+          // 采用DOM方式为stage绑定拖拽放下事件
+          const stage = this.$refs.stage.getNode()
+          const container = stage.container()
+          container.addEventListener('dragover', function (e) {
+            e.preventDefault(); // !important
+          });
+          // 放下时增加表
+          container.addEventListener('drop', (e) => {
+            e.preventDefault();
+            this.handleDrop(e)
+          })
+          this.computeRelations()
+        })
+      })
     },
     // 添加join关系
     __addJoinRelation () {
@@ -260,7 +291,7 @@ export default {
       join.ons.push({
         startField: this.relationRuntime.startField,
         endField: this.relationRuntime.endField,
-        relationType: 'AND'
+        relation: 'AND'
       })
       this.computeRelations()
     },
@@ -295,27 +326,6 @@ export default {
       const y = table.y + this.fieldHeight + (fieldIndex + 1) * this.fieldHeight - 15 - stagePosition.y
       const x = table.x + (withWidth ? table.width : 0) - stagePosition.x
       return { x, y }
-    },
-    // 渲染
-    render () {
-      this.rendered = false
-      this.$nextTick(() => {
-        this.rendered = true
-        this.$nextTick(() => {
-          // 采用DOM方式为stage绑定拖拽放下事件
-          const stage = this.$refs.stage.getNode()
-          const container = stage.container()
-          container.addEventListener('dragover', function (e) {
-            e.preventDefault(); // !important
-          });
-          // 放下时增加表
-          container.addEventListener('drop', (e) => {
-            e.preventDefault();
-            this.handleDrop(e)
-          })
-          this.computeRelations()
-        })
-      })
     }
   },
   mounted () {

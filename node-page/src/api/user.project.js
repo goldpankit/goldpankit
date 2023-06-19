@@ -8,6 +8,12 @@ export function create (data) {
 export function saveConfig (data) {
   return request.post('/usr/project/save', data)
 }
+
+// 保存查询模型
+export function saveModel (data) {
+  return request.post('/usr/project/model/save', data)
+}
+
 // 搜索项目
 export function search (data) {
   return request.post('/usr/project/search', data)

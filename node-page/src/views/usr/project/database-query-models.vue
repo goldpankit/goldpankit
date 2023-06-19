@@ -23,6 +23,7 @@
         v-if="currentModel != null"
         ref="designer"
         :model="currentModel"
+        @change="saveModel"
       />
     </div>
     <!-- 表设置 -->
@@ -30,7 +31,7 @@
       :table="currentTable"
       :table-joins="currentTableJoins"
       :aggregates="currentTableAggregates"
-      @field:change="$refs.designer.render()"
+      @field:change="handleSettingChange"
     />
   </div>
 </template>
@@ -43,6 +44,7 @@ import TableSetting from "../../../components/database/query-model/TableSetting.
 import QueryModelDesigner from "../../../components/database/query-model/Designer.vue";
 import TableLibrary from "../../../components/database/query-model/TableLibrary.vue";
 import {fetchTables} from "../../../api/db";
+import {saveModel} from "../../../api/user.project";
 
 export default {
   components: {
@@ -75,6 +77,7 @@ export default {
   },
   computed: {
     ...mapState(['currentProject', 'currentDatabase']),
+    // 当前表
     currentTable () {
       if (this.currentModel == null || this.currentModel.selectedTableId == null) {
         return null
@@ -97,6 +100,71 @@ export default {
     }
   },
   methods: {
+    // 保存查询模型
+    saveModel () {
+      const newModel = {
+        name: this.currentModel.name,
+        comment: this.currentModel.comment,
+        tables: this.currentModel.tables.map(item => {
+          return {
+            name: item.name,
+            alias: item.alias,
+            isVirtual: item.isVirtual,
+            type: item.type,
+            fields: item.fields.map(f => {
+              return {
+                name: f.name,
+                alias: f.alias,
+                type: f.type,
+                comment: f.comment,
+                isVirtual: f.isVirtual,
+              }
+            }),
+            x: item.x,
+            y: item.y
+          }
+        }),
+        joins: this.currentModel.joins.map(item => {
+          return {
+            ...item,
+            table: item.table.name,
+            joinTable:item.joinTable.name,
+            ons: item.ons.map(on => {
+              return {
+                startField: on.startField.name,
+                endField: on.endField.name,
+                relation: on.relation
+              }
+            })
+          }
+        }),
+        aggregates: this.currentModel.aggregates.map(agg => {
+          return {
+            table: agg.table.name,
+            targetTable: agg.targetTable.name,
+            field: agg.field.name,
+            targetField: agg.targetField.name,
+            function: agg.function
+          }
+        })
+      }
+      saveModel ({
+        projectId: this.currentProject.id,
+        database: this.currentDatabase,
+        model: newModel
+      })
+        .then(() => {
+          console.log('保存成功')
+        })
+        .catch(e => {
+          console.log('e', e)
+        })
+    },
+    // 表设置更改
+    handleSettingChange () {
+      this.saveModel()
+      this.$refs.designer.render()
+    },
     // 开始拖动表放置在设计器中
     handleDragStart (tableName) {
       this.currentModel.dragData = this.tables.find(t => t.name === tableName)
