@@ -3,7 +3,7 @@
     ref="table"
     :config="layerConfig"
   >
-    <v-rect ref="background" :config="config">
+    <v-rect ref="background" :config="backgroundConfig">
     </v-rect>
     <!-- 表头 -->
     <v-rect
@@ -20,11 +20,11 @@
       @click="selectTable"
     />
     <v-rect
-      v-for="(field,index) in table.fields"
+      v-for="(field,index) in visibleFields"
       :key="field.name"
       :config="{
         y: index * fieldHeight + tableHeaderConfig.height,
-        width,
+        width: 200,
         height: fieldHeight,
         fill: '#fff'
       }"
@@ -32,7 +32,7 @@
       @mouseup="handleFieldMouseUp(field)"
     />
     <v-text
-      v-for="(field,index) in table.fields"
+      v-for="(field,index) in visibleFields"
       :key="field"
       :config="{
         text: field.name,
@@ -57,12 +57,6 @@ export default {
     y: {
       default: 0
     },
-    width: {
-      default: 200
-    },
-    height: {
-      default: 300
-    },
     fieldHeight: {
       default: 30
     },
@@ -83,15 +77,17 @@ export default {
         x: _this.x,
         y: _this.y,
         draggable: false,
-      },
-      config: {
-        width: _this.width,
-        height: _this.height,
-        fill: '#fafafa'
       }
     }
   },
   computed: {
+    backgroundConfig () {
+      return {
+        width: 200,
+        height: (this.visibleFields.length + 1) * this.fieldHeight,
+        fill: '#fafafa'
+      }
+    },
     tableNameConfig () {
       return {
         text: this.table.name,
@@ -103,15 +99,16 @@ export default {
     },
     tableHeaderConfig () {
       return {
-        x: 0,
-        y: 0,
-        width: this.width,
+        width: 200,
         height: this.fieldHeight,
         fill: this.table.type === 'MAIN' ? '#FC777D' : '#666'
       }
     },
     relation () {
       return this.relations.find(r => r.endTable === this.table.name)
+    },
+    visibleFields () {
+      return this.table.fields.filter(f => f.visible === true)
     }
   },
   watch: {

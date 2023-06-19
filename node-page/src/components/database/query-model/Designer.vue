@@ -36,8 +36,6 @@
       v-for="table in model.tables"
       :ref="table.id"
       :key="table.name"
-      :width="table.width"
-      :height="table.height"
       :field-height="fieldHeight"
       :x="table.x"
       :y="table.y"
@@ -150,7 +148,6 @@ export default {
           type: 'aggregate'
         })
       }
-      console.log('this.relationLines', this.relationLines)
     },
     // 处理字段按下
     handleFieldMouseDown ({ table, field }) {
@@ -193,10 +190,6 @@ export default {
       const stage = this.$refs.stage.getNode()
       stage.setPointersPositions(e);
       const position = stage.getPointerPosition()
-      const size = {
-        width: 200,
-        height: (this.model.dragData.fields.length + 1) * this.fieldHeight
-      }
       const newTable = {
         ...this.model.dragData,
         // 字段
@@ -206,8 +199,6 @@ export default {
             alias: f.name
           }
         }),
-        // 尺寸
-        ...size,
         // 非虚拟表
         isVirtual: false,
         // 第一个表标记为主表
@@ -326,7 +317,7 @@ export default {
       const stageNode = this.$refs.stage.getNode()
       const stagePosition = stageNode.getAbsolutePosition()
       const fieldIndex = table.fields.findIndex(f => f.name === field.name)
-      const x = table.x + (withWidth ? table.width : 0) - stagePosition.x
+      const x = table.x + (withWidth ? 200 : 0) - stagePosition.x
       const y = table.y + this.fieldHeight + (fieldIndex + 1) * this.fieldHeight - 15 - stagePosition.y
       return { x, y }
     }

@@ -204,16 +204,10 @@ export default {
             const mField = table.fields.find(dbField => dbField.name === f.name)
             return this.__modelField2field(mField, f)
           })
-          // 计算表尺寸
-          const tableSize = {
-            width: 200,
-            height: (fields.length + 1) * this.fieldHeight
-          }
           return {
             id: '' + Math.random(),
             ...table,
             fields,
-            ...tableSize,
             // 添加joins，用于存放join关系
             joins: []
           }
@@ -241,22 +235,27 @@ export default {
     },
     // 模型字段转字段详情, modelField: 查询模型中的字段信息，dbField: 数据库字段信息
     __modelField2field (modelField, dbField) {
-      // 没有模型字段，但有表字段（新增的表字段）
+      // 没有模型字段，但有表字段（新增的表字段或未展示的字段）
       if (dbField != null && modelField == null) {
         return {
           ...dbField,
+          visible: false,
           alias: dbField.name,
           isVirtual: false
         }
       }
+      // 没有对应的数据库表字段，说明字段已删除
+      if (dbField == null) {
+        return null
+      }
       // 整合模型字段和表字段信息
-      const basicInfo = dbField == null ? {} : {...dbField}
       return {
-        ...basicInfo,
+        ...dbField,
         alias: modelField.alias,
         isVirtual: modelField.isVirtual,
-        type: modelField.isVirtual ? modelField.type : basicInfo.type,
-        comment: modelField.isVirtual ? modelField.comment : basicInfo.comment,
+        type: modelField.isVirtual ? modelField.type : dbField.type,
+        comment: modelField.isVirtual ? modelField.comment : dbField.comment,
+        visible: true
       }
     },
     // 模型join转join详情
