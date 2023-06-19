@@ -18,6 +18,28 @@ module.exports = {
     Object.assign(projectConfig, config)
     cache.projects.save(projectConfig)
   },
+  // 保存查询模型
+  saveModel (projectId, databaseName, newModel) {
+    console.log('projectId', projectId)
+    const projectConfig = cache.projects.get(projectId)
+    if (projectConfig == null) {
+      throw new Error('未找到项目信息')
+    }
+    const database = projectConfig.databases.find(db => db.name === databaseName)
+    if (database == null) {
+      throw new Error(`项目下未找到「${databaseName}」数据库信息`)
+    }
+    if (database.models == null) {
+      database.models = []
+    }
+    const model = database.models.find(m => m.name === newModel.name)
+    if (model == null) {
+      database.models.push(newModel)
+    } else {
+      Object.assign(model, newModel)
+    }
+    cache.projects.save(projectConfig)
+  },
   // 查询项目配置信息
   findConfigById (id) {
     return cache.projects.get(id)

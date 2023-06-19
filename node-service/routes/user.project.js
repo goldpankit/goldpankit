@@ -24,6 +24,12 @@ request
   .data(req => {
     return userProject.save(req.body)
   })
+// 保存项目查询模型
+request
+  .post('/usr/project/model/save')
+  .data(req => {
+    return userProject.saveModel(req.body.projectId, req.body.database, req.body.model)
+  })
 // 搜索项目
 request
   .post('/usr/project/search')
