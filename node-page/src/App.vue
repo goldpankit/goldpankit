@@ -1,12 +1,18 @@
-<script setup>
-// import { RouterLink, RouterView } from 'vue-router' // 跳转页面
-</script>
-
 <template>
   <div id="app">
     <RouterView />
+    <HelpCenter/>
   </div>
 </template>
+
+<script>
+import HelpCenter from "./components/common/HelpCenter.vue";
+
+export default {
+  components: {HelpCenter}
+
+}
+</script>
 
 <style scoped lang="scss">
 html,body {

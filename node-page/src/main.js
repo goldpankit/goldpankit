@@ -8,12 +8,14 @@ import I18nInput from "./components/common/I18nInput.vue";
 import './assets/style/app.scss'
 import store from './store'
 import VueKonva from 'vue-konva';
+import HelpButton from "./components/common/HelpButton.vue";
 
 const app = createApp(App)
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
   app.component(key, component)
 }
 app.component('I18nInput', I18nInput)
+app.component('I18nInput', HelpButton)
 
 app.use(VueKonva)
 app.use(router)

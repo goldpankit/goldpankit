@@ -10,9 +10,15 @@ let currentDatabase = window.localStorage.getItem('CURRENT_DATABASE')
 export default new Vuex.Store({
   state: {
     currentProject,
-    currentDatabase
+    currentDatabase,
+    help: {
+      code: null
+    }
   },
   mutations: {
+    setHelpCode (state, value) {
+      state.help.code = value
+    },
     setCurrentProject(state, project) {
       state.currentProject = project
       window.localStorage.setItem('CURRENT_PROJECT', JSON.stringify(project))

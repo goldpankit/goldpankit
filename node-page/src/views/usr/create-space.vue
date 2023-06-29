@@ -4,6 +4,10 @@
       <h2>Create Space</h2>
       <el-form>
         <el-form-item label="Space Name" required>
+          <template #label>
+            <span>Space Name</span>
+            <HelpButton code="space-name"/>
+          </template>
           <el-input v-model="form.name" />
         </el-form-item>
         <el-form-item label="Homepage">
@@ -26,9 +30,10 @@
 <script>
 import I18nInput from '@/components/common/I18nInput.vue'
 import { create } from '@/api/service.space'
+import HelpButton from "../../components/common/HelpButton.vue";
 
 export default {
-  components: {I18nInput},
+  components: {HelpButton, I18nInput},
   data () {
     return {
       form: {
