@@ -29,6 +29,10 @@
             <ProjectDatabasesSelect/>
           </el-popover>
         </li>
+        <li class="bean-wrap">
+          <img src="/images/bean.png">
+          <em>3201</em>
+        </li>
         <li>
           <el-button @click="$router.push({ name: 'Login' })">Sign In</el-button>
           <el-button type="important" @click="$router.push({ name: 'SignUp' })">Sign Up</el-button>
@@ -104,6 +108,20 @@ header {
     display: flex;
     li {
       margin-left: 10px;
+      display: flex;
+      align-items: center;
+    }
+    .bean-wrap {
+      margin-left: 30px;
+      margin-right: 30px;
+      img {
+        width: 20px;
+      }
+      em {
+        font-style: normal;
+        font-weight: bold;
+        margin-left: 2px;
+      }
     }
   }
 }
