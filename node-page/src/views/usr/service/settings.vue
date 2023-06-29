@@ -18,6 +18,7 @@
         <template v-if="initialized">
           <ul class="tabs">
             <li :class="{ selected: currentTab === 'basic' }" @click="currentTab = 'basic'">Basic</li>
+            <li :class="{ selected: currentTab === 'readme' }" @click="currentTab = 'readme'">Readme</li>
             <li :class="{ selected: currentTab === 'variables' }" @click="currentTab = 'variables'">Variables</li>
             <li :class="{ selected: currentTab === 'files' }" @click="currentTab = 'files'">Files</li>
           </ul>
@@ -26,6 +27,10 @@
               v-if="currentTab === 'basic'"
               :space="route.space"
               :service="route.service"
+            />
+            <MarkdownEditor
+              v-show="currentTab === 'readme'"
+              v-model="service.description"
             />
             <SettingFiles
               v-show="currentTab === 'files'"
@@ -63,9 +68,11 @@ import PublishWindow from "../../../components/service/PublishWindow.vue";
 import Variables from "../../../components/service/settings/Variables/Variables.vue";
 import {fetchProfile} from "../../../api/service";
 import {compile} from "../../../api/service.compile";
+import MarkdownEditor from "../../../components/common/MarkdownEditor.vue";
 
 export default {
   components: {
+    MarkdownEditor,
     Variables,
     PublishWindow, BasicSetting, InitializeView, DirectorySelect, SettingFiles},
   data () {

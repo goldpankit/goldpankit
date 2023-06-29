@@ -22,7 +22,7 @@
           <el-input v-model="form.repository"/>
         </el-form-item>
         <el-form-item label="Introduce" required>
-          <I18nInput type="textarea" v-model="form.description"/>
+          <I18nInput type="textarea" v-model="form.introduce"/>
         </el-form-item>
       </el-form>
       <div class="opera">
@@ -54,7 +54,7 @@ export default {
         type: 'MAIN',
         mainServiceName: null,
         repository: '',
-        description: ''
+        introduce: ''
       }
     }
   },

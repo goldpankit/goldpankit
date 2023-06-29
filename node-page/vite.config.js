@@ -3,12 +3,19 @@ import { fileURLToPath, URL } from 'node:url'
 import { defineConfig, loadEnv } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
+import prismjs from 'vite-plugin-prismjs'
 
 // https://vitejs.dev/config/
 export default ({ mode }) => {
   const apiPrefix = loadEnv(mode, process.cwd()).VITE_API_PREFIX
   return defineConfig({
-    plugins: [vue(), vueJsx()],
+    plugins: [
+      vue(),
+      vueJsx(),
+      prismjs({
+        languages: 'all',
+      })
+    ],
     resolve: {
       alias: {
         '@': fileURLToPath(new URL('./src', import.meta.url))
