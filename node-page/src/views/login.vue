@@ -7,7 +7,7 @@
       <span>create new account</span>
     </div>
     <div class="login-box">
-      <el-button>Log In</el-button>
+      <el-button type="primary">Log In</el-button>
     </div>
   </div>
 </template>
@@ -53,14 +53,6 @@ export default {
       height: 55px;
       border: 0;
       font-weight: bold;
-      background-color: var(--primary-color);
-      color: var(--font-color);
-      &:hover {
-        color: var(--font-color);
-      }
-      &:active {
-        color: var(--font-color);
-      }
     }
   }
 }
