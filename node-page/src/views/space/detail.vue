@@ -18,7 +18,7 @@
             <ul v-show="currentMainService == null" class="service-list">
               <li v-for="service in mainServices" @click="currentMainService = service">
                 <h4>{{service.name}}</h4>
-                <p>{{service.description}}</p>
+                <p>{{service.introduce}}</p>
                 <section class="infos">
                   <p>21 sub versions</p>
                   <p>Latest version: 2.2.0</p>

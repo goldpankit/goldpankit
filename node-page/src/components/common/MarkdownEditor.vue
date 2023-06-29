@@ -6,6 +6,7 @@
       left-toolbar="h bold italic strikethrough quote | ul ol table hr | link image code | preview toc fullscreen"
       right-toolbar=""
       :disabled-menus="[]"
+      :mode="readonly ? 'preview' : 'editable'"
       @upload-image="handleUploadImage"
       @update:modelValue="$emit('update:modelValue', $event)"
     />
@@ -19,6 +20,10 @@ export default {
   props: {
     modelValue: {
       required: true
+    },
+    readonly: {
+      type: Boolean,
+      default: false
     }
   },
   data () {
@@ -54,6 +59,9 @@ export default {
       textarea {
         padding: 20px 10px;
       }
+    }
+    :deep(.vuepress-markdown-body) {
+      padding: 30px 15px;
     }
   }
 }
