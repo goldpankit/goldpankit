@@ -31,6 +31,7 @@
             <MarkdownEditor
               v-show="currentTab === 'readme'"
               v-model="service.description"
+              @update:modelValue="saveConfig"
             />
             <SettingFiles
               v-show="currentTab === 'files'"
@@ -66,7 +67,7 @@ import InitializeView from "../../../components/service/settings/InitializeView.
 import BasicSetting from "../../../components/service/settings/BasicSetting.vue";
 import PublishWindow from "../../../components/service/PublishWindow.vue";
 import Variables from "../../../components/service/settings/Variables/Variables.vue";
-import {fetchProfile} from "../../../api/service";
+import {fetchConfig, fetchProfile, saveConfig} from "../../../api/service";
 import {compile} from "../../../api/service.compile";
 import MarkdownEditor from "../../../components/common/MarkdownEditor.vue";
 
@@ -94,6 +95,19 @@ export default {
     }
   },
   methods: {
+    // 保存配置
+    saveConfig () {
+      saveConfig({
+        ...this.route,
+        readme: this.service.description
+      })
+        .then(() => {
+          console.log('保存成功')
+        })
+        .catch(e => {
+          console.log('e', e)
+        })
+    },
     // 获取服务信息
     fetchProfile () {
       this.loading = true
@@ -103,6 +117,15 @@ export default {
       })
         .then(data => {
           this.service = data
+        })
+        .then(() => {
+          return fetchConfig({
+            space: this.route.space,
+            service: this.route.service
+          })
+        })
+        .then(serviceConfig => {
+          this.service.description = serviceConfig.readme
         })
         .catch(e => {
           console.log('e', e)
