@@ -32,7 +32,7 @@
                   <em v-if="hasNewVersion(service)">Upgradable</em>
                 </h5>
                 <p>{{service.lastVersion}}</p>
-                <p>{{service.description}}</p>
+                <p>{{service.introduce}}</p>
                 <p class="text-info-1 text-mini">Last publish: {{service.lastPublishTime}}</p>
               </li>
             </ul>
@@ -47,7 +47,9 @@
                 <li :class="{selected: currentServiceDimension === 'issues'}" @click="currentServiceDimension = 'issues'">Issues</li>
               </ul>
               <div class="dimension-content">
-                <div v-show="currentServiceDimension === 'readme'">Readme</div>
+                <div v-show="currentServiceDimension === 'readme'">
+                  <MarkdownEditor v-model="currentService.description" readonly :without-padding="true"/>
+                </div>
                 <ServiceInstaller
                   ref="installer"
                   v-show="currentServiceDimension === 'install'"
@@ -99,9 +101,10 @@ import { mapState } from 'vuex'
 import ServiceInstaller from "../components/space/ServiceInstaller.vue";
 import {fetchSubServices} from "../api/service";
 import {fetchById} from "../api/user.project";
+import MarkdownEditor from "../components/common/MarkdownEditor.vue";
 
 export default {
-  components: {ServiceInstaller},
+  components: {MarkdownEditor, ServiceInstaller},
   data () {
     return {
       space: null,

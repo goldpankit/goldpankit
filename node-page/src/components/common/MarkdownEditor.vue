@@ -1,5 +1,5 @@
 <template>
-  <div class="markdown-editor">
+  <div class="markdown-editor" :class="{ 'without-padding': withoutPadding }">
     <v-md-editor
       :model-value="modelValue"
       height="100%"
@@ -23,6 +23,9 @@ export default {
     },
     readonly: {
       type: Boolean,
+      default: false
+    },
+    withoutPadding: {
       default: false
     }
   },
@@ -54,6 +57,14 @@ export default {
   width: 100%;
   height: 100%;
   overflow: hidden;
+  &.without-padding {
+    padding: 0;
+    .v-md-editor {
+      :deep(.vuepress-markdown-body) {
+        padding: 0;
+      }
+    }
+  }
   .v-md-editor {
     :deep(.v-md-textarea-editor) {
       textarea {
