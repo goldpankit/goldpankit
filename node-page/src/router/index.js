@@ -46,6 +46,11 @@ const router = createRouter({
           component: () => import('@/views/workbench.vue')
         },
         {
+          path: '/usr/bean/recharge',
+          name: 'RechargeBean',
+          component: () => import('@/views/usr/bean/recharge.vue')
+        },
+        {
           path: '/usr/project/create',
           name: 'CreateProject',
           component: () => import('@/views/usr/project/create.vue')

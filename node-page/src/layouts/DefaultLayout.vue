@@ -29,7 +29,7 @@
             <ProjectDatabasesSelect/>
           </el-popover>
         </li>
-        <li class="bean-wrap">
+        <li class="bean-wrap" @click="$router.push({ name: 'RechargeBean' })">
           <img src="/images/bean.png">
           <em>3201</em>
         </li>
@@ -114,6 +114,7 @@ header {
     .bean-wrap {
       margin-left: 30px;
       margin-right: 30px;
+      cursor: pointer;
       img {
         width: 20px;
       }
