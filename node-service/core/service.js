@@ -62,6 +62,7 @@ module.exports = {
   },
   // 保存服务配置信息
   saveServiceConfig(dto) {
+    console.log('dto', dto)
     const serviceConfig =  this.getServiceConfig({ space: dto.space, service: dto.service })
     // 读取配置结构
     const newConfig = JSON.parse(JSON.stringify(Const.SERVICE_CONFIG_CONTENT))
@@ -69,6 +70,7 @@ module.exports = {
     object
       .merge(serviceConfig, newConfig)
       .merge(dto, newConfig)
+    console.log('newConfig', newConfig)
     // 写入配置文件
     const configPath = this.__getConfigPath(serviceConfig.codespace)
     fs.rewrite(configPath, fs.toJSONFileString(newConfig))
@@ -148,6 +150,7 @@ module.exports = {
       builds: JSON.stringify(serviceConfig.builds),
       variables: JSON.stringify(serviceConfig.variables),
       publishDescription: dto.publishDescription,
+      description: serviceConfig.readme,
       files
     })
   },
