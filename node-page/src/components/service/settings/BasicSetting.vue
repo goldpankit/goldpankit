@@ -11,6 +11,19 @@
         <el-form-item label="Supported Databases" prop="supportedDatabases">
           <DatabaseSelect v-model="form.supportedDatabases" @change="saveConfig"/>
         </el-form-item>
+        <el-form-item label="Charge" prop="chargeValue" required>
+          <el-radio-group v-model="form.chargeType">
+            <el-radio label="free">Free</el-radio>
+            <el-radio label="times">Charge per ride</el-radio>
+            <el-radio label="month">Monthly charge</el-radio>
+            <el-radio label="quarter">Quarterly charge</el-radio>
+            <el-radio label="year">Annual charge</el-radio>
+          </el-radio-group>
+          <div v-if="form.chargeType !== 'free'" class="charge-value">
+            <span><img src="/public/images/bean.png"></span>
+            <el-input-number :controls="false" v-model="form.chargeValue"/>
+          </div>
+        </el-form-item>
         <el-form-item label="Translator" prop="translator">
           <TranslatorList :space="space" :service="service" :translator="form.translator" @save="saveConfig"/>
         </el-form-item>
@@ -75,6 +88,8 @@ export default {
         tableFieldDefinitions: [],
         builds: [],
         unbuilds: [],
+        chargeType: 'free',
+        chargeValue: 0,
         translator: {
           output: '',
           settings: []
@@ -203,6 +218,20 @@ export default {
         }
         .el-button {
           margin-left: 30px;
+        }
+      }
+      .charge-value {
+        display: flex;
+        align-items: center;
+        span {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          img {
+            width: 20px;
+            height: auto;
+            margin-right: 5px;
+          }
         }
       }
     }
