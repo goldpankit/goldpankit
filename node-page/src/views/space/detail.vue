@@ -9,45 +9,62 @@
       <div class="content-wrap">
         <div class="dimension-wrap">
           <ul class="dimensions">
-            <li>Readme</li>
-            <li class="selected">Services</li>
-            <li>Prices</li>
-            <li>Issues</li>
+            <li :class="{ selected: currentTab === 'readme' }" @click="currentTab = 'readme'">Readme</li>
+            <li :class="{ selected: currentTab === 'services' }" @click="currentTab = 'services'">Services</li>
+            <li :class="{ selected: currentTab === 'prices' }" @click="currentTab = 'prices'">Prices</li>
+            <li :class="{ selected: currentTab === 'issues' }" @click="currentTab = 'issues'">Issues</li>
           </ul>
           <div class="detail">
-            <ul v-show="currentMainService == null" class="service-list">
-              <li v-for="service in mainServices" @click="currentMainService = service">
-                <h4>{{service.name}}</h4>
-                <p>{{service.introduce}}</p>
-                <section class="infos">
-                  <p>21 sub versions</p>
-                  <p>Latest version: 2.2.0</p>
-                </section>
-                <section class="infos text-info-1">
-                  <p>Last publish: 3 weeks ago</p>
-                </section>
-                <div class="opera">
-                  <el-button size="small" @click="$router.push({ name: 'ServiceSettings', query: { service_id: service.id } })">Edit</el-button>
-                </div>
-              </li>
-            </ul>
-            <MainServiceDetail
-              v-if="currentMainService != null && currentMainServiceVersion == null"
-              :space="space.name"
-              :service="currentMainService.name"
-              @install="handleServiceInstall"
-              @back="currentMainService = null"
-            />
-            <ServiceInstaller
-              v-if="currentMainServiceVersion != null"
-              :space="space.name"
-              :service="currentMainService.name"
-              :version="currentMainServiceVersion"
-              :with-breadcrumbs="true"
-              :with-install-button="true"
-              @back="currentMainServiceVersion = null"
-              @installed="$router.push({name: 'Workbench'})"
-            />
+            <template v-if="currentTab === 'readme'">
+              <div class="readme">
+                <ul class="toolbar">
+                  <li v-if="readmeData.edit"><el-button @click="cancelEditReadme">Cancel</el-button></li>
+                  <li v-if="readmeData.edit"><el-button type="primary" @click="confirmEditReadme">Save</el-button></li>
+                  <li v-if="!readmeData.edit"><el-button type="primary" @click="editReadme">Edit</el-button></li>
+                </ul>
+                <el-form v-if="readmeData.edit">
+                  <el-form-item label="Introduce" required>
+                    <el-input v-model="readmeData.introduce" class="introduce" type="textarea"/>
+                  </el-form-item>
+                </el-form>
+                <MarkdownEditor :readonly="!readmeData.edit" :without-padding="true" v-model="readmeData.readme"/>
+              </div>
+            </template>
+            <template v-else-if="currentTab === 'services'">
+              <ul v-show="currentMainService == null" class="service-list">
+                <li v-for="service in mainServices" @click="currentMainService = service">
+                  <h4>{{service.name}}</h4>
+                  <p>{{service.introduce}}</p>
+                  <section class="infos">
+                    <p>21 sub versions</p>
+                    <p>Latest version: 2.2.0</p>
+                  </section>
+                  <section class="infos text-info-1">
+                    <p>Last publish: 3 weeks ago</p>
+                  </section>
+                  <div class="opera">
+                    <el-button size="small" @click="$router.push({ name: 'ServiceSettings', query: { service_id: service.id } })">Edit</el-button>
+                  </div>
+                </li>
+              </ul>
+              <MainServiceDetail
+                v-if="currentMainService != null && currentMainServiceVersion == null"
+                :space="space.name"
+                :service="currentMainService.name"
+                @install="handleServiceInstall"
+                @back="currentMainService = null"
+              />
+              <ServiceInstaller
+                v-if="currentMainServiceVersion != null"
+                :space="space.name"
+                :service="currentMainService.name"
+                :version="currentMainServiceVersion"
+                :with-breadcrumbs="true"
+                :with-install-button="true"
+                @back="currentMainServiceVersion = null"
+                @installed="$router.push({name: 'Workbench'})"
+              />
+            </template>
           </div>
         </div>
         <div class="info">
@@ -95,12 +112,19 @@ import MainServiceDetail from "../../components/space/MainServiceDetail.vue";
 import ServiceInstaller from "../../components/space/ServiceInstaller.vue";
 import {fetchByName} from "../../api/service.space";
 import {search} from "../../api/service";
+import MarkdownEditor from "../../components/common/MarkdownEditor.vue";
 
 export default {
-  components: {ServiceInstaller, MainServiceDetail},
+  components: {MarkdownEditor, ServiceInstaller, MainServiceDetail},
   data () {
     return {
       spaceName: null,
+      currentTab: 'readme',
+      readmeData: {
+        edit: false,
+        introduce: '',
+        readme: ''
+      },
       // 当前选择的框架服务
       currentMainService: null,
       // 当前选择的框架服务版本
@@ -110,7 +134,31 @@ export default {
       mainServices: []
     }
   },
+  watch: {
+    space () {
+      this.readmeData.introduce = this.space.introduce
+      this.readmeData.readme = this.space.description
+    }
+  },
   methods: {
+    // 编辑readme
+    editReadme () {
+      this.readmeData.edit = true
+      this.readmeData.readme = this.space.description
+      this.readmeData.introduce = this.space.introduce
+    },
+    // 取消编辑readme
+    cancelEditReadme () {
+      this.readmeData.edit = false
+      this.readmeData.readme = this.space.description
+      this.readmeData.introduce = this.space.introduce
+    },
+    // 确认保存readme
+    confirmEditReadme () {
+      this.readmeData.edit = false
+      this.space.description = this.readmeData.readme
+      this.space.introduce = this.readmeData.introduce
+    },
     // 查询空间信息
     fetchSpace () {
       fetchByName(this.spaceName)
@@ -222,6 +270,26 @@ export default {
       // 维度详情
       .detail {
         padding: 20px 20px 0 0;
+        .readme {
+          .toolbar {
+            display: flex;
+            justify-content: flex-end;
+            border-bottom: 1px solid var(--border-default-color);
+            padding-bottom: 10px;
+            li {
+              margin-right: 10px;
+              &:last-of-type {
+                margin-right: 0;
+              }
+            }
+          }
+          .markdown-editor {
+            height: 500px;
+            :deep(.v-md-editor__preview-wrapper) {
+              padding: 15px;
+            }
+          }
+        }
       }
     }
     .info {

@@ -16,9 +16,6 @@
         <el-form-item label="Introduce" required>
           <i18n-input v-model="form.introduce" type="textarea" maxlength="200"/>
         </el-form-item>
-        <el-form-item label="Description" required>
-          <i18n-input v-model="form.description" type="textarea"/>
-        </el-form-item>
       </el-form>
       <div class="opera">
         <el-button type="primary" size="large" @click="create">Create Space</el-button>
