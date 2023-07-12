@@ -16,7 +16,7 @@
       </el-form>
       <div class="login-box">
         <div>
-          <el-button type="important" >Sign In</el-button>
+          <el-button type="important" :disabled="loginData.isWorking" @click="login">Sign In</el-button>
         </div>
       </div>
     </div>
@@ -28,16 +28,42 @@
 
 <script>
 
+import {loginByPassword} from "../api/user.login";
+
 export default {
   data () {
     return {
       form: {
         username: '',
         password: ''
+      },
+      loginData: {
+        isWorking: false
       }
     }
   },
   methods: {
+    // 密码登录
+    login () {
+      this.$refs.form.validate()
+        .then(() => {
+          if (this.loginData.isWorking) {
+            return
+          }
+          this.loginData.isWorking = true
+          loginByPassword (this.form)
+            .then(data => {
+              console.log('登录成功', data)
+            })
+            .catch(e => {
+              console.log('e', e)
+            })
+            .finally(() => {
+              this.loginData.isWorking = false
+            })
+        })
+        .catch(() => {})
+    },
   }
 }
 </script>
