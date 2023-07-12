@@ -1,6 +1,5 @@
 const request = require('../utils/request.define')
 
-request.post('/usr/regis/mobile').proxy()
-request.post('/usr/regis/mobile/sms').proxy()
+request.post('/usr/login/password').proxy()
 
 module.exports = request.router
