@@ -1,49 +1,79 @@
 <template>
-  <div class="login-wrap">
-    <h2>Log In</h2>
-    <div class="input-box">
-      <el-input type="text" placeholder="username / mobile / email"/>
-      <el-input type="text" placeholder="password"/>
-      <span>create new account</span>
+  <div class="signup">
+    <div class="wrap">
+      <h2>Sign In</h2>
+      <el-form ref="form" :model="form">
+        <el-form-item label="Username" prop="username" required>
+          <el-input v-model="form.username" type="text" size="large"/>
+        </el-form-item>
+        <el-form-item class="password-item" label="Password" prop="password" required>
+          <template #label>
+            <label>Password</label>
+            <router-link to="#">Forgot Password</router-link>
+          </template>
+          <el-input v-model="form.password" show-password type="password" size="large"/>
+        </el-form-item>
+      </el-form>
+      <div class="login-box">
+        <div>
+          <el-button type="important" >Sign In</el-button>
+        </div>
+      </div>
     </div>
-    <div class="login-box">
-      <el-button type="primary">Log In</el-button>
+    <div class="create-account">
+      <router-link :to="{ name: 'SignUp' }">Create Account</router-link>
     </div>
   </div>
 </template>
 
 <script>
+
 export default {
-  name: 'login'
+  data () {
+    return {
+      form: {
+        username: '',
+        password: ''
+      }
+    }
+  },
+  methods: {
+  }
 }
 </script>
 
 <style scoped lang="scss">
-.login-wrap {
-  width: 400px;
-  padding: 40px 30px;
+.signup {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-y: auto;
+  padding: 50px 0;
+}
+.wrap {
+  width: 500px;
+  padding: 30px;
   background-color: var(--color-light);
   box-sizing: border-box;
-  position: absolute;
-  right: 172px;
-  top: 130px;
+  box-shadow: var(--page-shadow);
+  border-radius: var(--radius-page);
   // 头部
   h2 {
     padding: 10px 0 60px 0;
-    font-size: var(--font-size-large);
+    font-size: 30px;
     text-align: center;
   }
-  .input-box {
-    text-align: right;
-    font-size: var(--font-size);
-    .el-input {
-      margin-bottom: 20px;
-      :deep(.el-input__inner) {
-        padding: 20px 0!important;
+  :deep(.el-form) {
+    .password-item {
+      .el-form-item__label {
+        position: relative;
+        a {
+          position: absolute;
+          top: 0;
+          right: 0;
+          text-decoration: underline !important;
+        }
       }
-    }
-    span {
-      cursor: pointer;
     }
   }
   .login-box {
@@ -53,7 +83,18 @@ export default {
       height: 55px;
       border: 0;
       font-weight: bold;
+      font-size: 20px;
     }
+  }
+}
+.create-account {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  a {
+    text-decoration: underline !important;
+    font-weight: bold;
   }
 }
 </style>
