@@ -3,7 +3,7 @@ const axios = require('axios')
 // 默认配置
 axios.defaults.headers.common['Content-Type'] = 'application/json;charset=UTF-8'
 const axiosInstance = axios.create({
-  baseURL: 'http://192.168.124.2:10088',
+  baseURL: 'http://192.168.124.5:10088',
   // 请求超时时间
   timeout: 300000
 })
