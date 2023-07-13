@@ -26,15 +26,15 @@
             <h3>{{space.name}}</h3>
             <p>{{space.description}}</p>
             <ul class="service-list">
-              <li v-for="service in space.frameworkServices">
+              <li v-for="service in space.mainServices">
                 <h4>{{service.name}}</h4>
-                <p>{{service.description}}</p>
+                <p>{{service.introduce}}</p>
                 <section class="infos">
-                  <p>21 sub versions</p>
-                  <p>Latest version: 2.2.0</p>
+                  <p>{{service.defaultMajorVersion.subServices.length}} sub versions</p>
+                  <p>Latest version: {{service.defaultMajorVersion.version}}</p>
                 </section>
                 <section class="infos text-info-1">
-                  <p>Last publish: 3 weeks ago</p>
+                  <p>Last publish: {{service.lastPublish}}</p>
                 </section>
               </li>
             </ul>
@@ -89,6 +89,7 @@ export default {
           this.pagination.total = data.total
           this.pagination.pageCount = data.pageCount
           this.spaces = data.records
+          console.log('data.records', data.records)
         })
         .catch(e => {
           console.log('e', e)
