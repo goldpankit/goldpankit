@@ -24,6 +24,12 @@ request
   .data(req => {
     return userProject.save(req.body)
   })
+// 删除项目
+request
+  .get('/usr/project/delete/:projectId')
+  .data(req => {
+    return userProject.deleteProject(req.params.projectId)
+  })
 // 保存项目查询模型
 request
   .post('/usr/project/model/save')

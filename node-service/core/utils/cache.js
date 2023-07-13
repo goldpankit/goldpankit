@@ -89,7 +89,7 @@ class ArrayCache {
     if (index === -1) {
       return
     }
-    list.split(index, 1)
+    list.splice(index, 1)
     this.#rewrite(config)
   }
   // 检查配置文件

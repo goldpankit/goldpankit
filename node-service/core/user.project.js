@@ -64,6 +64,10 @@ module.exports = {
     const project = cache.projects.get(projectId)
     return this.__getConfigPath(project.codespace)
   },
+  // 删除项目
+  deleteProject (projectId) {
+    cache.projects.remove(projectId)
+  },
   // 获取配置文件
   __getConfigPath (codespace) {
     return `${codespace}/${Const.PROJECT_CONFIG_FILE}`
