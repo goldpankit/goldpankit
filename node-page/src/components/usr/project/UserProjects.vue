@@ -12,11 +12,12 @@
         <div class="info">
           <h3>{{project.name}}</h3>
           <p>{{project.codespace}}</p>
-          <p class="text-info-1">3 databases</p>
+          <p class="text-info-1">{{project.databases.length}} databases</p>
         </div>
         <div class="opera">
           <el-button @click="$router.push({ name: 'ProjectDatabases', query: { project_id: project.id } })">Databases</el-button>
           <el-button @click="setCurrentProject(project)">Use It</el-button>
+          <el-button type="danger" text @click="deleteProject(project)">Delete</el-button>
         </div>
       </li>
     </ul>
@@ -25,7 +26,7 @@
 
 <script>
 import { mapMutations } from "vuex";
-import {search} from "../../../api/user.project";
+import {deleteProject, search} from "../../../api/user.project";
 
 export default {
   name: "UserProjects",
@@ -44,6 +45,22 @@ export default {
         .catch(e => {
           console.log('e')
         })
+    },
+    // 删除项目
+    deleteProject (project) {
+      const index = this.projects.find(p => p === project)
+      this.$model.deleteConfirm(`Do you want to delete the project named 「${project.name}」 ?`)
+        .then(() => {
+          deleteProject(project.id)
+            .then(() => {
+              console.log('删除成功')
+              this.search()
+            })
+            .catch(e => {
+              console.log('删除失败', e)
+            })
+        })
+        .catch(() => {})
     }
   },
   created () {
@@ -71,6 +88,7 @@ export default {
     padding: 15px 0;
     display: flex;
     border-top: 1px solid var(--border-default-color);
+    position: relative;
     .avatar {
       flex-shrink: 0;
       width: 50px;
@@ -93,13 +111,15 @@ export default {
       }
       p {
         margin-top: 5px;
+        &:first-of-type {
+          margin-top: 10px;
+        }
       }
     }
     .opera {
-      flex-shrink: 0;
-      width: 200px;
-      display: flex;
-      justify-content: flex-end;
+      position: absolute;
+      top: 10px;
+      right: 5px;
     }
   }
 }

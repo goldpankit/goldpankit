@@ -49,4 +49,14 @@ html {
       padding-right: 5px;
     }
   }
+  // 危险按钮
+  .danger-button {
+    background: var(--danger-color);
+    border: 0;
+    &:hover,&:focus {
+      background: var(--danger-color);
+      opacity: .85;
+      outline: none;
+    }
+  }
 }

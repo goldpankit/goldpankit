@@ -11,17 +11,13 @@
         </router-link>
       </div>
       <router-link class="module private-space" :to="{ name: 'UserSpaces' }">
-        <h2>Purchased or private service spaces</h2>
+        <h2>Private service spaces</h2>
         <p>Private space only serves you or your team, you can organize technical staff to create and develop your service space for better and more efficient research and development work.</p>
       </router-link>
       <div class="line gap-top">
         <router-link :to="{ name: 'CreateSpace' }" class="module new-space">
           <h2>Create New Space</h2>
           <p>Create a new service space and start a new journey of research and development.</p>
-        </router-link>
-        <router-link to="#" class="module database">
-          <h2>Database</h2>
-          <p>Connect and save your database connection information to help you get the code you want more easily.</p>
         </router-link>
       </div>
       <div class="project-wrap">
@@ -96,7 +92,6 @@ export default {
   }
   // 私有空间
   .private-space h2 {
-    font-size: 30px;
     color: var(--primary-color-match-3);
   }
   // 创建新空间
