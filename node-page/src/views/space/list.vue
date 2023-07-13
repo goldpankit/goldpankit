@@ -1,15 +1,26 @@
 <template>
   <div class="page">
     <div class="warp">
-<!--      <h2>Public Spaces</h2>-->
       <div class="search-wrap">
         <div class="input-wrap">
           <el-icon size="20"><Search/></el-icon>
-          <el-input size="large" placeholder="Search spaces & services"></el-input>
+          <el-input
+            v-model="keyword"
+            size="large"
+            placeholder="Search spaces & services"
+            @keypress.enter.native="search"
+          />
         </div>
-        <el-button size="large" type="primary">Search</el-button>
+        <el-button size="large" type="primary" @click="search">Search</el-button>
       </div>
-      <ul class="space-list">
+      <Pagination
+        v-if="pagination.pageCount > 1"
+        :pagination="pagination"
+        position="top"
+        @current-change="handleCurrentChange"
+        @size-change="handleSizeChange"
+      />
+      <ul v-loading="loading" class="space-list">
         <li v-for="space in spaces" :key="space.id">
           <router-link :to="{ name: 'SpaceDetail', params: { name: space.name } }">
             <h3>{{space.name}}</h3>
@@ -30,31 +41,69 @@
           </router-link>
         </li>
       </ul>
+      <Empty v-if="keyword.trim() !== '' && spaces.length === 0" description="Not Found Data"/>
+      <Pagination
+        v-if="pagination.pageCount > 1"
+        :pagination="pagination"
+        @current-change="handleCurrentChange"
+        @size-change="handleSizeChange"
+      />
     </div>
   </div>
 </template>
 
 <script>
 import {search} from "../../api/service.space";
+import Pagination from "../../components/common/Pagination.vue";
+import Empty from "../../components/common/Empty.vue";
 
 export default {
+  components: {Empty, Pagination},
   data () {
     return {
+      loading: false,
+      keyword: '',
+      pagination: {
+        pageIndex: 1,
+        pageCount: 0,
+        capacity: 15,
+        total: 0
+      },
       spaces: []
     }
   },
   methods: {
     // 搜索
     search () {
+      if (this.loading) {
+        return
+      }
+      this.loading = true
       search({
-        name: ''
+        ...this.pagination,
+        model: {
+          keyword: this.keyword
+        }
       })
         .then(data => {
+          this.pagination.total = data.total
+          this.pagination.pageCount = data.pageCount
           this.spaces = data.records
         })
         .catch(e => {
           console.log('e', e)
         })
+        .finally(() => {
+          this.loading = false
+        })
+    },
+    handleSizeChange (pageSize) {
+      this.pagination.capacity = pageSize
+      this.search()
+    },
+    handleCurrentChange (value) {
+      this.pagination.pageIndex = value
+      this.search()
     }
   },
   created () {
@@ -70,6 +119,7 @@ export default {
   .warp {
     width: var(--page-width);
     margin: 30px auto 0 auto;
+    padding-bottom: 50px;
     h2 {
       font-size: var(--font-size-title);
       margin-bottom: var(--gap-title);
@@ -105,7 +155,8 @@ export default {
             height: 100%;
             background: #f2f2f2;
             padding: 0 20px 0 60px;
-            font-size: 16px;
+            font-size: 18px;
+            font-weight: bold;
             border: 3px solid transparent;
             border-right: 0;
             &:focus {
@@ -120,11 +171,14 @@ export default {
       .el-button {
         width: 150px;
         border-radius: 0;
+        font-size: 16px;
+        font-weight: bold;
       }
     }
     // 空间列表
     ul.space-list {
       width: 100%;
+      min-height: 300px;
       & > li {
         padding: 30px 30px;
         box-sizing: border-box;

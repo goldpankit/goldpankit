@@ -44,7 +44,6 @@ export default {
   },
   methods: {
     handleInput (value) {
-      console.log('value', value)
       this.$emit('update:modelValue', value)
     }
   }
