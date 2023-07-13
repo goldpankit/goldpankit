@@ -6,7 +6,7 @@
           <h2>Public Spaces</h2>
           <p>For all technical teams, you can click in to view all the service space, select and open the service space you need.</p>
         </router-link>
-        <router-link to="#" class="module profile">
+        <router-link :to="{ name: 'UserProfile' }" class="module profile">
           <h2>Profile</h2>
         </router-link>
       </div>

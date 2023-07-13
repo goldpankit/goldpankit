@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import DefaultLayout from '../layouts/DefaultLayout.vue'
 import PCDesign from '../views/ui/design/pc.vue'
+import UserLayout from "../layouts/UserLayout.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -89,6 +90,18 @@ const router = createRouter({
           path: '/usr/services',
           name: 'UserServices',
           component: () => import('@/views/usr/services.vue')
+        }
+      ]
+    },
+    {
+      path: '/usr',
+      name: 'UserLayout',
+      component: UserLayout,
+      children: [
+        {
+          path: '/usr/profile',
+          name: 'UserProfile',
+          component: () => import('@/views/usr/profile/profile.vue')
         }
       ]
     }

@@ -3,10 +3,11 @@
     <div class="title">
       <h2>My Projects</h2>
       <el-button type="primary" @click="$router.push({ name: 'CreateProject' })">
-        <el-icon :size="20"><Plus /></el-icon>
+        <el-icon :size="14" style="margin-right: 5px;"><Plus /></el-icon>
+        Create Project
       </el-button>
     </div>
-    <ul>
+    <ul v-if="projects.length > 0">
       <li v-for="project in projects">
         <div class="avatar">{{project.name.substring(0,1)}}</div>
         <div class="info">
@@ -21,15 +22,18 @@
         </div>
       </li>
     </ul>
+    <Empty v-else description="No Projects."/>
   </div>
 </template>
 
 <script>
 import { mapMutations } from "vuex";
 import {deleteProject, search} from "../../../api/user.project";
+import Empty from "../../common/Empty.vue";
 
 export default {
   name: "UserProjects",
+  components: {Empty},
   data () {
     return {
       projects: []
@@ -48,7 +52,6 @@ export default {
     },
     // 删除项目
     deleteProject (project) {
-      const index = this.projects.find(p => p === project)
       this.$model.deleteConfirm(`Do you want to delete the project named 「${project.name}」 ?`)
         .then(() => {
           deleteProject(project.id)
@@ -78,11 +81,6 @@ export default {
     display: flex;
     justify-content: space-between;
     padding-bottom: 15px;
-    .el-button {
-      padding: 0;
-      width: 40px;
-      height: 40px;
-    }
   }
   li {
     padding: 15px 0;
