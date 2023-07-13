@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import DefaultLayout from '../layouts/DefaultLayout.vue'
 import PCDesign from '../views/ui/design/pc.vue'
 import UserLayout from "../layouts/UserLayout.vue";
+import NonProjectLayout from "../layouts/NonProjectLayout.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -16,26 +17,6 @@ const router = createRouter({
       name: 'DefaultLayout',
       component: DefaultLayout,
       children: [
-        {
-          path: '/',
-          name: 'Index',
-          component: () => import('@/views/index.vue')
-        },
-        {
-          path: '/login',
-          name: 'Login',
-          component: () => import('@/views/login.vue')
-        },
-        {
-          path: '/signup',
-          name: 'SignUp',
-          component: () => import('@/views/signup.vue')
-        },
-        {
-          path: '/spaces',
-          name: 'PublicSpaces',
-          component: () => import('@/views/space/list.vue')
-        },
         {
           path: '/space/:name',
           name: 'SpaceDetail',
@@ -85,11 +66,33 @@ const router = createRouter({
           path: '/usr/service/settings',
           name: 'ServiceSettings',
           component: () => import('@/views/usr/service/settings.vue')
+        }
+      ]
+    },
+    {
+      path: '',
+      name: 'NonProjectLayout',
+      component: NonProjectLayout,
+      children: [
+        {
+          path: '/',
+          name: 'Index',
+          component: () => import('@/views/index.vue')
         },
         {
-          path: '/usr/services',
-          name: 'UserServices',
-          component: () => import('@/views/usr/services.vue')
+          path: '/login',
+          name: 'Login',
+          component: () => import('@/views/login.vue')
+        },
+        {
+          path: '/signup',
+          name: 'SignUp',
+          component: () => import('@/views/signup.vue')
+        },
+        {
+          path: '/spaces',
+          name: 'PublicSpaces',
+          component: () => import('@/views/space/list.vue')
         }
       ]
     },

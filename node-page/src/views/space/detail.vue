@@ -253,7 +253,7 @@ export default {
       .dimensions {
         display: flex;
         border-bottom: 3px solid;
-        border-image: linear-gradient(to right, var(--primary-color), var(--primary-color-match-2), var(--primary-color-match-1)) 1;
+        border-image: var(--border-colors);
         li {
           flex-grow: 1;
           text-align: center;

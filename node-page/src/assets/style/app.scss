@@ -51,10 +51,10 @@ html {
   }
   // 危险按钮
   .danger-button {
-    background: var(--danger-color);
+    background: var(--color-danger);
     border: 0;
     &:hover,&:focus {
-      background: var(--danger-color);
+      background: var(--color-danger);
       opacity: .85;
       outline: none;
     }

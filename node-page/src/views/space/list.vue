@@ -1,7 +1,14 @@
 <template>
   <div class="page">
     <div class="warp">
-      <h2>Public Spaces</h2>
+<!--      <h2>Public Spaces</h2>-->
+      <div class="search-wrap">
+        <div class="input-wrap">
+          <el-icon size="20"><Search/></el-icon>
+          <el-input size="large" placeholder="Search spaces & services"></el-input>
+        </div>
+        <el-button size="large" type="primary">Search</el-button>
+      </div>
       <ul class="space-list">
         <li v-for="space in spaces" :key="space.id">
           <router-link :to="{ name: 'SpaceDetail', params: { name: space.name } }">
@@ -18,9 +25,6 @@
                 <section class="infos text-info-1">
                   <p>Last publish: 3 weeks ago</p>
                 </section>
-                <div class="opera">
-                  <el-button size="small" @click="$router.push({ name: 'ServiceSettings', query: { service_id: service.id } })">Edit</el-button>
-                </div>
               </li>
             </ul>
           </router-link>
@@ -69,23 +73,83 @@ export default {
     h2 {
       font-size: var(--font-size-title);
       margin-bottom: var(--gap-title);
+      border-bottom: 3px solid;
+      border-image: var(--border-colors);
+      padding-bottom: 10px;
+    }
+    .search-wrap {
+      height: 75px;
+      box-sizing: border-box;
+      display: flex;
+      border-bottom: 3px solid;
+      border-image: var(--border-colors);
+      margin-bottom: var(--gap-title);
+      padding-bottom: 10px;
+      .input-wrap {
+        flex-grow: 1;
+        display: flex;
+        align-items: center;
+        background: #f2f2f2;
+        position: relative;
+        .el-icon {
+          position: absolute;
+          top: 20px;
+          left: 30px;
+          z-index: 9;
+        }
+        .el-input {
+          :deep(.el-input__wrapper) {
+            padding: 0;
+          }
+          :deep(.el-input__inner) {
+            height: 100%;
+            background: #f2f2f2;
+            padding: 0 20px 0 60px;
+            font-size: 16px;
+            border: 3px solid transparent;
+            border-right: 0;
+            &:focus {
+              border-color: var(--primary-color);
+            }
+          }
+        }
+      }
+      .el-input, .el-button {
+        height: 100%;
+      }
+      .el-button {
+        width: 150px;
+        border-radius: 0;
+      }
     }
     // 空间列表
     ul.space-list {
       width: 100%;
       & > li {
-        margin-bottom: 20px;
-        padding: 50px 30px;
+        padding: 30px 30px;
         box-sizing: border-box;
         background-color: var(--color-light);
         display: flex;
         flex-direction: column;
         justify-content: space-between;
         font-size: var(--font-size-middle);
-        box-shadow: var(--page-shadow);
-        border-radius: 30px;
+        border-bottom: 2px solid var(--border-default-color);
+        border-left: 5px solid;
+        border-left-color: var(--primary-color);
+        &:nth-of-type(2n) {
+          border-left-color: var(--primary-color-match-2);
+        }
+        &:nth-of-type(3n) {
+          border-left-color: var(--primary-color-match-1);
+        }
+        &:hover {
+          h3 {
+            color: var(--primary-color-match-2);
+            text-decoration: underline;
+          }
+        }
         h3 {
-          font-size: var(--font-size-title);
+          font-size: var(--font-size-large);
           margin-bottom: 15px;
         }
         p {
@@ -106,15 +170,14 @@ export default {
       & > li {
         margin-right: 10px;
         width: 325px;
-        border: 1px solid var(--border-default-color);
+        border: 2px solid var(--border-default-color);
         padding: 20px;
         cursor: pointer;
         margin-bottom: 15px;
-        border-radius: 10px;
         transition: all ease .15s;
         &:hover {
-          // border-color: var(--primary-color);
           background: var(--background-color);
+          border-color: var(--border-default-color-deep)
         }
         h4 {
           font-size: var(--font-size-middle);

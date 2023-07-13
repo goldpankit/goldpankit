@@ -320,7 +320,7 @@ export default {
   position: relative;
   background: var(--background-color);
   border-top: 5px solid;
-  border-image: linear-gradient(to right, var(--primary-color), var(--primary-color-match-2), var(--primary-color-match-1)) 1;
+  border-image: var(--border-colors);
   .table-library {
     width: 255px;
     flex-shrink: 0;
