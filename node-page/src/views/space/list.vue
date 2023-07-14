@@ -30,8 +30,8 @@
                 <h4>{{service.name}}</h4>
                 <p>{{service.introduce}}</p>
                 <section class="infos">
-                  <p>{{service.defaultMajorVersion.subServices.length}} sub versions</p>
-                  <p>Latest version: {{service.defaultMajorVersion.version}}</p>
+                  <p>{{service.subServiceCount}} sub services</p>
+                  <p>Latest version: {{service.lastVersion}}</p>
                 </section>
                 <section class="infos text-info-1">
                   <p>Last publish: {{service.lastPublish}}</p>

@@ -26,11 +26,11 @@
                   <h4>{{service.name}}</h4>
                   <p>{{service.introduce}}</p>
                   <section class="infos">
-                    <p>21 sub versions</p>
-                    <p>Latest version: 2.2.0</p>
+                    <p>{{service.versionCount}} versions</p>
+                    <p>Latest version: {{service.lastVersion}}</p>
                   </section>
                   <section class="infos text-info-1">
-                    <p>Last publish: 3 weeks ago</p>
+                    <p>Last publish: {{service.lastPublish}}</p>
                   </section>
                   <div class="opera">
                     <el-button size="small" @click="$router.push({ name: 'ServiceSettings', query: { service_id: service.id } })">Edit</el-button>
@@ -55,6 +55,9 @@
                 @back="currentMainServiceVersion = null"
                 @installed="$router.push({name: 'Workbench'})"
               />
+            </template>
+            <template v-else-if="currentTab === 'prices'">
+              <ServiceListView :services="[]" empty-description="No Price Services"/>
             </template>
             <template v-else-if="currentTab === 'issues'">
               <IssueListView/>
@@ -111,9 +114,10 @@ import {search} from "../../api/service";
 import MarkdownEditor from "../../components/common/MarkdownEditor.vue";
 import Empty from "../../components/common/Empty.vue";
 import IssueListView from "../../components/space/IssueListView.vue";
+import ServiceListView from "../../components/space/ServiceListView.vue";
 
 export default {
-  components: {IssueListView, Empty, MarkdownEditor, ServiceInstaller, MainServiceDetail},
+  components: {IssueListView, ServiceListView, Empty, MarkdownEditor, ServiceInstaller, MainServiceDetail},
   data () {
     return {
       spaceName: null,

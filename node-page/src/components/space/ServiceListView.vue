@@ -3,23 +3,26 @@
     <li v-for="service in services" :key="service.name">
       <div class="service-info">
         <h3>{{service.name}}</h3>
-        <p>{{service.description}}</p>
+        <p>{{service.introduce}}</p>
         <p class="text-mini text-info-1">Last publish: {{service.lastPublishTime}}</p>
       </div>
     </li>
   </ul>
-  <Empty v-else description="No Services"/>
+  <Empty v-else :description="emptyDescription"/>
 </template>
 
 <script>
 import Empty from "../common/Empty.vue";
 
 export default {
-  name: "SubServiceListView",
+  name: "ServiceListView",
   components: {Empty},
   props: {
     services: {
       required: true
+    },
+    emptyDescription: {
+      default: 'No Services'
     }
   }
 }

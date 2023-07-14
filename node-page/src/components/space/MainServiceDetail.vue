@@ -27,7 +27,7 @@
         <li :class="{ selected: currentDim === 'structure' }" @click="currentDim = 'structure'">Structure</li>
       </ul>
       <MarkdownEditor v-show="currentDim === 'readme'" v-model="majorVersionDetail.description" :readonly="true"/>
-      <SubServiceListView v-show="currentDim === 'subServices'" :services="majorVersionDetail.subServices"/>
+      <ServiceListView v-show="currentDim === 'subServices'" :services="majorVersionDetail.subServices"/>
       <ServiceStructureView v-show="currentDim === 'structure'" :nodes="majorVersionDetail.structure"/>
     </div>
   </div>
@@ -35,13 +35,13 @@
 
 <script>
 import { mapState } from 'vuex'
-import SubServiceListView from "./SubServiceListView.vue";
+import ServiceListView from "./ServiceListView.vue";
 import {fetchMainServiceDetail} from "../../api/service";
 import ServiceStructureView from "./ServiceStructureView.vue";
 import MarkdownEditor from "../common/MarkdownEditor.vue";
 export default {
   name: "MainServiceDetail",
-  components: {MarkdownEditor, ServiceStructureView, SubServiceListView},
+  components: {MarkdownEditor, ServiceStructureView, ServiceListView},
   props: {
     space: {
       required: true
@@ -71,7 +71,6 @@ export default {
         service: this.service
       })
         .then(data => {
-          console.log('data', data)
           this.majorVersions = data.majorVersions
           this.currentMajorVersion = this.majorVersions[0]
           this.majorVersionDetail = data.defaultMajorVersion
