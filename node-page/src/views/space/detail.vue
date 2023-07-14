@@ -4,7 +4,7 @@
       <h2>{{ space.name }}</h2>
       <div class="tech-stack-wrap">
         <em>Private</em>
-        <p class="tech-stack">55 services</p>
+        <p class="tech-stack">{{space.serviceCount}} services</p>
       </div>
       <div class="content-wrap">
         <div class="dimension-wrap">
@@ -17,17 +17,7 @@
           <div class="detail">
             <template v-if="currentTab === 'readme'">
               <div class="readme">
-                <ul class="toolbar">
-                  <li v-if="readmeData.edit"><el-button @click="cancelEditReadme">Cancel</el-button></li>
-                  <li v-if="readmeData.edit"><el-button type="primary" @click="confirmEditReadme">Save</el-button></li>
-                  <li v-if="!readmeData.edit"><el-button type="primary" @click="editReadme">Edit</el-button></li>
-                </ul>
-                <el-form v-if="readmeData.edit">
-                  <el-form-item label="Introduce" required>
-                    <el-input v-model="readmeData.introduce" class="introduce" type="textarea"/>
-                  </el-form-item>
-                </el-form>
-                <MarkdownEditor :readonly="!readmeData.edit" :without-padding="true" v-model="readmeData.readme"/>
+                <MarkdownEditor readonly :without-padding="true" v-model="space.description"/>
               </div>
             </template>
             <template v-else-if="currentTab === 'services'">
@@ -90,15 +80,17 @@
           <ul>
             <li>
               <label>Home Page</label>
-              <a href="#">http://eva.adjustrd.com</a>
+              <a v-if="space.homePage != null && space.homePage !== ''" href="#">{{space.homePage}}</a>
+              <p v-else>None</p>
             </li>
             <li>
               <label>Services</label>
-              <p>55</p>
+              <p>{{space.serviceCount}}</p>
             </li>
             <li>
               <label>Last Publish</label>
-              <p>3 month ago</p>
+              <p v-if="space.lastPublish != null">{{space.lastPublish}}</p>
+              <p v-else>None</p>
             </li>
           </ul>
         </div>
@@ -120,11 +112,6 @@ export default {
     return {
       spaceName: null,
       currentTab: 'readme',
-      readmeData: {
-        edit: false,
-        introduce: '',
-        readme: ''
-      },
       // 当前选择的框架服务
       currentMainService: null,
       // 当前选择的框架服务版本
@@ -134,31 +121,7 @@ export default {
       mainServices: []
     }
   },
-  watch: {
-    space () {
-      this.readmeData.introduce = this.space.introduce
-      this.readmeData.readme = this.space.description
-    }
-  },
   methods: {
-    // 编辑readme
-    editReadme () {
-      this.readmeData.edit = true
-      this.readmeData.readme = this.space.description
-      this.readmeData.introduce = this.space.introduce
-    },
-    // 取消编辑readme
-    cancelEditReadme () {
-      this.readmeData.edit = false
-      this.readmeData.readme = this.space.description
-      this.readmeData.introduce = this.space.introduce
-    },
-    // 确认保存readme
-    confirmEditReadme () {
-      this.readmeData.edit = false
-      this.space.description = this.readmeData.readme
-      this.space.introduce = this.readmeData.introduce
-    },
     // 查询空间信息
     fetchSpace () {
       fetchByName(this.spaceName)
@@ -270,26 +233,6 @@ export default {
       // 维度详情
       .detail {
         padding: 20px 20px 0 0;
-        .readme {
-          .toolbar {
-            display: flex;
-            justify-content: flex-end;
-            border-bottom: 1px solid var(--border-default-color);
-            padding-bottom: 10px;
-            li {
-              margin-right: 10px;
-              &:last-of-type {
-                margin-right: 0;
-              }
-            }
-          }
-          .markdown-editor {
-            height: 500px;
-            :deep(.v-md-editor__preview-wrapper) {
-              padding: 15px;
-            }
-          }
-        }
       }
     }
     .info {
