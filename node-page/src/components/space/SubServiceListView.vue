@@ -1,5 +1,5 @@
 <template>
-  <ul class="service-list">
+  <ul v-if="services.length > 0" class="service-list">
     <li v-for="service in services" :key="service.name">
       <div class="service-info">
         <h3>{{service.name}}</h3>
@@ -8,11 +8,15 @@
       </div>
     </li>
   </ul>
+  <Empty v-else description="No Services"/>
 </template>
 
 <script>
+import Empty from "../common/Empty.vue";
+
 export default {
   name: "SubServiceListView",
+  components: {Empty},
   props: {
     services: {
       required: true

@@ -21,7 +21,7 @@
               </div>
             </template>
             <template v-else-if="currentTab === 'services'">
-              <ul v-show="currentMainService == null" class="service-list">
+              <ul v-if="currentMainService == null && mainServices.length > 0" class="service-list">
                 <li v-for="service in mainServices" @click="currentMainService = service">
                   <h4>{{service.name}}</h4>
                   <p>{{service.introduce}}</p>
@@ -37,6 +37,7 @@
                   </div>
                 </li>
               </ul>
+              <Empty v-else-if="currentMainService == null && mainServices.length === 0" description="No Services"/>
               <MainServiceDetail
                 v-if="currentMainService != null && currentMainServiceVersion == null"
                 :space="space.name"
@@ -54,6 +55,9 @@
                 @back="currentMainServiceVersion = null"
                 @installed="$router.push({name: 'Workbench'})"
               />
+            </template>
+            <template v-else-if="currentTab === 'issues'">
+              <IssueListView/>
             </template>
           </div>
         </div>
@@ -105,9 +109,11 @@ import ServiceInstaller from "../../components/space/ServiceInstaller.vue";
 import {fetchByName} from "../../api/service.space";
 import {search} from "../../api/service";
 import MarkdownEditor from "../../components/common/MarkdownEditor.vue";
+import Empty from "../../components/common/Empty.vue";
+import IssueListView from "../../components/space/IssueListView.vue";
 
 export default {
-  components: {MarkdownEditor, ServiceInstaller, MainServiceDetail},
+  components: {IssueListView, Empty, MarkdownEditor, ServiceInstaller, MainServiceDetail},
   data () {
     return {
       spaceName: null,
