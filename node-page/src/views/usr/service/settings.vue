@@ -29,18 +29,18 @@
               :service="route.service"
             />
             <MarkdownEditor
-              v-show="currentTab === 'readme'"
+              v-if="currentTab === 'readme'"
               v-model="service.description"
               @update:modelValue="saveConfig"
-            />
-            <SettingFiles
-              v-show="currentTab === 'files'"
-              :space="route.space"
-              :service="route.service"
             />
             <Variables
               ref="variables"
               v-show="currentTab === 'variables'"
+              :space="route.space"
+              :service="route.service"
+            />
+            <SettingFiles
+              v-show="currentTab === 'files'"
               :space="route.space"
               :service="route.service"
             />
@@ -231,19 +231,3 @@ export default {
   }
 }
 </style>
-7.13日报
-一、教学
-  • sql教学
-二、全智
-  • BUG：精简代码过滤
-  • BUG：模块数据修改重新获取后数据不生效
-三、Kit
-  • 首页/操作项调整
-  • 首页/删除项目
-  • 公共空间列表/页面优化
-  • 公共空间列表/增加搜索
-  • 公共空间列表/增加分页
-  • 公共空间列表/初始化主服务信息
-
-7.14计划
-一、教学

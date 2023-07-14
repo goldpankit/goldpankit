@@ -13,15 +13,25 @@
         </el-form-item>
         <el-form-item label="Charge" prop="chargeValue" required>
           <el-radio-group v-model="form.chargeType">
-            <el-radio label="free">Free</el-radio>
-            <el-radio label="times">Charge per ride</el-radio>
-            <el-radio label="month">Monthly charge</el-radio>
-            <el-radio label="quarter">Quarterly charge</el-radio>
-            <el-radio label="year">Annual charge</el-radio>
+            <el-radio-button label="free">Free</el-radio-button>
+            <el-radio-button label="times">Charge per ride</el-radio-button>
+            <el-radio-button label="monthly">Monthly charge</el-radio-button>
+            <el-radio-button label="quarterly">Quarterly charge</el-radio-button>
+            <el-radio-button label="annual">Annual charge</el-radio-button>
           </el-radio-group>
-          <div v-if="form.chargeType !== 'free'" class="charge-value">
-            <span><img src="/public/images/bean.png"></span>
-            <el-input-number :controls="false" v-model="form.chargeValue"/>
+        </el-form-item>
+        <el-form-item v-if="form.chargeType !== 'free'" label="Price" prop="chargeValue" class="item-price" required>
+          <span><img src="/public/images/bean.png"></span>
+          <el-input-number :controls="false" v-model="form.chargeValue"/>
+        </el-form-item>
+        <el-form-item label="Other settings">
+          <div>
+            <el-checkbox v-model="form.private"/>
+            <p>Whether the service is private</p>
+          </div>
+          <div>
+            <el-checkbox v-model="form.receiveService"/>
+            <p>接收其他人添加的服务</p>
           </div>
         </el-form-item>
         <el-form-item label="Translator" prop="translator">
@@ -83,6 +93,8 @@ export default {
       originForm: null,
       form: {
         version: '',
+        private: false,
+        receiveService: false,
         compiler: '',
         supportedDatabases: [],
         tableFieldDefinitions: [],
@@ -220,9 +232,8 @@ export default {
           margin-left: 30px;
         }
       }
-      .charge-value {
+      .item-price {
         display: flex;
-        align-items: center;
         span {
           display: flex;
           justify-content: center;

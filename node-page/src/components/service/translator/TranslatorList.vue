@@ -62,7 +62,7 @@
         </template>
         <!-- 编码翻译 -->
         <template v-else-if="item.type === 'code'">
-          <p>function translate(filepath, content, fileSetting) {</p>
+          <p class="code"><em class="keyword">function</em> <em>translate</em>&nbsp;(<em>filepath</em>, <em>content</em>, <em>fileSetting</em>) {</p>
           <el-input
             v-model="item.code"
             type="textarea"
@@ -246,6 +246,17 @@ export default {
       }
       .type {
         width: 100px;
+      }
+    }
+    :deep(.code) {
+      font-size: 14px;
+      em {
+        color: #1e54d9;
+        font-style: normal;
+        &.keyword {
+          font-weight: bold;
+          color: #a90092;
+        }
       }
     }
     // 操作
