@@ -7,6 +7,7 @@ const userRegis = require('./user.regis')
 const userLogin = require('./user.login')
 const localFile = require('./local.file')
 const db = require('./db')
+const common = require('./common')
 module.exports = {
-  service, serviceSpace, serviceCompile, serviceVersion, userProject, userRegis, userLogin, localFile, db
+  service, serviceSpace, serviceCompile, serviceVersion, userProject, userRegis, userLogin, localFile, db, common
 };
