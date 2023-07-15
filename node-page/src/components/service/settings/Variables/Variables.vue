@@ -11,6 +11,11 @@
         :default-expand-all="true"
         :data="variables"
         @node-click="selectVariable"
+        draggable
+        :allow-drop="allowDrop"
+        :allow-drag="allowDrag"
+        @node-drag-start="handleDragStart"
+        @node-drop="handleDrop"
       >
         <template #default="{ node, data }">
           <div class="title">
@@ -31,20 +36,31 @@
       </el-tree>
     </div>
     <div class="variable-setting">
-      <h4>Variable Setting</h4>
+      <div class="title">
+        <h4>Variable Setting</h4>
+        <el-button v-if="currentVariable != null" type="danger" text @click="deleteVariable">Delete</el-button>
+      </div>
       <div class="content-wrap">
-        <VariableSettingForm
-          v-if="currentVariable != null && currentVariable.type === 'variable'"
-          :variable="currentVariable"
-          :variables="variables"
-          :with-group="isGroupVariable"
-          @change="saveVariables"
-        />
-        <VariableGroupSettingForm
-          v-if="currentVariable != null && currentVariable.type === 'group'"
-          :variable="currentVariable"
-          @change="saveVariables"
-        />
+        <template v-if="currentVariable != null">
+          <VariableSettingForm
+            v-if="currentVariable.type === 'variable'"
+            :variable="currentVariable"
+            :variables="variables"
+            :with-group="currentGroup != null"
+            @change="saveVariables"
+          />
+          <VariableGroupSettingForm
+            v-if="currentVariable.type === 'group'"
+            :variable="currentVariable"
+            @change="saveVariables"
+          />
+        </template>
+        <template v-else>
+          <div class="variable-holder">
+            <h4>Variable & Variable Group Settings</h4>
+            <p>You can open Settings by clicking on variables or groups of variables on the left.</p>
+          </div>
+        </template>
       </div>
     </div>
   </div>
@@ -61,7 +77,8 @@ import VariableGroupSettingForm from "./VariableGroupSettingForm.vue";
 
 export default {
   name: "Variables",
-  components: {VariableGroupSettingForm, VariableSettingForm, VariableInput, I18nInput, InputTypeSelect, CompilerSelect},
+  components: {
+    VariableGroupSettingForm, VariableSettingForm, VariableInput, I18nInput, InputTypeSelect, CompilerSelect},
   props: {
     space: {
       required: true
@@ -75,15 +92,21 @@ export default {
       varIndex: 1,
       groupIndex: 1,
       currentVariable: null,
-      isGroupVariable: false,
-      variables: []
+      currentGroup: null,
+      variables: [],
+      dragData: {
+        target: null
+      }
     }
   },
   methods: {
     // 选择变量
     selectVariable(variable, node) {
       this.currentVariable = variable
-      this.isGroupVariable = node.level > 1
+      this.currentGroup = null
+      if (node.level > 1) {
+        this.currentGroup = node.parent.data
+      }
     },
     // 添加变量
     createVariable (group) {
@@ -104,7 +127,16 @@ export default {
       if (group != null) {
         group.children.push(newVar)
       } else {
-        this.variables.push(newVar)
+        if (this.variables.length === 0) {
+          this.variables.push(newVar)
+        } else {
+          const lastVarIndex = this.variables.findLastIndex(v => v.type === 'variable')
+          if (lastVarIndex === -1) {
+            this.variables.unshift(newVar)
+          } else {
+            this.variables.splice(lastVarIndex, 0, newVar)
+          }
+        }
       }
       this.currentVariable = newVar
       this.saveVariables()
@@ -173,10 +205,70 @@ export default {
             variable.options = variable.options == null ? [] : variable.options
             return variable
           })
+          this.variables = this.variables.sort((item1, item2) => {
+            if (item1.type === 'variable' && item2.type === 'group') {
+              return -1
+            }
+            return 1
+          })
         })
         .catch(e => {
           console.log('e', e)
         })
+    },
+    // 删除变量
+    deleteVariable () {
+      const type = this.currentVariable.type === 'variable' ? 'variable' : 'variable group'
+      this.$model.deleteConfirm(`Do you want to delete the ${type} named 「${this.currentVariable.name}」?`)
+        .then(() => {
+          if (this.currentGroup != null) {
+            const index = this.currentGroup.children.findIndex(v => v.name === this.currentVariable.name)
+            if (index === -1) {
+              return
+            }
+            this.currentGroup.children.splice(index, 1)
+            this.currentVariable = null
+            this.saveVariables()
+            return
+          }
+          const index = this.variables.find(v => v.name === this.currentVariable.name)
+          if (index === -1) {
+            return
+          }
+          this.variables.splice(index, 1)
+          this.currentVariable = null
+          this.saveVariables()
+        })
+        .catch(() => {})
+    },
+    handleDragStart (node) {
+      this.dragData.target = node.data
+    },
+    handleDrop () {
+      this.saveVariables()
+    },
+    allowDrag () {
+      return true
+    },
+    allowDrop (draggingNode, dropNode, dropType) {
+      // 移动变量
+      if (draggingNode.data.type === 'variable') {
+        // 不允许移动到其他变量内部
+        if (dropNode.data.type === 'variable' && dropType === 'inner') {
+          return false
+        }
+        return true
+      }
+      // 移动变量组
+      if (draggingNode.data.type === 'group') {
+        console.log('dropType', dropType)
+        // 不允许移动到其他变量或变量组内部
+        if (dropNode.data.type === 'variable') {
+          return false
+        }
+        return true
+      }
+      return false
     },
     // 获取保存变量内容
     __getSaveVariable (variable) {
@@ -238,6 +330,7 @@ export default {
     }
     // 变量列表
     .variables {
+      --selected-background-color: #fff8d3;
       :deep(.el-tree-node) {
         min-height: 30px;
         .el-tree-node__content {
@@ -245,6 +338,15 @@ export default {
         }
         &:last-of-type {
           border-bottom: 0;
+        }
+        &.is-current .el-tree-node__content {
+          background: var(--selected-background-color);
+          &:hover {
+            background: var(--selected-background-color);
+          }
+        }
+        &:focus,&:hover {
+          background: var(--selected-background-color);
         }
       }
       :deep(.title) {
@@ -276,10 +378,15 @@ export default {
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    h4 {
-      flex-shrink: 0;
-      margin-top: 15px;
-      padding-bottom: 15px;
+    .title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      h4 {
+        flex-shrink: 0;
+        margin-top: 15px;
+        padding-bottom: 15px;
+      }
     }
     .content-wrap {
       flex-grow: 1;
@@ -295,6 +402,21 @@ export default {
             display: flex;
             justify-content: space-between;
           }
+        }
+      }
+      // 变量空提示
+      .variable-holder {
+        font-size: 18px;
+        width: 455px;
+        margin: 30px auto 0 auto;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 50px;
+        p {
+          line-height: 30px;
+          color: var(--color-gray);
         }
       }
     }

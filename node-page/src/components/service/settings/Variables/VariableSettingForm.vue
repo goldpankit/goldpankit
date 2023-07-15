@@ -7,7 +7,7 @@
       </el-radio-group>
     </el-form-item>
     <el-form-item label="Label" required>
-      <I18nInput v-model="variable.label" @input="handleChange"/>
+      <el-input v-model="variable.label" @input="handleChange"/>
     </el-form-item>
     <el-form-item label="Name" required>
       <el-input v-model="variable.name" @input="handleChange"/>
@@ -27,7 +27,7 @@
           <div class="opera">
             <el-button icon="Top" class="button-icon"></el-button>
             <el-button icon="Bottom" class="button-icon"></el-button>
-            <el-button @click="createOption">Add</el-button>
+            <el-button type="primary" @click="createOption">Add</el-button>
           </div>
         </div>
       </template>

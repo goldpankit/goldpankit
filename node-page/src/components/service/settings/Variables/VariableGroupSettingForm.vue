@@ -7,7 +7,7 @@
       </el-radio-group>
     </el-form-item>
     <el-form-item label="Label" required>
-      <I18nInput v-model="variable.label" @input="handleChange"/>
+      <el-input v-model="variable.label" @input="handleChange"/>
     </el-form-item>
     <el-form-item label="Name" required>
       <el-input v-model="variable.name" @input="handleChange"/>

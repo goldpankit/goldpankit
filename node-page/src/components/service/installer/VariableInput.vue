@@ -4,6 +4,12 @@
     v-model="variable[valueKey]"
     @input="$emit('change', $event)"
   />
+  <InstallInput
+    v-else-if="variable.inputType === 'textarea'"
+    type="textarea"
+    v-model="variable[valueKey]"
+    @input="$emit('change', $event)"
+  />
   <InstallCheckbox
     v-else-if="variable.inputType === 'checkbox'"
     v-model="variable[valueKey]"

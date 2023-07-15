@@ -1,11 +1,12 @@
 <template>
-  <ul class="installer-checkbox">
+  <ul v-if="options.length > 0" class="installer-checkbox">
     <li
       v-for="option in options" :key="option.value"
       :class="{ selected: modelValue === option.value }"
       @click="handleSelect(option)"
     >{{option.label}}</li>
   </ul>
+  <p v-else>Please add options first.</p>
 </template>
 
 <script>

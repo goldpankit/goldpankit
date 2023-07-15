@@ -12,7 +12,7 @@
         <li>
           <el-popover placement="right" trigger="click" popper-class="select-project-popover">
             <template #reference>
-              <el-button type="primary">
+              <el-button>
                 {{ currentProject == null ? 'Select Project' : 'Current project: ' + currentProject.name }}
               </el-button>
             </template>
@@ -22,7 +22,7 @@
         <li>
           <el-popover placement="right" trigger="click" popper-class="select-database-popover">
             <template #reference>
-              <el-button type="primary">
+              <el-button>
                 {{ currentProject == null ? 'Select Database' : 'Current database: ' + currentDatabase }}
               </el-button>
             </template>

@@ -1,10 +1,15 @@
 <template>
-  <el-input class="install-input"/>
+  <el-input :type="type" class="install-input"/>
 </template>
 
 <script>
 export default {
-  name: "InstallInput"
+  name: "InstallInput",
+  props: {
+    type: {
+      default: 'text'
+    }
+  }
 }
 </script>
 
