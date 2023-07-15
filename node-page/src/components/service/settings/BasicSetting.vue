@@ -12,7 +12,7 @@
           <DatabaseSelect v-model="form.supportedDatabases" @change="saveConfig"/>
         </el-form-item>
         <el-form-item label="Charge" prop="prices[0].type" required>
-          <el-radio-group v-model="form.prices[0].type" @change="saveConfig">
+          <el-radio-group v-model="form.prices[0].type" @change="changePriceType">
             <el-radio-button label="free">Free</el-radio-button>
             <el-radio-button label="times">Charge per ride</el-radio-button>
             <el-radio-button label="monthly">Monthly charge</el-radio-button>
@@ -41,7 +41,7 @@
           <BuildList :builds="form.builds" @save="saveConfig"/>
         </el-form-item>
         <el-form-item label="Uninstall Builds" prop="unbuilds">
-          <BuildList :builds="form.unbuilds" @save="saveConfig"/>
+          <BuildList :builds="form.unbuilds" :with-unbuild="true" @save="saveConfig"/>
         </el-form-item>
         <el-form-item label="Code Space" prop="codespace">
           <div v-if="!newCodespace.changing" class="codespace-wrap">
@@ -129,6 +129,13 @@ export default {
           console.log('e', e)
         })
     },
+    // 切换价格类型
+    changePriceType (value) {
+      if (value === 'free') {
+        this.form.prices[0].value = 0
+      }
+      this.saveConfig()
+    },
     // 修改代码空间
     changeCodespace () {
       this.newCodespace.changing = true
@@ -181,6 +188,13 @@ export default {
             })
         },
         builds: this.form.builds.map(item => {
+          return {
+            name: item.name,
+            type: item.type,
+            content: item.content
+          }
+        }),
+        unbuilds: this.form.unbuilds.map(item => {
           return {
             name: item.name,
             type: item.type,

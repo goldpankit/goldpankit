@@ -47,7 +47,6 @@
 </template>
 
 <script>
-import { ref } from 'vue'
 import BuildCommandTypeSelect from "./BuildCommandTypeSelect.vue";
 import Empty from "../../common/Empty.vue";
 
@@ -58,6 +57,9 @@ export default {
     builds: {
       required: true,
       type: Array
+    },
+    withUnbuild: {
+      default: false
     }
   },
   data () {
@@ -110,7 +112,7 @@ export default {
     __generateBuildName () {
       let buildName
       while(true) {
-        buildName = `build${this.varIndex}`
+        buildName = `${this.withUnbuild ? 'un' : ''}build${this.varIndex}`
         this.varIndex ++
         if (this.builds.findIndex(b => b.name === buildName) === -1) {
           return buildName
