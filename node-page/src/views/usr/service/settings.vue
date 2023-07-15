@@ -27,6 +27,7 @@
               v-if="currentTab === 'basic'"
               :space="route.space"
               :service="route.service"
+              :service-type="service.type"
             />
             <MarkdownEditor
               v-if="currentTab === 'readme'"

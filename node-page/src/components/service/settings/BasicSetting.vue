@@ -29,9 +29,9 @@
             <el-checkbox v-model="form.private" @change="saveConfig"/>
             <p>Is a private service.</p>
           </div>
-          <div>
+          <div v-if="serviceType === 'MAIN'">
             <el-checkbox v-model="form.receivable" @change="saveConfig"/>
-            <p>Receive services added by others.</p>
+            <p>Receive sub services added by others.</p>
           </div>
         </el-form-item>
         <el-form-item label="Translator" prop="translator">
@@ -80,6 +80,9 @@ export default {
       required: true
     },
     service: {
+      required: true
+    },
+    serviceType: {
       required: true
     }
   },
