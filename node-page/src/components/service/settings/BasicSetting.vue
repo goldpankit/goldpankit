@@ -11,8 +11,8 @@
         <el-form-item label="Supported Databases" prop="supportedDatabases">
           <DatabaseSelect v-model="form.supportedDatabases" @change="saveConfig"/>
         </el-form-item>
-        <el-form-item label="Charge" prop="chargeValue" required>
-          <el-radio-group v-model="form.chargeType">
+        <el-form-item label="Charge" prop="prices[0].type" required>
+          <el-radio-group v-model="form.prices[0].type" @change="saveConfig">
             <el-radio-button label="free">Free</el-radio-button>
             <el-radio-button label="times">Charge per ride</el-radio-button>
             <el-radio-button label="monthly">Monthly charge</el-radio-button>
@@ -20,18 +20,18 @@
             <el-radio-button label="annual">Annual charge</el-radio-button>
           </el-radio-group>
         </el-form-item>
-        <el-form-item v-if="form.chargeType !== 'free'" label="Price" prop="chargeValue" class="item-price" required>
+        <el-form-item v-if="form.prices[0].type !== 'free'" label="Price" prop="prices[0].value" class="item-price" required>
           <span><img src="/public/images/bean.png"></span>
-          <el-input-number :controls="false" v-model="form.chargeValue"/>
+          <el-input-number :controls="false" v-model="form.prices[0].value" @input="saveConfig"/>
         </el-form-item>
-        <el-form-item label="Other settings">
+        <el-form-item label="Other settings" class="item-other-settings">
           <div>
-            <el-checkbox v-model="form.private"/>
-            <p>Whether the service is private</p>
+            <el-checkbox v-model="form.private" @change="saveConfig"/>
+            <p>Is a private service.</p>
           </div>
           <div>
-            <el-checkbox v-model="form.receiveService"/>
-            <p>接收其他人添加的服务</p>
+            <el-checkbox v-model="form.receivable" @change="saveConfig"/>
+            <p>Receive services added by others.</p>
           </div>
         </el-form-item>
         <el-form-item label="Translator" prop="translator">
@@ -40,8 +40,8 @@
         <el-form-item label="Install Builds" prop="builds">
           <BuildList :builds="form.builds" @save="saveConfig"/>
         </el-form-item>
-        <el-form-item label="Uninstall Builds" prop="builds">
-          <BuildList :builds="form.builds" @save="saveConfig"/>
+        <el-form-item label="Uninstall Builds" prop="unbuilds">
+          <BuildList :builds="form.unbuilds" @save="saveConfig"/>
         </el-form-item>
         <el-form-item label="Code Space" prop="codespace">
           <div v-if="!newCodespace.changing" class="codespace-wrap">
@@ -94,14 +94,18 @@ export default {
       form: {
         version: '',
         private: false,
-        receiveService: false,
+        receivable: false,
         compiler: '',
         supportedDatabases: [],
         tableFieldDefinitions: [],
         builds: [],
         unbuilds: [],
-        chargeType: 'free',
-        chargeValue: 0,
+        prices: [
+          {
+            type: 'monthly',
+            value: 0,
+          }
+        ],
         translator: {
           output: '',
           settings: []
@@ -197,6 +201,9 @@ export default {
       .then(config => {
         // 需给定默认值，防止用户自行篡改配置文件
         this.form.version = config.version || '1.0.0'
+        this.form.private = config.private == null ? false : config.private
+        this.form.receivable = config.receivable == null ? false : config.receivable
+        this.form.prices = config.prices
         this.form.compiler = config.compiler || 'freemarker'
         this.form.supportedDatabases = config.supportedDatabases || []
         this.form.builds = config.builds || []
@@ -242,6 +249,18 @@ export default {
             width: 20px;
             height: auto;
             margin-right: 5px;
+          }
+        }
+      }
+      .item-other-settings {
+        .el-form-item__content {
+          flex-direction: column;
+          align-items: flex-start;
+          & > div {
+            display: flex;
+            .el-checkbox {
+              margin-right: 10px;
+            }
           }
         }
       }
