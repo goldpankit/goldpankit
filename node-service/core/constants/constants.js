@@ -8,9 +8,18 @@ module.exports = {
   SERVICE_CONFIG_CONTENT: {
     name: '', // 服务名称
     version: '1.0.0', // 版本号
+    private: false, // 是否为私有服务
+    receivable: false, // 是否接收服务
     compiler: 'static', // 编译器
     supportedDatabases: [], // 支持的数据库列表
+    prices: [ // 价格定义
+      // {
+      //   type: 'monthly',
+      //   value: 10
+      // }
+    ],
     builds: [], // 构建列表
+    unbuilds: [], // 卸载构建
     variables: [], // 服务变量列表
     translator: { // 翻译器
       output: '', // 翻译输出路径
