@@ -10,34 +10,47 @@
       <p class="install-tip">
         tips: Install the service by filling out the form below and clicking the Install button at the bottom.
       </p>
-      <el-form>
-        <template v-for="variable in serviceVariables">
-          <el-form-item
-            v-if="!variable.hidden"
-            :key="variable.name"
-            :label="variable.label"
-          >
-            <template #label>
-              <template v-if="variable.type === 'variable'">{{variable.label}}</template>
-              <template v-else>
-                <div class="label-wrap">
-                  <span>{{variable.label}}</span>
-                  <el-icon><ArrowRight /></el-icon>
-                </div>
-              </template>
-            </template>
-            <!-- 根变量 -->
-            <VariableInput v-if="variable.type === 'variable'" :variable="variable" :variables="variables"/>
-            <!-- 服务变量组 -->
-            <ul v-else-if="variable.type === 'group'" class="group-vars">
-              <li v-for="v of variable.children" :key="`${variable.name}_${v.name}`">
-                <label class="text-info-1 text-mini">{{v.label}}</label>
-                <VariableInput :variable="v"/>
-              </li>
-            </ul>
+      <div class="form-wrap">
+        <el-form :model="project">
+          <el-form-item label="Project Name" required>
+            <el-input v-model="project.name"/>
           </el-form-item>
-        </template>
-      </el-form>
+          <el-form-item label="Remark">
+            <el-input type="textarea" :rows="2" v-model="project.remark"/>
+          </el-form-item>
+          <el-form-item label="Project Directory" required>
+            <DirectorySelect v-model="project.codespace"/>
+          </el-form-item>
+        </el-form>
+        <el-form>
+          <template v-for="variable in serviceVariables">
+            <el-form-item
+              v-if="!variable.hidden"
+              :key="variable.name"
+              :label="variable.label"
+            >
+              <template #label>
+                <template v-if="variable.type === 'variable'">{{variable.label}}</template>
+                <template v-else>
+                  <div class="label-wrap">
+                    <span>{{variable.label}}</span>
+                    <el-icon><ArrowRight /></el-icon>
+                  </div>
+                </template>
+              </template>
+              <!-- 根变量 -->
+              <VariableInput v-if="variable.type === 'variable'" :variable="variable" :variables="variables"/>
+              <!-- 服务变量组 -->
+              <ul v-else-if="variable.type === 'group'" class="group-vars">
+                <li v-for="v of variable.children" :key="`${variable.name}_${v.name}`">
+                  <label class="text-info-1 text-mini">{{v.label}}</label>
+                  <VariableInput :variable="v"/>
+                </li>
+              </ul>
+            </el-form-item>
+          </template>
+        </el-form>
+      </div>
       <div v-if="withInstallButton" class="install">
         <el-button type="important" :disabled="currentProject == null" @click="install">
           INSTALL{{currentProject == null ? '' : ' to project ' + currentProject.name}}
@@ -48,7 +61,7 @@
 </template>
 
 <script>
-import {mapState} from "vuex";
+import {mapMutations, mapState} from "vuex";
 import InstallCheckbox from "../service/installer/Checkbox.vue";
 import InstallInput from "../service/installer/Input.vue";
 import InstallRadio from "../service/installer/Radio.vue";
@@ -57,10 +70,14 @@ import {install, uninstall} from "../../api/service.compile";
 import {fetchVersion} from "../../api/service.version";
 import MySqlFieldSelect from "../database/MySqlFieldSelect.vue";
 import FieldSetting from "../service/installer/FieldSetting.vue";
+import DirectorySelect from "../common/DirectorySelect.vue";
+import {create} from "../../api/user.project";
 
 export default {
   name: "ServiceInstaller",
-  components: {FieldSetting, MySqlFieldSelect, VariableInput, InstallRadio, InstallInput, InstallCheckbox},
+  components: {
+    DirectorySelect,
+    FieldSetting, MySqlFieldSelect, VariableInput, InstallRadio, InstallInput, InstallCheckbox},
   props: {
     space: {
       required: true
@@ -82,7 +99,13 @@ export default {
   },
   data () {
     return {
-      variables: []
+      variables: [],
+      project: {
+        name: '',
+        codespace: '',
+        remark: '',
+        databases: []
+      }
     }
   },
   computed: {
@@ -101,6 +124,7 @@ export default {
     }
   },
   methods: {
+    ...mapMutations(['setCurrentProject']),
     // 获取版本信息
     fetchVersion () {
       fetchVersion({
@@ -141,14 +165,26 @@ export default {
     },
     // 安装服务
     install () {
-      install({
-        projectId: this.currentProject.id,
-        database: this.currentDatabase,
-        space: this.space,
-        service: this.service,
-        version: this.version,
-        variables: this.variables
-      })
+      // 创建项目
+      create(this.project)
+        .then(data => {
+          this.setCurrentProject({
+            id: data,
+            ...this.project
+          })
+          return data
+        })
+        .then(projectId => {
+          // 安装服务
+          install({
+            projectId: projectId,
+            database: null, // this.currentDatabase,
+            space: this.space,
+            service: this.service,
+            version: this.version,
+            variables: this.variables
+          })
+        })
         .then(() => {
           this.$emit('installed')
         })
@@ -236,7 +272,7 @@ export default {
     }
   }
   .content-wrap {
-    padding: 50px;
+    // padding: 50px;
     .install-tip {
       margin-bottom: 20px;
       font-weight: bold;
@@ -245,7 +281,7 @@ export default {
       margin-bottom: 10px;
     }
     // 变量表单
-    .el-form {
+    .form-wrap {
       padding: 30px;
       box-shadow: var(--form-shadow);
       border-radius: var(--radius-page);
