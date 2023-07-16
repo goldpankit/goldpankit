@@ -13,6 +13,7 @@
     "axios": "^1.4.0",
     "element-plus": "^2.3.2",
     "konva": "^9.2.0",
+    "sortablejs": "^1.15.0",
     "vite-plugin-prismjs": "0.0.8",
     "vue": "^3.2.47",
     "vue-konva": "^3.0.2",

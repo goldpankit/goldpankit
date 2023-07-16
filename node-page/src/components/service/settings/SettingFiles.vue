@@ -39,6 +39,9 @@
               </div>
             </template>
             <el-table :data="currentNode.variables">
+              <el-table-column width="25px">
+                <span><el-icon><Grid /></el-icon></span>
+              </el-table-column>
               <el-table-column label="*Name" min-width="120px">
                 <template #default="{ row }">
                   <el-input v-model="row.name" @input="saveFileSetting"/>
@@ -77,6 +80,7 @@ import CompilerSelect from "../../common/CompilerSelect.vue";
 import InputTypeSelect from "../../common/InputTypeSelect.vue";
 import {fetchFiles, saveFileSetting} from "../../../api/service";
 import {sortFiles} from "../../../utils/file";
+import Sortable from 'sortablejs'
 
 export default {
   name: "SettingFiles",
@@ -95,13 +99,21 @@ export default {
       files: []
     }
   },
+  watch: {
+    currentNode () {
+      if (this.currentNode != null) {
+        this.$nextTick(() => {
+          this.initDraggable()
+        })
+      }
+    }
+  },
   methods: {
     // 获取文件
     fetchFiles () {
       fetchFiles(this.space, this.service)
         .then(data => {
           this.files = data
-          console.log('files', this.files)
           sortFiles(this.files)
         })
         .catch(e => {
@@ -148,7 +160,6 @@ export default {
     },
     // 选择树节点
     handleNodeClick (node) {
-      console.log('node', node)
       this.currentNode = node
     },
     // 是否为重点标记文件
@@ -156,6 +167,37 @@ export default {
       return (node.compiler != null && node.compiler !== '') ||
         (node.enableExpress != null && node.enableExpress !== '') ||
         (node.variables.length > 0)
+    },
+    // 初始化行拖拽
+    initDraggable () {
+      const tbody = this.$el.querySelector('.el-table__body-wrapper tbody')
+      console.log('tbody', tbody)
+      const _this = this
+      Sortable.create(tbody, {
+        onEnd ({ newIndex, oldIndex}) {
+          console.log(newIndex, oldIndex)
+          if (newIndex === oldIndex) {
+            return
+          }
+          const originRow = _this.currentNode.variables[oldIndex]
+          // 从上拖到下
+          if (newIndex > oldIndex) {
+            _this.currentNode.variables.splice(newIndex + 1,0,originRow)
+            _this.currentNode.variables.splice(oldIndex,1)
+          }
+          // 从下拖到上
+          else {
+            _this.currentNode.variables.splice(oldIndex,1)
+            _this.currentNode.variables.splice(newIndex,0,originRow)
+          }
+          const newVariables = _this.currentNode.variables.slice(0)
+          _this.currentNode.variables = []
+          _this.$nextTick(() => {
+            _this.currentNode.variables = newVariables
+            _this.saveFileSetting()
+          })
+        }
+      })
     }
   },
   created () {
