@@ -297,6 +297,11 @@ export default {
       .group-vars {
         width: 100%;
       }
+      :deep(.el-input__inner) {
+        color: var(--primary-color-match-2);
+        font-size: 16px;
+        font-weight: bold;
+      }
     }
     // 安装按钮
     .install {

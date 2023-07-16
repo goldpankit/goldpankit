@@ -31,7 +31,13 @@
           </div>
         </div>
       </template>
-      <el-table :data="variable.options" v-sortable:config="{ data: variable.options, onChange: handleOptionSorted }">
+      <el-table
+        :data="variable.options"
+        v-sortable:config="{
+          data: variable.options,
+          onChange: handleOptionSorted
+        }"
+      >
         <el-table-column width="25px">
           <SortableButton/>
         </el-table-column>
