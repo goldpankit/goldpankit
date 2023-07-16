@@ -102,11 +102,14 @@ export default {
   methods: {
     // 选择变量
     selectVariable(variable, node) {
-      this.currentVariable = variable
-      this.currentGroup = null
-      if (node.level > 1) {
-        this.currentGroup = node.parent.data
-      }
+      this.currentVariable = null
+      this.$nextTick(() => {
+        this.currentVariable = variable
+        this.currentGroup = null
+        if (node.level > 1) {
+          this.currentGroup = node.parent.data
+        }
+      })
     },
     // 添加变量
     createVariable (group) {

@@ -2,7 +2,7 @@
   <ul v-if="options.length > 0" class="installer-checkbox">
     <li
       v-for="option in options" :key="option.value"
-      :class="{ selected: modelValue.findIndex(v => v === option.value) !== -1 }"
+      :class="{ selected: (modelValue == null || modelValue === '') ? false : modelValue.findIndex(v => v === option.value) !== -1 }"
       @click="handleSelect(option)"
     >{{option.label}}</li>
   </ul>

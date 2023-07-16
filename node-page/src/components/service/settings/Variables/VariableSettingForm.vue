@@ -13,7 +13,7 @@
       <el-input v-model="variable.name" @input="handleChange"/>
     </el-form-item>
     <el-form-item label="Input Type" required>
-      <InputTypeSelect v-model="variable.inputType" @change="handleChange"/>
+      <InputTypeSelect v-model="variable.inputType" @change="handleInputTypeChange"/>
     </el-form-item>
     <el-form-item
       v-if="variable.inputType === 'checkbox' || variable.inputType === 'radio'"
@@ -31,7 +31,10 @@
           </div>
         </div>
       </template>
-      <el-table :data="variable.options">
+      <el-table :data="variable.options" v-sortable:config="{ data: variable.options, onChange: handleOptionSorted }">
+        <el-table-column width="25px">
+          <SortableButton/>
+        </el-table-column>
         <el-table-column label="*Label" min-width="200px">
           <template #default="{ row }">
             <el-input v-model="row.label" type="textarea" :rows="1" @input="handleChange"/>
@@ -76,10 +79,11 @@
 import InputTypeSelect from "../../../common/InputTypeSelect.vue";
 import CompilerSelect from "../../../common/CompilerSelect.vue";
 import VariableInput from "../../installer/VariableInput.vue";
+import SortableButton from "../../../common/SortableButton.vue";
 
 export default {
   name: "VariableSettingForm",
-  components: {VariableInput, CompilerSelect, InputTypeSelect},
+  components: {SortableButton, VariableInput, CompilerSelect, InputTypeSelect},
   props: {
     // 当前设置的变量
     variable: {
@@ -109,6 +113,24 @@ export default {
     // 删除选项
     deleteOption (index) {
       this.variable.options.splice(index, 1)
+    },
+    // 处理输入类型变更
+    handleInputTypeChange () {
+      if (this.variable.inputType === 'checkbox') {
+        this.variable.defaultValue = [this.variable.defaultValue]
+      } else {
+        this.variable.defaultValue = this.variable.defaultValue instanceof Array ? this.variable.defaultValue[0] : this.variable.defaultValue
+      }
+      console.log('this.variable.defaultValue', this.variable.defaultValue)
+      this.handleChange()
+    },
+    // 处理选项排序
+    handleOptionSorted (newOptions) {
+      this.variable.options = []
+      this.$nextTick(() => {
+        this.variable.options = newOptions
+        this.handleChange()
+      })
     }
   }
 }
