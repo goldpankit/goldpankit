@@ -38,9 +38,9 @@
                 </div>
               </div>
             </template>
-            <el-table :data="currentNode.variables">
+            <el-table :data="currentNode.variables" v-sortable:config="{ data: currentNode.variables, onChange: handleSorted }">
               <el-table-column width="25px">
-                <span><el-icon><Grid /></el-icon></span>
+                <SortableButton/>
               </el-table-column>
               <el-table-column label="*Name" min-width="120px">
                 <template #default="{ row }">
@@ -81,10 +81,11 @@ import InputTypeSelect from "../../common/InputTypeSelect.vue";
 import {fetchFiles, saveFileSetting} from "../../../api/service";
 import {sortFiles} from "../../../utils/file";
 import Sortable from 'sortablejs'
+import SortableButton from "../../common/SortableButton.vue";
 
 export default {
   name: "SettingFiles",
-  components: {CompilerSelect, InputTypeSelect},
+  components: {SortableButton, CompilerSelect, InputTypeSelect},
   props: {
     space: {
       required: true
@@ -97,15 +98,6 @@ export default {
     return {
       currentNode: null,
       files: []
-    }
-  },
-  watch: {
-    currentNode () {
-      if (this.currentNode != null) {
-        this.$nextTick(() => {
-          this.initDraggable()
-        })
-      }
     }
   },
   methods: {
@@ -168,35 +160,12 @@ export default {
         (node.enableExpress != null && node.enableExpress !== '') ||
         (node.variables.length > 0)
     },
-    // 初始化行拖拽
-    initDraggable () {
-      const tbody = this.$el.querySelector('.el-table__body-wrapper tbody')
-      console.log('tbody', tbody)
-      const _this = this
-      Sortable.create(tbody, {
-        onEnd ({ newIndex, oldIndex}) {
-          console.log(newIndex, oldIndex)
-          if (newIndex === oldIndex) {
-            return
-          }
-          const originRow = _this.currentNode.variables[oldIndex]
-          // 从上拖到下
-          if (newIndex > oldIndex) {
-            _this.currentNode.variables.splice(newIndex + 1,0,originRow)
-            _this.currentNode.variables.splice(oldIndex,1)
-          }
-          // 从下拖到上
-          else {
-            _this.currentNode.variables.splice(oldIndex,1)
-            _this.currentNode.variables.splice(newIndex,0,originRow)
-          }
-          const newVariables = _this.currentNode.variables.slice(0)
-          _this.currentNode.variables = []
-          _this.$nextTick(() => {
-            _this.currentNode.variables = newVariables
-            _this.saveFileSetting()
-          })
-        }
+    // 排序后
+    handleSorted (newVariables) {
+      this.currentNode.variables = []
+      this.$nextTick(() => {
+        this.currentNode.variables = newVariables
+        this.saveFileSetting()
       })
     }
   },
