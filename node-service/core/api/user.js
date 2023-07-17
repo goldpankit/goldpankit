@@ -1,7 +1,8 @@
-const request = require('../utils/request')
+const request = require('../../utils/request.axios')
 
 module.exports = {
-    create (data) {
-        return request.post('/template/file/push', data)
+    // 退出登录
+    logout () {
+        return request.get('/usr/logout')
     }
 }

@@ -51,7 +51,16 @@ class Request {
         }
       }
       // 发起请求
-      request[this.#methods](url, req.body)
+      const config = {
+        headers: req.headers
+      }
+      let requestPromise = null
+      if (this.#methods === 'get') {
+        requestPromise = request[this.#methods](url, config)
+      } else {
+        requestPromise = request[this.#methods](url, req.body, config)
+      }
+      requestPromise
         .then(data => {
           res.send(this.#buildSuccess(data))
         })

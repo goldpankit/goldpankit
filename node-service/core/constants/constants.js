@@ -43,12 +43,15 @@ module.exports = {
   LOCAL_CONFIG_FILE: `data.json`,
   // 本地全局配置内容
   LOCAL_CONFIG_FILE_CONTENT: {
+    // 令牌
+    tokens: [],
     // 服务列表
     services: [
       // {
-      //   id: 1, // 服务ID
-      //   dir: '' // 本地存放路径
-      // }
+      //   "space": "eva",
+      //   "name": "单表接口",
+      //   "codespace": "/Users/caesar/adjustrd/goldpankit/spaces/eva/eva-server-table-crud"
+      // },
     ],
     // 项目列表
     projects: [],

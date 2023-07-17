@@ -40,6 +40,10 @@ class ArrayCache {
     const config = this.#read()
     return config[this.#cacheKey][this.getIndex.apply(this, [...arguments])]
   }
+  // 获取所有数据
+  getAll () {
+    return this.#read()[this.#cacheKey]
+  }
   // 获取坐标
   getIndex() {
     const config = this.#read()
@@ -66,7 +70,7 @@ class ArrayCache {
   search (pageWrap = null) {
     const config = this.#read()
     const datalist = config[this.#cacheKey].reverse()
-    if (pageWrap != null) {
+    if (pageWrap != null && JSON.stringify(pageWrap) !== '{}') {
       const startIndex = (pageWrap.pageIndex - 1) * pageWrap.capacity
       const endIndex = startIndex + pageWrap.capacity
       return {
@@ -99,6 +103,11 @@ class ArrayCache {
       return
     }
     list.splice(index, 1)
+    this.#rewrite(config)
+  }
+  clear () {
+    const config = this.#read()
+    config[this.#cacheKey] = []
     this.#rewrite(config)
   }
   // 检查配置文件
@@ -148,6 +157,7 @@ module.exports = {
   get (key) {
     return CACHE[key]
   },
+  tokens: new ArrayCache('tokens', ['value']),
   services: new ArrayCache('services', ['space', 'name']),
   projects: new ArrayCache('projects', 'id'),
   databases: new ArrayCache('databases', 'id'),
