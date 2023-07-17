@@ -5,10 +5,9 @@
     <el-descriptions-item label="Port">{{database.port}}</el-descriptions-item>
     <el-descriptions-item label="Schema">{{database.schema}}</el-descriptions-item>
     <el-descriptions-item label="Username">{{database.username}}</el-descriptions-item>
-    <el-descriptions-item label="Password">{{database.password}}</el-descriptions-item>
+    <el-descriptions-item label="Password">******</el-descriptions-item>
     <template #extra>
       <ul class="toolbar">
-        <li><el-button size="small" @click="testConnect">Test Connection</el-button></li>
         <li><el-button size="small" @click="$router.push({ name: 'DatabaseModels', params: { database: database.name } })">Query Models</el-button></li>
         <li><el-button size="small" icon="Edit" @click="$emit('edit')">Edit</el-button></li>
         <li><el-button size="small" type="danger" text @click="$emit('delete')">Delete</el-button></li>
@@ -18,7 +17,6 @@
 </template>
 
 <script>
-import {testConnect} from "@/api/database.util";
 
 export default {
   name: "DatabaseView",
@@ -28,22 +26,6 @@ export default {
     }
   },
   methods: {
-    // 测试连接
-    testConnect () {
-      testConnect({
-        host: this.database.host,
-        port: this.database.port,
-        user: this.database.username,
-        password: this.database.password,
-        database: this.database.schema
-      })
-        .then(data => {
-          console.log('data', data)
-        })
-        .catch(e => {
-          console.log('e', e)
-        })
-    }
   }
 }
 </script>

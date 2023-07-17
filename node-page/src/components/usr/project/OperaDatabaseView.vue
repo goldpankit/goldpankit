@@ -5,10 +5,7 @@
         <el-input v-model="form.name"/>
       </el-form-item>
       <el-form-item label="Database Type" required>
-        <el-select v-model="form.type">
-          <el-option value="mysql" label="MySQL"/>
-          <el-option value="oracle" label="Oracle"/>
-        </el-select>
+        <DatabaseSelect v-model="form.type" :multiple="false"/>
       </el-form-item>
       <el-form-item label="Host" required>
         <el-input v-model="form.host"/>
@@ -23,9 +20,9 @@
         <el-input v-model="form.username"/>
       </el-form-item>
       <el-form-item label="Password" required>
-        <el-input v-model="form.password"/>
+        <el-input type="password" v-model="form.password" show-password/>
       </el-form-item>
-      <el-form-item label="URL" class="item-url" required>
+      <el-form-item v-if="form.type === 'mysql'" label="URL" class="item-url" required>
         <template #label>
           <div>
             <label>URL</label>
@@ -48,9 +45,11 @@
 <script>
 import {create, updateById} from "../../../api/database";
 import {testConnect} from "../../../api/database.util";
+import DatabaseSelect from "../../database/DatabaseSelect.vue";
 
 export default {
   name: "OperaDatabaseView",
+  components: {DatabaseSelect},
   props: {
     database: {}
   },

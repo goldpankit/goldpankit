@@ -1,5 +1,5 @@
 <template>
-  <el-select class="database-select" :multiple="true">
+  <el-select class="database-select" :multiple="multiple">
     <el-option value="mysql" label="MySQL"/>
 <!--    <el-option value="oracle" label="Oracle"/>-->
   </el-select>
@@ -7,7 +7,12 @@
 
 <script>
 export default {
-  name: "DatabaseSelect"
+  name: "DatabaseSelect",
+  props: {
+    multiple: {
+      default: true
+    }
+  }
 }
 </script>
 
