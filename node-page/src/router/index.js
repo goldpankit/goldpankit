@@ -87,7 +87,7 @@ const router = createRouter({
         {
           path: '/spaces',
           name: 'PublicSpaces',
-          component: () => import('@/views/space/list.vue')
+          component: () => import('@/views/spaces.vue')
         },
         {
           path: '/databases',

@@ -11,7 +11,7 @@
           <h2 v-else>{{userInfo.nickname}}</h2>
           <ul v-if="userInfo != null">
             <li><el-button @click.stop="$router.push({ name: 'UserProfile' })" icon="UserFilled">Profile</el-button></li>
-            <li><el-button @click.stop="doLogout">Logout</el-button></li>
+            <li><el-button @click.stop="doLogout" :disabled="logoutData.isWorking">Logout</el-button></li>
           </ul>
         </a>
       </div>
@@ -42,18 +42,32 @@ import {mapActions, mapState} from "vuex";
 
 export default {
   components: {UserProjects},
+  data () {
+    return {
+      logoutData: {
+        isWorking: false
+      }
+    }
+  },
   computed: {
     ...mapState(['userInfo'])
   },
   methods: {
     ...mapActions(['logout']),
     doLogout () {
+      if (this.logoutData.isWorking) {
+        return
+      }
+      this.logoutData.isWorking = true
       this.logout()
-        .then(data => {
+        .then(() => {
           console.log('退出成功')
         })
         .catch(e => {
           console.log('e', e)
+        })
+        .finally(() => {
+          this.logoutData.isWorking = false
         })
     }
   }

@@ -4,7 +4,7 @@
     <el-button type="important" @click="$router.push({ name: 'SignUp' })">Sign Up</el-button>
   </template>
   <template v-else>
-    <div class="user-info">
+    <div class="user-info" @click="$router.push({ name: 'Index'})">
       <img
         v-if="userInfo.avatar == null || userInfo.avatar === ''"
         src="/images/avatar/1.png"
@@ -32,6 +32,7 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
+  cursor: pointer;
   img {
     width: 30px;
     height: 30px;

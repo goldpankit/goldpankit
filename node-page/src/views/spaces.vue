@@ -53,9 +53,9 @@
 </template>
 
 <script>
-import {search} from "../../api/service.space";
-import Pagination from "../../components/common/Pagination.vue";
-import Empty from "../../components/common/Empty.vue";
+import {search} from "../api/service.space";
+import Pagination from "../components/common/Pagination.vue";
+import Empty from "../components/common/Empty.vue";
 
 export default {
   components: {Empty, Pagination},

@@ -11,7 +11,7 @@
             <label>Password</label>
             <router-link to="#">Forgot Password</router-link>
           </template>
-          <el-input v-model="form.password" show-password type="password" size="large"/>
+          <el-input v-model="form.password" show-password type="password" size="large" @keypress.enter.native="login"/>
         </el-form-item>
       </el-form>
       <div class="login-box">
