@@ -10,18 +10,14 @@
       </div>
       <ul class="opera">
         <li>
-          <ProjectSelect :model-value="currentProject" @change="setCurrentProject"/>
-        </li>
-        <li>
           <DatabaseSelect :model-value="currentDatabase" @change="setCurrentDatabase"/>
         </li>
-        <li class="bean-wrap" @click="$router.push({ name: 'RechargeBean' })">
+        <li v-if="userInfo != null" class="bean-wrap" @click="$router.push({ name: 'RechargeBean' })">
           <img src="/images/bean.png">
           <em>3201</em>
         </li>
         <li>
-          <el-button @click="$router.push({ name: 'SignIn' })">Sign In</el-button>
-          <el-button type="important" @click="$router.push({ name: 'SignUp' })">Sign Up</el-button>
+          <LoginView/>
         </li>
       </ul>
     </header>
@@ -38,12 +34,13 @@ import ProjectDatabasesSelect from "../components/usr/project/ProjectDatabasesSe
 import DatabaseSelect from "../components/database/DatabaseSelect.vue";
 import ProjectSelect from "../components/usr/project/ProjectSelect.vue";
 import AppLayout from "./AppLayout.vue";
+import LoginView from "../components/header/LoginView.vue";
 
 export default {
   name: 'DefaultLayout',
-  components: {AppLayout, ProjectSelect, DatabaseSelect, ProjectDatabasesSelect, UserProjects},
+  components: {LoginView, AppLayout, ProjectSelect, DatabaseSelect, ProjectDatabasesSelect, UserProjects},
   computed: {
-    ...mapState(['currentProject', 'currentDatabase'])
+    ...mapState(['currentProject', 'currentDatabase', 'userInfo'])
   },
   methods: {
     ...mapMutations(['setCurrentProject', 'setCurrentDatabase'])

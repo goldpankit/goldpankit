@@ -1,5 +1,5 @@
 <template>
-  <AppLayout class="non-project-layout">
+  <AppLayout class="none-layout">
     <header>
       <div class="logo-wrap" @click="$router.push({ name: 'PublicSpaces' })">
         <h1>Gold Pan Kit</h1>
@@ -8,15 +8,6 @@
           <em></em>
         </div>
       </div>
-      <ul class="opera">
-        <li v-if="userInfo != null" class="bean-wrap" @click="$router.push({ name: 'RechargeBean' })">
-          <img src="/images/bean.png">
-          <em>3201</em>
-        </li>
-        <li>
-          <LoginView/>
-        </li>
-      </ul>
     </header>
     <main>
       <router-view/>
@@ -29,19 +20,15 @@ import UserProjects from "../components/usr/project/UserProjects.vue";
 import ProjectDatabasesSelect from "../components/usr/project/ProjectDatabasesSelect.vue";
 import AppLayout from "./AppLayout.vue";
 import LoginView from "../components/header/LoginView.vue";
-import {mapState} from "vuex";
 
 export default {
-  name: 'NonProjectLayout',
-  components: {LoginView, AppLayout, ProjectDatabasesSelect, UserProjects},
-  computed: {
-    ...mapState(['userInfo'])
-  }
+  name: 'NoneLayout',
+  components: {LoginView, AppLayout, ProjectDatabasesSelect, UserProjects}
 }
 </script>
 
 <style scoped lang="scss">
-.non-project-layout {
+.none-layout {
   height: 100%;
   overflow: hidden;
   display: flex;

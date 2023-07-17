@@ -3,6 +3,7 @@ import DefaultLayout from '../layouts/DefaultLayout.vue'
 import PCDesign from '../views/ui/design/pc.vue'
 import UserLayout from "../layouts/UserLayout.vue";
 import NonProjectLayout from "../layouts/NonProjectLayout.vue";
+import NoneLayout from "../layouts/NoneLayout.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -94,6 +95,23 @@ const router = createRouter({
           name: 'Databases',
           component: () => import('@/views/database/list.vue')
         },
+      ]
+    },
+    {
+      path: '/NoneLayout',
+      name: 'NoneLayout',
+      component: NoneLayout,
+      children: [
+        {
+          path: '/signin',
+          name: 'SignIn',
+          component: () => import('@/views/signin.vue')
+        },
+        {
+          path: '/signup',
+          name: 'SignUp',
+          component: () => import('@/views/signup.vue')
+        }
       ]
     },
     {

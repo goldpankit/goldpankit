@@ -16,8 +16,7 @@
     </div>
     <div class="install">
       <el-button type="important" @click="$emit('install', currentVersion)">
-        <h5>INSTALL{{currentProject == null ? '' : ' to project ' + currentProject.name}}</h5>
-        <p v-if="currentProject == null">Please select a project for install the framework.</p>
+        <h5>INSTALL</h5>
       </el-button>
     </div>
     <div class="content-wrap">
