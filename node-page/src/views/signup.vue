@@ -37,7 +37,7 @@
     </div>
     <div class="have-an-account">
       <p>Already have an account?</p>
-      <router-link :to="{ name: 'Login' }">Sign In</router-link>
+      <router-link :to="{ name: 'SignIn' }">Sign In</router-link>
     </div>
   </div>
 </template>
@@ -77,6 +77,7 @@ export default {
           regisByMobile(this.form)
             .then(() => {
               this.$message.info('Register successful.')
+              this.$router.push({ name: 'SignIn'})
             })
             .catch(e => {
               console.log('e', e)

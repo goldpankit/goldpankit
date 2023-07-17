@@ -20,7 +20,7 @@
           <em>3201</em>
         </li>
         <li>
-          <el-button @click="$router.push({ name: 'Login' })">Sign In</el-button>
+          <el-button @click="$router.push({ name: 'SignIn' })">Sign In</el-button>
           <el-button type="important" @click="$router.push({ name: 'SignUp' })">Sign Up</el-button>
         </li>
       </ul>
