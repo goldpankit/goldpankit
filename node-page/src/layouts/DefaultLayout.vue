@@ -9,9 +9,6 @@
         </div>
       </div>
       <ul class="opera">
-        <li>
-          <DatabaseSelect :model-value="currentDatabase" @change="setCurrentDatabase"/>
-        </li>
         <li v-if="userInfo != null" class="bean-wrap" @click="$router.push({ name: 'RechargeBean' })">
           <img src="/images/bean.png">
           <em>3201</em>
@@ -28,9 +25,7 @@
 </template>
 
 <script>
-import {mapMutations, mapState} from 'vuex'
-import UserProjects from "../components/usr/project/UserProjects.vue";
-import ProjectDatabasesSelect from "../components/usr/project/ProjectDatabasesSelect.vue";
+import { mapState} from 'vuex'
 import DatabaseSelect from "../components/database/DatabaseSelect.vue";
 import ProjectSelect from "../components/usr/project/ProjectSelect.vue";
 import AppLayout from "./AppLayout.vue";
@@ -38,12 +33,9 @@ import LoginView from "../components/header/LoginView.vue";
 
 export default {
   name: 'DefaultLayout',
-  components: {LoginView, AppLayout, ProjectSelect, DatabaseSelect, ProjectDatabasesSelect, UserProjects},
+  components: {LoginView, AppLayout, ProjectSelect, DatabaseSelect },
   computed: {
-    ...mapState(['currentProject', 'currentDatabase', 'userInfo'])
-  },
-  methods: {
-    ...mapMutations(['setCurrentProject', 'setCurrentDatabase'])
+    ...mapState(['userInfo'])
   }
 }
 </script>

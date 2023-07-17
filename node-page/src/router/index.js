@@ -1,8 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import DefaultLayout from '../layouts/DefaultLayout.vue'
 import PCDesign from '../views/ui/design/pc.vue'
-import UserLayout from "../layouts/UserLayout.vue";
-import NonProjectLayout from "../layouts/NonProjectLayout.vue";
 import NoneLayout from "../layouts/NoneLayout.vue";
 
 const router = createRouter({
@@ -18,6 +16,31 @@ const router = createRouter({
       name: 'DefaultLayout',
       component: DefaultLayout,
       children: [
+        {
+          path: '/',
+          name: 'Index',
+          component: () => import('@/views/index.vue')
+        },
+        {
+          path: '/signin',
+          name: 'SignIn',
+          component: () => import('@/views/signin.vue')
+        },
+        {
+          path: '/signup',
+          name: 'SignUp',
+          component: () => import('@/views/signup.vue')
+        },
+        {
+          path: '/spaces',
+          name: 'PublicSpaces',
+          component: () => import('@/views/spaces.vue')
+        },
+        {
+          path: '/databases',
+          name: 'Databases',
+          component: () => import('@/views/database/list.vue')
+        },
         {
           path: '/space/:name',
           name: 'SpaceDetail',
@@ -62,39 +85,12 @@ const router = createRouter({
           path: '/usr/service/settings',
           name: 'ServiceSettings',
           component: () => import('@/views/usr/service/settings.vue')
+        },
+        {
+          path: '/usr/profile',
+          name: 'UserProfile',
+          component: () => import('@/views/usr/profile/profile.vue')
         }
-      ]
-    },
-    {
-      path: '/NonProjectLayout',
-      name: 'NonProjectLayout',
-      component: NonProjectLayout,
-      children: [
-        {
-          path: '/',
-          name: 'Index',
-          component: () => import('@/views/index.vue')
-        },
-        {
-          path: '/signin',
-          name: 'SignIn',
-          component: () => import('@/views/signin.vue')
-        },
-        {
-          path: '/signup',
-          name: 'SignUp',
-          component: () => import('@/views/signup.vue')
-        },
-        {
-          path: '/spaces',
-          name: 'PublicSpaces',
-          component: () => import('@/views/spaces.vue')
-        },
-        {
-          path: '/databases',
-          name: 'Databases',
-          component: () => import('@/views/database/list.vue')
-        },
       ]
     },
     {
@@ -111,18 +107,6 @@ const router = createRouter({
           path: '/signup',
           name: 'SignUp',
           component: () => import('@/views/signup.vue')
-        }
-      ]
-    },
-    {
-      path: '/UserLayout',
-      name: 'UserLayout',
-      component: UserLayout,
-      children: [
-        {
-          path: '/usr/profile',
-          name: 'UserProfile',
-          component: () => import('@/views/usr/profile/profile.vue')
         }
       ]
     }
