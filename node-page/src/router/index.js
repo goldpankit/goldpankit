@@ -38,11 +38,6 @@ const router = createRouter({
           component: () => import('@/views/usr/project/create.vue')
         },
         {
-          path: '/usr/project/databases',
-          name: 'ProjectDatabases',
-          component: () => import('@/views/usr/project/databases.vue')
-        },
-        {
           path: '/usr/project/:database/models',
           name: 'DatabaseModels',
           component: () => import('@/views/usr/project/database-query-models.vue')
@@ -93,7 +88,12 @@ const router = createRouter({
           path: '/spaces',
           name: 'PublicSpaces',
           component: () => import('@/views/space/list.vue')
-        }
+        },
+        {
+          path: '/databases',
+          name: 'Databases',
+          component: () => import('@/views/database/list.vue')
+        },
       ]
     },
     {

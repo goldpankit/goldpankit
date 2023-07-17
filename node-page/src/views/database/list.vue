@@ -13,24 +13,24 @@
                 <el-button type="primary" @click="add">Add New Database</el-button>
               </li>
             </ul>
-            <ul class="database-list">
-              <li v-for="(db,index) in databases" :key="db.name">
+            <ul v-if="databases.length > 0" class="database-list">
+              <li v-for="db in databases" :key="db.name">
                 <DatabaseView
                   :database="db"
                   @edit="edit(db)"
-                  @delete="deleteDatabase(index)"
+                  @delete="deleteDatabase(db.id)"
                   @connect="connect(db)"
                 />
               </li>
             </ul>
+            <Empty v-else description="No Databases"/>
           </div>
         </InnerRouterView>
         <InnerRouterView name="operaDatabase" :title="operaDbTitle">
-<!--          <OperaDatabaseView-->
-<!--            :project="project"-->
-<!--            :database="currentDatabase"-->
-<!--            @success="$refs.window.back()"-->
-<!--          />-->
+          <OperaDatabaseView
+            :database="currentDatabase"
+            @success="$refs.window.back()"
+          />
         </InnerRouterView>
       </InnerRouterViewWindow>
     </div>
@@ -38,18 +38,24 @@
 </template>
 
 <script>
-import InnerRouterView from "../../../components/common/InnerRouterView/InnerRouterView.vue";
-import InnerRouterViewWindow from "../../../components/common/InnerRouterView/InnerRouterViewWindow.vue";
-import OperaDatabaseView from "../../../components/usr/project/OperaDatabaseView.vue";
-import DatabaseView from "../../../components/usr/project/DatabaseView.vue";
-import {fetchConfigById, saveConfig} from "../../../api/user.project";
+import InnerRouterView from "@/components/common/InnerRouterView/InnerRouterView.vue";
+import InnerRouterViewWindow from "@/components/common/InnerRouterView/InnerRouterViewWindow.vue";
+import OperaDatabaseView from "@/components/usr/project/OperaDatabaseView.vue";
+import DatabaseView from "@/components/usr/project/DatabaseView.vue";
+import {deleteById, search} from "../../api/database";
+import Empty from "../../components/common/Empty.vue";
 
 export default {
-  components: {DatabaseView, OperaDatabaseView, InnerRouterViewWindow, InnerRouterView},
+  components: {Empty, DatabaseView, OperaDatabaseView, InnerRouterViewWindow, InnerRouterView},
   data () {
     return {
-      databases: null,
-      currentDatabase: null
+      databases: [],
+      currentDatabase: null,
+      pagination: {
+        pageIndex: 1,
+        capacity: 10,
+        total: 0
+      }
     }
   },
   computed: {
@@ -61,6 +67,16 @@ export default {
     }
   },
   methods: {
+    // 搜索
+    search () {
+      search (this.pagination)
+        .then(data => {
+          this.databases = data.records
+        })
+        .catch(e => {
+          console.log('e', e)
+        })
+    },
     // 添加数据库
     add () {
       this.currentDatabase = null
@@ -72,9 +88,18 @@ export default {
       this.$refs.window.push('operaDatabase')
     },
     // 删除数据库
-    deleteDatabase (index) {
-      this.project.databases.splice(index, 1)
-      this.__save()
+    deleteDatabase (id) {
+      this.$model.deleteConfirm(`Do you want to delete the database?`)
+        .then(() => {
+          deleteById (id)
+            .then(() => {
+              this.search()
+            })
+            .catch(e => {
+              console.log('e', e)
+            })
+        })
+        .catch(() => {})
     },
     // 测试连接
     connect (db) {},
@@ -93,6 +118,7 @@ export default {
     }
   },
   created () {
+    this.search()
   }
 }
 </script>

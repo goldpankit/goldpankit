@@ -19,7 +19,7 @@
           <h2>Create New Space</h2>
           <p>Create a new service space and start a new journey of research and development.</p>
         </router-link>
-        <router-link to="#" class="module database">
+        <router-link :to="{ name: 'Databases' }" class="module database">
           <h2>Databases</h2>
           <p>Connect and save your database connection information to help you get the code you want more easily.</p>
         </router-link>

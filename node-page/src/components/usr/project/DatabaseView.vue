@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import {testConnect} from "../../../api/db";
+import {testConnect} from "@/api/database.util";
 
 export default {
   name: "DatabaseView",
