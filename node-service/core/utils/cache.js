@@ -63,9 +63,18 @@ class ArrayCache {
     return -1
   }
   // 搜索
-  search () {
+  search (pageWrap = null) {
     const config = this.#read()
-    return config[this.#cacheKey]
+    const datalist = config[this.#cacheKey].reverse()
+    if (pageWrap != null) {
+      const startIndex = (pageWrap.pageIndex - 1) * pageWrap.capacity
+      const endIndex = startIndex + pageWrap.capacity
+      return {
+        total: datalist.length,
+        records: datalist.splice(startIndex, endIndex)
+      }
+    }
+    return datalist
   }
   // 删除
   remove () {
@@ -105,6 +114,13 @@ class ArrayCache {
       const content = JSON.stringify(Const.LOCAL_CONFIG_FILE_CONTENT, null, 2)
       fs.createFile(configFilePath, content, true)
     }
+    // 存在则同步配置结构
+    else {
+      const defaultConfig = JSON.parse(JSON.stringify(Const.LOCAL_CONFIG_FILE_CONTENT))
+      const config = this.#read()
+      Object.assign(defaultConfig, config)
+      fs.createFile(this.#getConfigFile(), fs.toJSONFileString(defaultConfig), true)
+    }
   }
   // 读取配置文件
   #read () {
@@ -134,4 +150,5 @@ module.exports = {
   },
   services: new ArrayCache('services', ['space', 'name']),
   projects: new ArrayCache('projects', 'id'),
+  databases: new ArrayCache('databases', 'id'),
 }

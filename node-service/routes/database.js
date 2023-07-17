@@ -1,21 +1,33 @@
 const request = require('../utils/request.define')
-var express = require('express');
-var router = express.Router();
-const multer = require('multer');
-const upload = multer();
-const multiparty = require("multiparty")
+const database = require('../core/database')
 
-// 上传图片
-router.post('/upload/image', (req, res) => {
-  let form = new multiparty.Form()
-  form.parse(req, (err, formData, imgData) => {
-    console.log('imgData', imgData)
+// 查询分页
+request
+  .post('/database/search')
+  .data(req => {
+    return database.search(req.body)
   })
-  // const file = req.file;
-  // console.log('file', req)
-  // const formData = new FormData()
-  // formData.set('fil')
-  // request.post('/upload/image',)
-})
 
-module.exports = router
+// 新建
+request
+  .post('/database/create')
+  .data(req => {
+    return database.create(req.body)
+  })
+
+// 编辑
+request
+  .post('/database/updateById')
+  .data(req => {
+    return database.updateById(req.body)
+  })
+
+// 删除
+request
+  .get('/database/delete/:databaseId')
+  .data(req => {
+    console.log('req', req)
+    return database.deleteById(req.params.databaseId)
+  })
+
+module.exports = request.router
