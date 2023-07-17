@@ -1,5 +1,6 @@
 import Vuex from 'vuex'
 import {getToken} from "../api/user.token";
+import {getLoginInfo, logout} from "../api/user.login";
 // 获取本地项目
 let currentProject = null
 const currentProjectStr = window.localStorage.getItem('CURRENT_PROJECT')
@@ -10,6 +11,7 @@ if (currentProjectStr != null) {
 let currentDatabase = window.localStorage.getItem('CURRENT_DATABASE')
 export default new Vuex.Store({
   state: {
+    userInfo: null,
     currentProject,
     currentDatabase,
     help: {
@@ -19,6 +21,13 @@ export default new Vuex.Store({
   mutations: {
     setHelpCode (state, value) {
       state.help.code = value
+    },
+    setUserInfo (state, value) {
+      if (state.userInfo == null || value == null) {
+        state.userInfo = value
+        return
+      }
+      Object.assign(value, state.userInfo)
     },
     setCurrentProject(state, project) {
       state.currentProject = project
@@ -30,13 +39,41 @@ export default new Vuex.Store({
     }
   },
   actions: {
+    // 退出登录
+    logout ({commit}) {
+      return new Promise((resolve, reject) => {
+        logout()
+          .then(() => {
+            commit('setUserInfo', null)
+            resolve()
+          })
+          .catch(e => {
+            reject()
+          })
+      })
+    },
     // 初始化登录令牌
-    initToken () {
+    initToken ({commit, dispatch}) {
       getToken()
         .then(data => {
           if (data != null) {
             document.cookie = `x-kit-token=${data.value};`
           }
+          return data
+        })
+        .then(token => {
+          if (token == null) {
+            return
+          }
+          // 获取登录信息
+          getLoginInfo()
+            .then(userInfo => {
+              commit('setUserInfo', userInfo)
+              if (userInfo == null) {
+                dispatch('logout')
+              }
+            })
+            .catch(() => {})
         })
     }
   },

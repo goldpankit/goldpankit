@@ -67,7 +67,7 @@
         <div class="info">
           <div class="user-profile">
             <div class="user-info">
-              <img src="/avatar.png">
+              <img src="/images/avatar/avatar.png">
               <h4>Caesar Liu</h4>
             </div>
             <p class="description">Kit联合创始人，从业10年，精通Java、Vue等技术栈。</p>

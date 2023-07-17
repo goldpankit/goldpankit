@@ -57,7 +57,11 @@ export default {
               return data
             })
             .then(token => {
+              // 调用接口，将令牌存储在用户设备文件系统中，便于下次自动授权
               save(token)
+                .then(() => {
+                  window.location.href = '/'
+                })
                 .catch(e => {
                   console.log('e', e)
                 })

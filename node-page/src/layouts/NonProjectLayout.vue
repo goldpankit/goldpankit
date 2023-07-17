@@ -14,8 +14,7 @@
           <em>3201</em>
         </li>
         <li>
-          <el-button @click="$router.push({ name: 'Login' })">Sign In</el-button>
-          <el-button type="important" @click="$router.push({ name: 'SignUp' })">Sign Up</el-button>
+          <LoginView/>
         </li>
       </ul>
     </header>
@@ -29,10 +28,11 @@
 import UserProjects from "../components/usr/project/UserProjects.vue";
 import ProjectDatabasesSelect from "../components/usr/project/ProjectDatabasesSelect.vue";
 import AppLayout from "./AppLayout.vue";
+import LoginView from "../components/header/LoginView.vue";
 
 export default {
   name: 'NonProjectLayout',
-  components: {AppLayout, ProjectDatabasesSelect, UserProjects}
+  components: {LoginView, AppLayout, ProjectDatabasesSelect, UserProjects}
 }
 </script>
 

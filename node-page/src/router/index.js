@@ -13,7 +13,7 @@ const router = createRouter({
       component: PCDesign
     },
     {
-      path: '/',
+      path: '/DefaultLayout',
       name: 'DefaultLayout',
       component: DefaultLayout,
       children: [
@@ -65,7 +65,7 @@ const router = createRouter({
       ]
     },
     {
-      path: '',
+      path: '/NonProjectLayout',
       name: 'NonProjectLayout',
       component: NonProjectLayout,
       children: [
@@ -97,7 +97,7 @@ const router = createRouter({
       ]
     },
     {
-      path: '/usr',
+      path: '/UserLayout',
       name: 'UserLayout',
       component: UserLayout,
       children: [

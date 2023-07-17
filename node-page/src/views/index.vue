@@ -6,9 +6,14 @@
           <h2>Public Spaces</h2>
           <p>For all technical teams, you can click in to view all the service space, select and open the service space you need.</p>
         </router-link>
-        <router-link :to="{ name: 'UserProfile' }" class="module profile">
-          <h2>Profile</h2>
-        </router-link>
+        <a @click="$router.push({ name: 'UserProfile' })" class="module profile">
+          <h2 v-if="userInfo == null">Profile</h2>
+          <h2 v-else>{{userInfo.nickname}}</h2>
+          <ul v-if="userInfo != null">
+            <li><el-button @click.stop="$router.push({ name: 'UserProfile' })" icon="UserFilled">Profile</el-button></li>
+            <li><el-button @click.stop="doLogout">Logout</el-button></li>
+          </ul>
+        </a>
       </div>
       <router-link class="module private-space" :to="{ name: 'UserSpaces' }">
         <h2>Private service spaces</h2>
@@ -33,9 +38,25 @@
 
 <script>
 import UserProjects from "../components/usr/project/UserProjects.vue";
+import {mapActions, mapState} from "vuex";
 
 export default {
-  components: {UserProjects}
+  components: {UserProjects},
+  computed: {
+    ...mapState(['userInfo'])
+  },
+  methods: {
+    ...mapActions(['logout']),
+    doLogout () {
+      this.logout()
+        .then(data => {
+          console.log('退出成功')
+        })
+        .catch(e => {
+          console.log('e', e)
+        })
+    }
+  }
 }
 </script>
 
@@ -88,6 +109,22 @@ export default {
     flex-shrink: 0;
     h2 {
       color: #555;
+    }
+    ul {
+      display: flex;
+      margin-top: 10px;
+      li {
+        margin-right: 10px;
+        &:nth-of-type(1) .el-button {
+          background: #cfe4ff;
+        }
+        &:nth-of-type(2) .el-button {
+          background: #ffcfec;
+        }
+        .el-button {
+          border: 0 !important;
+        }
+      }
     }
   }
   // 公共空间

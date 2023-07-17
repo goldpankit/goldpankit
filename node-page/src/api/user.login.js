@@ -4,3 +4,13 @@ import request from "../utils/request";
 export function loginByPassword (data) {
   return request.post('/usr/login/password', data)
 }
+
+// 获取登录信息
+export function getLoginInfo (data) {
+  return request.get('/usr/login/info')
+}
+
+// 退出登录
+export function logout () {
+  return request.get('/usr/logout')
+}
