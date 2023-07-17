@@ -1,4 +1,5 @@
 import Vuex from 'vuex'
+import {getToken} from "../api/user.token";
 // 获取本地项目
 let currentProject = null
 const currentProjectStr = window.localStorage.getItem('CURRENT_PROJECT')
@@ -28,6 +29,16 @@ export default new Vuex.Store({
       window.localStorage.setItem('CURRENT_DATABASE', database)
     }
   },
-  actions: {},
+  actions: {
+    // 初始化登录令牌
+    initToken () {
+      getToken()
+        .then(data => {
+          if (data != null) {
+            document.cookie = `x-kit-token=${data.value};`
+          }
+        })
+    }
+  },
   getters: {}
 })

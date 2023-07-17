@@ -1,20 +1,10 @@
 <template>
-  <div class="app-layout">
-    <header>
-      <h1>Gold Pan Kit</h1>
-      <div class="buts">
-<!--        <el-button>Databases</el-button>-->
-<!--        <el-button>Create Factory</el-button>-->
-<!--        <el-button>Create Template</el-button>-->
-      </div>
-    </header>
-    <main>
-      <router-view/>
-    </main>
-  </div>
+  <router-view/>
 </template>
 
 <script>
+import {mapActions} from "vuex";
+
 export default {
   name: 'AppLayout',
   props: {
@@ -22,6 +12,12 @@ export default {
       type: Boolean,
       default: true
     }
+  },
+  methods: {
+    ...mapActions(['initToken'])
+  },
+  created () {
+    this.initToken()
   }
 }
 </script>

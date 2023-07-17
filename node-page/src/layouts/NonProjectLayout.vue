@@ -1,5 +1,5 @@
 <template>
-  <div class="non-project-layout">
+  <AppLayout class="non-project-layout">
     <header>
       <div class="logo-wrap" @click="$router.push({ name: 'Index' })">
         <h1>Gold Pan Kit</h1>
@@ -22,16 +22,17 @@
     <main>
       <router-view/>
     </main>
-  </div>
+  </AppLayout>
 </template>
 
 <script>
 import UserProjects from "../components/usr/project/UserProjects.vue";
 import ProjectDatabasesSelect from "../components/usr/project/ProjectDatabasesSelect.vue";
+import AppLayout from "./AppLayout.vue";
 
 export default {
   name: 'NonProjectLayout',
-  components: {ProjectDatabasesSelect, UserProjects}
+  components: {AppLayout, ProjectDatabasesSelect, UserProjects}
 }
 </script>
 

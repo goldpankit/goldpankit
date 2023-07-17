@@ -29,6 +29,7 @@
 <script>
 
 import {loginByPassword} from "../api/user.login";
+import {save} from "../api/user.token";
 
 export default {
   data () {
@@ -53,7 +54,13 @@ export default {
           this.loginData.isWorking = true
           loginByPassword (this.form)
             .then(data => {
-              console.log('登录成功', data)
+              return data
+            })
+            .then(token => {
+              save(token)
+                .catch(e => {
+                  console.log('e', e)
+                })
             })
             .catch(e => {
               console.log('e', e)

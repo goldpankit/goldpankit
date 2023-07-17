@@ -1,5 +1,5 @@
 <template>
-  <div class="default-layout">
+  <AppLayout class="default-layout">
     <header>
       <div class="logo-wrap" @click="$router.push({ name: 'Index' })">
         <h1>Gold Pan Kit</h1>
@@ -28,7 +28,7 @@
     <main>
       <router-view/>
     </main>
-  </div>
+  </AppLayout>
 </template>
 
 <script>
@@ -37,10 +37,11 @@ import UserProjects from "../components/usr/project/UserProjects.vue";
 import ProjectDatabasesSelect from "../components/usr/project/ProjectDatabasesSelect.vue";
 import DatabaseSelect from "../components/database/DatabaseSelect.vue";
 import ProjectSelect from "../components/usr/project/ProjectSelect.vue";
+import AppLayout from "./AppLayout.vue";
 
 export default {
   name: 'DefaultLayout',
-  components: {ProjectSelect, DatabaseSelect, ProjectDatabasesSelect, UserProjects},
+  components: {AppLayout, ProjectSelect, DatabaseSelect, ProjectDatabasesSelect, UserProjects},
   computed: {
     ...mapState(['currentProject', 'currentDatabase'])
   },
