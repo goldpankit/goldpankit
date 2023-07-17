@@ -24,12 +24,13 @@
               </li>
             </ul>
             <Empty v-else description="No Databases"/>
+            <Pagination :pagination="pagination"/>
           </div>
         </InnerRouterView>
         <InnerRouterView name="operaDatabase" :title="operaDbTitle">
           <OperaDatabaseView
             :database="currentDatabase"
-            @success="$refs.window.back()"
+            @success="$refs.window.back(),search()"
           />
         </InnerRouterView>
       </InnerRouterViewWindow>
@@ -44,9 +45,10 @@ import OperaDatabaseView from "@/components/usr/project/OperaDatabaseView.vue";
 import DatabaseView from "@/components/usr/project/DatabaseView.vue";
 import {deleteById, search} from "../../api/database";
 import Empty from "../../components/common/Empty.vue";
+import Pagination from "../../components/common/Pagination.vue";
 
 export default {
-  components: {Empty, DatabaseView, OperaDatabaseView, InnerRouterViewWindow, InnerRouterView},
+  components: {Pagination, Empty, DatabaseView, OperaDatabaseView, InnerRouterViewWindow, InnerRouterView},
   data () {
     return {
       databases: [],

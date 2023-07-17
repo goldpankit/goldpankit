@@ -5,6 +5,7 @@
     v-model:page-size="pagination.capacity"
     layout="prev, pager, next, jumper"
     :total="pagination.total"
+    :hide-on-single-page="true"
   />
 </template>
 

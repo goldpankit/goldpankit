@@ -25,6 +25,18 @@
       <el-form-item label="Password" required>
         <el-input v-model="form.password"/>
       </el-form-item>
+      <el-form-item label="URL" class="item-url" required>
+        <template #label>
+          <div>
+            <label>URL</label>
+            <a href="javascript:;" @click="testConnect">Test Connection</a>
+          </div>
+        </template>
+        <el-input :model-value="url" readonly disabled/>
+        <p v-if="connectResult.connecting">连接中</p>
+        <p v-else-if="!connectResult.withError && connectResult.message != null" class="success">{{connectResult.message}}</p>
+        <p v-else-if="connectResult.message != null" class="error">{{connectResult.message}}</p>
+      </el-form-item>
     </el-form>
     <div class="opera">
       <el-button v-if="database == null" type="primary" size="large" @click="create">Add Database</el-button>
@@ -34,7 +46,8 @@
 </template>
 
 <script>
-import {create} from "../../../api/database";
+import {create, updateById} from "../../../api/database";
+import {testConnect} from "../../../api/database.util";
 
 export default {
   name: "OperaDatabaseView",
@@ -52,23 +65,66 @@ export default {
         schema: '',
         username: 'root',
         password: ''
+      },
+      connectResult: {
+        connecting: false,
+        message: null,
+        withError: false
       }
     }
   },
+  computed: {
+    url () {
+      return `jdbc:mysql://${this.form.host}:${this.form.port}`
+    }
+  },
   methods: {
+    // 创建
     create () {
       create(this.form)
-        .then(databaseId => {
-          this.$emit('created', {
-            id: databaseId,
-            ...this.form
-          })
+        .then(() => {
+          this.$emit('success')
         })
         .catch(e => {
           console.log('e', e)
         })
     },
-    update () {}
+    // 更新
+    update () {
+      updateById(this.form)
+        .then(() => {
+          this.$emit('success')
+        })
+        .catch(e => {
+          console.log('e', e)
+        })
+    },
+    // 测试连接
+    testConnect () {
+      if (this.connectResult.connecting) {
+        return
+      }
+      this.connectResult.connecting = true
+      this.connectResult.withError = false
+      testConnect({
+        host: this.form.host,
+        port: this.form.port,
+        user: this.form.username,
+        password: this.form.password,
+        database: this.form.schema
+      })
+        .then(() => {
+          this.connectResult.withError = false
+          this.connectResult.message = 'Succeeded'
+        })
+        .catch(e => {
+          this.connectResult.withError = true
+          this.connectResult.message = e.message
+        })
+        .finally(() => {
+          this.connectResult.connecting = false
+        })
+    }
   }
 }
 </script>
@@ -78,6 +134,31 @@ export default {
   width: 500px;
   padding: var(--gap-page-padding) 0;
   margin: 0 auto;
+  :deep(.el-form) {
+    .item-url {
+      .el-form-item__label {
+        padding-right: 0;
+        & > div {
+          width: 100%;
+          display: flex;
+          justify-content: space-between;
+          a {
+            color: var(--primary-color-common) !important;
+          }
+        }
+      }
+      p {
+        line-height: 20px;
+        margin-top: 10px;
+      }
+      .success {
+        color: var(--color-success);
+      }
+      .error {
+        color: var(--color-danger);
+      }
+    }
+  }
 }
 // 操作
 .opera {
