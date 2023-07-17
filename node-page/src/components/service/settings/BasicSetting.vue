@@ -9,7 +9,7 @@
           <CompilerSelect v-model="form.compiler" @change="saveConfig"/>
         </el-form-item>
         <el-form-item label="Supported Databases" prop="supportedDatabases">
-          <DatabaseSelect v-model="form.supportedDatabases" @change="saveConfig"/>
+          <DatabaseTypeSelect v-model="form.supportedDatabases" @change="saveConfig"/>
         </el-form-item>
         <el-form-item label="Charge" prop="prices[0].type" required>
           <el-radio-group v-model="form.prices[0].type" @change="changePriceType">
@@ -66,7 +66,7 @@
 
 <script>
 import CompilerSelect from "../../common/CompilerSelect.vue";
-import DatabaseSelect from "../../database/DatabaseSelect.vue";
+import DatabaseTypeSelect from "../../database/DatabaseTypeSelect.vue";
 import DirectorySelect from "../../common/DirectorySelect.vue";
 import BuildList from "../build/BuildList.vue";
 import TranslatorList from "../translator/TranslatorList.vue";
@@ -74,7 +74,7 @@ import {fetchConfig, initialize, saveConfig} from "../../../api/service";
 
 export default {
   name: "BasicSetting",
-  components: {TranslatorList, BuildList, DirectorySelect, DatabaseSelect, CompilerSelect},
+  components: {TranslatorList, BuildList, DirectorySelect, DatabaseTypeSelect, CompilerSelect},
   props: {
     space: {
       required: true

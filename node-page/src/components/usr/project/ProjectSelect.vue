@@ -1,5 +1,5 @@
 <template>
-  <div class="database-select">
+  <div class="project-select">
     <el-select :model-value="modelValue" @change="$emit('change', $event)" clearable>
       <el-option
         v-for="item in list"
@@ -7,29 +7,33 @@
         :key="item.id"
         :label="item.name"
       />
-      <template #prefix>Database:</template>
+      <template #prefix>Project:</template>
     </el-select>
-    <el-button class="button-icon" type="primary" icon="Plus"></el-button>
   </div>
 </template>
 
 <script>
 
-import {search} from "../../api/database";
+import {search} from "../../../api/user.project";
 
 export default {
-  name: "DatabaseSelect",
+  name: "ProjectSelect",
   props: {
     modelValue: {}
   },
   data () {
     return {
-      list: []
+      list: [],
+      pagination: {
+        pageIndex: 1,
+        capacity: 1000,
+        total: 0
+      }
     }
   },
   methods: {
     fetchList () {
-      search ()
+      search()
         .then(data => {
           this.list = data
         })
@@ -45,13 +49,14 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.database-select {
+.project-select {
   display: flex;
   border: 1px solid var(--border-default-color);
   border-radius: 5px;
   overflow: hidden;
   :deep(.el-select) {
-    width: 175px;
+    min-width: 150px;
+    max-width: 175px;
     .el-input__wrapper {
       box-shadow: none !important;
     }

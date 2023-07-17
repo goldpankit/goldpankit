@@ -1,8 +1,8 @@
 <template>
   <div class="project-databases">
     <div class="title">
-      <h2>{{currentProject.name}} Databases</h2>
-      <el-button type="primary"  @click="$router.push({ name: 'ProjectDatabases', query: { project_id: currentProject.id } })">
+      <h2>Databases</h2>
+      <el-button type="primary" @click="$router.push({ name: 'Databases' })">
         <el-icon :size="20"><Plus /></el-icon>
       </el-button>
     </div>
@@ -22,12 +22,18 @@
 
 <script>
 import {mapMutations, mapState} from "vuex";
+import {search} from "../../../api/database";
 
 export default {
   name: "ProjectDatabasesSelect",
   data () {
     return {
-      databases: []
+      databases: [],
+      pagination: {
+        pageIndex: 1,
+        capacity: 1000,
+        total: 0
+      }
     }
   },
   computed: {
@@ -35,13 +41,16 @@ export default {
   },
   methods: {
     ...mapMutations(['setCurrentDatabase']),
-    // 获取当前项目数据库
+    // 查询数据库集
     fetchDatabases () {
-      if (this.currentProject == null) {
-        return
-      }
-      this.databases = this.currentProject.databases
-    }
+      search (this.pagination)
+        .then(data => {
+          this.databases = data.records
+        })
+        .catch(e => {
+          console.log('e', e)
+        })
+    },
   },
   created () {
     this.fetchDatabases()

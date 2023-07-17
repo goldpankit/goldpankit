@@ -10,24 +10,10 @@
       </div>
       <ul class="opera">
         <li>
-          <el-popover placement="right" trigger="click" popper-class="select-project-popover">
-            <template #reference>
-              <el-button>
-                {{ currentProject == null ? 'Select Project' : 'Current project: ' + currentProject.name }}
-              </el-button>
-            </template>
-            <UserProjects/>
-          </el-popover>
+          <ProjectSelect :model-value="currentProject" @change="setCurrentProject"/>
         </li>
         <li>
-          <el-popover placement="right" trigger="click" popper-class="select-database-popover">
-            <template #reference>
-              <el-button>
-                {{ currentProject == null ? 'Select Database' : 'Current database: ' + currentDatabase }}
-              </el-button>
-            </template>
-            <ProjectDatabasesSelect/>
-          </el-popover>
+          <DatabaseSelect :model-value="currentDatabase" @change="setCurrentDatabase"/>
         </li>
         <li class="bean-wrap" @click="$router.push({ name: 'RechargeBean' })">
           <img src="/images/bean.png">
@@ -46,15 +32,20 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import {mapMutations, mapState} from 'vuex'
 import UserProjects from "../components/usr/project/UserProjects.vue";
 import ProjectDatabasesSelect from "../components/usr/project/ProjectDatabasesSelect.vue";
+import DatabaseSelect from "../components/database/DatabaseSelect.vue";
+import ProjectSelect from "../components/usr/project/ProjectSelect.vue";
 
 export default {
   name: 'DefaultLayout',
-  components: {ProjectDatabasesSelect, UserProjects},
+  components: {ProjectSelect, DatabaseSelect, ProjectDatabasesSelect, UserProjects},
   computed: {
     ...mapState(['currentProject', 'currentDatabase'])
+  },
+  methods: {
+    ...mapMutations(['setCurrentProject', 'setCurrentDatabase'])
   }
 }
 </script>

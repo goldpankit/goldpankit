@@ -12,7 +12,7 @@
         <CompilerSelect v-model="form.compiler"/>
       </el-form-item>
       <el-form-item label="Supported Databases" prop="supportedDatabases">
-        <DatabaseSelect v-model="form.supportedDatabases"/>
+        <DatabaseTypeSelect v-model="form.supportedDatabases"/>
       </el-form-item>
     </el-form>
     <div class="directory-select-wrap">
@@ -31,12 +31,12 @@
 <script>
 import DirectorySelect from "../../common/DirectorySelect.vue";
 import CompilerSelect from "../../common/CompilerSelect.vue";
-import DatabaseSelect from "../../database/DatabaseSelect.vue";
+import DatabaseTypeSelect from "../../database/DatabaseSelect.vue";
 import {fetchConfig, initialize} from "../../../api/service";
 
 export default {
   name: "InitializeView",
-  components: {DatabaseSelect, CompilerSelect, DirectorySelect},
+  components: {DatabaseTypeSelect, CompilerSelect, DirectorySelect},
   props: {
     spaceName: {
       required: true

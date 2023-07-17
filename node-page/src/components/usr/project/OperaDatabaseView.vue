@@ -5,7 +5,7 @@
         <el-input v-model="form.name"/>
       </el-form-item>
       <el-form-item label="Database Type" required>
-        <DatabaseSelect v-model="form.type" :multiple="false"/>
+        <DatabaseTypeSelect v-model="form.type" :multiple="false"/>
       </el-form-item>
       <el-form-item label="Host" required>
         <el-input v-model="form.host"/>
@@ -45,11 +45,11 @@
 <script>
 import {create, updateById} from "../../../api/database";
 import {testConnect} from "../../../api/database.util";
-import DatabaseSelect from "../../database/DatabaseSelect.vue";
+import DatabaseTypeSelect from "../../database/DatabaseTypeSelect.vue";
 
 export default {
   name: "OperaDatabaseView",
-  components: {DatabaseSelect},
+  components: {DatabaseTypeSelect},
   props: {
     database: {}
   },

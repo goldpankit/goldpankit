@@ -25,9 +25,9 @@
 </template>
 
 <script>
-import {fetchTables} from "../../api/db";
 import {mapState} from "vuex";
 import FieldSetting from "../service/installer/FieldSetting.vue";
+import {fetchTables} from "@/api/database.util";
 
 export default {
   name: "TableSelect",
