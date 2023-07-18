@@ -1,6 +1,6 @@
 import Vuex from 'vuex'
 import {getToken} from "../api/user.token";
-import {logout} from "../api/user.login";
+import {getLoginInfo, logout} from "../api/user.login";
 // 获取本地项目
 let currentProject = null
 const currentProjectStr = window.localStorage.getItem('CURRENT_PROJECT')
@@ -53,11 +53,22 @@ export default new Vuex.Store({
       })
     },
     // 初始化登录令牌
-    initToken () {
+    initToken ({ commit, dispatch }) {
       getToken()
         .then(data => {
           if (data != null) {
             document.cookie = `x-kit-token=${data.value};`
+            getLoginInfo()
+              .then(userInfo => {
+                if (userInfo != null) {
+                  commit('setUserInfo', userInfo)
+                } else {
+                  dispatch('logout')
+                }
+              })
+              .catch(e => {
+                console.log('get user info throw an error', e)
+              })
           }
         })
         .catch(e => {

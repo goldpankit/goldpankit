@@ -28,8 +28,9 @@
 
 <script>
 
-import {loginByPassword} from "../api/user.login";
+import {loginByPassword, getLoginInfo} from "../api/user.login";
 import {save} from "../api/user.token";
+import {mapMutations} from "vuex";
 
 export default {
   data () {
@@ -44,6 +45,7 @@ export default {
     }
   },
   methods: {
+    ...mapMutations(['setUserInfo']),
     // 密码登录
     login () {
       this.$refs.form.validate()
@@ -60,11 +62,13 @@ export default {
               document.cookie = `x-kit-token=${token};`
               // 调用接口，将令牌存储在用户设备文件系统中，便于下次自动授权
               save(token)
-                .then(() => {
+            })
+            .then(() => {
+              // 存储用户信息
+              getLoginInfo()
+                .then(userInfo => {
+                  this.setUserInfo(userInfo)
                   this.$router.back()
-                })
-                .catch(e => {
-                  console.log('e', e)
                 })
             })
             .catch(e => {

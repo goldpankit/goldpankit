@@ -129,38 +129,20 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  let userInfo = store.state.userInfo
-  if (userInfo != null) {
+  // 非用户页面：直接放行
+  if (!to.path.startsWith('/usr')) {
     next()
     return
   }
-  getLoginInfo()
-    .then(data => {
-      userInfo = data
-      // 存储用户，并放行
-      if (userInfo != null) {
-        store.commit('setUserInfo', userInfo)
-        next()
-        return
-      }
-      // 退出登录
-      store.dispatch('logout')
-      // 非用户页面，直接放行
-      if (!to.path.startsWith('/usr')) {
-        next()
-        return
-      }
-      // 跳转到登录页
-      next({
-        name: 'SignIn'
-      })
-    })
-    .catch(e => {
-      console.log('e', e)
-      next({
-        name: 'SignIn'
-      })
-    })
+  // 用户页面：如果拿到了登录信息，直接放行
+  if (store.state.userInfo != null) {
+    next()
+    return
+  }
+  // 用户页面：未拿到登录信息，跳转到登录页
+  next({
+    name: 'SignIn'
+  })
 })
 
 export default router
