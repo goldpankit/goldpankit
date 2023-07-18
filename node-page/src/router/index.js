@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import DefaultLayout from '../layouts/DefaultLayout.vue'
 import PCDesign from '../views/ui/design/pc.vue'
 import NoneLayout from "../layouts/NoneLayout.vue";
+import WorkbenchLayout from "../layouts/WorkbenchLayout.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -108,6 +109,18 @@ const router = createRouter({
           name: 'SignUp',
           component: () => import('@/views/signup.vue')
         }
+      ]
+    },
+    {
+      path: '/WorkbenchLayout',
+      name: 'WorkbenchLayout',
+      component: WorkbenchLayout,
+      children: [
+        {
+          path: '/workbench',
+          name: 'Workbench',
+          component: () => import('@/views/workbench.vue')
+        },
       ]
     }
   ]

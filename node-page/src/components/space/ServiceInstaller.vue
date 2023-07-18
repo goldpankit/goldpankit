@@ -52,8 +52,8 @@
         </el-form>
       </div>
       <div v-if="withInstallButton" class="install">
-        <el-button type="important" :disabled="currentProject == null" @click="install">
-          INSTALL{{currentProject == null ? '' : ' to project ' + currentProject.name}}
+        <el-button type="important" @click="install">
+          INSTALL
         </el-button>
       </div>
     </div>
@@ -168,10 +168,7 @@ export default {
       // 创建项目
       create(this.project)
         .then(data => {
-          this.setCurrentProject({
-            id: data,
-            ...this.project
-          })
+          this.setCurrentProject(data)
           return data
         })
         .then(projectId => {

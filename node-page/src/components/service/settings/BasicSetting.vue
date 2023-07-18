@@ -84,7 +84,8 @@ export default {
     },
     serviceType: {
       required: true
-    }
+    },
+    serviceConfig: {}
   },
   data () {
     return {
@@ -118,6 +119,13 @@ export default {
     }
   },
   methods: {
+    // 初始化数据
+    initData () {
+      for (const key in this.form) {
+        this.form[key] = this.serviceConfig[key]
+      }
+      this.originForm = JSON.parse(JSON.stringify(this.form))
+    },
     // 初始化
     initialize () {
       initialize(this.form)
@@ -150,6 +158,7 @@ export default {
           if (config != null) {
             this.form.version = config.version || this.form.version
             this.form.compiler = config.compiler || this.form.compiler
+            this.form.prices = config.prices || this.form.prices
             this.form.supportedDatabases = config.supportedDatabases || this.form.supportedDatabases
             this.form.builds = config.builds || this.form.builds
             this.form.unbuilds = config.unbuilds || this.form.unbuilds
@@ -211,27 +220,7 @@ export default {
     }
   },
   created () {
-    fetchConfig({
-      space: this.space,
-      service: this.service
-    })
-      .then(config => {
-        // 需给定默认值，防止用户自行篡改配置文件
-        this.form.version = config.version || '1.0.0'
-        this.form.private = config.private == null ? false : config.private
-        this.form.receivable = config.receivable == null ? false : config.receivable
-        this.form.prices = config.prices
-        this.form.compiler = config.compiler || 'freemarker'
-        this.form.supportedDatabases = config.supportedDatabases || []
-        this.form.builds = config.builds || []
-        this.form.unbuilds = config.unbuilds || []
-        this.form.codespace = config.codespace
-        this.form.translator = config.translator
-        this.originForm = JSON.parse(JSON.stringify(this.form))
-      })
-      .catch(e => {
-        console.log('e', e)
-      })
+    this.initData()
   }
 }
 </script>

@@ -38,7 +38,7 @@ import AppLayout from "./AppLayout.vue";
 import LoginView from "../components/header/LoginView.vue";
 
 export default {
-  name: 'DefaultLayout',
+  name: 'WorkbenchLayout',
   components: {LoginView, AppLayout, ProjectSelect, DatabaseSelect },
   computed: {
     ...mapState(['currentProject', 'currentDatabase', 'userInfo'])

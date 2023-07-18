@@ -31,7 +31,7 @@
 <script>
 import DirectorySelect from "../../common/DirectorySelect.vue";
 import CompilerSelect from "../../common/CompilerSelect.vue";
-import DatabaseTypeSelect from "../../database/DatabaseSelect.vue";
+import DatabaseTypeSelect from "../../database/DatabaseTypeSelect.vue";
 import {fetchConfig, initialize} from "../../../api/service";
 
 export default {

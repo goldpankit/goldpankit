@@ -28,6 +28,7 @@
               :space="route.space"
               :service="route.service"
               :service-type="service.type"
+              :service-config="serviceConfig"
             />
             <MarkdownEditor
               v-if="currentTab === 'readme'"
@@ -86,13 +87,14 @@ export default {
       },
       loading: true,
       currentTab: 'basic',
-      service: null
+      service: null,
+      serviceConfig: null
     }
   },
   computed: {
     ...mapState(['currentProject', 'currentDatabase']),
     initialized () {
-      return this.service.local && this.service.local.codespace
+      return this.serviceConfig != null && this.serviceConfig.version != null
     }
   },
   methods: {
@@ -118,6 +120,9 @@ export default {
       })
         .then(data => {
           this.service = data
+          if (this.service.local && this.service.local.codespace) {
+            this.fetchConfig(this.service.local.codespace)
+          }
         })
         .then(() => {
           return fetchConfig({
@@ -133,6 +138,19 @@ export default {
         })
         .finally(() => {
           this.loading = false
+        })
+    },
+    // 获取服务配置
+    fetchConfig (codespace) {
+      fetchConfig({
+        codespace
+      })
+        .then(config => {
+          console.log('config', config)
+          this.serviceConfig = config
+        })
+        .catch(e => {
+          console.log('e', e)
         })
     },
     // 编译服务

@@ -20,7 +20,7 @@
               <el-input size="large" placeholder="Search"/>
             </div>
             <!-- 服务列表 -->
-            <ul class="service-list">
+            <ul v-if="subServices.length > 0" class="service-list">
               <li
                 v-for="service in subServices"
                 :key="service.id"
@@ -36,6 +36,7 @@
                 <p class="text-info-1 text-mini">Last publish: {{service.lastPublishTime}}</p>
               </li>
             </ul>
+            <Empty v-else description="No Sub Services"/>
           </div>
           <!-- 服务信息 -->
           <div v-if="currentService != null" class="setting-wrap">
@@ -90,6 +91,10 @@
               >INSTALL</el-button>
             </div>
           </div>
+          <div class="setting-holder">
+            <h4>Sub Service Settings</h4>
+            <p>You can open Settings by clicking on sub services on the left.</p>
+          </div>
         </div>
       </div>
     </div>
@@ -102,9 +107,10 @@ import ServiceInstaller from "../components/space/ServiceInstaller.vue";
 import {fetchSubServices} from "../api/service";
 import {fetchById} from "../api/user.project";
 import MarkdownEditor from "../components/common/MarkdownEditor.vue";
+import Empty from "../components/common/Empty.vue";
 
 export default {
-  components: {MarkdownEditor, ServiceInstaller},
+  components: {Empty, MarkdownEditor, ServiceInstaller},
   data () {
     return {
       space: null,
@@ -133,7 +139,7 @@ export default {
   methods: {
     // 查询项目信息
     fetchProject (withSubServices = false) {
-      fetchById(this.currentProject.id)
+      fetchById(this.currentProject)
         .then(data => {
           this.project = data
           // 获取空间信息
@@ -370,6 +376,22 @@ export default {
           width: 200px;
           font-size: var(--font-size-middle);
         }
+      }
+    }
+    // 变量设置空提示
+    .setting-holder {
+      font-size: 18px;
+      width: 455px;
+      margin: 30px auto 0 auto;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 50px;
+      p {
+        line-height: 30px;
+        color: var(--color-gray);
+        margin-top: 20px;
       }
     }
   }
