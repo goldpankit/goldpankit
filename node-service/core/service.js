@@ -4,7 +4,7 @@ const cache = require('./utils/cache')
 const object = require('./utils/object')
 const fs = require('./utils/fs')
 const serviceApi = require("./api/service");
-// const serviceTranslator = require('./service.translator')
+const serviceTranslator = require('./service.translator')
 module.exports = {
   // 初始化
   initialize(extConfig) {
@@ -62,7 +62,6 @@ module.exports = {
   },
   // 保存服务配置信息
   saveServiceConfig(dto) {
-    console.log('dto', dto)
     const serviceConfig =  this.getServiceConfig({ space: dto.space, service: dto.service })
     // 读取配置结构
     const newConfig = JSON.parse(JSON.stringify(Const.SERVICE_CONFIG_CONTENT))
@@ -70,7 +69,6 @@ module.exports = {
     object
       .merge(serviceConfig, newConfig)
       .merge(dto, newConfig)
-    console.log('newConfig', newConfig)
     // 写入配置文件
     const configPath = this.__getConfigPath(serviceConfig.codespace)
     fs.rewrite(configPath, fs.toJSONFileString(newConfig))
@@ -118,11 +116,12 @@ module.exports = {
   publish(dto) {
     // 获取服务文件
     const serviceConfig = this.getServiceConfig({ space: dto.space, service: dto.service })
+    console.log('serviceConfig', serviceConfig)
     let fileStoragePath = serviceConfig.codespace
     // 如果存在翻译器，自动翻译，且服务代码空间指定为翻译代码空间
     if (serviceConfig.translator.settings.length > 0) {
       fileStoragePath = `${fileStoragePath}/${Const.TRANSLATOR.DEFAULT_OUTPUT_PATH}`
-      // serviceTranslator.translate({ space: dto.space, service: dto.service })
+      serviceTranslator.translate({ space: dto.space, service: dto.service })
     }
     // 获取文件
     const files = fs.getFilesWithChildren(fileStoragePath, fileStoragePath).map(fullpath => {
@@ -141,7 +140,7 @@ module.exports = {
       }
     })
     // 执行发布
-    return serviceApi.publish({
+    const publishParams = {
       space: dto.space,
       service: dto.service,
       version: serviceConfig.version,
@@ -155,7 +154,8 @@ module.exports = {
       publishDescription: dto.publishDescription,
       description: serviceConfig.readme,
       files
-    })
+    }
+    return serviceApi.publish(publishParams)
   },
   // 获取文件设置
   getFileSetting (codespace, fileRelativePath) {

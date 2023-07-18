@@ -14,7 +14,9 @@ axiosInstance.interceptors.request.use(config => {
   // 添加头部信息
   const headers = cache.get('request_headers')
   if (headers != null) {
-    config.headers = headers
+    config.headers = {
+      cookie: headers.cookie
+    }
     cache.remove('request_headers')
   }
   return config

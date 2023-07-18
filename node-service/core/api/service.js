@@ -15,6 +15,6 @@ module.exports = {
     },
     // 发布版本
     publish (data) {
-        return request.post('/service/version/publish', data)
+        return request.post('/usr/service/version/publish', data)
     }
 }
