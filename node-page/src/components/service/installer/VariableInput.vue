@@ -20,6 +20,12 @@
     v-model="variable[valueKey]"
     :options="variable.options"
   />
+  <DatabaseSelect
+    v-else-if="variable.inputType === 'database'"
+    v-model="variable[valueKey]"
+    :with-prefix="false"
+    :with-create-button="false"
+  />
   <TableSelect
     v-else-if="variable.inputType === 'table'"
     :variables="variables"
@@ -40,10 +46,11 @@ import InstallRadio from "./Radio.vue";
 import InstallCheckbox from "./Checkbox.vue";
 import TableSelect from "../../common/TableSelect.vue";
 import QueryModelSelect from "../../common/QueryModelSelect.vue";
+import DatabaseSelect from "../../database/DatabaseSelect.vue";
 
 export default {
   name: "VariableInput",
-  components: {QueryModelSelect, TableSelect, InstallCheckbox, InstallRadio, InstallInput},
+  components: {DatabaseSelect, QueryModelSelect, TableSelect, InstallCheckbox, InstallRadio, InstallInput},
   props: {
     // 当前变量
     variable: {

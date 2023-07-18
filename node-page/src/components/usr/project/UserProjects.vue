@@ -13,11 +13,8 @@
         <div class="info">
           <h3>{{project.name}}</h3>
           <p>{{project.codespace}}</p>
-          <p class="text-info-1">{{project.databases.length}} databases</p>
         </div>
         <div class="opera">
-          <el-button @click="$router.push({ name: 'ProjectDatabases', query: { project_id: project.id } })">Databases</el-button>
-          <el-button @click="setCurrentProject(project)">Use It</el-button>
           <el-button type="danger" text @click="deleteProject(project)">Delete</el-button>
         </div>
       </li>
@@ -27,7 +24,6 @@
 </template>
 
 <script>
-import { mapMutations } from "vuex";
 import {deleteProject, search} from "../../../api/user.project";
 import Empty from "../../common/Empty.vue";
 
@@ -40,7 +36,6 @@ export default {
     }
   },
   methods: {
-    ...mapMutations(['setCurrentProject']),
     search () {
       search()
         .then(data => {

@@ -2,7 +2,7 @@ import request from "../utils/request";
 
 // 创建
 export function create (data) {
-  return request.post('/space/create', data)
+  return request.post('/usr/space/create', data)
 }
 
 // 根据ID查询

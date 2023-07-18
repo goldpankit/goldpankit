@@ -57,10 +57,11 @@ export default {
               return data
             })
             .then(token => {
+              document.cookie = `x-kit-token=${token};`
               // 调用接口，将令牌存储在用户设备文件系统中，便于下次自动授权
               save(token)
                 .then(() => {
-                  window.location.href = '/'
+                  this.$router.back()
                 })
                 .catch(e => {
                   console.log('e', e)

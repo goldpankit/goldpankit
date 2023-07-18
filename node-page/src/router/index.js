@@ -1,8 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import store from '../store/index.js'
 import DefaultLayout from '../layouts/DefaultLayout.vue'
 import PCDesign from '../views/ui/design/pc.vue'
 import NoneLayout from "../layouts/NoneLayout.vue";
 import WorkbenchLayout from "../layouts/WorkbenchLayout.vue";
+import {getLoginInfo} from "../api/user.login";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -124,6 +126,41 @@ const router = createRouter({
       ]
     }
   ]
+})
+
+router.beforeEach((to, from, next) => {
+  let userInfo = store.state.userInfo
+  if (userInfo != null) {
+    next()
+    return
+  }
+  getLoginInfo()
+    .then(data => {
+      userInfo = data
+      // 存储用户，并放行
+      if (userInfo != null) {
+        store.commit('setUserInfo', userInfo)
+        next()
+        return
+      }
+      // 退出登录
+      store.dispatch('logout')
+      // 非用户页面，直接放行
+      if (!to.path.startsWith('/usr')) {
+        next()
+        return
+      }
+      // 跳转到登录页
+      next({
+        name: 'SignIn'
+      })
+    })
+    .catch(e => {
+      console.log('e', e)
+      next({
+        name: 'SignIn'
+      })
+    })
 })
 
 export default router

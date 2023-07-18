@@ -14,6 +14,7 @@
         draggable
         :allow-drop="allowDrop"
         :allow-drag="allowDrag"
+        empty-text="No Variables"
         @node-drag-start="handleDragStart"
         @node-drop="handleDrop"
       >

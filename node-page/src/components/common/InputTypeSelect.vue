@@ -4,6 +4,7 @@
     <el-option value="textarea" label="Textarea"/>
     <el-option value="checkbox" label="Checkbox"/>
     <el-option value="radio" label="Radio"/>
+    <el-option value="database" label="Database"/>
     <el-option value="table" label="Table"/>
     <el-option value="query_model" label="Query Model"/>
   </el-select>

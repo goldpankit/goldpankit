@@ -3,7 +3,7 @@
     <div class="wrap">
       <h2>{{ space.name }}</h2>
       <div class="tech-stack-wrap">
-        <em>Private</em>
+        <em>{{ space.withPrivate ? 'Private' : 'Public' }}</em>
         <p class="tech-stack">{{space.serviceCount}} services</p>
       </div>
       <div class="content-wrap">
@@ -137,6 +137,9 @@ export default {
       fetchByName(this.spaceName)
         .then(data => {
           this.space = data
+          if (this.space.description == null) {
+            this.space.description = ''
+          }
           this.fetchServiceList()
         })
         .catch(e => {

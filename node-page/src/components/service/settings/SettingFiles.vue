@@ -6,6 +6,7 @@
       </div>
       <el-tree
         :data="files"
+        empty-text="No Files"
         @node-click="handleNodeClick"
       >
         <template #default="{ node, data }">

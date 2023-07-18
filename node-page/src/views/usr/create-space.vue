@@ -10,6 +10,9 @@
           </template>
           <el-input v-model="form.name" />
         </el-form-item>
+        <el-form-item label="Private">
+          <el-switch v-model="form.withPrivate" />
+        </el-form-item>
         <el-form-item label="Homepage">
           <el-input v-model="form.homepage" />
         </el-form-item>
@@ -35,6 +38,7 @@ export default {
     return {
       form: {
         name: '',
+        withPrivate: false,
         homepage: '',
         introduce: '',
         description: ''

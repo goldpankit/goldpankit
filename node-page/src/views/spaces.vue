@@ -20,11 +20,11 @@
         @current-change="handleCurrentChange"
         @size-change="handleSizeChange"
       />
-      <ul v-loading="loading" class="space-list">
+      <ul v-if="loading || spaces.length > 0" v-loading="loading" class="space-list">
         <li v-for="space in spaces" :key="space.id">
           <router-link :to="{ name: 'SpaceDetail', params: { name: space.name } }">
             <h3>{{space.name}}</h3>
-            <p>{{space.description}}</p>
+            <p>{{space.introduce}}</p>
             <ul class="service-list">
               <li v-for="service in space.mainServices">
                 <h4>{{service.name}}</h4>
@@ -41,7 +41,7 @@
           </router-link>
         </li>
       </ul>
-      <Empty v-if="keyword.trim() !== '' && spaces.length === 0" description="Not Found Data"/>
+      <Empty v-if="keyword.trim() !== '' && spaces.length === 0" description="Not Found Spaces"/>
       <Pagination
         v-if="pagination.pageCount > 1"
         :pagination="pagination"

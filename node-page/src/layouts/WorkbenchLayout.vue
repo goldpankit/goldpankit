@@ -1,5 +1,5 @@
 <template>
-  <AppLayout class="default-layout">
+  <AppLayout class="workbench-layout">
     <header>
       <div class="logo-wrap" @click="$router.push({ name: 'PublicSpaces' })">
         <h1>Gold Pan Kit</h1>
@@ -50,7 +50,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.default-layout {
+.workbench-layout {
   height: 100%;
   overflow: hidden;
   display: flex;
@@ -119,19 +119,5 @@ header {
 main {
   flex-grow: 1;
   overflow: hidden;
-}
-</style>
-<style lang="scss">
-.select-project-popover,.select-database-popover {
-  width: 600px !important;
-  max-height: 90%;
-  overflow-y: auto;
-  overflow-x: hidden;
-  .user-projects {
-    padding: 15px;
-  }
-}
-.select-database-popover {
-  width: 300px !important;
 }
 </style>

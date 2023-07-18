@@ -7,15 +7,14 @@
         :key="item.id"
         :label="item.name"
       />
-      <template #prefix>Database:</template>
+      <template v-if="withPrefix" #prefix>Database:</template>
     </el-select>
-    <el-button class="button-icon" type="primary" icon="Plus" @click="$refs.createDatabaseWindow.open()"></el-button>
+    <el-button v-if="withCreateButton" class="button-icon" type="primary" icon="Plus" @click="$refs.createDatabaseWindow.open()"></el-button>
     <CreateDatabaseWindow ref="createDatabaseWindow"/>
   </div>
 </template>
 
 <script>
-
 import {search} from "../../api/database";
 import CreateDatabaseWindow from "./CreateDatabaseWindow.vue";
 
@@ -23,7 +22,13 @@ export default {
   name: "DatabaseSelect",
   components: {CreateDatabaseWindow},
   props: {
-    modelValue: {}
+    modelValue: {},
+    withPrefix: {
+      default: true
+    },
+    withCreateButton: {
+      default: true
+    }
   },
   data () {
     return {
