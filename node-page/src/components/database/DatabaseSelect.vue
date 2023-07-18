@@ -9,16 +9,19 @@
       />
       <template #prefix>Database:</template>
     </el-select>
-    <el-button class="button-icon" type="primary" icon="Plus"></el-button>
+    <el-button class="button-icon" type="primary" icon="Plus" @click="$refs.createDatabaseWindow.open()"></el-button>
+    <CreateDatabaseWindow ref="createDatabaseWindow"/>
   </div>
 </template>
 
 <script>
 
 import {search} from "../../api/database";
+import CreateDatabaseWindow from "./CreateDatabaseWindow.vue";
 
 export default {
   name: "DatabaseSelect",
+  components: {CreateDatabaseWindow},
   props: {
     modelValue: {}
   },

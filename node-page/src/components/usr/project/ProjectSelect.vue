@@ -76,35 +76,3 @@ export default {
   }
 }
 </style>
-<style lang="scss">
-.create-project-dialog {
-  .el-dialog__body {
-    padding: 0;
-    // 提示
-    & > .tip {
-      padding: 20px;
-      background: var(--primary-color-match-2);
-      color: var(--color-light);
-      display: flex;
-      align-items: center;
-      margin-bottom: 20px;
-      em {
-        background: rgba(0, 0, 0, .15);
-        padding: 3px 5px;
-        border-radius: 5px;
-        font-style: normal;
-        font-weight: bold;
-        margin: 0 5px;
-      }
-    }
-    & > .opera {
-      display: flex;
-      justify-content: flex-end;
-      padding: 0 30px 30px 0;
-    }
-    & > .el-form {
-      padding: 0 30px;
-    }
-  }
-}
-</style>

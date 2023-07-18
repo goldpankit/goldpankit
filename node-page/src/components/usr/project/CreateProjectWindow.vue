@@ -4,6 +4,8 @@
     title="Create Project"
     custom-class="create-project-dialog"
     append-to-body
+    :close-on-click-modal="false"
+    :close-on-press-escape="false"
   >
     <section class="tip">
       You are now creating an offline project.
@@ -20,7 +22,8 @@
       </el-form-item>
     </el-form>
     <div class="opera">
-      <el-button type="primary" size="large" @click="confirmCreateProject">Create Project</el-button>
+      <el-button size="large" @click="cancelCreate">Cancel</el-button>
+      <el-button type="primary" size="large" @click="confirmCreate">Create Project</el-button>
     </div>
   </el-dialog>
 </template>
@@ -50,7 +53,7 @@ export default {
       })
     },
     // 确认创建
-    confirmCreateProject () {
+    confirmCreate () {
       create(this.form)
         .then(data => {
           this.visible = false
@@ -59,11 +62,48 @@ export default {
         .catch(e => {
           console.log('e', e)
         })
+    },
+    // 取消创建
+    cancelCreate () {
+      this.visible = false
     }
   }
 }
 </script>
 
-<style scoped lang="scss">
-
+<style lang="scss">
+.create-project-dialog {
+  .el-dialog__title {
+    font-size: var(--font-size-large);
+    font-weight: bold;
+  }
+  .el-dialog__body {
+    padding: 0;
+    // 提示
+    & > .tip {
+      padding: 20px;
+      background: var(--primary-color-match-2);
+      color: var(--color-light);
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+      em {
+        background: rgba(0, 0, 0, .15);
+        padding: 3px 5px;
+        border-radius: 5px;
+        font-style: normal;
+        font-weight: bold;
+        margin: 0 5px;
+      }
+    }
+    & > .opera {
+      display: flex;
+      justify-content: flex-end;
+      padding: 0 30px 30px 0;
+    }
+    & > .el-form {
+      padding: 0 30px;
+    }
+  }
+}
 </style>
