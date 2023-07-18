@@ -9,26 +9,26 @@
       />
       <template #prefix>Project:</template>
     </el-select>
+    <el-button class="button-icon" type="primary" icon="Plus" @click="$refs.createProjectWindow.open()"></el-button>
+    <CreateProjectWindow ref="createProjectWindow" @success="handleCreateSuccess"/>
   </div>
 </template>
 
 <script>
 
 import {search} from "../../../api/user.project";
+import DirectorySelect from "../../common/DirectorySelect.vue";
+import CreateProjectWindow from "./CreateProjectWindow.vue";
 
 export default {
   name: "ProjectSelect",
+  components: {CreateProjectWindow, DirectorySelect},
   props: {
     modelValue: {}
   },
   data () {
     return {
-      list: [],
-      pagination: {
-        pageIndex: 1,
-        capacity: 1000,
-        total: 0
-      }
+      list: []
     }
   },
   methods: {
@@ -41,6 +41,11 @@ export default {
           console.log('e', e)
         })
     },
+    // 创建完成
+    handleCreateSuccess (projectId) {
+      this.fetchList()
+      this.$emit('change', projectId)
+    }
   },
   created () {
     this.fetchList()
@@ -68,6 +73,38 @@ export default {
     border: 0;
     border-left: 1px solid var(--border-default-color);
     border-radius: 0;
+  }
+}
+</style>
+<style lang="scss">
+.create-project-dialog {
+  .el-dialog__body {
+    padding: 0;
+    // 提示
+    & > .tip {
+      padding: 20px;
+      background: var(--primary-color-match-2);
+      color: var(--color-light);
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+      em {
+        background: rgba(0, 0, 0, .15);
+        padding: 3px 5px;
+        border-radius: 5px;
+        font-style: normal;
+        font-weight: bold;
+        margin: 0 5px;
+      }
+    }
+    & > .opera {
+      display: flex;
+      justify-content: flex-end;
+      padding: 0 30px 30px 0;
+    }
+    & > .el-form {
+      padding: 0 30px;
+    }
   }
 }
 </style>

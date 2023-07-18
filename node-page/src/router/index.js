@@ -83,11 +83,6 @@ const router = createRouter({
           component: () => import('@/views/usr/service/create.vue')
         },
         {
-          path: '/usr/service/settings',
-          name: 'ServiceSettings',
-          component: () => import('@/views/usr/service/settings.vue')
-        },
-        {
           path: '/usr/profile',
           name: 'UserProfile',
           component: () => import('@/views/usr/profile/profile.vue')
@@ -120,6 +115,11 @@ const router = createRouter({
           path: '/workbench',
           name: 'Workbench',
           component: () => import('@/views/workbench.vue')
+        },
+        {
+          path: '/usr/service/settings',
+          name: 'ServiceSettings',
+          component: () => import('@/views/usr/service/settings.vue')
         },
       ]
     }
