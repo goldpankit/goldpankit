@@ -1,4 +1,5 @@
 const axios = require('axios')
+const cache = require('../core/utils/cache')
 
 // 默认配置
 axios.defaults.headers.common['Content-Type'] = 'application/json;charset=UTF-8'
@@ -10,6 +11,12 @@ const axiosInstance = axios.create({
 
 // 新建请求拦截器
 axiosInstance.interceptors.request.use(config => {
+  // 添加头部信息
+  const headers = cache.get('request_headers')
+  if (headers != null) {
+    config.headers = headers
+    cache.remove('request_headers')
+  }
   return config
 }, function (error) {
   return Promise.reject(error)

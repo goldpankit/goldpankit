@@ -13,10 +13,10 @@ module.exports = {
     compiler: 'static', // 编译器
     supportedDatabases: [], // 支持的数据库列表
     prices: [ // 价格定义
-      // {
-      //   type: 'monthly',
-      //   value: 10
-      // }
+      {
+        type: 'free',
+        value: 0
+      }
     ],
     builds: [], // 构建列表
     unbuilds: [], // 卸载构建

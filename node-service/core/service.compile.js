@@ -223,8 +223,16 @@ class Kit {
     return variables.map(item => {
       return new Promise((resolve, reject) => {
         try {
+          // 如果类型为数据库，则查询出库信息
+          if (item.inputType === 'database') {
+            const database = cache.databases.get(item.value || item.defaultValue)
+            resolve({
+              ...item,
+              value: database
+            })
+          }
           // 输入类型为表，则查询出表信息
-          if (item.inputType === 'table') {
+          else if (item.inputType === 'table') {
             mysql.getTable({
               host: database.host,
               port: database.port,
@@ -244,7 +252,7 @@ class Kit {
             return
           }
           // 如果类型为查询模型，则查询出模型信息
-          if (item.inputType === 'query_model') {
+          else if (item.inputType === 'query_model') {
             const modelName = item.value || item.defaultValue
             const model = database.models.find(model => model.name === modelName)
             // 主表
@@ -302,7 +310,7 @@ class Kit {
             return
           }
           // 如果为服务变量组，则修改子变量值
-          if (item.type === 'group' && item.scope === 'service') {
+          else if (item.type === 'group' && item.scope === 'service') {
             resolve({
               ...item,
               children: item.children.map(v => {

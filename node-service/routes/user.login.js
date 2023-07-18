@@ -9,7 +9,7 @@ request.get('/usr/login/info').proxy()
 // 退出登录
 request
   .get('/usr/logout')
-  .data(() => {
+  .data(req => {
     userToken.clear()
     UserApi.logout()
   })

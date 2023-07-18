@@ -157,6 +157,9 @@ module.exports = {
   get (key) {
     return CACHE[key]
   },
+  remove (key) {
+    delete CACHE[key]
+  },
   tokens: new ArrayCache('tokens', ['value']),
   services: new ArrayCache('services', ['space', 'name']),
   projects: new ArrayCache('projects', 'id'),

@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const request = require('./request.axios')
+const cache = require('../core/utils/cache')
 
 class Request {
   #url;
@@ -14,6 +15,8 @@ class Request {
   data (callback) {
     router[this.#methods](this.#url, (req, res, next) => {
       try {
+        // 存储请求头到缓存中
+        cache.set('request_headers', req.headers)
         let result = callback
         if (typeof callback === 'function') {
           result = callback(req)
@@ -43,6 +46,8 @@ class Request {
   proxy () {
     router[this.#methods](this.#url, (req, res, next) => {
       console.log(`Proxy: ${this.#methods} ${this.#url}`)
+      // 存储请求头到缓存中
+      cache.set('request_headers', req.headers)
       // 如果存在参数
       let url = this.#url
       if (url.indexOf(':') !== -1 && req.params != null && typeof req.params === 'object') {
@@ -50,15 +55,11 @@ class Request {
           url = url.replace(new RegExp(`:${key}`,'g'), req.params[key])
         }
       }
-      // 发起请求
-      const config = {
-        headers: req.headers
-      }
       let requestPromise = null
       if (this.#methods === 'get') {
-        requestPromise = request[this.#methods](url, config)
+        requestPromise = request[this.#methods](url)
       } else {
-        requestPromise = request[this.#methods](url, req.body, config)
+        requestPromise = request[this.#methods](url, req.body)
       }
       requestPromise
         .then(data => {
