@@ -4,17 +4,6 @@
       <h3>Initialize Service</h3>
       <p>You must first specify or create a local directory and initialize the service. Then you can code the service in the specified local directory.</p>
     </div>
-    <el-form :model="form">
-      <el-form-item label="Version" prop="version" required>
-        <el-input v-model="form.version"/>
-      </el-form-item>
-      <el-form-item label="Compiler" prop="compiler" required>
-        <CompilerSelect v-model="form.compiler"/>
-      </el-form-item>
-      <el-form-item label="Supported Databases" prop="supportedDatabases">
-        <DatabaseTypeSelect v-model="form.supportedDatabases"/>
-      </el-form-item>
-    </el-form>
     <div class="directory-select-wrap">
       <DirectorySelect
         v-model="form.codespace"

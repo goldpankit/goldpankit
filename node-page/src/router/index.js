@@ -135,14 +135,26 @@ router.beforeEach((to, from, next) => {
     return
   }
   // 用户页面：如果拿到了登录信息，直接放行
-  if (store.state.userInfo != null) {
-    next()
-    return
-  }
-  // 用户页面：未拿到登录信息，跳转到登录页
-  next({
-    name: 'SignIn'
-  })
+  getLoginInfo()
+    .then(data => {
+      // 获取到了登录信息：放行
+      if (data != null) {
+        next()
+        return
+      }
+      // 未获取到登录信息：退出登录
+      store.dispatch('logout')
+      // 跳转到登录页
+      next({
+        name: 'SignIn'
+      })
+    })
+    .catch(e => {
+      console.log('e', e)
+      next({
+        name: 'SignIn'
+      })
+    })
 })
 
 export default router
