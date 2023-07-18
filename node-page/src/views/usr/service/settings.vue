@@ -5,7 +5,7 @@
         <div class="header">
           <h2>{{service.space.name}}·{{service.name}}</h2>
           <div v-if="initialized" class="opera">
-            <el-button type="important" :disabled="currentProject == null" @click="compile">Compile</el-button>
+            <el-button type="important" :disabled="currentProject == null || isWorking.compile" @click="compile">Compile</el-button>
             <el-button type="important" @click="$refs.publishWindow.open(route.space, route.service)">Publish</el-button>
           </div>
         </div>
@@ -80,6 +80,9 @@ export default {
     PublishWindow, BasicSetting, InitializeView, DirectorySelect, SettingFiles},
   data () {
     return {
+      isWorking: {
+        compile: false
+      },
       // 路由参数
       route: {
         space: '',
@@ -155,10 +158,14 @@ export default {
     },
     // 编译服务
     compile () {
+      if (this.isWorking.compile) {
+        return
+      }
+      this.isWorking.compile = true
       const variables = this.$refs.variables.variables
       compile({
         ...this.route,
-        projectId: this.currentProject.id,
+        projectId: this.currentProject,
         database: this.currentDatabase,
         variables
       })
@@ -167,6 +174,9 @@ export default {
         })
         .catch(e => {
           console.log('e', e)
+        })
+        .finally(() => {
+          this.isWorking.compile = false
         })
     }
   },

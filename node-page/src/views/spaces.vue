@@ -38,6 +38,11 @@
                 </section>
               </li>
             </ul>
+            <div class="user-profile">
+              <img v-if="space.user.avatar == null" src="/images/avatar/1.png">
+              <img v-else :src="space.user.avatar">
+              <span>{{space.user.nickname}}</span>
+            </div>
           </router-link>
         </li>
       </ul>
@@ -253,6 +258,18 @@ export default {
           display: flex;
           justify-content: flex-end;
         }
+      }
+    }
+    // 用户信息
+    .user-profile {
+      display: flex;
+      align-items: center;
+      img {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        object-fit: contain;
+        margin-right: 10px;
       }
     }
   }

@@ -24,7 +24,7 @@
     v-else-if="variable.inputType === 'database'"
     v-model="variable[valueKey]"
     :with-prefix="false"
-    :with-create-button="false"
+    :with-block="true"
   />
   <TableSelect
     v-else-if="variable.inputType === 'table'"
@@ -71,6 +71,5 @@ export default {
 }
 </script>
 
-<style scoped>
-
+<style scoped lang="scss">
 </style>

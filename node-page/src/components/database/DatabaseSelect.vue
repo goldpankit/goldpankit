@@ -1,6 +1,11 @@
 <template>
-  <div class="database-select">
-    <el-select :model-value="modelValue" @change="$emit('change', $event)" clearable>
+  <div class="database-select" :class="{ 'with-block': withBlock }">
+    <el-select
+      :model-value="modelValue"
+      @update:modelValue="$emit('update:modelValue', $event)"
+      @change="$emit('change', $event)"
+      clearable
+    >
       <el-option
         v-for="item in list"
         :value="item.id"
@@ -28,6 +33,9 @@ export default {
     },
     withCreateButton: {
       default: true
+    },
+    withBlock: {
+      default: false
     }
   },
   data () {
@@ -58,6 +66,15 @@ export default {
   border: 1px solid var(--border-default-color);
   border-radius: 5px;
   overflow: hidden;
+  &.with-block {
+    width: 100%;
+    :deep(.el-select) {
+      flex-grow: 1;
+    }
+    :deep(.el-button) {
+      flex-shrink: 0;
+    }
+  }
   :deep(.el-select) {
     width: 175px;
     .el-input__wrapper {

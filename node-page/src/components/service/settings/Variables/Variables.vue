@@ -138,7 +138,7 @@ export default {
           if (lastVarIndex === -1) {
             this.variables.unshift(newVar)
           } else {
-            this.variables.splice(lastVarIndex, 0, newVar)
+            this.variables.splice(lastVarIndex + 1, 0, newVar)
           }
         }
       }
@@ -235,7 +235,7 @@ export default {
             this.saveVariables()
             return
           }
-          const index = this.variables.find(v => v.name === this.currentVariable.name)
+          const index = this.variables.findIndex(v => v.name === this.currentVariable.name)
           if (index === -1) {
             return
           }

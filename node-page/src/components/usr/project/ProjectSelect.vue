@@ -1,6 +1,11 @@
 <template>
   <div class="project-select">
-    <el-select :model-value="modelValue" @change="$emit('change', $event)" clearable>
+    <el-select
+      :model-value="modelValue"
+      @update:modelValue="$emit('update:modelValue', $event)"
+      @change="$emit('change', $event)"
+      clearable
+    >
       <el-option
         v-for="item in list"
         :value="item.id"
