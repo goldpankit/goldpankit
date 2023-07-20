@@ -17,6 +17,7 @@ class EllipsisExpress {
     }
     const diffGroups = this.#parse(express)
     // console.log('diffGroups', JSON.stringify(diffGroups, null, 2))
+    console.log('targetContent', targetContent)
     const contentLines = targetContent.split('\n')
     // 记录上一次的插入索引，用于处理当前这一次的删除范围
     for (const diffGroup of diffGroups) {

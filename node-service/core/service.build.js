@@ -13,7 +13,6 @@ module.exports = {
       contents: builds.map(item => item.content)
     })
       .then(contents => {
-        console.log('contents', contents)
         for (let i = 0; i < contents.length; i++) {
           builds[i].content = contents[i]
         }

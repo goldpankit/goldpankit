@@ -25,7 +25,7 @@ module.exports = {
         let content = file.content
         // 如果内容为省略号表达式，则对原始内容进行反向合并后写入文件
         if (ee.isEllipsis(content)) {
-          const originContent = this.readFile(filepath)
+          const originContent = this.readFile(filepath).content
           content = ee.revertMerge(content, originContent)
           this.createFile(filepath, content, true)
           fileCount++

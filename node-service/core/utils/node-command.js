@@ -10,7 +10,8 @@ module.exports = {
    */
   exec (dir, command) {
     return new Promise((resolve, reject) => {
-      exec(command, {cwd: dir}, (err) => {
+      const commands = command.split('\n')
+      exec(commands.join('&&'), {cwd: dir}, (err) => {
         if (err) {
           return reject(err)
         }
