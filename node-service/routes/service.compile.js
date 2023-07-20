@@ -21,4 +21,11 @@ request
     return serviceCompile.compile(req.body)
   })
 
+// 清空编译服务文件
+request
+  .post('/service/compile/clean')
+  .data(req => {
+    return serviceCompile.cleanCompile(req.body)
+  })
+
 module.exports = request.router

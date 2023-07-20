@@ -16,9 +16,9 @@ module.exports = {
     let fileCount = 0
     for (const file of files) {
       const relativePath = file.filepath
+      const filepath = `${codespace}/${relativePath}`
       // 删除文件
       if (file.filetype !== 'DIRECTORY') {
-        const filepath = `${codespace}/${relativePath}`
         let content = file.content
         // 如果内容为省略号表达式，则对原始内容进行反向合并后写入文件
         if (ee.isEllipsis(content)) {
@@ -30,6 +30,12 @@ module.exports = {
         }
         this.deleteFile(filepath)
         fileCount++
+        // 删除空目录
+        let dirpath = this.getDirectory(filepath)
+        while (this.isEmptyDirectory(dirpath) && codespace !== dirpath) {
+          this.deleteDirectory(dirpath)
+          dirpath = this.getDirectory(dirpath)
+        }
       }
     }
     return fileCount

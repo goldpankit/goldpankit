@@ -150,6 +150,7 @@ module.exports = {
       compiler: serviceConfig.compiler,
       supportedDatabases: serviceConfig.supportedDatabases.join(','),
       builds: JSON.stringify(serviceConfig.builds),
+      unbuilds: JSON.stringify(serviceConfig.unbuilds),
       variables: JSON.stringify(serviceConfig.variables),
       publishDescription: dto.publishDescription,
       description: serviceConfig.readme,
