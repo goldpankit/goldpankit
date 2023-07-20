@@ -58,10 +58,14 @@
                     :space="space"
                     :service="currentService.name"
                     :version="currentService.lastVersion"
+                    :with-project="false"
                     :project-config="project"
                     @installed="fetchProject()"
                     @uninstalled="fetchProject()"
                   />
+                  <div class="issue-wrap">
+                    <IssueListView v-show="currentServiceDimension === 'issues'"/>
+                  </div>
                 </div>
               </div>
               <div class="opera">
@@ -110,9 +114,10 @@ import {fetchSubServices} from "../api/service";
 import {fetchById} from "../api/user.project";
 import MarkdownEditor from "../components/common/MarkdownEditor.vue";
 import Empty from "../components/common/Empty.vue";
+import IssueListView from "../components/space/IssueListView.vue";
 
 export default {
-  components: {Empty, MarkdownEditor, ServiceInstaller},
+  components: {IssueListView, Empty, MarkdownEditor, ServiceInstaller},
   data () {
     return {
       space: null,
@@ -135,6 +140,7 @@ export default {
       if (this.currentService == null) {
         return false
       }
+      console.log('this.project.services', this.project.services)
       return this.project.services[this.currentService.name] != null
     }
   },

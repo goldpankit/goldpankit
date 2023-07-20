@@ -12,3 +12,7 @@ export function uninstall (data) {
 export function compile (data) {
   return request.post('/service/compile', data)
 }
+// 清空编译代码
+export function cleanCompile (data) {
+  return request.post('/service/compile/clean', data)
+}

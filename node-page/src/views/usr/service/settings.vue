@@ -5,7 +5,8 @@
         <div class="header">
           <h2>{{service.space.name}}·{{service.name}}</h2>
           <div v-if="initialized" class="opera">
-            <el-button type="important" :disabled="currentProject == null || isWorking.compile" @click="compile">Compile</el-button>
+            <el-button type="primary" :disabled="currentProject == null || isWorking.compile" @click="compile">Compile</el-button>
+            <el-button type="primary" :disabled="currentProject == null || isWorking.cleanCompile" @click="cleanCompile">Clean Compile</el-button>
             <el-button type="important" @click="$refs.publishWindow.open(route.space, route.service)">Publish</el-button>
           </div>
         </div>
@@ -70,7 +71,7 @@ import BasicSetting from "../../../components/service/settings/BasicSetting.vue"
 import PublishWindow from "../../../components/service/PublishWindow.vue";
 import Variables from "../../../components/service/settings/Variables/Variables.vue";
 import {fetchConfig, fetchProfile, saveConfig} from "../../../api/service";
-import {compile} from "../../../api/service.compile";
+import {cleanCompile, compile} from "../../../api/service.compile";
 import MarkdownEditor from "../../../components/common/MarkdownEditor.vue";
 
 export default {
@@ -81,7 +82,8 @@ export default {
   data () {
     return {
       isWorking: {
-        compile: false
+        compile: false,
+        cleanCompile: false
       },
       // 路由参数
       route: {
@@ -177,6 +179,29 @@ export default {
         })
         .finally(() => {
           this.isWorking.compile = false
+        })
+    },
+    // 清空编译
+    cleanCompile () {
+      if (this.isWorking.cleanCompile) {
+        return
+      }
+      this.isWorking.cleanCompile = true
+      const variables = this.$refs.variables.variables
+      cleanCompile({
+        ...this.route,
+        projectId: this.currentProject,
+        database: this.currentDatabase,
+        variables
+      })
+        .then(() => {
+          console.log('清空成功')
+        })
+        .catch(e => {
+          console.log('e', e)
+        })
+        .finally(() => {
+          this.isWorking.cleanCompile = false
         })
     }
   },

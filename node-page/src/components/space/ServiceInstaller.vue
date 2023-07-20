@@ -10,7 +10,7 @@
       <p class="install-tip">
         tips: Install the service by filling out the form below and clicking the Install button at the bottom.
       </p>
-      <div class="form-wrap">
+      <div v-if="withProject" class="form-wrap">
         <el-form :model="project">
           <el-form-item label="Project Name" required>
             <el-input v-model="project.name"/>
@@ -87,6 +87,10 @@ export default {
     },
     version: {
       required: true
+    },
+    // 是否包含项目信息
+    withProject: {
+      default: true
     },
     // 项目配置信息（项目安装完服务后的配置信息）
     projectConfig: {},
@@ -165,23 +169,41 @@ export default {
     },
     // 安装服务
     install () {
-      // 创建项目
-      create(this.project)
-        .then(data => {
-          this.setCurrentProject(data)
-          return data
-        })
-        .then(projectId => {
-          // 安装服务
-          install({
-            projectId: projectId,
-            database: this.currentDatabase,
-            space: this.space,
-            service: this.service,
-            version: this.version,
-            variables: this.variables
+      if (this.withProject) {
+        // 创建项目
+        create(this.project)
+          .then(data => {
+            this.setCurrentProject(data)
+            return data
           })
-        })
+          .then(projectId => {
+            // 安装服务
+            install({
+              projectId: projectId,
+              database: this.currentDatabase,
+              space: this.space,
+              service: this.service,
+              version: this.version,
+              variables: this.variables
+            })
+          })
+          .then(() => {
+            this.$emit('installed')
+          })
+          .catch(e => {
+            this.$emit('error', e)
+          })
+        return
+      }
+      // 安装服务
+      install({
+        projectId: this.currentProject,
+        database: this.currentDatabase,
+        space: this.space,
+        service: this.service,
+        version: this.version,
+        variables: this.variables
+      })
         .then(() => {
           this.$emit('installed')
         })
@@ -189,10 +211,10 @@ export default {
           this.$emit('error', e)
         })
     },
-    // 安装服务
+    // 卸载服务
     uninstall () {
       uninstall({
-        projectId: this.currentProject.id,
+        projectId: this.currentProject,
         database: this.currentDatabase,
         space: this.space,
         service: this.service,

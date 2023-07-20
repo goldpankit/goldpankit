@@ -106,7 +106,7 @@ export default {
         unbuilds: [],
         prices: [
           {
-            type: 'monthly',
+            type: 'free',
             value: 0,
           }
         ],
@@ -121,9 +121,8 @@ export default {
   methods: {
     // 初始化数据
     initData () {
-      console.log('serviceConfig', this.serviceConfig)
       for (const key in this.form) {
-        this.form[key] = this.serviceConfig[key]
+        this.form[key] = this.serviceConfig[key] || this.form[key]
       }
       this.originForm = JSON.parse(JSON.stringify(this.form))
     },
