@@ -175,7 +175,7 @@ export default {
           // 安装服务
           install({
             projectId: projectId,
-            database: null, // this.currentDatabase,
+            database: this.currentDatabase,
             space: this.space,
             service: this.service,
             version: this.version,
