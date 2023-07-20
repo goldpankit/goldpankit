@@ -152,26 +152,28 @@ class Kit {
       serviceTranslator.translate({ space: dto.space, service: dto.service })
     }
     // 获取数据库信息
-    const database = project.databases.find(db => db.name === dto.database)
+    const database = cache.databases.get(dto.database)
     // 组装变量
     const variables = this.#getVariables(database, dto.variables)
     return Promise.all(variables)
       .then(vars => {
-        console.log('vars', vars)
-        return serviceApi.compile({
+        serviceApi.compile({
           defaultCompiler: serviceConfig.compiler,
           variables: vars,
           files: this.#getFileConfigList(dto.space, dto.service)
         })
-      })
-      .then(data => {
-        // 写入文件
-        fs.writeFiles(data, project.codespace)
-        // 执行命令
-        if (serviceConfig.builds.length > 0) {
-          serviceBuild.build(project, database, serviceConfig.builds)
-        }
-        return Promise.resolve()
+          .then(data => {
+            // 写入文件
+            fs.writeFiles(data, project.codespace)
+            // 执行命令
+            if (serviceConfig.builds.length > 0) {
+              serviceBuild.build(project, database, serviceConfig, vars)
+            }
+            return Promise.resolve()
+          })
+          .catch(e => {
+            return Promise.reject(e)
+          })
       })
       .catch(e => {
         return Promise.reject(e)

@@ -26,7 +26,6 @@ request
 request
   .get('/database/delete/:databaseId')
   .data(req => {
-    console.log('req', req)
     return database.deleteById(req.params.databaseId)
   })
 

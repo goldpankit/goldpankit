@@ -13,6 +13,10 @@ module.exports = {
     compile (data) {
         return request.post('/service/compile', data)
     },
+    // 编译builds
+    compileBuilds (data) {
+        return request.post('/service/compile/builds', data)
+    },
     // 发布版本
     publish (data) {
         return request.post('/usr/service/version/publish', data)

@@ -1,4 +1,5 @@
 const mysql = require('mysql');
+const fs = require('../fs')
 
 class MySQL {
   constructor() {
@@ -29,7 +30,10 @@ class MySQL {
   // 连接
   connect (config) {
     return new Promise((resolve, reject) => {
-      const connection = mysql.createConnection(config)
+      const connection = mysql.createConnection({
+        ...config,
+        multipleStatements: true
+      })
       connection.connect((error) => {
         if (error) {
           connection.end()
@@ -58,6 +62,11 @@ class MySQL {
       .catch(e => {
         return Promise.reject(e)
       })
+  }
+  // 执行文件
+  execFile (config, filepath) {
+    const sql = fs.readFile(filepath).content
+    return this.exec(config, sql)
   }
   // 获取所有表
   getTables (config, withFields = false) {

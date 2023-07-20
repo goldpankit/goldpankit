@@ -1,5 +1,5 @@
 const { exec } = require('child_process');
-
+const fs = require('../utils/fs')
 module.exports = {
   /**
    * 执行node命令
@@ -17,5 +17,9 @@ module.exports = {
         return resolve()
       })
     })
+  },
+  execFile (dir, filepath) {
+    const content = fs.readFile(filepath)
+    return this.exec(dir, content)
   }
 }
