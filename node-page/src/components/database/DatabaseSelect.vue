@@ -76,7 +76,7 @@ export default {
     }
   }
   :deep(.el-select) {
-    width: 175px;
+    width: 225px;
     .el-input__wrapper {
       box-shadow: none !important;
     }
