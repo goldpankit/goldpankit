@@ -33,26 +33,44 @@
           </div>
         </template>
         <!-- 命令输入 -->
-        <el-input
-          v-model="build.content"
-          type="textarea"
-          placeholder="Build command"
-          :rows="5"
-          @input="handleSave"
-        />
+        <el-tabs v-model="build.contentType">
+          <el-tab-pane name="string" label="Input">
+            <el-input
+              v-model="build.content"
+              type="textarea"
+              placeholder="Build command"
+              :rows="5"
+              @input="handleSave"
+            />
+          </el-tab-pane>
+          <el-tab-pane name="file" label="File">
+            <div class="select-holder" @click="openSelectFileWindow(build)">
+              <p v-if="build.__filepath == null || build.__filepath === ''" class="holder">Click to select file.</p>
+              <p v-else>{{build.__filepath}}</p>
+            </div>
+          </el-tab-pane>
+        </el-tabs>
       </el-collapse-item>
     </el-collapse>
     <Empty v-else/>
+    <!-- 服务文件选择 -->
+    <ServiceFileSelectWindow
+      ref="serviceFileSelectWindow"
+      :service-config="serviceConfig"
+      @change="handleFileChange"
+    />
   </div>
 </template>
 
 <script>
 import BuildCommandTypeSelect from "./BuildCommandTypeSelect.vue";
 import Empty from "../../common/Empty.vue";
+import DirectorySelect from "../../common/DirectorySelect.vue";
+import ServiceFileSelectWindow from "../../common/ServiceFileSelectWindow.vue";
 
 export default {
   name: "BuildList",
-  components: {Empty, BuildCommandTypeSelect},
+  components: {ServiceFileSelectWindow, DirectorySelect, Empty, BuildCommandTypeSelect},
   props: {
     builds: {
       required: true,
@@ -60,26 +78,40 @@ export default {
     },
     withUnbuild: {
       default: false
+    },
+    serviceConfig: {
+      required: true
     }
   },
   data () {
     return {
       actives: [],
-      varIndex: 1
+      varIndex: 1,
+      // 选择文件数据
+      selectFileData: {
+        currentBuild: null
+      }
     }
   },
   watch: {
     builds: {
       immediate: true,
       handler () {
-        this.builds.forEach(item => {
-          item.id = '' + Math.random()
-          item.__readonly = true
-        })
+        this.__handleBuildList('builds')
       }
-    }
+    },
+    unbuilds: {
+      immediate: true,
+      handler () {
+        this.__handleBuildList('unbuilds')
+      }
+    },
   },
   methods: {
+    handleFileChange (value) {
+      this.selectFileData.currentBuild.__filepath = value
+      this.handleSave()
+    },
     // 创建
     create () {
       const id = '' + Math.random()
@@ -87,8 +119,10 @@ export default {
         id,
         name: this.__generateBuildName(),
         type: 'Node',
+        contentType: 'string',
         content: '',
-        __readonly: false
+        __readonly: false,
+        __filepath: ''
       })
       this.actives.push(id)
     },
@@ -108,6 +142,11 @@ export default {
       this.builds.splice(index,1)
       this.handleSave()
     },
+    // 打开选择文件窗口
+    openSelectFileWindow(build) {
+      this.selectFileData.currentBuild = build
+      this.$refs.serviceFileSelectWindow.open()
+    },
     // 生成构建名称
     __generateBuildName () {
       let buildName
@@ -118,6 +157,20 @@ export default {
           return buildName
         }
       }
+    },
+    // 处理build数据
+    __handleBuildList(buildType) {
+      if (this[buildType] == null) {
+        return
+      }
+      this[buildType].forEach(item => {
+        item.id = '' + Math.random()
+        if (item.contentType === 'file') {
+          item.__filepath = item.content
+          item.content = ''
+        }
+        item.__readonly = true
+      })
     }
   }
 }
@@ -163,6 +216,18 @@ export default {
       }
       .type {
         width: 100px;
+      }
+    }
+    // 选择文件空提示
+    .select-holder {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 80px;
+      cursor: pointer;
+      .holder {
+        font-size: var(--font-size-middle);
+        color: var(--color-gray);
       }
     }
     // 操作

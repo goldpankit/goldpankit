@@ -38,10 +38,10 @@
           <TranslatorList :space="space" :service="service" :translator="form.translator" @save="saveConfig"/>
         </el-form-item>
         <el-form-item label="Install Builds" prop="builds">
-          <BuildList :builds="form.builds" @save="saveConfig"/>
+          <BuildList :builds="form.builds" :service-config="serviceConfig" @save="saveConfig"/>
         </el-form-item>
         <el-form-item label="Uninstall Builds" prop="unbuilds">
-          <BuildList :builds="form.unbuilds" :with-unbuild="true" @save="saveConfig"/>
+          <BuildList :builds="form.unbuilds" :with-unbuild="true" :service-config="serviceConfig" @save="saveConfig"/>
         </el-form-item>
         <el-form-item label="Code Space" prop="codespace">
           <div v-if="!newCodespace.changing" class="codespace-wrap">
@@ -121,6 +121,7 @@ export default {
   methods: {
     // 初始化数据
     initData () {
+      console.log('serviceConfig', this.serviceConfig)
       for (const key in this.form) {
         this.form[key] = this.serviceConfig[key]
       }
@@ -200,14 +201,16 @@ export default {
           return {
             name: item.name,
             type: item.type,
-            content: item.content
+            content: item.contentType === 'file' ? item.__filepath : item.content,
+            contentType: item.contentType
           }
         }),
         unbuilds: this.form.unbuilds.map(item => {
           return {
             name: item.name,
             type: item.type,
-            content: item.content
+            content: item.contentType === 'file' ? item.__filepath : item.content,
+            contentType: item.contentType
           }
         })
       })
