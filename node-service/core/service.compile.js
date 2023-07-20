@@ -33,11 +33,13 @@ class Kit {
       throw new Error('Please select a project.')
     }
     // 获取数据库信息
-    const database = project.databases.find(db => db.name === dto.database)
+    const database = cache.databases.get(dto.database)
     // 组装变量
     const variables = this.#getVariables(database, dto.variables)
+    let serviceVars = []
     return Promise.all(variables)
       .then(vars => {
+        serviceVars = vars
         return serviceApi.install({
           space: dto.space,
           service: dto.service,
@@ -73,7 +75,7 @@ class Kit {
         // 执行命令
         const builds = data.version.builds == null || data.version.builds === '' ? [] : JSON.parse(data.version.builds)
         if (builds.length > 0) {
-          serviceBuild.build(project, database, builds)
+          serviceBuild.build(project, database, builds, serviceVars, data.version.compiler)
         }
         return Promise.resolve()
       })
@@ -167,7 +169,7 @@ class Kit {
             fs.writeFiles(data, project.codespace)
             // 执行命令
             if (serviceConfig.builds.length > 0) {
-              serviceBuild.build(project, database, serviceConfig, vars)
+              serviceBuild.build(project, database, serviceConfig.builds, vars, serviceConfig.compiler)
             }
             return Promise.resolve()
           })

@@ -2,21 +2,21 @@ const mysql = require('./utils/db/mysql')
 const nc = require('./utils/node-command')
 const serviceApi = require("./api/service");
 module.exports = {
-  build (project, database, serviceConfig, vars) {
-    if (serviceConfig.builds == null || serviceConfig.builds.length === 0) {
+  build (project, database, builds, vars, compiler) {
+    if (builds == null || builds.length === 0) {
       return
     }
     // 编译builds
     serviceApi.compileBuilds({
-      compiler: serviceConfig.compiler,
+      compiler: compiler,
       variables: vars,
-      contents: serviceConfig.builds.map(item => item.content)
+      contents: builds.map(item => item.content)
     })
       .then(contents => {
         for (let i = 0; i < contents.length; i++) {
-          serviceConfig.builds[i].content = contents[i]
+          builds[i].content = contents[i]
         }
-        for (const build of serviceConfig.builds) {
+        for (const build of builds) {
           // 执行MySQL脚本
           if (build.type === 'MySQL') {
             let execPromise = null
