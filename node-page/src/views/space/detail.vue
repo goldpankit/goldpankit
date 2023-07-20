@@ -154,6 +154,14 @@ export default {
       })
         .then(data => {
           this.mainServices = data
+          // 从路由中获取service名称
+          const targetServiceName = this.$route.query.service
+          if (targetServiceName != null && targetServiceName !== '') {
+            this.currentMainService = this.mainServices.find(s => s.name === targetServiceName)
+            if (this.currentMainService != null) {
+              this.currentTab = 'services'
+            }
+          }
         })
         .catch(e => {
           console.log('e', e)

@@ -22,11 +22,22 @@
       />
       <ul v-if="loading || spaces.length > 0" v-loading="loading" class="space-list">
         <li v-for="space in spaces" :key="space.id">
-          <router-link :to="{ name: 'SpaceDetail', params: { name: space.name } }">
+          <a
+            href="javascript:;"
+            @click="$router.push({ name: 'SpaceDetail', params: { name: space.name } })"
+          >
             <h3>{{space.name}}</h3>
             <p>{{space.introduce}}</p>
             <ul class="service-list">
-              <li v-for="service in space.mainServices">
+              <li
+                v-for="service in space.mainServices"
+                :key="service.id"
+                @click.stop="$router.push({
+                  name: 'SpaceDetail',
+                  params: { name: space.name },
+                  query: { service: service.name }
+                })"
+              >
                 <h4>{{service.name}}</h4>
                 <p>{{service.introduce}}</p>
                 <section class="infos">
@@ -43,7 +54,7 @@
               <img v-else :src="space.user.avatar">
               <span>{{space.user.nickname}}</span>
             </div>
-          </router-link>
+          </a>
         </li>
       </ul>
       <Empty v-if="keyword.trim() !== '' && spaces.length === 0" description="Not Found Spaces"/>
