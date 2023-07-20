@@ -223,13 +223,14 @@ export default {
           font-size: var(--font-size-large);
           margin-bottom: 15px;
         }
-        p {
+        a > p {
           color: var(--font-color);
           overflow: hidden;
           text-overflow: ellipsis;
           -webkit-line-clamp: 2;
           display: -webkit-box;
           -webkit-box-orient: vertical;
+          line-height: 25px;
         }
       }
     }
