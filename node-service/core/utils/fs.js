@@ -17,6 +17,9 @@ module.exports = {
     for (const file of files) {
       const relativePath = file.filepath
       const filepath = `${codespace}/${relativePath}`
+      if (!this.exists(filepath)) {
+        continue
+      }
       // 删除文件
       if (file.filetype !== 'DIRECTORY') {
         let content = file.content

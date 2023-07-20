@@ -26,101 +26,118 @@ class Kit {
    * @returns {Promise<void>}
    */
   install (dto) {
-    this.#install(dto)
-      .then(({ data, project, database, variables}) => {
-        // 写入文件
-        fs.writeFiles(data.files, project.codespace)
-        // 获取配置格式
-        const config = JSON.parse(JSON.stringify(Const.PROJECT_CONFIG_FILE_CONTENT))
-        // 获取项目配置
-        const configPath = userProject.getConfigPath(project.id)
-        let projectConfig = fs.readJSONFile(configPath)
-        if (projectConfig != null) {
-          object.merge(projectConfig, config)
-        }
-        // 写入项目配置文件
-        if (data.version.serviceType === 'MAIN') {
-          config.space = dto.space
-          config.main[dto.service] = {
-            version: dto.version,
-            variables: this.#getSimpleVariables(dto.variables)
+    return new Promise((resolve, reject) => {
+      this.#install(dto)
+        .then(({ data, project, database, variables}) => {
+          // 写入文件
+          fs.writeFiles(data.files, project.codespace)
+          // 获取配置格式
+          const config = JSON.parse(JSON.stringify(Const.PROJECT_CONFIG_FILE_CONTENT))
+          // 获取项目配置
+          const configPath = userProject.getConfigPath(project.id)
+          let projectConfig = fs.readJSONFile(configPath)
+          if (projectConfig != null) {
+            object.merge(projectConfig, config)
           }
-        } else {
-          config.services[dto.service] = {
-            version: dto.version,
-            variables: this.#getSimpleVariables(dto.variables)
+          // 写入项目配置文件
+          if (data.version.serviceType === 'MAIN') {
+            config.space = dto.space
+            config.main[dto.service] = {
+              version: dto.version,
+              variables: this.#getSimpleVariables(dto.variables)
+            }
+          } else {
+            config.services[dto.service] = {
+              version: dto.version,
+              variables: this.#getSimpleVariables(dto.variables)
+            }
           }
-        }
-        fs.createFile(userProject.getConfigPath(project.id), fs.toJSONFileString(config), true)
-        // 执行命令
-        const builds = data.version.builds == null || data.version.builds === '' ? [] : JSON.parse(data.version.builds)
-        if (builds.length > 0) {
-          serviceBuild.build(project, database, builds, variables, data.version.compiler)
-        }
-        return Promise.resolve()
-      })
-      .catch(e => {
-        return Promise.reject(e)
-      })
+          fs.createFile(userProject.getConfigPath(project.id), fs.toJSONFileString(config), true)
+          // 执行命令
+          const builds = data.version.builds == null || data.version.builds === '' ? [] : JSON.parse(data.version.builds)
+          if (builds.length > 0) {
+            serviceBuild.build(project, database, builds, variables, data.version.compiler)
+          }
+          resolve()
+        })
+        .catch(e => {
+          reject(e)
+        })
+    })
   }
   /**
    * 卸载服务
    */
   uninstall (dto) {
-    this.#install(dto)
-      .then(({ data, project, database, variables}) => {
-        // 删除文件
-        fs.deleteFiles(data.files, project.codespace)
-        // 获取项目配置
-        const configPath = userProject.getConfigPath(project.id)
-        let projectConfig = fs.readJSONFile(configPath)
-        // 删除项目配置中服务的配置
-        delete projectConfig.services[dto.service]
-        // 重新写入项目配置文件中
-        fs.createFile(userProject.getConfigPath(project.id), fs.toJSONFileString(projectConfig), true)
-        // 执行命令
-        const unbuilds = data.version.unbuilds == null || data.version.unbuilds === '' ? [] : JSON.parse(data.version.unbuilds)
-        if (unbuilds.length > 0) {
-          serviceBuild.build(project, database, unbuilds, variables, data.version.compiler)
-        }
-        return Promise.resolve()
-      })
-      .catch(e => {
-        return Promise.reject(e)
-      })
+    return new Promise((resolve, reject) => {
+      this.#install(dto)
+        .then(({ data, project, database, variables}) => {
+          // 删除文件
+          fs.deleteFiles(data.files, project.codespace)
+          // 获取项目配置
+          const configPath = userProject.getConfigPath(project.id)
+          let projectConfig = fs.readJSONFile(configPath)
+          // 删除项目配置中服务的配置
+          delete projectConfig.services[dto.service]
+          // 重新写入项目配置文件中
+          fs.createFile(userProject.getConfigPath(project.id), fs.toJSONFileString(projectConfig), true)
+          // 执行命令
+          console.log('data', data.version)
+          const unbuilds = data.version.unbuilds == null || data.version.unbuilds === '' ? [] : JSON.parse(data.version.unbuilds)
+          if (unbuilds.length > 0) {
+            serviceBuild.build(project, database, unbuilds, variables, data.version.compiler)
+          }
+          resolve()
+        })
+        .catch(e => {
+          reject(e)
+        })
+    })
   }
   /**
    * 编译服务代码
    */
   compile(dto) {
-    return this.#compile(dto)
-      .then(data => {
-        // 写入文件
-        fs.writeFiles(data.files, data.project.codespace)
-        // 执行命令
-        if (data.serviceConfig.builds.length > 0) {
-          serviceBuild.build(data.project, data.database, data.serviceConfig.builds, data.variables, data.serviceConfig.compiler)
-        }
-        return Promise.resolve()
-      })
-      .catch(e => {
-        return Promise.reject(e)
-      })
+    return new Promise((resolve, reject) => {
+      this.#compile(dto)
+        .then(data => {
+          // 写入文件
+          fs.writeFiles(data.files, data.project.codespace)
+          // 执行命令
+          if (data.serviceConfig.builds.length > 0) {
+            serviceBuild.build(data.project, data.database, data.serviceConfig.builds, data.variables, data.serviceConfig.compiler)
+          }
+          resolve()
+        })
+        .catch(e => {
+          reject(e)
+        })
+    })
   }
 
   /**
    * 清空编译代码
    */
   cleanCompile(dto) {
-    this.#compile(dto)
-      .then(data => {
-        // 删除文件
-        fs.deleteFiles(data.files, data.project.codespace)
-        // 执行命令
-        if (data.serviceConfig.unbuilds.length > 0) {
-          serviceBuild.build(data.project, data.database, data.serviceConfig.unbuilds, data.variables, data.serviceConfig.compiler)
-        }
-      })
+    console.log('cleanCompile')
+    return new Promise((resolve, reject) => {
+      this.#compile(dto)
+        .then(data => {
+          console.log('compiled')
+          // 删除文件
+          fs.deleteFiles(data.files, data.project.codespace)
+          // 执行命令
+          console.log('unbulilds', data.serviceConfig.unbuilds)
+          if (data.serviceConfig.unbuilds.length > 0) {
+            serviceBuild.build(data.project, data.database, data.serviceConfig.unbuilds, data.variables, data.serviceConfig.compiler)
+          }
+          resolve()
+        })
+        .catch(e => {
+          console.log('e', e)
+          reject(e)
+        })
+    })
   }
 
   /**
@@ -195,7 +212,7 @@ class Kit {
       throw new Error('Please select a project.')
     }
     // 获取数据库信息
-    const database = project.databases.find(db => db.name === dto.database)
+    const database = cache.databases.get(dto.database)
     // 组装变量
     const variables = this.#getVariables(database, dto.variables)
     let serviceVars = null
