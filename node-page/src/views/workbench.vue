@@ -39,61 +39,63 @@
             <Empty v-else description="No Sub Services"/>
           </div>
           <!-- 服务信息 -->
-          <div v-if="currentService != null" class="setting-wrap">
-            <h3>{{currentService.name}}</h3>
-            <div class="main">
-              <ul class="service-dimensions">
-                <li :class="{selected: currentServiceDimension === 'readme'}" @click="currentServiceDimension = 'readme'">Readme</li>
-                <li :class="{selected: currentServiceDimension === 'install'}" @click="currentServiceDimension = 'install'">Install</li>
-                <li :class="{selected: currentServiceDimension === 'issues'}" @click="currentServiceDimension = 'issues'">Issues</li>
-              </ul>
-              <div class="dimension-content">
-                <div v-show="currentServiceDimension === 'readme'">
-                  <MarkdownEditor v-model="currentService.description" readonly :without-padding="true"/>
+          <div class="setting-wrap">
+            <template v-if="currentService != null">
+              <h3>{{currentService.name}}</h3>
+              <div class="main">
+                <ul class="service-dimensions">
+                  <li :class="{selected: currentServiceDimension === 'readme'}" @click="currentServiceDimension = 'readme'">Readme</li>
+                  <li :class="{selected: currentServiceDimension === 'install'}" @click="currentServiceDimension = 'install'">Install</li>
+                  <li :class="{selected: currentServiceDimension === 'issues'}" @click="currentServiceDimension = 'issues'">Issues</li>
+                </ul>
+                <div class="dimension-content">
+                  <div v-show="currentServiceDimension === 'readme'">
+                    <MarkdownEditor v-model="currentService.description" readonly :without-padding="true"/>
+                  </div>
+                  <ServiceInstaller
+                    ref="installer"
+                    v-show="currentServiceDimension === 'install'"
+                    :space="space"
+                    :service="currentService.name"
+                    :version="currentService.lastVersion"
+                    :project-config="project"
+                    @installed="fetchProject()"
+                    @uninstalled="fetchProject()"
+                  />
                 </div>
-                <ServiceInstaller
-                  ref="installer"
-                  v-show="currentServiceDimension === 'install'"
-                  :space="space"
-                  :service="currentService.name"
-                  :version="currentService.lastVersion"
-                  :project-config="project"
-                  @installed="fetchProject()"
-                  @uninstalled="fetchProject()"
-                />
               </div>
-            </div>
-            <div class="opera">
-              <template v-if="installed">
-                <el-button
-                  v-if="hasNewVersion(currentService)"
-                  type="primary"
-                  size="large"
-                  icon="Upload"
-                  @click="$refs.installer.install()"
-                >UPGRADE</el-button>
+              <div class="opera">
+                <template v-if="installed">
+                  <el-button
+                    v-if="hasNewVersion(currentService)"
+                    type="primary"
+                    size="large"
+                    icon="Upload"
+                    @click="$refs.installer.install()"
+                  >UPGRADE</el-button>
+                  <el-button
+                    v-else
+                    type="primary"
+                    size="large"
+                    @click="$refs.installer.install()"
+                  >REINSTALL</el-button>
+                  <el-button
+                    size="large"
+                    @click="$refs.installer.uninstall()"
+                  >UNINSTALL</el-button>
+                </template>
                 <el-button
                   v-else
                   type="primary"
                   size="large"
                   @click="$refs.installer.install()"
-                >REINSTALL</el-button>
-                <el-button
-                  size="large"
-                  @click="$refs.installer.uninstall()"
-                >UNINSTALL</el-button>
-              </template>
-              <el-button
-                v-else
-                type="primary"
-                size="large"
-                @click="$refs.installer.install()"
-              >INSTALL</el-button>
+                >INSTALL</el-button>
+              </div>
+            </template>
+            <div v-else class="setting-holder">
+              <h4>Sub Service Settings</h4>
+              <p>You can open Settings by clicking on sub services on the left.</p>
             </div>
-          </div>
-          <div class="setting-holder">
-            <h4>Sub Service Settings</h4>
-            <p>You can open Settings by clicking on sub services on the left.</p>
           </div>
         </div>
       </div>
@@ -385,7 +387,6 @@ export default {
       margin: 30px auto 0 auto;
       display: flex;
       flex-direction: column;
-      justify-content: center;
       align-items: center;
       padding: 50px;
       p {
