@@ -85,7 +85,7 @@ class Request {
       code: 500,
       success: false,
       data: null,
-      message: e.message
+      message: typeof e === 'string' ? e : e.message
     }
   }
 }

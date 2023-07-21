@@ -164,6 +164,9 @@ class MySQL {
               conn.end()
             })
         })
+        .catch(e => {
+          reject(e)
+        })
     })
   }
   // 获取表字段

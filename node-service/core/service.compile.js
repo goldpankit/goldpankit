@@ -82,7 +82,6 @@ class Kit {
           // 重新写入项目配置文件中
           fs.createFile(userProject.getConfigPath(project.id), fs.toJSONFileString(projectConfig), true)
           // 执行命令
-          console.log('data', data.version)
           const unbuilds = data.version.unbuilds == null || data.version.unbuilds === '' ? [] : JSON.parse(data.version.unbuilds)
           if (unbuilds.length > 0) {
             serviceBuild.build(project, database, unbuilds, variables, data.version.compiler)
@@ -101,13 +100,18 @@ class Kit {
     return new Promise((resolve, reject) => {
       this.#compile(dto)
         .then(data => {
-          // 写入文件
-          fs.writeFiles(data.files, data.project.codespace)
-          // 执行命令
-          if (data.serviceConfig.builds.length > 0) {
-            serviceBuild.build(data.project, data.database, data.serviceConfig.builds, data.variables, data.serviceConfig.compiler)
+          try {
+            console.log('写入文件')
+            // 写入文件
+            fs.writeFiles(data.files, data.project.codespace)
+            // 执行命令
+            if (data.serviceConfig.builds.length > 0) {
+              serviceBuild.build(data.project, data.database, data.serviceConfig.builds, data.variables, data.serviceConfig.compiler)
+            }
+            resolve()
+          } catch (e) {
+            reject(e)
           }
-          resolve()
         })
         .catch(e => {
           reject(e)
@@ -119,15 +123,12 @@ class Kit {
    * 清空编译代码
    */
   cleanCompile(dto) {
-    console.log('cleanCompile')
     return new Promise((resolve, reject) => {
       this.#compile(dto)
         .then(data => {
-          console.log('compiled')
           // 删除文件
           fs.deleteFiles(data.files, data.project.codespace)
           // 执行命令
-          console.log('unbulilds', data.serviceConfig.unbuilds)
           if (data.serviceConfig.unbuilds.length > 0) {
             serviceBuild.build(data.project, data.database, data.serviceConfig.unbuilds, data.variables, data.serviceConfig.compiler)
           }
@@ -152,45 +153,48 @@ class Kit {
    */
   #compile(dto) {
     return new Promise((resolve, reject) => {
-      // 获取项目信息
-      const project = cache.projects.get(dto.projectId)
-      if (project == null) {
-        reject(new Error('Please select a project.'))
-        return
-      }
-      // 获取服务信息
-      const serviceConfig = service.getServiceConfig({ space: dto.space, service: dto.service })
-      // 如果存在翻译器，则先进行翻译
-      if (serviceConfig.translator.settings.length > 0) {
-        serviceTranslator.translate({ space: dto.space, service: dto.service })
-      }
-      // 获取数据库信息
-      const database = cache.databases.get(dto.database)
-      // 组装变量
-      const variables = this.#getVariables(database, dto.variables)
-      Promise.all(variables)
-        .then(vars => {
-          serviceApi.compile({
-            defaultCompiler: serviceConfig.compiler,
-            variables: vars,
-            files: this.#getFileConfigList(dto.space, dto.service)
-          })
-            .then(data => {
-              resolve({
-                files: data,
-                project,
-                database,
-                serviceConfig,
-                variables: vars,
+      try { // 获取项目信息
+        const project = cache.projects.get(dto.projectId)
+        if (project == null) {
+          reject(new Error('Please select a project.'))
+          return
+        }
+        // 获取服务信息
+        const serviceConfig = service.getServiceConfig({space: dto.space, service: dto.service})
+        // 如果存在翻译器，则先进行翻译
+        if (serviceConfig.translator.settings.length > 0) {
+          serviceTranslator.translate({space: dto.space, service: dto.service})
+        }
+        // 获取数据库信息
+        const database = cache.databases.get(dto.database)
+        // 组装变量
+        const variables = this.#getVariables(database, dto.variables)
+        Promise.all(variables)
+          .then(vars => {
+            serviceApi.compile({
+              defaultCompiler: serviceConfig.compiler,
+              variables: vars,
+              files: this.#getFileConfigList(dto.space, dto.service)
+            })
+              .then(data => {
+                resolve({
+                  files: data,
+                  project,
+                  database,
+                  serviceConfig,
+                  variables: vars,
+                })
               })
-            })
-            .catch(e => {
-              reject(e)
-            })
-        })
-        .catch(e => {
-          reject(e)
-        })
+              .catch(e => {
+                reject(e)
+              })
+          })
+          .catch(e => {
+            reject(e)
+          })
+      } catch (e) {
+        reject(e)
+      }
     })
   }
   /**
@@ -291,9 +295,10 @@ class Kit {
               ...item,
               value: database
             })
+            return
           }
           // 输入类型为表，则查询出表信息
-          else if (item.inputType === 'table') {
+          if (item.inputType === 'table') {
             mysql.getTable({
               host: database.host,
               port: database.port,
@@ -313,7 +318,7 @@ class Kit {
             return
           }
           // 如果类型为查询模型，则查询出模型信息
-          else if (item.inputType === 'query_model') {
+          if (item.inputType === 'query_model') {
             const modelName = item.value || item.defaultValue
             const model = database.models.find(model => model.name === modelName)
             // 主表
@@ -371,7 +376,7 @@ class Kit {
             return
           }
           // 如果为服务变量组，则修改子变量值
-          else if (item.type === 'group' && item.scope === 'service') {
+          if (item.type === 'group' && item.scope === 'service') {
             resolve({
               ...item,
               children: item.children.map(v => {

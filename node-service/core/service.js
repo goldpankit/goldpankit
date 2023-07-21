@@ -53,6 +53,9 @@ module.exports = {
   getServiceConfig(dto) {
     if (dto.space != null && dto.service != null) {
       const service = cache.services.get(dto.space, dto.service)
+      if (service == null) {
+        return null
+      }
       return this.__getServiceConfig(service.codespace)
     }
     if (dto.codespace != null) {
