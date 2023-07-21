@@ -10,8 +10,8 @@
       <p class="install-tip">
         tips: Install the service by filling out the form below and clicking the Install button at the bottom.
       </p>
-      <div v-if="withProject" class="form-wrap">
-        <el-form :model="project">
+      <div class="form-wrap">
+        <el-form v-if="withProject" :model="project">
           <el-form-item label="Project Name" required>
             <el-input v-model="project.name"/>
           </el-form-item>
@@ -116,6 +116,7 @@ export default {
     ...mapState(['currentProject', 'currentDatabase']),
     // 服务变量集
     serviceVariables () {
+      console.log('vars', this.variables)
       return this.variables.filter(v => v.scope === 'service')
     },
     unique () {
@@ -178,7 +179,7 @@ export default {
           })
           .then(projectId => {
             // 安装服务
-            install({
+            return install({
               projectId: projectId,
               database: this.currentDatabase,
               space: this.space,

@@ -59,6 +59,11 @@ export default {
       return this.variables.filter(v => v.type === 'group' && v.scope === 'table_field')
     }
   },
+  watch: {
+    currentDatabase () {
+      this.fetchTables()
+    }
+  },
   methods: {
     // 切换表选择
     handleChange (value) {
