@@ -100,7 +100,7 @@ export default {
           }
         })
         .catch(e => {
-          console.log('e', e)
+          this.$tip.apiFailed(e)
         })
     }
   },

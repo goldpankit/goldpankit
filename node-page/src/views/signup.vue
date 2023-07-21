@@ -80,7 +80,7 @@ export default {
               this.$router.push({ name: 'SignIn'})
             })
             .catch(e => {
-              console.log('e', e)
+              this.$tip.apiFailed(e)
             })
             .finally(() => {
               this.regisData.isWorking = false
@@ -111,7 +111,7 @@ export default {
               }, 1000)
             })
             .catch(e => {
-              console.log('e', e)
+              this.$tip.apiFailed(e)
             })
             .finally(() => {
               this.sendSmsData.isWorking = false

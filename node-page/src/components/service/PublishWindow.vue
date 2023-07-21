@@ -62,7 +62,7 @@ export default {
           this.form.version = config.version
         })
         .catch(e => {
-          console.log('e', e)
+          this.$tip.apiFailed(e)
         })
     },
     // 保存配置
@@ -73,7 +73,7 @@ export default {
         version: this.form.version
       })
         .catch(e => {
-          console.log('e', e)
+          this.$tip.apiFailed(e)
         })
     },
     // 发布
@@ -91,7 +91,7 @@ export default {
           this.visible = false
         })
         .catch(e => {
-          console.log('e', e)
+          this.$tip.apiFailed(e)
         })
         .finally(() => {
           this.isWorking = false

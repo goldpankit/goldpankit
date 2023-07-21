@@ -110,7 +110,7 @@ export default {
           sortFiles(this.files)
         })
         .catch(e => {
-          console.log('e', e)
+          this.$tip.apiFailed(e)
         })
     },
     // 保存文件配置
@@ -134,7 +134,7 @@ export default {
             console.log('保存成功')
           })
           .catch(e => {
-            console.log('e', e)
+            this.$tip.apiFailed(e)
           })
       }, 300)
     },

@@ -160,7 +160,7 @@ export default {
           console.log('翻译完成')
         })
         .catch(e => {
-          console.log('e', e)
+          this.$tip.apiFailed(e)
         })
     },
     // 生成构建名称

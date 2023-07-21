@@ -48,7 +48,7 @@ export default {
           this.databases = data.records
         })
         .catch(e => {
-          console.log('e', e)
+          this.$tip.apiFailed(e)
         })
     },
   },

@@ -60,7 +60,7 @@ export default {
           this.$router.push({ name: 'CreateService', query: { space: this.form.name } })
         })
         .catch(e => {
-          console.log('e', e)
+          this.$tip.apiFailed(e)
         })
     }
   }

@@ -43,7 +43,7 @@ export default {
           this.list = data
         })
         .catch(e => {
-          console.log('e', e)
+          this.$tip.apiFailed(e)
         })
     },
     // 创建完成

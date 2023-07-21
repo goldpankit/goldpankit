@@ -108,7 +108,7 @@ export default {
           sortFiles(this.files)
         })
         .catch(e => {
-          console.log('e', e)
+          this.$tip.apiFailed(e)
         })
     },
     // 获取项目名称

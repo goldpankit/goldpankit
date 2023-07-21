@@ -76,7 +76,7 @@ export default {
           this.databases = data.records
         })
         .catch(e => {
-          console.log('e', e)
+          this.$tip.apiFailed(e)
         })
     },
     // 添加数据库
@@ -98,7 +98,7 @@ export default {
               this.search()
             })
             .catch(e => {
-              console.log('e', e)
+              this.$tip.apiFailed(e)
             })
         })
         .catch(() => {})
@@ -115,7 +115,7 @@ export default {
           this.$emit('success')
         })
         .catch(e => {
-          console.log('e', e)
+          this.$tip.apiFailed(e)
         })
     }
   },

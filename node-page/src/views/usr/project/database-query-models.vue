@@ -146,7 +146,7 @@ export default {
           console.log('保存成功')
         })
         .catch(e => {
-          console.log('e', e)
+          this.$tip.apiFailed(e)
         })
     },
     // 表设置更改
@@ -185,7 +185,7 @@ export default {
           this.fetchModels()
         })
         .catch(e => {
-          console.log('e', e)
+          this.$tip.apiFailed(e)
         })
     },
     // 查询模型

@@ -54,26 +54,29 @@ export default new Vuex.Store({
     },
     // 初始化登录令牌
     initToken ({ commit, dispatch }) {
-      getToken()
-        .then(data => {
-          if (data != null) {
-            document.cookie = `x-kit-token=${data.value};`
-            getLoginInfo()
-              .then(userInfo => {
-                if (userInfo != null) {
-                  commit('setUserInfo', userInfo)
-                } else {
-                  dispatch('logout')
-                }
-              })
-              .catch(e => {
-                console.log('get user info throw an error', e)
-              })
-          }
-        })
-        .catch(e => {
-          console.log('get token throw an error', e)
-        })
+      return new Promise((resolve, reject) => {
+        getToken()
+          .then(data => {
+            if (data != null) {
+              document.cookie = `x-kit-token=${data.value};`
+              getLoginInfo()
+                .then(userInfo => {
+                  if (userInfo != null) {
+                    commit('setUserInfo', userInfo)
+                  } else {
+                    dispatch('logout')
+                  }
+                  resolve()
+                })
+                .catch(e => {
+                  reject(e)
+                })
+            }
+          })
+          .catch(e => {
+            reject(e)
+          })
+      })
     }
   },
   getters: {}

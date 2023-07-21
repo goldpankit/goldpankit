@@ -113,7 +113,7 @@ export default {
           console.log('保存成功')
         })
         .catch(e => {
-          console.log('e', e)
+          this.$tip.apiFailed(e)
         })
     },
     // 获取服务信息
@@ -139,7 +139,7 @@ export default {
           this.service.description = serviceConfig.readme
         })
         .catch(e => {
-          console.log('e', e)
+          this.$tip.apiFailed(e)
         })
         .finally(() => {
           this.loading = false
@@ -155,7 +155,7 @@ export default {
           this.serviceConfig = config
         })
         .catch(e => {
-          console.log('e', e)
+          this.$tip.apiFailed(e)
         })
     },
     // 编译服务
@@ -175,7 +175,7 @@ export default {
           console.log('编译成功')
         })
         .catch(e => {
-          console.log('e', e)
+          this.$tip.apiFailed(e)
         })
         .finally(() => {
           this.isWorking.compile = false
@@ -198,7 +198,7 @@ export default {
           console.log('清空成功')
         })
         .catch(e => {
-          console.log('e', e)
+          this.$tip.apiFailed(e)
         })
         .finally(() => {
           this.isWorking.cleanCompile = false

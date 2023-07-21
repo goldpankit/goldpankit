@@ -85,7 +85,7 @@ export default {
           this.$emit('success')
         })
         .catch(e => {
-          console.log('e', e)
+          this.$tip.apiFailed(e)
         })
     },
     // 更新
@@ -95,7 +95,7 @@ export default {
           this.$emit('success')
         })
         .catch(e => {
-          console.log('e', e)
+          this.$tip.apiFailed(e)
         })
     },
     // 测试连接

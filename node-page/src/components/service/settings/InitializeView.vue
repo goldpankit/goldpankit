@@ -54,7 +54,7 @@ export default {
           this.$emit('initialized', this.form)
         })
         .catch(e => {
-          console.log('e', e)
+          this.$tip.apiFailed(e)
         })
     },
     // 获取配置
@@ -70,7 +70,7 @@ export default {
           }
         })
         .catch(e => {
-          console.log('e', e)
+          this.$tip.apiFailed(e)
         })
     }
   }

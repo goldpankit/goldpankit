@@ -108,7 +108,7 @@ export default {
           console.log('data.records', data.records)
         })
         .catch(e => {
-          console.log('e', e)
+          this.$tip.apiFailed(e)
         })
         .finally(() => {
           this.loading = false

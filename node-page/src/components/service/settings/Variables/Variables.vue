@@ -184,7 +184,7 @@ export default {
           console.log('data', data)
         })
         .catch(e => {
-          console.log('e', e)
+          this.$tip.apiFailed(e)
         })
     },
     // 获取变量配置
@@ -217,7 +217,7 @@ export default {
           })
         })
         .catch(e => {
-          console.log('e', e)
+          this.$tip.apiFailed(e)
         })
     },
     // 删除变量

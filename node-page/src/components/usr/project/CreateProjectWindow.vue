@@ -60,7 +60,7 @@ export default {
           this.$emit('success', data)
         })
         .catch(e => {
-          console.log('e', e)
+          this.$tip.apiFailed(e)
         })
     },
     // 取消创建

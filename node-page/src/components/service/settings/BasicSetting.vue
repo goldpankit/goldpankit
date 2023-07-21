@@ -139,7 +139,7 @@ export default {
           this.$emit('initialized', this.form)
         })
         .catch(e => {
-          console.log('e', e)
+          this.$tip.apiFailed(e)
         })
     },
     // 切换价格类型
@@ -172,7 +172,7 @@ export default {
           }
         })
         .catch(e => {
-          console.log('e', e)
+          this.$tip.apiFailed(e)
         })
     },
     // 保存配置
@@ -223,7 +223,7 @@ export default {
           this.originForm = JSON.parse(JSON.stringify(this.form))
         })
         .catch(e => {
-          console.log('e', e)
+          this.$tip.apiFailed(e)
         })
     }
   },

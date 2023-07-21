@@ -83,7 +83,7 @@ export default {
           sortFiles(this.files)
         })
         .catch(e => {
-          console.log('e', e)
+          this.$tip.apiFailed(e)
         })
         .finally(() => {
           file.__working_create = false
@@ -124,7 +124,7 @@ export default {
           sortFiles(this.files)
         })
         .catch(e => {
-          console.log('e', e)
+          this.$tip.apiFailed(e)
         })
     },
     // 获取路径
@@ -137,7 +137,7 @@ export default {
           this.$emit('change', this.__getAbsolutePath())
         })
         .catch(e => {
-          console.log('e', e)
+          this.$tip.apiFailed(e)
         })
     },
     // 获取绝对路径

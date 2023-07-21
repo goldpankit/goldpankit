@@ -143,7 +143,7 @@ export default {
           this.fetchServiceList()
         })
         .catch(e => {
-          console.log('e', e)
+          this.$tip.apiFailed(e)
         })
     },
     // 查询服务列表
@@ -164,7 +164,7 @@ export default {
           }
         })
         .catch(e => {
-          console.log('e', e)
+          this.$tip.apiFailed(e)
         })
     },
     // 服务安装

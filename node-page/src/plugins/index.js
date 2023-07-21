@@ -1,6 +1,8 @@
 import { ElMessageBox } from 'element-plus'
+import message from "./message";
 export default {
   install (app, options) {
+    app.config.globalProperties.$tip = message
     app.config.globalProperties.$model = {
       // 删除确认
       deleteConfirm (message) {

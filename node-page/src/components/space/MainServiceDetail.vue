@@ -76,7 +76,7 @@ export default {
           this.currentVersion = this.majorVersionDetail.version
         })
         .catch(e => {
-          console.log('e', e)
+          this.$tip.apiFailed(e)
         })
     }
   },

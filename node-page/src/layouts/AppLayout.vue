@@ -18,6 +18,9 @@ export default {
   },
   created () {
     this.initToken()
+      .catch(e => {
+        this.$tip.apiFailed(e)
+      })
   }
 }
 </script>

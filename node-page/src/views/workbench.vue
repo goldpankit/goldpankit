@@ -168,7 +168,7 @@ export default {
           }
         })
         .catch(e => {
-          console.log('e', e)
+          this.$tip.apiFailed(e)
         })
     },
     // 查询子服务
@@ -185,7 +185,7 @@ export default {
           }
         })
         .catch(e => {
-          console.log('e', e)
+          this.$tip.apiFailed(e)
         })
     },
     // 选择服务
