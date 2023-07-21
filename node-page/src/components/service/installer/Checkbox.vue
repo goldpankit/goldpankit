@@ -1,11 +1,26 @@
 <template>
-  <ul v-if="options.length > 0" class="installer-checkbox">
-    <li
-      v-for="option in options" :key="option.value"
-      :class="{ selected: (modelValue == null || modelValue === '') ? false : modelValue.findIndex(v => v === option.value) !== -1 }"
-      @click="handleSelect(option)"
-    >{{option.label}}</li>
-  </ul>
+  <template v-if="options.length > 0">
+    <ul v-if="type === 'checkbox'" class="installer-checkbox">
+      <li
+        v-for="option in options"
+        :key="option.value"
+        :class="{ selected: modelValue == null ? false : modelValue.findIndex(v => v === option.value) !== -1 }"
+        @click="handleSelect(option)"
+      >{{option.label}}</li>
+    </ul>
+    <el-select
+      :model-value="modelValue"
+      @update:modelValue="$emit('update:modelValue', $event)"
+      multiple
+    >
+      <el-option
+        v-for="option in options"
+        :key="option.value"
+        :value="option.value"
+        :label="option.label"
+      />
+    </el-select>
+  </template>
   <p v-else>Please add options first.</p>
 </template>
 
@@ -15,6 +30,10 @@ export default {
   props: {
     modelValue: {
       type: Array
+    },
+    // 取值select和checkbox
+    type: {
+      default: 'checkbox'
     },
     options: {}
   },

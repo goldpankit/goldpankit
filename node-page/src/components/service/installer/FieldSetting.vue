@@ -1,6 +1,11 @@
 <template>
   <h5>{{group.label}}</h5>
-  <MySqlFieldSelect @update:modelValue="handleSelect" :model-value="group[valueKey]" :table="table" placeholder="Select fields"/>
+  <MySqlFieldSelect
+    @update:modelValue="handleSelect"
+    :model-value="group[valueKey]"
+    :table="table"
+    placeholder="Select fields"
+  />
   <el-table size="small" :data="group[valueKey]">
     <el-table-column label="字段名" width="100px" prop="name" fixed></el-table-column>
     <el-table-column
@@ -9,7 +14,10 @@
       :label="variable.label"
     >
       <template #default="{ row }">
-        <el-input v-model="row[variable.name]"/>
+        <TableFieldVariableInput
+          :variable="variable"
+          v-model="row[variable.name]"
+        />
       </template>
     </el-table-column>
   </el-table>
@@ -17,10 +25,12 @@
 
 <script>
 import MySqlFieldSelect from "../../database/MySqlFieldSelect.vue";
+import TableFieldVariableInput from "./TableFieldVariableInput.vue";
+import {getDefaultEmptyValue, isEmptyValue} from '../../../utils/variable'
 
 export default {
   name: "FieldSetting",
-  components: {MySqlFieldSelect},
+  components: {TableFieldVariableInput, MySqlFieldSelect},
   props: {
     valueKey: {
       default: 'value'
@@ -37,11 +47,17 @@ export default {
       for (const field of fields) {
         // 将字段变量添加到字段对象中，但需要保留原来的值
         for (const variable of this.group.children) {
-          field[variable.name] = field[variable.name] || ''
+          field[variable.name] = isEmptyValue(field[variable.name]) ? variable.defaultValue : field[variable.name]
+          if (isEmptyValue(field[variable.name])) {
+            field[variable.name] = getDefaultEmptyValue(variable.inputType)
+          }
         }
       }
       this.group[this.valueKey] = fields
     }
+  },
+  created () {
+    console.log('group', this.group)
   }
 }
 </script>

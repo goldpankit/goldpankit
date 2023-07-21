@@ -29,6 +29,7 @@ import {mapState} from "vuex";
 import FieldSetting from "../service/installer/FieldSetting.vue";
 import {fetchTables} from "@/api/database.util";
 import {search} from "../../api/database";
+import {getDefaultEmptyValue, isEmptyValue} from "../../utils/variable";
 
 export default {
   name: "TableSelect",
@@ -112,6 +113,17 @@ export default {
               }
               // 将已安装的值赋给对应的表字段
               Object.assign(targetField, cacheField)
+              // 初始化默认值
+              for (const variable of group.children) {
+                // 如果是空值，则设置为默认值
+                if (isEmptyValue(cacheField[variable.name])) {
+                  cacheField[variable.name] = variable.defaultValue
+                }
+                if (isEmptyValue(cacheField[variable.name])) {
+                  cacheField[variable.name] = getDefaultEmptyValue(variable.inputType)
+                }
+              }
+              console.log('cacheField', cacheField)
             }
           }
         })

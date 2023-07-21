@@ -1,11 +1,25 @@
 <template>
-  <ul v-if="options.length > 0" class="installer-checkbox">
-    <li
-      v-for="option in options" :key="option.value"
-      :class="{ selected: modelValue === option.value }"
-      @click="handleSelect(option)"
-    >{{option.label}}</li>
-  </ul>
+  <template v-if="options.length > 0">
+    <ul v-if="type === 'radio'" class="installer-checkbox">
+      <li
+        v-for="option in options" :key="option.value"
+        :class="{ selected: modelValue === option.value }"
+        @click="handleSelect(option.value)"
+      >{{option.label}}</li>
+    </ul>
+    <el-select
+      v-else
+      :model-value="modelValue"
+      @change="handleSelect"
+    >
+      <el-option
+        v-for="option in options"
+        :key="option.value"
+        :value="option.value"
+        :label="option.label"
+      />
+    </el-select>
+  </template>
   <p v-else>Please add options first.</p>
 </template>
 
@@ -14,13 +28,20 @@ export default {
   name: "InstallRadio",
   props: {
     modelValue: {},
-    options: {}
+    options: {},
+    // 取值select和radio
+    type: {
+      default: 'radio'
+    }
   },
   methods: {
-    handleSelect (option) {
-      this.$emit('update:modelValue', option.value)
-      this.$emit('change', option.value)
+    handleSelect (value) {
+      this.$emit('update:modelValue', value)
+      this.$emit('change', value)
     }
+  },
+  created () {
+    console.log('radio value', this.modelValue)
   }
 }
 </script>
