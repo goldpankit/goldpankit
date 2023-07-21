@@ -4,15 +4,23 @@
     <el-option value="textarea" label="Textarea"/>
     <el-option value="checkbox" label="Checkbox"/>
     <el-option value="radio" label="Radio"/>
-    <el-option value="database" label="Database"/>
-    <el-option value="table" label="Table"/>
-    <el-option value="query_model" label="Query Model"/>
+    <template v-if="!withGroup">
+      <el-option value="database" label="Database"/>
+      <el-option value="table" label="Table"/>
+      <el-option value="query_model" label="Query Model"/>
+    </template>
   </el-select>
 </template>
 
 <script>
 export default {
-  name: "InputTypeSelect"
+  name: "InputTypeSelect",
+  props: {
+    // 是否为组内变量选择，如果是，不会展示
+    withGroup: {
+      default: false
+    }
+  }
 }
 </script>
 

@@ -13,7 +13,11 @@
       <el-input v-model="variable.name" @input="handleChange"/>
     </el-form-item>
     <el-form-item label="Input Type" required>
-      <InputTypeSelect v-model="variable.inputType" @change="handleInputTypeChange"/>
+      <InputTypeSelect
+        v-model="variable.inputType"
+        :with-group="withGroup"
+        @change="handleInputTypeChange"
+      />
     </el-form-item>
     <el-form-item
       v-if="variable.inputType === 'checkbox' || variable.inputType === 'radio'"
@@ -64,7 +68,12 @@
       </el-table>
     </el-form-item>
     <el-form-item label="Default Value">
-      <VariableInput :variable="variable" :variables="variables" value-key="defaultValue" @change="handleChange"/>
+      <VariableInput
+        :variable="variable"
+        :variables="variables"
+        value-key="defaultValue"
+        @change="handleChange"
+      />
     </el-form-item>
     <el-form-item label="Required">
       <el-switch v-model="variable.required" @change="handleChange"/>
