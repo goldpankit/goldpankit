@@ -44,7 +44,7 @@ class Kit {
             config.space = dto.space
             config.main[dto.service] = {
               version: dto.version,
-              variables: this.#getSimpleVariables(dto.variables)
+              variables: this.#getSimpleMainServiceVariables(dto.variables)
             }
           } else {
             config.services[dto.service] = {
@@ -101,7 +101,6 @@ class Kit {
       this.#compile(dto)
         .then(data => {
           try {
-            console.log('写入文件')
             // 写入文件
             fs.writeFiles(data.files, data.project.codespace)
             // 执行命令
@@ -168,7 +167,7 @@ class Kit {
         // 获取数据库信息
         const database = cache.databases.get(dto.database)
         // 组装变量
-        const variables = this.#getVariables(database, dto.variables)
+        const variables = this.#getVariables(project, database, dto.variables)
         Promise.all(variables)
           .then(vars => {
             serviceApi.compile({
@@ -218,7 +217,7 @@ class Kit {
     // 获取数据库信息
     const database = cache.databases.get(dto.database)
     // 组装变量
-    const variables = this.#getVariables(database, dto.variables)
+    const variables = this.#getVariables(project, database, dto.variables)
     let serviceVars = null
     return Promise.all(variables)
       .then(vars => {
@@ -243,7 +242,22 @@ class Kit {
       })
   }
 
-  // 简化变量
+  // 获取主服务简化变量
+  #getSimpleMainServiceVariables (variables) {
+    return variables.map(v => {
+      return {
+        name: v.name,
+        type: v.type,
+        scope: v.scope,
+        label: v.label,
+        inputType: v.inputType,
+        compiler: v.compiler,
+        value: v.value
+      }
+    })
+  }
+
+  // 获取简化变量
   #getSimpleVariables (variables) {
     const vars = {}
     for (const v of variables) {
@@ -284,7 +298,21 @@ class Kit {
   }
 
   // 获取安装/编译变量
-  #getVariables (database, variables) {
+  #getVariables (project, database, variables) {
+    // 获取项目信息
+    const projectConfig = fs.readJSONFile(userProject.__getConfigPath(project.codespace))
+    if (projectConfig != null && projectConfig.main != null) {
+      let mainServiceName = null
+      for (const servceName in projectConfig.main) {
+        mainServiceName = servceName
+        break
+      }
+      // 将项目主服务的变量添加到最前
+      const mainServiceVariables = projectConfig.main[mainServiceName].variables.reverse()
+      for (const variable of mainServiceVariables) {
+        variables.unshift(variable)
+      }
+    }
     return variables.map(item => {
       return new Promise((resolve, reject) => {
         try {

@@ -81,6 +81,7 @@ class Request {
   }
 
   #buildError(e) {
+    console.log('e', e)
     return {
       code: 500,
       success: false,
