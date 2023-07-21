@@ -32,6 +32,7 @@
               :service-config="serviceConfig"
             />
             <MarkdownEditor
+              v-if="service.description != null"
               v-show="currentTab === 'readme'"
               v-model="service.description"
               @update:modelValue="saveConfig"
@@ -136,7 +137,9 @@ export default {
           })
         })
         .then(serviceConfig => {
-          this.service.description = serviceConfig.readme
+          if (serviceConfig != null) {
+            this.service.description = serviceConfig.readme
+          }
         })
         .catch(e => {
           this.$tip.apiFailed(e)
@@ -151,7 +154,6 @@ export default {
         codespace
       })
         .then(config => {
-          console.log('config', config)
           this.serviceConfig = config
         })
         .catch(e => {

@@ -53,9 +53,6 @@ export default {
         //   })
       }
     },
-  },
-  created () {
-    console.log('modelValue', this.modelValue)
   }
 }
 </script>

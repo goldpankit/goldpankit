@@ -68,7 +68,7 @@ export default {
               getLoginInfo()
                 .then(userInfo => {
                   this.setUserInfo(userInfo)
-                  this.$router.back()
+                  this.$router.push({ name: 'Index' })
                 })
             })
             .catch(e => {

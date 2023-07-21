@@ -28,6 +28,7 @@
 import {mapState} from "vuex";
 import FieldSetting from "../service/installer/FieldSetting.vue";
 import {fetchTables} from "@/api/database.util";
+import {search} from "../../api/database";
 
 export default {
   name: "TableSelect",
@@ -46,6 +47,7 @@ export default {
   data () {
     return {
       selected: null,
+      databases: [],
       tables: []
     }
   },
@@ -67,9 +69,20 @@ export default {
       this.$emit('update:modelValue', value)
       this.$emit('change', value)
     },
+    // 查询库
+    fetchDatabases () {
+      search ()
+        .then(data => {
+          this.databases = data
+          this.fetchTables()
+        })
+        .catch(e => {
+          this.$tip.apiFailed(e)
+        })
+    },
     // 查询表
     fetchTables () {
-      const database = this.currentProject.databases.find(db => db.name === this.currentDatabase)
+      const database = this.databases.find(db => db.id === this.currentDatabase)
       if (database == null) {
         return
       }
@@ -85,6 +98,9 @@ export default {
           // 填充默认选中的table
           if (this.modelValue != null) {
             this.selected = this.tables.find(v => v.name === this.modelValue)
+          }
+          if (this.selected == null) {
+            return
           }
           // 填充字段的默认数据
           for (const group of this.fieldVariableGroup) {
@@ -105,12 +121,7 @@ export default {
     }
   },
   created () {
-    this.fetchTables()
-    const json = {
-      queryFields: [
-        { name: '', type: '',  }
-      ]
-    }
+    this.fetchDatabases()
   }
 }
 </script>
