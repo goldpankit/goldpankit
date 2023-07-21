@@ -2,7 +2,7 @@
   <div class="signup">
     <div class="wrap">
       <h2>Sign Up</h2>
-      <el-form ref="form" :model="form">
+      <el-form ref="form" :model="form" @submit.stop>
         <el-form-item label="Username" prop="username" required>
           <el-input v-model="form.username" type="text" size="large"/>
         </el-form-item>

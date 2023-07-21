@@ -25,14 +25,14 @@
           </ul>
           <div class="tab-content">
             <BasicSetting
-              v-if="currentTab === 'basic'"
+              v-show="currentTab === 'basic'"
               :space="route.space"
               :service="route.service"
               :service-type="service.type"
               :service-config="serviceConfig"
             />
             <MarkdownEditor
-              v-if="currentTab === 'readme'"
+              v-show="currentTab === 'readme'"
               v-model="service.description"
               @update:modelValue="saveConfig"
             />

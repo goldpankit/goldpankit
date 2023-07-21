@@ -18,12 +18,12 @@
             <MainServiceSelect v-model="form.mainServiceName" :space="space" />
           </el-form-item>
         </template>
-        <el-form-item label="Repository">
-          <el-input v-model="form.repository"/>
-        </el-form-item>
-        <el-form-item label="Introduce" required>
-          <I18nInput type="textarea" v-model="form.introduce"/>
-        </el-form-item>
+<!--        <el-form-item label="Repository">-->
+<!--          <el-input v-model="form.repository"/>-->
+<!--        </el-form-item>-->
+<!--        <el-form-item label="Introduce" required>-->
+<!--          <I18nInput type="textarea" v-model="form.introduce"/>-->
+<!--        </el-form-item>-->
       </el-form>
       <div class="opera">
         <el-button type="primary" size="large" @click="create">Create Service</el-button>

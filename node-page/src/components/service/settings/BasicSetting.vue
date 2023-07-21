@@ -11,6 +11,9 @@
         <el-form-item label="Supported Databases" prop="supportedDatabases">
           <DatabaseTypeSelect v-model="form.supportedDatabases" @change="saveConfig"/>
         </el-form-item>
+        <el-form-item label="Introduce" prop="introduce" required>
+          <el-input type="textarea" :rows="5" v-model="form.introduce" @input="saveConfig"/>
+        </el-form-item>
         <el-form-item label="Charge" prop="prices[0].type" required>
           <el-radio-group v-model="form.prices[0].type" @change="changePriceType">
             <el-radio-button label="free">Free</el-radio-button>
@@ -100,6 +103,7 @@ export default {
         private: false,
         receivable: false,
         compiler: '',
+        introduce: '',
         supportedDatabases: [],
         tableFieldDefinitions: [],
         builds: [],
@@ -121,6 +125,7 @@ export default {
   methods: {
     // 初始化数据
     initData () {
+      console.log('this.serviceConfig', this.serviceConfig)
       for (const key in this.form) {
         this.form[key] = this.serviceConfig[key] || this.form[key]
       }
@@ -157,6 +162,7 @@ export default {
         .then(config => {
           if (config != null) {
             this.form.version = config.version || this.form.version
+            this.form.introduce = config.introduce || this.form.introduce
             this.form.compiler = config.compiler || this.form.compiler
             this.form.prices = config.prices || this.form.prices
             this.form.supportedDatabases = config.supportedDatabases || this.form.supportedDatabases
