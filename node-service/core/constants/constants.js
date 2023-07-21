@@ -28,6 +28,7 @@ module.exports = {
       ]
     },
     settings: [], // 文件设置列表，设置内容见SERVICE_FILE_CONFIG_CONTENT
+    introduce: '', // 服务简介
     readme: '' // 服务说明
   },
   // 服务文件配置

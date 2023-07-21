@@ -152,6 +152,7 @@ module.exports = {
       unbuilds: JSON.stringify(serviceConfig.unbuilds),
       variables: JSON.stringify(serviceConfig.variables),
       publishDescription: dto.publishDescription,
+      introduce: serviceConfig.introduce,
       description: serviceConfig.readme,
       files
     }
