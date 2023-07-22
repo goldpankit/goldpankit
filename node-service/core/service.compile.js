@@ -309,7 +309,6 @@ class Kit {
         break
       }
       // 将项目主服务的变量添加到最前
-      console.log('variables', projectConfig.main[mainServiceName].variables)
       const mainServiceVariables = projectConfig.main[mainServiceName].variables.reverse()
       for (const variable of mainServiceVariables) {
         variables.unshift(variable)
