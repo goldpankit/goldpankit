@@ -57,8 +57,15 @@ class Kit {
           const builds = data.version.builds == null || data.version.builds === '' ? [] : JSON.parse(data.version.builds)
           if (builds.length > 0) {
             serviceBuild.build(project, database, builds, variables, data.version.compiler)
+              .then(() => {
+                resolve()
+              })
+              .catch(e => {
+                reject(e)
+              })
+          } else {
+            resolve()
           }
-          resolve()
         })
         .catch(e => {
           reject(e)
@@ -72,20 +79,20 @@ class Kit {
     return new Promise((resolve, reject) => {
       this.#install(dto)
         .then(({ data, project, database, variables}) => {
-          // 删除文件
-          fs.deleteFiles(data.files, project.codespace)
-          // 获取项目配置
-          const configPath = userProject.getConfigPath(project.id)
-          let projectConfig = fs.readJSONFile(configPath)
-          // 删除项目配置中服务的配置
-          delete projectConfig.services[dto.service]
-          // 重新写入项目配置文件中
-          fs.createFile(userProject.getConfigPath(project.id), fs.toJSONFileString(projectConfig), true)
-          // 执行命令
+          // 先执行命令
           const unbuilds = data.version.unbuilds == null || data.version.unbuilds === '' ? [] : JSON.parse(data.version.unbuilds)
           if (unbuilds.length > 0) {
             serviceBuild.build(project, database, unbuilds, variables, data.version.compiler)
+              .then(() => {
+                this.#afterUninstall(dto, data, project)
+                resolve()
+              })
+              .catch(e => {
+                reject(e)
+              })
+            return
           }
+          this.#afterUninstall(dto, data, project)
           resolve()
         })
         .catch(e => {
@@ -101,13 +108,23 @@ class Kit {
       this.#compile(dto)
         .then(data => {
           try {
+            // 不存在命令，直接写入文件
+            if (data.serviceConfig.builds.length === 0) {
+              // 写入文件
+              fs.writeFiles(data.files, data.project.codespace)
+              resolve()
+              return
+            }
             // 写入文件
             fs.writeFiles(data.files, data.project.codespace)
-            // 执行命令
-            if (data.serviceConfig.builds.length > 0) {
-              serviceBuild.build(data.project, data.database, data.serviceConfig.builds, data.variables, data.serviceConfig.compiler)
-            }
-            resolve()
+            // 存在命令，则执行命令
+            serviceBuild.build(data.project, data.database, data.serviceConfig.builds, data.variables, data.serviceConfig.compiler)
+              .then(() => {
+                resolve()
+              })
+              .catch(e => {
+                reject(e)
+              })
           } catch (e) {
             reject(e)
           }
@@ -125,12 +142,21 @@ class Kit {
     return new Promise((resolve, reject) => {
       this.#compile(dto)
         .then(data => {
-          // 删除文件
-          fs.deleteFiles(data.files, data.project.codespace)
-          // 执行命令
+          // 存在卸载构建，则卸载后删除文件
           if (data.serviceConfig.unbuilds.length > 0) {
             serviceBuild.build(data.project, data.database, data.serviceConfig.unbuilds, data.variables, data.serviceConfig.compiler)
+              .then(() => {
+                // 删除文件
+                fs.deleteFiles(data.files, data.project.codespace)
+                resolve()
+              })
+              .catch(e => {
+                reject(e)
+              })
+            return
           }
+          // 删除文件
+          fs.deleteFiles(data.files, data.project.codespace)
           resolve()
         })
         .catch(e => {
@@ -138,6 +164,19 @@ class Kit {
           reject(e)
         })
     })
+  }
+
+  // 卸载后处理
+  #afterUninstall (dto, data, project) {
+    // 删除文件
+    fs.deleteFiles(data.files, project.codespace)
+    // 获取项目配置
+    const configPath = userProject.getConfigPath(project.id)
+    let projectConfig = fs.readJSONFile(configPath)
+    // 删除项目配置中服务的配置
+    delete projectConfig.services[dto.service]
+    // 重新写入项目配置文件中
+    fs.createFile(userProject.getConfigPath(project.id), fs.toJSONFileString(projectConfig), true)
   }
 
   /**

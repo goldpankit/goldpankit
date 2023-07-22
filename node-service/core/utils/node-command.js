@@ -9,6 +9,7 @@ module.exports = {
    * @returns {Promise<unknown>}
    */
   exec (dir, command) {
+    console.log('执行SQL', command)
     return new Promise((resolve, reject) => {
       const commands = command.split('\n')
       exec(commands.join('&&'), {cwd: dir}, (err) => {

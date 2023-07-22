@@ -6,6 +6,7 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+// const open = require('open')
 
 var routers = require('./routes/index');
 
@@ -19,10 +20,14 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+const publicPath = path.join(__dirname, 'public')
+app.use(express.static(publicPath));
 for (const key in routers) {
   app.use('/api', routers[key]);
 }
+app.get('*', (req, res) => {
+  res.sendFile(path.join(publicPath, 'index.html'));
+});
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -40,6 +45,7 @@ app.use(function(err, req, res, next) {
   res.send('error');
 });
 
-app.listen(8888, () => {
-  console.log('Server is listening on port 8888')
+app.listen(80, () => {
+  console.log('Server is listening on port 80')
+  // open('http://localhost')
 })
