@@ -15,7 +15,7 @@
       <template v-if="withPrefix" #prefix>Database:</template>
     </el-select>
     <el-button v-if="withCreateButton" class="button-icon" type="primary" icon="Plus" @click="$refs.createDatabaseWindow.open()"></el-button>
-    <CreateDatabaseWindow ref="createDatabaseWindow"/>
+    <CreateDatabaseWindow ref="createDatabaseWindow" @success="handleCreateSuccess"/>
   </div>
 </template>
 
@@ -53,6 +53,11 @@ export default {
           this.$tip.apiFailed(e)
         })
     },
+    // 创建完成
+    handleCreateSuccess (databaseId) {
+      this.fetchList()
+      this.$emit('change', databaseId)
+    }
   },
   created () {
     this.fetchList()

@@ -11,18 +11,15 @@
         tips: Install the service by filling out the form below and clicking the Install button at the bottom.
       </p>
       <div class="form-wrap">
-        <el-form v-if="withProject" :model="project">
-          <el-form-item label="Project Name" required>
-            <el-input v-model="project.name"/>
-          </el-form-item>
-          <el-form-item label="Remark">
-            <el-input type="textarea" :rows="2" v-model="project.remark"/>
-          </el-form-item>
-          <el-form-item label="Project Directory" required>
-            <DirectorySelect v-model="project.codespace"/>
-          </el-form-item>
-        </el-form>
         <el-form>
+          <el-form-item v-if="withProject" label="Project" required>
+            <ProjectSelect
+              :model-value="currentProject"
+              :with-block="true"
+              :with-prefix="false"
+              @change="setCurrentProject"
+            />
+          </el-form-item>
           <template v-for="variable in serviceVariables">
             <el-form-item
               v-if="!variable.hidden"
@@ -72,10 +69,12 @@ import MySqlFieldSelect from "../database/MySqlFieldSelect.vue";
 import FieldSetting from "../service/installer/FieldSetting.vue";
 import DirectorySelect from "../common/DirectorySelect.vue";
 import {create} from "../../api/user.project";
+import ProjectSelect from "../usr/project/ProjectSelect.vue";
 
 export default {
   name: "ServiceInstaller",
   components: {
+    ProjectSelect,
     DirectorySelect,
     FieldSetting, MySqlFieldSelect, VariableInput, InstallRadio, InstallInput, InstallCheckbox},
   props: {
@@ -103,20 +102,13 @@ export default {
   },
   data () {
     return {
-      variables: [],
-      project: {
-        name: '',
-        codespace: '',
-        remark: '',
-        databases: []
-      }
+      variables: []
     }
   },
   computed: {
     ...mapState(['currentProject', 'currentDatabase']),
     // 服务变量集
     serviceVariables () {
-      console.log('vars', this.variables)
       return this.variables.filter(v => v.scope === 'service')
     },
     unique () {
@@ -170,32 +162,6 @@ export default {
     },
     // 安装服务
     install () {
-      if (this.withProject) {
-        // 创建项目
-        create(this.project)
-          .then(data => {
-            this.setCurrentProject(data)
-            return data
-          })
-          .then(projectId => {
-            // 安装服务
-            return install({
-              projectId: projectId,
-              database: this.currentDatabase,
-              space: this.space,
-              service: this.service,
-              version: this.version,
-              variables: this.variables
-            })
-          })
-          .then(() => {
-            this.$emit('installed')
-          })
-          .catch(e => {
-            this.$emit('error', e)
-          })
-        return
-      }
       // 安装服务
       install({
         projectId: this.currentProject,

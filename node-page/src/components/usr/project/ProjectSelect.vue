@@ -1,5 +1,5 @@
 <template>
-  <div class="project-select">
+  <div class="project-select" :class="{ 'with-block': withBlock }">
     <el-select
       :model-value="modelValue"
       @update:modelValue="$emit('update:modelValue', $event)"
@@ -12,7 +12,7 @@
         :key="item.id"
         :label="item.name"
       />
-      <template #prefix>Project:</template>
+      <template v-if="withPrefix" #prefix>Project:</template>
     </el-select>
     <el-button class="button-icon" type="primary" icon="Plus" @click="$refs.createProjectWindow.open()"></el-button>
     <CreateProjectWindow ref="createProjectWindow" @success="handleCreateSuccess"/>
@@ -29,7 +29,13 @@ export default {
   name: "ProjectSelect",
   components: {CreateProjectWindow, DirectorySelect},
   props: {
-    modelValue: {}
+    modelValue: {},
+    withPrefix: {
+      default: true
+    },
+    withBlock: {
+      default: false
+    }
   },
   data () {
     return {
@@ -64,6 +70,15 @@ export default {
   border: 1px solid var(--border-default-color);
   border-radius: 5px;
   overflow: hidden;
+  &.with-block {
+    width: 100%;
+    :deep(.el-select) {
+      flex-grow: 1;
+    }
+    :deep(.el-button) {
+      flex-shrink: 0;
+    }
+  }
   :deep(.el-select) {
     width: 225px;
     .el-input__wrapper {

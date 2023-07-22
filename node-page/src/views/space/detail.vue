@@ -32,9 +32,6 @@
                   <section class="infos text-info-1">
                     <p>Last publish: {{service.lastPublish}}</p>
                   </section>
-                  <div class="opera">
-                    <el-button size="small" @click="$router.push({ name: 'ServiceSettings', query: { service_id: service.id } })">Edit</el-button>
-                  </div>
                 </li>
               </ul>
               <Empty v-else-if="currentMainService == null && mainServices.length === 0" description="No Services"/>
@@ -359,6 +356,7 @@ export default {
         margin-bottom: 15px;
         border-radius: 10px;
         transition: all ease .15s;
+        background: var(--background-color);
         &:hover {
           border-color: var(--primary-color);
           background: var(--background-color);
