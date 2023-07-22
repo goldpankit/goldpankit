@@ -218,6 +218,7 @@ export default {
     }
     .view,.edit {
       display: flex;
+      overflow: hidden;
       :deep(.el-form) {
         display: flex;
         .el-form-item {
@@ -246,6 +247,16 @@ export default {
       }
       .type {
         width: 100px;
+      }
+    }
+    .view {
+      height: 48px;
+      p {
+        height: 48px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        word-break: break-all;
+        white-space: nowrap;
       }
     }
     :deep(.code) {

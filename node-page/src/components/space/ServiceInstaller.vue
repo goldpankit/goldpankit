@@ -7,46 +7,51 @@
       </div>
     </div>
     <div class="content-wrap">
-      <p class="install-tip">
-        tips: Install the service by filling out the form below and clicking the Install button at the bottom.
-      </p>
-      <div class="form-wrap">
-        <el-form>
-          <el-form-item v-if="withProject" label="Project" required>
-            <ProjectSelect
-              :model-value="currentProject"
-              :with-block="true"
-              :with-prefix="false"
-              @change="setCurrentProject"
-            />
-          </el-form-item>
-          <template v-for="variable in serviceVariables">
-            <el-form-item
-              v-if="!variable.hidden"
-              :key="variable.name"
-              :label="variable.label"
-            >
-              <template #label>
-                <template v-if="variable.type === 'variable'">{{variable.label}}</template>
-                <template v-else>
-                  <div class="label-wrap">
-                    <span>{{variable.label}}</span>
-                    <el-icon><ArrowRight /></el-icon>
-                  </div>
-                </template>
-              </template>
-              <!-- 根变量 -->
-              <VariableInput v-if="variable.type === 'variable'" :variable="variable" :variables="variables"/>
-              <!-- 服务变量组 -->
-              <ul v-else-if="variable.type === 'group'" class="group-vars">
-                <li v-for="v of variable.children" :key="`${variable.name}_${v.name}`">
-                  <label class="text-info-1 text-mini">{{v.label}}</label>
-                  <VariableInput :variable="v"/>
-                </li>
-              </ul>
+      <template v-if="withProject || serviceVariables.length > 0">
+        <p class="install-tip">
+          tips: Install the service by filling out the form below and clicking the Install button at the bottom.
+        </p>
+        <div class="form-wrap">
+          <el-form>
+            <el-form-item v-if="withProject" label="Project" required>
+              <ProjectSelect
+                :model-value="currentProject"
+                :with-block="true"
+                :with-prefix="false"
+                @change="setCurrentProject"
+              />
             </el-form-item>
-          </template>
-        </el-form>
+            <template v-for="variable in serviceVariables">
+              <el-form-item
+                v-if="!variable.hidden"
+                :key="variable.name"
+                :label="variable.label"
+              >
+                <template #label>
+                  <template v-if="variable.type === 'variable'">{{variable.label}}</template>
+                  <template v-else>
+                    <div class="label-wrap">
+                      <span>{{variable.label}}</span>
+                      <el-icon><ArrowRight /></el-icon>
+                    </div>
+                  </template>
+                </template>
+                <!-- 根变量 -->
+                <VariableInput v-if="variable.type === 'variable'" :variable="variable" :variables="variables"/>
+                <!-- 服务变量组 -->
+                <ul v-else-if="variable.type === 'group'" class="group-vars">
+                  <li v-for="v of variable.children" :key="`${variable.name}_${v.name}`">
+                    <label class="text-info-1 text-mini">{{v.label}}</label>
+                    <VariableInput :variable="v"/>
+                  </li>
+                </ul>
+              </el-form-item>
+            </template>
+          </el-form>
+        </div>
+      </template>
+      <div class="parameters-holder">
+        <p>This service does not have any parameters, click the INSTALL button at the bottom to install.</p>
       </div>
       <div v-if="withInstallButton" class="install">
         <el-button type="important" @click="install">
@@ -287,6 +292,18 @@ export default {
         color: var(--primary-color-match-2);
         font-size: 16px;
         font-weight: bold;
+      }
+    }
+    // 参数空提示
+    .parameters-holder {
+      display: flex;
+      justify-content: center;
+      padding: 50px 0;
+      p {
+        width: 60%;
+        font-size: var(--font-size-middle);
+        color: var(--color-gray);
+        line-height: 25px;
       }
     }
     // 安装按钮

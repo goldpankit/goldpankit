@@ -2,8 +2,7 @@
   <div class="database-select" :class="{ 'with-block': withBlock }">
     <el-select
       :model-value="modelValue"
-      @update:modelValue="$emit('update:modelValue', $event)"
-      @change="$emit('change', $event)"
+      @update:modelValue="handleChange"
       clearable
     >
       <el-option
@@ -22,6 +21,7 @@
 <script>
 import {search} from "../../api/database";
 import CreateDatabaseWindow from "./CreateDatabaseWindow.vue";
+import {mapMutations} from "vuex";
 
 export default {
   name: "DatabaseSelect",
@@ -44,6 +44,7 @@ export default {
     }
   },
   methods: {
+    ...mapMutations(['setCurrentDatabase']),
     fetchList () {
       search ()
         .then(data => {
@@ -53,10 +54,17 @@ export default {
           this.$tip.apiFailed(e)
         })
     },
+    // 切换数据库
+    handleChange(databaseId) {
+      this.$emit('update:modelValue', databaseId)
+      this.$emit('change', databaseId)
+      // 全局设定为当前数据库
+      this.setCurrentDatabase(databaseId)
+    },
     // 创建完成
     handleCreateSuccess (databaseId) {
       this.fetchList()
-      this.$emit('change', databaseId)
+      this.handleChange(databaseId)
     }
   },
   created () {

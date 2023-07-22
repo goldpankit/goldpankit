@@ -117,7 +117,10 @@ export default {
     },
     // 获取全路径
     __getAbsolutePath () {
-      const absolutePath = `${this.serviceConfig.codespace}/${this.paths.slice(1).join('/')}`
+      let absolutePath = `${this.serviceConfig.codespace}/${this.paths.slice(1).join('/')}`
+      if (this.serviceConfig.translator.settings.length > 0) {
+        absolutePath = `${this.serviceConfig.codespace}/${this.serviceConfig.translator.output}/${this.paths.slice(1).join('/')}`
+      }
       if (absolutePath.endsWith('/')) {
         return absolutePath.substring(0, absolutePath.length - 1)
       }
