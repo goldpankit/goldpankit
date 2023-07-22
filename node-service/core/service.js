@@ -5,6 +5,8 @@ const object = require('./utils/object')
 const fs = require('./utils/fs')
 const serviceApi = require("./api/service");
 const serviceTranslator = require('./service.translator')
+const serviceConf = require('./service.config')
+const serviceFile = require('./service.file')
 module.exports = {
   // 初始化
   initialize(extConfig) {
@@ -51,17 +53,7 @@ module.exports = {
   },
   // 获取服务配置信息
   getServiceConfig(dto) {
-    if (dto.space != null && dto.service != null) {
-      const service = cache.services.get(dto.space, dto.service)
-      if (service == null) {
-        return null
-      }
-      return this.__getServiceConfig(service.codespace)
-    }
-    if (dto.codespace != null) {
-      return this.__getServiceConfig(dto.codespace)
-    }
-    return null
+    return serviceConf.getServiceConfig(dto)
   },
   // 保存服务配置信息
   saveServiceConfig(dto) {
@@ -163,40 +155,11 @@ module.exports = {
   },
   // 获取文件设置
   getFileSetting (codespace, fileRelativePath) {
-    const configPath = this.__getConfigPath(codespace)
-    const config = fs.readJSONFile(configPath)
-    const setting = JSON.parse(JSON.stringify(Const.SERVICE_FILE_CONFIG_CONTENT))
-    let targetSettings = config.settings.find(file => file.path === fileRelativePath)
-    if (targetSettings != null) {
-      object.merge(targetSettings, setting)
-    }
-    // 没有设置过的文件不会产生配置文件，此时path为空，此处设定path值
-    setting.path = fileRelativePath
-    // 如果当前文件的编译模式为空，找出实际编译模式（为空时继承上级编译模式）
-    setting._actualCompiler = setting.compiler
-    if (setting.compiler == null || setting.compiler === '') {
-      // 先按照路径的层级进行倒序排列，然后依次startsWith，找出最近的上级节点
-      config.settings.sort((item1, item2) => {
-        const item1Level = item1.path.split('/').length
-        const item2Level = item2.path.split('/').length
-        return item2Level - item1Level
-      })
-      for (const item of config.settings) {
-        if (setting.path.startsWith(item.path) && item.compiler != null && item.compiler !== '') {
-          setting._actualCompiler = item.compiler
-          break
-        }
-      }
-      // 如果没有匹配到上级设置了编译器，则使用服务编译器
-      if (setting._actualCompiler == null || setting._actualCompiler === '') {
-        setting._actualCompiler = config.compiler
-      }
-    }
-    return setting
+    return serviceFile.getFileSetting(codespace, fileRelativePath)
   },
   // 获取文件配置目录
   __getConfigPath (codespace) {
-    return `${codespace}/${Const.SERVICE_CONFIG_DIRECTORY}/${Const.SERVICE_CONFIG_FILE}`
+    return serviceConf.__getConfigPath(codespace)
   },
   /**
    * 获取文件树
@@ -237,10 +200,6 @@ module.exports = {
   },
   // 获取服务配置
   __getServiceConfig (codespace) {
-    const configPath = this.__getConfigPath(codespace)
-    return {
-      ...fs.readJSONFile(configPath),
-      codespace
-    }
+    return serviceConf.__getServiceConfig(codespace)
   }
 }

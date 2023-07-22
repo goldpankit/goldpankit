@@ -1,5 +1,7 @@
-const service = require('./service')
+const serviceConf = require('./service.config')
+const serviceFile = require('./service.file')
 const fs = require("./utils/fs");
+const cache = require("./utils/cache");
 
 class Translator {
     constructor() {
@@ -14,7 +16,7 @@ class Translator {
      */
     translate (dto) {
         // 获取服务配置
-        const serviceConfig = service.getServiceConfig(dto)
+        const serviceConfig = serviceConf.getServiceConfig(dto)
         // 获取翻译器配置
         if (serviceConfig.translator == null || serviceConfig.translator.settings.length === 0) {
             return
@@ -42,7 +44,7 @@ class Translator {
             }
             let translatedFilepath = this.#translate(translators, translateFilepathFile, {}).filepath
             // 根据翻译路径获取文件设置
-            const fileSetting = service.getFileSetting(serviceConfig.codespace, translatedFilepath)
+            const fileSetting = serviceFile.getFileSetting(serviceConfig.codespace, translatedFilepath)
             // 修改文件编译器设置为真实编译器
             fileSetting.compiler = fileSetting._actualCompiler
             delete fileSetting._actualCompiler
