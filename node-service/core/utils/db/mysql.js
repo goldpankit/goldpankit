@@ -65,6 +65,7 @@ class MySQL {
   }
   // 执行文件
   execFile (config, filepath) {
+    console.log('执行sql文件', filepath)
     const sql = fs.readFile(filepath).content
     return this.exec(config, sql)
   }

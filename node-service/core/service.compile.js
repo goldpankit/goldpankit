@@ -152,7 +152,8 @@ class Kit {
    */
   #compile(dto) {
     return new Promise((resolve, reject) => {
-      try { // 获取项目信息
+      try {
+        // 获取项目信息
         const project = cache.projects.get(dto.projectId)
         if (project == null) {
           reject(new Error('Please select a project.'))
@@ -308,6 +309,7 @@ class Kit {
         break
       }
       // 将项目主服务的变量添加到最前
+      console.log('variables', projectConfig.main[mainServiceName].variables)
       const mainServiceVariables = projectConfig.main[mainServiceName].variables.reverse()
       for (const variable of mainServiceVariables) {
         variables.unshift(variable)
