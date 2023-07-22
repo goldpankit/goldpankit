@@ -44,7 +44,7 @@ import RelationLine from "../../../components/database/query-model/RelationLine.
 import TableSetting from "../../../components/database/query-model/TableSetting.vue";
 import QueryModelDesigner from "../../../components/database/query-model/Designer.vue";
 import TableLibrary from "../../../components/database/query-model/TableLibrary.vue";
-import {fetchTables} from "../../../api/db";
+import {fetchTables} from "../../../api/database.util";
 import {saveModel} from "../../../api/user.project";
 
 export default {

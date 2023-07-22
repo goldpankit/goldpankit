@@ -189,9 +189,8 @@ export default {
       flex-wrap: wrap;
       li {
         width: 50%;
-        padding: 0 10px;
-        height: 40px;
-        line-height: 40px;
+        flex-shrink: 0;
+        padding: 10px;
         border-bottom: 1px dashed var(--border-default-color);
         cursor: pointer;
         display: flex;
@@ -212,9 +211,6 @@ export default {
             color: var(--color-light);
           }
         }
-        &:last-of-type {
-          border-bottom: 0;
-        }
         &:hover {
           color: var(--primary-color-match-2);
         }
@@ -232,6 +228,12 @@ export default {
             flex-shrink: 0;
             margin-left: 10px;
           }
+        }
+        p {
+          flex-grow: 1;
+          overflow: hidden;
+          word-break: break-all;
+          line-height: 20px;
         }
       }
     }
