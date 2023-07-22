@@ -50,7 +50,7 @@
           </el-form>
         </div>
       </template>
-      <div class="parameters-holder">
+      <div v-else class="parameters-holder">
         <p>This service does not have any parameters, click the INSTALL button at the bottom to install.</p>
       </div>
       <div v-if="withInstallButton" class="install">
