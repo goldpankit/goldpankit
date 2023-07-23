@@ -54,6 +54,8 @@
                   </div>
                   <ServiceInstaller
                     ref="installer"
+                    v-model:installing="isWorking.install"
+                    v-model:uninstalling="isWorking.uninstall"
                     v-show="currentServiceDimension === 'install'"
                     :space="space"
                     :service="currentService.name"
@@ -81,19 +83,28 @@
                     v-else
                     type="primary"
                     size="large"
+                    :disabled="isWorking.install"
                     @click="$refs.installer.install()"
-                  >REINSTALL</el-button>
+                  >
+                    {{ isWorking.install ? 'INSTALLING...' : 'REINSTALL'}}
+                  </el-button>
                   <el-button
                     size="large"
+                    :disabled="isWorking.uninstall"
                     @click="$refs.installer.uninstall()"
-                  >UNINSTALL</el-button>
+                  >
+                    {{ isWorking.uninstall ? 'UNINSTALLING...' : 'UNINSTALL'}}
+                  </el-button>
                 </template>
                 <el-button
                   v-else
                   type="primary"
                   size="large"
+                  :disabled="isWorking.install"
                   @click="$refs.installer.install()"
-                >INSTALL</el-button>
+                >
+                  {{ isWorking.install ? 'INSTALLING...' : 'INSTALL'}}
+                </el-button>
               </div>
             </template>
             <div v-else class="setting-holder">
@@ -120,6 +131,10 @@ export default {
   components: {IssueListView, Empty, MarkdownEditor, ServiceInstaller},
   data () {
     return {
+      isWorking: {
+        install: false,
+        uninstall: false
+      },
       space: null,
       mainService: null,
       currentService: null,
@@ -140,7 +155,6 @@ export default {
       if (this.currentService == null) {
         return false
       }
-      console.log('this.project.services', this.project.services)
       return this.project.services[this.currentService.name] != null
     }
   },

@@ -54,8 +54,8 @@
         <p>This service does not have any parameters, click the INSTALL button at the bottom to install.</p>
       </div>
       <div v-if="withInstallButton" class="install">
-        <el-button type="important" @click="install">
-          INSTALL
+        <el-button type="important" @click="install" :disabled="isWorking.install">
+          {{ isWorking.install ? 'INSTALLING...' : 'INSTALL' }}
         </el-button>
       </div>
     </div>
@@ -83,6 +83,8 @@ export default {
     DirectorySelect,
     FieldSetting, MySqlFieldSelect, VariableInput, InstallRadio, InstallInput, InstallCheckbox},
   props: {
+    installing: {},
+    uninstalling: {},
     space: {
       required: true
     },
@@ -107,6 +109,10 @@ export default {
   },
   data () {
     return {
+      isWorking: {
+        install: false,
+        uninstall: false
+      },
       variables: []
     }
   },
@@ -123,6 +129,12 @@ export default {
   watch: {
     unique () {
       this.fetchVersion()
+    },
+    'isWorking.install': function () {
+      this.$emit('update:installing', this.isWorking.install)
+    },
+    'isWorking.uninstall': function () {
+      this.$emit('update:uninstalling', this.isWorking.uninstall)
     }
   },
   methods: {
@@ -167,6 +179,10 @@ export default {
     },
     // 安装服务
     install () {
+      if (this.isWorking.install) {
+        return
+      }
+      this.isWorking.install = true
       // 安装服务
       install({
         projectId: this.currentProject,
@@ -177,14 +193,22 @@ export default {
         variables: this.variables
       })
         .then(() => {
+          this.$tip.success('Install Successfully')
           this.$emit('installed')
         })
         .catch(e => {
           this.$emit('error', e)
         })
+        .finally(() => {
+          this.isWorking.install = false
+        })
     },
     // 卸载服务
     uninstall () {
+      if (this.isWorking.uninstall) {
+        return
+      }
+      this.isWorking.uninstall = true
       uninstall({
         projectId: this.currentProject,
         database: this.currentDatabase,
@@ -194,10 +218,14 @@ export default {
         variables: this.variables
       })
         .then(() => {
+          this.$tip.success('Uninstall Successfully')
           this.$emit('uninstalled')
         })
         .catch(e => {
           this.$emit('error', e)
+        })
+        .finally(() => {
+          this.isWorking.uninstall = false
         })
     },
     // 获取默认值
