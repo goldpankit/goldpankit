@@ -8,6 +8,7 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const autoopen = require('./core/utils/autoopen')
 const routers = require('./routes/index');
+const log = require('./core/utils/log')
 
 const app = express();
 // app.use((req, res, next) => {
@@ -15,7 +16,7 @@ const app = express();
 //   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
 //   next();
 // })
-app.use(logger('dev'));
+// app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -44,7 +45,10 @@ app.use(function(err, req, res, next) {
   res.send('error');
 });
 
-app.listen(80, () => {
-  console.log('Server is listening on port 80')
-  autoopen.open(80)
+autoopen.findAvailablePort(80, (port) => {
+  app.listen(port, () => {
+    log.success(`Server is listening on port ${port}`)
+    autoopen.open(port)
+  })
 })
+

@@ -1,5 +1,6 @@
 const root = process.cwd()
 const open = require('opn')
+const net = require('net')
 const fs = require('./fs')
 const Const = require('../constants/constants')
 const cache = require('./cache')
@@ -17,5 +18,20 @@ module.exports = {
     }
     // 找不到配置文件或项目，则打开公共空间页面
     open(`http://localhost:${port}/spaces`)
+  },
+  // 查询可用的端口号
+  findAvailablePort(port, callback) {
+    const server = net.createServer();
+    server.once('error', () => {
+      // 端口被占用，则尝试监听下一个端口
+      this.findAvailablePort(port + 1, callback);
+    });
+    server.once('listening', () => {
+      // 端口未被占用，则关闭服务器并返回端口号
+      server.close(() => {
+        callback(port);
+      });
+    });
+    server.listen(port);
   }
 }
