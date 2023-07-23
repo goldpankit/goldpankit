@@ -108,7 +108,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import {mapMutations, mapState} from 'vuex'
 import ServiceInstaller from "../components/space/ServiceInstaller.vue";
 import {fetchSubServices} from "../api/service";
 import {fetchById} from "../api/user.project";
@@ -145,6 +145,7 @@ export default {
     }
   },
   methods: {
+    ...mapMutations(['setCurrentProject']),
     // 查询项目信息
     fetchProject (withSubServices = false) {
       fetchById(this.currentProject)
@@ -202,6 +203,11 @@ export default {
     }
   },
   created () {
+    const projectId = this.$route.query.project_id
+    if (projectId != null && projectId !== '') {
+      this.setCurrentProject(projectId)
+      this.$router.replace({ name: 'Workbench'})
+    }
     this.fetchProject(true)
   }
 }
