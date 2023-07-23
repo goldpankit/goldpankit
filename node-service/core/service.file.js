@@ -1,5 +1,4 @@
 const Const = require('./constants/constants')
-const cache = require('./utils/cache')
 const fs = require('./utils/fs')
 const object = require("./utils/object");
 const serviceConf = require('./service.config')

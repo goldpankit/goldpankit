@@ -2,15 +2,14 @@
 // 禁用 DeprecationWarning
 process.noDeprecation = true
 
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
-// const open = require('open')
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
+const autoopen = require('./core/utils/autoopen')
+const routers = require('./routes/index');
 
-var routers = require('./routes/index');
-
-var app = express();
+const app = express();
 // app.use((req, res, next) => {
 //   res.header('Access-Control-Allow-Credentials', 'true');
 //   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
@@ -47,5 +46,5 @@ app.use(function(err, req, res, next) {
 
 app.listen(80, () => {
   console.log('Server is listening on port 80')
-  // open('http://localhost')
+  autoopen.open(80)
 })

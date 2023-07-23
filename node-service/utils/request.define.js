@@ -45,7 +45,7 @@ class Request {
   // 代理
   proxy () {
     router[this.#methods](this.#url, (req, res, next) => {
-      console.log(`Proxy: ${this.#methods} ${this.#url}`)
+      // console.log(`Proxy: ${this.#methods} ${this.#url}`)
       // 存储请求头到缓存中
       cache.set('request_headers', req.headers)
       // 如果存在参数
@@ -93,11 +93,11 @@ class Request {
 module.exports = {
   router,
   get (url) {
-    console.log(`[GET] defined api for url '${url}'`)
+    // console.log(`[GET] defined api for url '${url}'`)
     return new Request(url, 'get')
   },
   post (url) {
-    console.log(`[POST] defined api for url '${url}'`)
+    // console.log(`[POST] defined api for url '${url}'`)
     return new Request(url, 'post')
   }
 }
