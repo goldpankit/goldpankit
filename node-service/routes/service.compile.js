@@ -1,5 +1,12 @@
 const request = require('../utils/request.define')
 const serviceCompile = require('../core/service.compile')
+const serviceBuild = require('../core/service.build')
+// 构建服务
+request
+  .post('/service/build')
+  .data(req => {
+    return serviceBuild.build(req.body)
+  })
 // 安装服务
 request
   .post('/service/install')

@@ -1,8 +1,15 @@
 const mysql = require('./utils/db/mysql')
 const nc = require('./utils/node-command')
 const serviceApi = require("./api/service");
+const fs = require('./utils/fs')
+const cache = require('./utils/cache')
 module.exports = {
-  build (project, database, builds, vars, compiler) {
+  build (dto) {
+    const builds = dto.builds
+    const vars = dto.variables
+    const compiler = dto.compiler
+    const project = cache.projects.get(dto.projectId)
+    const database = cache.databases.get(dto.databaseId)
     return new Promise((resolve, reject) => {
       if (builds == null || builds.length === 0) {
         resolve()
@@ -18,60 +25,49 @@ module.exports = {
           for (let i = 0; i < contents.length; i++) {
             builds[i].content = contents[i]
           }
-          for (const build of builds) {
+          Promise.all(builds.map(build => {
             // 执行MySQL脚本
             if (build.type === 'MySQL') {
-              let execPromise = null
-              if (build.contentType === 'file') {
-                execPromise = mysql.execFile({
-                  host: database.host,
-                  port: database.port,
-                  user: database.username,
-                  password: database.password,
-                  database: database.schema
-                }, `${project.codespace}${build.content}`)
-              } else {
-                execPromise = mysql.exec({
-                  host: database.host,
-                  port: database.port,
-                  user: database.username,
-                  password: database.password,
-                  database: database.schema
-                }, build.content)
-              }
-              execPromise
-                .then(() => {
-                  resolve()
-                })
-                .catch(e => {
-                  console.log('execute mysql script error', e)
-                  reject(e)
-                })
-              continue
+              return mysql.exec({
+                host: database.host,
+                port: database.port,
+                user: database.username,
+                password: database.password,
+                database: database.schema
+              }, build.content)
             }
             // 执行Node命令
             if (build.type === 'Node') {
-              let ncPromise = null
-              if (build.contentType === 'file') {
-                ncPromise = nc.execFile(project.codespace, build.content)
-              } else {
-                ncPromise = nc.exec(project.codespace, build.content)
-              }
-              ncPromise
-                .then(() => {
-                  resolve()
-                })
-                .catch(e => {
-                  console.log('execute node commands error', e)
-                  reject(e)
-                })
+              return nc.exec(project.codespace, build.content)
             }
-          }
+          }))
+            .then(() => {
+              resolve()
+            })
+            .catch(e => {
+              console.log('build failed', e)
+              reject(e)
+            })
         })
         .catch(e => {
           console.log('compile builds throw an error', e)
           reject(e)
         })
     })
+  },
+  // 获取build列表
+  getBuildDetails(project, builds) {
+    const buildDetails = []
+    for (const build of builds) {
+      let content = build.content
+      if (build.contentType === 'file') {
+        content = fs.readFile(`${project.codespace}${build.content}`).content
+      }
+      buildDetails.push({
+        ...build,
+        content
+      })
+    }
+    return buildDetails
   }
 }

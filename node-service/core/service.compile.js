@@ -108,23 +108,17 @@ class Kit {
       this.#compile(dto)
         .then(data => {
           try {
-            // 不存在命令，直接写入文件
-            if (data.serviceConfig.builds.length === 0) {
-              // 写入文件
-              fs.writeFiles(data.files, data.project.codespace)
-              resolve()
-              return
-            }
             // 写入文件
             fs.writeFiles(data.files, data.project.codespace)
-            // 存在命令，则执行命令
-            serviceBuild.build(data.project, data.database, data.serviceConfig.builds, data.variables, data.serviceConfig.compiler)
-              .then(() => {
-                resolve()
-              })
-              .catch(e => {
-                reject(e)
-              })
+            // 返回构建信息
+            const result = {
+              projectId: data.project.id,
+              databaseId: data.database.id,
+              builds: serviceBuild.getBuildDetails(data.project, data.serviceConfig.builds),
+              variables: data.variables,
+              compiler: data.serviceConfig.compiler
+            }
+            resolve(result)
           } catch (e) {
             reject(e)
           }
