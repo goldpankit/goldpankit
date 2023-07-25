@@ -20,3 +20,8 @@ export function deleteById (id) {
   return request.get(`/database/delete/${id}`)
 }
 
+// 保存查询模型
+export function saveModel (data) {
+  return request.post('/database/model/save', data)
+}
+

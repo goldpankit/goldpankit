@@ -95,13 +95,13 @@
           <ul class="join-ons">
             <SQLLine v-for="(on,index) in join.ons" indent="20">
               <DynamicWidthInput v-if="index !== 0" v-model="on.relation"/>
-              <DynamicWidthInput v-model="table.alias"/>
-              <span>.</span>
-              <span>{{on.startField.name}}</span>
-              <span>=</span>
               <DynamicWidthInput v-model="join.joinTable.alias"/>
               <span>.</span>
               <span>{{on.endField.name}}</span>
+              <span>=</span>
+              <DynamicWidthInput v-model="join.table.alias"/>
+              <span>.</span>
+              <span>{{on.startField.name}}</span>
             </SQLLine>
           </ul>
         </li>

@@ -5,6 +5,7 @@
       :tables="tables"
       @table:drag="handleDragStart"
       v-model:current-model="currentModel"
+      @created="saveModel"
     />
     <div class="designer-wrap">
       <!-- 线条类型 -->
@@ -45,8 +46,7 @@ import TableSetting from "../../components/database/query-model/TableSetting.vue
 import QueryModelDesigner from "../../components/database/query-model/Designer.vue";
 import TableLibrary from "../../components/database/query-model/TableLibrary.vue";
 import {fetchTables} from "../../api/database.util";
-import {saveModel} from "../../api/user.project";
-import {search} from "../../api/database";
+import {search,saveModel} from "../../api/database";
 
 export default {
   components: {
@@ -82,7 +82,9 @@ export default {
       if (this.currentTable == null || this.currentTable.type !== 'MAIN') {
         return []
       }
-      return this.currentModel.joins.filter(r => r.table.id === this.currentTable.id || r.joinTable.id === this.currentTable.id)
+      console.log('joins', this.currentModel.joins)
+      return this.currentModel.joins
+      // return this.currentModel.joins.filter(r => r.table.id === this.currentTable.id || r.joinTable.id === this.currentTable.id)
     },
     // 当前表的聚合函数列
     currentTableAggregates () {
@@ -98,6 +100,7 @@ export default {
       const newModel = {
         name: this.currentModel.name,
         comment: this.currentModel.comment,
+        // 关联表信息
         tables: this.currentModel.tables.map(item => {
           return {
             name: item.name,
@@ -117,6 +120,7 @@ export default {
             y: item.y
           }
         }),
+        // join关系
         joins: this.currentModel.joins.map(item => {
           return {
             ...item,
@@ -131,6 +135,7 @@ export default {
             })
           }
         }),
+        // 聚合关系
         aggregates: this.currentModel.aggregates.map(agg => {
           return {
             table: agg.table.name,
@@ -142,7 +147,6 @@ export default {
         })
       }
       saveModel ({
-        projectId: this.currentProject.id,
         database: this.currentDatabase,
         model: newModel
       })
@@ -206,7 +210,9 @@ export default {
     },
     // 查询模型
     fetchModels () {
-      const models = this.databases.find(db => db.id === this.currentDatabase).models
+      const database = this.databases.find(db => db.id === this.currentDatabase)
+      const models = database.models
+      console.log('database.models', database.models)
       this.queryModels = models.map(model => {
         model.tables = model.tables.map(table => {
           const dbTable = this.tables.find(tb => tb.name.toLowerCase() === table.name.toLowerCase())
@@ -229,10 +235,10 @@ export default {
         })
         // 过滤掉不存在的表
         model.tables = model.tables.filter(t => t != null)
-        // 如果模型中不存在表，则返回null
-        if (model.tables.length === 0) {
-          return null
-        }
+        // // 如果模型中不存在表，则返回null
+        // if (model.tables.length === 0) {
+        //   return model
+        // }
         // join处理
         model.joins.map(join => {
           return this.__modelJoin2join(model, join)
@@ -245,8 +251,9 @@ export default {
         model.aggregates = model.aggregates.filter(agg => agg != null)
         return model
       })
-      // 过滤掉无效的模型
-      this.queryModels = this.queryModels.filter(m => m != null)
+      console.log('queryModels', this.queryModels)
+      // 过滤掉无效的模型（不存在表的模型）
+      // this.queryModels = this.queryModels.filter(m => m != null)
     },
     // 模型字段转字段详情, modelField: 查询模型中的字段信息，dbField: 数据库字段信息
     __modelField2field (modelField, dbField) {

@@ -3,26 +3,26 @@
   <div v-if="model.tables.length === 0" class="empty-tip" @dragover.prevent @drop="handleDrop">
     <div class="wrap">
       <p>Drag and drop the table on the left here or fill out the form below to create a virtual table.</p>
-      <el-table :data="virtualTable.fields">
-        <el-table-column prop="name" label="*Name">
-          <template #default="{ row }">
-            <el-input v-model="row.name"/>
-          </template>
-        </el-table-column>
-        <el-table-column prop="type" label="*Type">
-          <template #default="{ row }">
-            <el-input v-model="row.type"/>
-          </template>
-        </el-table-column>
-        <el-table-column prop="comment" label="*Comment">
-          <template #default="{ row }">
-            <el-input v-model="row.comment"/>
-          </template>
-        </el-table-column>
-      </el-table>
-      <div class="opera">
-        <el-button type="important" @click="confirmCreateVirtualTable">Confirm Create</el-button>
-      </div>
+<!--      <el-table :data="virtualTable.fields">-->
+<!--        <el-table-column prop="name" label="*Name">-->
+<!--          <template #default="{ row }">-->
+<!--            <el-input v-model="row.name"/>-->
+<!--          </template>-->
+<!--        </el-table-column>-->
+<!--        <el-table-column prop="type" label="*Type">-->
+<!--          <template #default="{ row }">-->
+<!--            <el-input v-model="row.type"/>-->
+<!--          </template>-->
+<!--        </el-table-column>-->
+<!--        <el-table-column prop="comment" label="*Comment">-->
+<!--          <template #default="{ row }">-->
+<!--            <el-input v-model="row.comment"/>-->
+<!--          </template>-->
+<!--        </el-table-column>-->
+<!--      </el-table>-->
+<!--      <div class="opera">-->
+<!--        <el-button type="important" @click="confirmCreateVirtualTable">Confirm Create</el-button>-->
+<!--      </div>-->
     </div>
   </div>
   <v-stage
@@ -190,13 +190,19 @@ export default {
       const stage = this.$refs.stage.getNode()
       stage.setPointersPositions(e);
       const position = stage.getPointerPosition()
+      const size = {
+        width: 200,
+        height: (this.model.dragData.fields.length + 1) * this.fieldHeight
+      }
       const newTable = {
         ...this.model.dragData,
         // 字段
         fields: this.model.dragData.fields.map(f => {
           return {
             ...f,
-            alias: f.name
+            alias: f.name,
+            visible: true,
+            isVirtual: false
           }
         }),
         // 非虚拟表

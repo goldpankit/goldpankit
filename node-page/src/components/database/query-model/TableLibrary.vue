@@ -86,7 +86,7 @@ export default {
     },
     // 确认创建
     confirmCreate () {
-      this.queryModels.push({
+      this.queryModels.unshift({
         ...this.newModel,
         // 当前选择的关系线类型
         lineType: 'join',
@@ -103,6 +103,7 @@ export default {
       })
       this.selectModel(this.queryModels[this.queryModels.length - 1])
       this.$refs.routerViewWindow.back()
+      this.$emit('created', this.queryModels[this.queryModels.length - 1])
     },
     // 选择模型
     selectModel (model) {
