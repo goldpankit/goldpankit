@@ -61,27 +61,23 @@
     </div>
     <!-- 发布窗口 -->
     <PublishWindow ref="publishWindow"/>
-    <!-- 执行构建窗口 -->
-    <BuildNotice :install-data="installData"/>
   </div>
 </template>
 
 <script>
-import {mapState} from "vuex";
+import {mapState, mapMutations} from "vuex";
 import SettingFiles from "../../../components/service/settings/SettingFiles.vue";
 import DirectorySelect from "../../../components/common/DirectorySelect.vue";
 import InitializeView from "../../../components/service/settings/InitializeView.vue";
 import BasicSetting from "../../../components/service/settings/BasicSetting.vue";
 import PublishWindow from "../../../components/service/PublishWindow.vue";
 import Variables from "../../../components/service/settings/Variables/Variables.vue";
+import MarkdownEditor from "../../../components/common/MarkdownEditor.vue";
 import {fetchConfig, fetchProfile, saveConfig} from "../../../api/service";
 import {cleanCompile, compile} from "../../../api/service.compile";
-import MarkdownEditor from "../../../components/common/MarkdownEditor.vue";
-import BuildNotice from "../../../components/service/installer/BuildNotice.vue";
 
 export default {
   components: {
-    BuildNotice,
     MarkdownEditor,
     Variables,
     PublishWindow, BasicSetting, InitializeView, DirectorySelect, SettingFiles},
@@ -91,7 +87,6 @@ export default {
         compile: false,
         cleanCompile: false
       },
-      installData: null,
       // 路由参数
       route: {
         space: '',
@@ -104,12 +99,13 @@ export default {
     }
   },
   computed: {
-    ...mapState(['currentProject', 'currentDatabase']),
+    ...mapState(['currentProject', 'currentDatabase', 'installData']),
     initialized () {
       return this.serviceConfig != null && this.serviceConfig.version != null
     }
   },
   methods: {
+    ...mapMutations(['setInstallData']),
     // 保存配置
     saveConfig () {
       saveConfig({
@@ -181,7 +177,7 @@ export default {
       })
         .then((installData) => {
           this.$tip.success('Compile successfully.')
-          this.installData = installData
+          this.setInstallData(installData)
         })
         .catch(e => {
           this.$tip.apiFailed(e)
@@ -205,7 +201,7 @@ export default {
       })
         .then(installData => {
           this.$tip.success('Clean Compile successfully.')
-          this.installData = installData
+          this.setInstallData(installData)
         })
         .catch(e => {
           this.$tip.apiFailed(e)
