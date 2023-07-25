@@ -59,7 +59,10 @@
         </template>
       </div>
     </div>
+    <!-- 发布窗口 -->
     <PublishWindow ref="publishWindow"/>
+    <!-- 执行构建窗口 -->
+    <BuildNotice :install-data="installData"/>
   </div>
 </template>
 
@@ -74,9 +77,11 @@ import Variables from "../../../components/service/settings/Variables/Variables.
 import {fetchConfig, fetchProfile, saveConfig} from "../../../api/service";
 import {cleanCompile, compile} from "../../../api/service.compile";
 import MarkdownEditor from "../../../components/common/MarkdownEditor.vue";
+import BuildNotice from "../../../components/service/installer/BuildNotice.vue";
 
 export default {
   components: {
+    BuildNotice,
     MarkdownEditor,
     Variables,
     PublishWindow, BasicSetting, InitializeView, DirectorySelect, SettingFiles},
@@ -86,6 +91,7 @@ export default {
         compile: false,
         cleanCompile: false
       },
+      installData: null,
       // 路由参数
       route: {
         space: '',
@@ -173,8 +179,9 @@ export default {
         database: this.currentDatabase,
         variables
       })
-        .then(() => {
-          console.log('编译成功')
+        .then((installData) => {
+          this.$tip.success('Compile successfully.')
+          this.installData = installData
         })
         .catch(e => {
           this.$tip.apiFailed(e)

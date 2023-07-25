@@ -317,7 +317,7 @@ export default {
         width: 100%;
       }
       :deep(.el-input__inner) {
-        color: var(--primary-color-match-2);
+        color: var(--color-value);
         font-size: 16px;
         font-weight: bold;
       }

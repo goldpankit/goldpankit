@@ -68,12 +68,12 @@ export default {
     border: 1px solid var(--background-color);
     border-radius: 5px;
     &.selected {
-      background: var(--primary-color-match-2);
+      background: var(--color-value);
       color: var(--color-light);
       font-weight: bold;
-      border-color: var(--primary-color-match-2);
+      border-color: var(--color-value);
       &:hover {
-        border-color: var(--primary-color-match-2);
+        border-color: var(--color-value);
       }
     }
     &:hover {
