@@ -29,4 +29,11 @@ request
     return database.deleteById(req.params.databaseId)
   })
 
+// 保存查询模型
+request
+  .post('/database/model/save')
+  .data(req => {
+    return database.saveModel(req.body.database, req.body.model)
+  })
+
 module.exports = request.router

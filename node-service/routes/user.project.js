@@ -30,12 +30,6 @@ request
   .data(req => {
     return userProject.deleteProject(req.params.projectId)
   })
-// 保存项目查询模型
-request
-  .post('/usr/project/model/save')
-  .data(req => {
-    return userProject.saveModel(req.body.projectId, req.body.database, req.body.model)
-  })
 // 搜索项目
 request
   .post('/usr/project/search')
