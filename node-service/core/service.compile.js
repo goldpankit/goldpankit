@@ -53,19 +53,21 @@ class Kit {
             }
           }
           fs.createFile(userProject.getConfigPath(project.id), fs.toJSONFileString(config), true)
-          // 执行命令
+          // 获取构建详情并返回
           const builds = data.version.builds == null || data.version.builds === '' ? [] : JSON.parse(data.version.builds)
-          if (builds.length > 0) {
-            serviceBuild.build(project, database, builds, variables, data.version.compiler)
-              .then(() => {
-                resolve()
-              })
-              .catch(e => {
-                reject(e)
-              })
-          } else {
-            resolve()
-          }
+          serviceBuild.getBuildDetails(project, builds, data.version.compiler, variables)
+            .then(builds => {
+              // 返回构建信息
+              const result = {
+                projectId: project.id,
+                databaseId: database.id,
+                builds
+              }
+              resolve(result)
+            })
+            .catch(e => {
+              reject(e)
+            })
         })
         .catch(e => {
           reject(e)
@@ -79,21 +81,30 @@ class Kit {
     return new Promise((resolve, reject) => {
       this.#install(dto)
         .then(({ data, project, database, variables}) => {
-          // 先执行命令
+          // 获取构建详情并返回
           const unbuilds = data.version.unbuilds == null || data.version.unbuilds === '' ? [] : JSON.parse(data.version.unbuilds)
-          if (unbuilds.length > 0) {
-            serviceBuild.build(project, database, unbuilds, variables, data.version.compiler)
-              .then(() => {
-                this.#afterUninstall(dto, data, project)
-                resolve()
-              })
-              .catch(e => {
-                reject(e)
-              })
-            return
-          }
-          this.#afterUninstall(dto, data, project)
-          resolve()
+          serviceBuild.getBuildDetails(project, unbuilds, data.version.compiler, variables)
+            .then(builds => {
+              // 删除文件
+              fs.deleteFiles(data.files, project.codespace)
+              // 获取项目配置
+              const configPath = userProject.getConfigPath(project.id)
+              let projectConfig = fs.readJSONFile(configPath)
+              // 删除项目配置中服务的配置
+              delete projectConfig.services[dto.service]
+              // 重新写入项目配置文件中
+              fs.createFile(userProject.getConfigPath(project.id), fs.toJSONFileString(projectConfig), true)
+              // 返回构建信息
+              const result = {
+                projectId: project.id,
+                databaseId: database.id,
+                builds
+              }
+              resolve(result)
+            })
+            .catch(e => {
+              reject(e)
+            })
         })
         .catch(e => {
           reject(e)
@@ -163,19 +174,6 @@ class Kit {
           reject(e)
         })
     })
-  }
-
-  // 卸载后处理
-  #afterUninstall (dto, data, project) {
-    // 删除文件
-    fs.deleteFiles(data.files, project.codespace)
-    // 获取项目配置
-    const configPath = userProject.getConfigPath(project.id)
-    let projectConfig = fs.readJSONFile(configPath)
-    // 删除项目配置中服务的配置
-    delete projectConfig.services[dto.service]
-    // 重新写入项目配置文件中
-    fs.createFile(userProject.getConfigPath(project.id), fs.toJSONFileString(projectConfig), true)
   }
 
   /**
@@ -248,37 +246,41 @@ class Kit {
    * @returns {Promise<void>}
    */
   #install (dto) {
-    const projectId = dto.projectId
-    const project = cache.projects.get(projectId)
-    if (project == null) {
-      throw new Error('Please select a project.')
+    try {
+      const projectId = dto.projectId
+      const project = cache.projects.get(projectId)
+      if (project == null) {
+        return Promise.reject('Please select a project.')
+      }
+      // 获取数据库信息
+      const database = cache.databases.get(dto.database)
+      // 组装变量
+      const variables = this.#getVariables(project, database, dto.variables)
+      let serviceVars = null
+      return Promise.all(variables)
+        .then(vars => {
+          serviceVars = vars
+          return serviceApi.install({
+            space: dto.space,
+            service: dto.service,
+            version: dto.version,
+            variables: vars
+          })
+        })
+        .then(data => {
+          return Promise.resolve({
+            data,
+            project,
+            database,
+            variables: serviceVars
+          })
+        })
+        .catch(e => {
+          return Promise.reject(e)
+        })
+    } catch (e) {
+      return Promise.reject(e)
     }
-    // 获取数据库信息
-    const database = cache.databases.get(dto.database)
-    // 组装变量
-    const variables = this.#getVariables(project, database, dto.variables)
-    let serviceVars = null
-    return Promise.all(variables)
-      .then(vars => {
-        serviceVars = vars
-        return serviceApi.install({
-          space: dto.space,
-          service: dto.service,
-          version: dto.version,
-          variables: vars
-        })
-      })
-      .then(data => {
-        return Promise.resolve({
-          data,
-          project,
-          database,
-          variables: serviceVars
-        })
-      })
-      .catch(e => {
-        return Promise.reject(e)
-      })
   }
 
   // 获取主服务简化变量

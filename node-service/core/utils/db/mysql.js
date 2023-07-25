@@ -142,9 +142,11 @@ class MySQL {
                 if (error) {
                   conn.end()
                   reject(error.sqlMessage)
+                  return
                 }
                 if (tables == null || tables.length === 0) {
                   reject(`can not found table ${table}.`)
+                  return
                 }
                 resolve({conn, config, tables})
               }
