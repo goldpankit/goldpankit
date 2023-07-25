@@ -141,25 +141,25 @@ class Kit {
     return new Promise((resolve, reject) => {
       this.#compile(dto)
         .then(data => {
-          // 存在卸载构建，则卸载后删除文件
-          if (data.serviceConfig.unbuilds.length > 0) {
-            serviceBuild.build(data.project, data.database, data.serviceConfig.unbuilds, data.variables, data.serviceConfig.compiler)
-              .then(() => {
-                // 删除文件
-                fs.deleteFiles(data.files, data.project.codespace)
-                resolve()
-              })
-              .catch(e => {
-                reject(e)
-              })
-            return
-          }
-          // 删除文件
-          fs.deleteFiles(data.files, data.project.codespace)
-          resolve()
+          // 获取构建详情并返回
+          serviceBuild.getBuildDetails(data.project, data.serviceConfig.unbuilds, data.serviceConfig.compiler, data.variables)
+            .then(builds => {
+              // 删除文件
+              fs.deleteFiles(data.files, data.project.codespace)
+              // 返回构建信息
+              const result = {
+                projectId: data.project.id,
+                databaseId: data.database.id,
+                builds
+              }
+              resolve(result)
+            })
+            .catch(e => {
+              reject(e)
+            })
         })
         .catch(e => {
-          console.log('e', e)
+          console.log('clean compile throw an exception', e)
           reject(e)
         })
     })
