@@ -16,14 +16,12 @@
 </template>
 
 <script>
-import UserProjects from "../components/usr/project/UserProjects.vue";
-import ProjectDatabasesSelect from "../components/usr/project/ProjectDatabasesSelect.vue";
 import AppLayout from "./AppLayout.vue";
 import LoginView from "../components/header/LoginView.vue";
 
 export default {
   name: 'NoneLayout',
-  components: {LoginView, AppLayout, ProjectDatabasesSelect, UserProjects}
+  components: { LoginView, AppLayout }
 }
 </script>
 
