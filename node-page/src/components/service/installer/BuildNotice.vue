@@ -12,7 +12,7 @@
         </div>
       </li>
     </ul>
-    <div class="opera">
+    <div v-if="builds.length > 1" class="opera">
       <el-button @click="ignoreAll">Ignore all</el-button>
       <el-button type="primary" :disabled="anyExecuting" @click="executeAll">Execute all</el-button>
     </div>

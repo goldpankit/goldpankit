@@ -203,8 +203,9 @@ export default {
         database: this.currentDatabase,
         variables
       })
-        .then(() => {
-          console.log('清空成功')
+        .then(installData => {
+          this.$tip.success('Clean Compile successfully.')
+          this.installData = installData
         })
         .catch(e => {
           this.$tip.apiFailed(e)
