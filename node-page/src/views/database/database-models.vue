@@ -83,8 +83,8 @@
 </template>
 
 <script>
-import InnerRouterViewWindow from "../../../components/common/InnerRouterView/InnerRouterViewWindow.vue";
-import InnerRouterView from "../../../components/common/InnerRouterView/InnerRouterView.vue";
+import InnerRouterViewWindow from "../../components/common/InnerRouterView/InnerRouterViewWindow.vue";
+import InnerRouterView from "../../components/common/InnerRouterView/InnerRouterView.vue";
 
 export default {
   name: "models",

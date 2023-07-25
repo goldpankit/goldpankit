@@ -8,7 +8,7 @@
     <el-descriptions-item label="Password">******</el-descriptions-item>
     <template #extra>
       <ul class="toolbar">
-        <li><el-button size="small" @click="$router.push({ name: 'DatabaseModels', params: { database: database.name } })">Query Models</el-button></li>
+        <li><el-button size="small" @click="gotoQueryModels">Query Models</el-button></li>
         <li><el-button size="small" icon="Edit" @click="$emit('edit')">Edit</el-button></li>
         <li><el-button size="small" type="danger" text @click="$emit('delete')">Delete</el-button></li>
       </ul>
@@ -18,6 +18,8 @@
 
 <script>
 
+import {mapMutations} from "vuex";
+
 export default {
   name: "DatabaseView",
   props: {
@@ -26,6 +28,12 @@ export default {
     }
   },
   methods: {
+    ...mapMutations(['setCurrentDatabase']),
+    // 跳转至查询模型页
+    gotoQueryModels () {
+      this.setCurrentDatabase(this.database.id)
+      this.$router.push({ name: 'DatabaseQueryModel' })
+    }
   }
 }
 </script>

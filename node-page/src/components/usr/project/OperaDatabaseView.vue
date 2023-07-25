@@ -63,7 +63,9 @@ export default {
         port: 3306,
         schema: '',
         username: 'root',
-        password: ''
+        password: '',
+        // 模型
+        models: []
       },
       connectResult: {
         connecting: false,

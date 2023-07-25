@@ -67,7 +67,8 @@ export default {
         port: 3306,
         schema: '',
         username: 'root',
-        password: ''
+        password: '',
+        models: []
       },
       connectResult: {
         connecting: false,

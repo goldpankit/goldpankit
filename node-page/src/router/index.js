@@ -4,6 +4,7 @@ import DefaultLayout from '../layouts/DefaultLayout.vue'
 import PCDesign from '../views/ui/design/pc.vue'
 import NoneLayout from "../layouts/NoneLayout.vue";
 import WorkbenchLayout from "../layouts/WorkbenchLayout.vue";
+import WithDatabaseLayout from "../layouts/WithDatabaseLayout.vue";
 import {getLoginInfo} from "../api/user.login";
 
 const router = createRouter({
@@ -65,11 +66,6 @@ const router = createRouter({
           component: () => import('@/views/usr/project/create.vue')
         },
         {
-          path: '/usr/project/:database/models',
-          name: 'DatabaseModels',
-          component: () => import('@/views/usr/project/database-query-models.vue')
-        },
-        {
           path: '/usr/space/create',
           name: 'CreateSpace',
           component: () => import('@/views/usr/create-space.vue')
@@ -122,6 +118,18 @@ const router = createRouter({
           path: '/usr/service/settings',
           name: 'ServiceSettings',
           component: () => import('@/views/usr/service/settings.vue')
+        },
+      ]
+    },
+    {
+      path: '/WithDatabaseLayout',
+      name: 'WithDatabaseLayout',
+      component: WithDatabaseLayout,
+      children: [
+        {
+          path: '/database/query-models',
+          name: 'DatabaseQueryModel',
+          component: () => import('@/views/database/query-models.vue')
         },
       ]
     }

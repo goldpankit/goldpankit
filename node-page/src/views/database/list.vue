@@ -5,36 +5,27 @@
       <section class="tip">
         The database information will only be stored on your device.
       </section>
-      <InnerRouterViewWindow ref="window">
-        <InnerRouterView name="databaseList" default>
-          <div class="database-list-wrap">
-            <ul class="toolbar">
-              <li>
-                <el-button type="primary" @click="add">Add New Database</el-button>
-              </li>
-            </ul>
-            <ul v-if="databases.length > 0" class="database-list">
-              <li v-for="db in databases" :key="db.name">
-                <DatabaseView
-                  :database="db"
-                  @edit="edit(db)"
-                  @delete="deleteDatabase(db.id)"
-                  @connect="connect(db)"
-                />
-              </li>
-            </ul>
-            <Empty v-else description="No Databases"/>
-            <Pagination :pagination="pagination"/>
-          </div>
-        </InnerRouterView>
-        <InnerRouterView name="operaDatabase" :title="operaDbTitle">
-          <OperaDatabaseView
-            :database="currentDatabase"
-            @success="$refs.window.back(),search()"
-          />
-        </InnerRouterView>
-      </InnerRouterViewWindow>
+      <div class="database-list-wrap">
+        <ul class="toolbar">
+          <li>
+            <el-button type="primary" @click="$refs.operaDatabaseWindow.open()">Add New Database</el-button>
+          </li>
+        </ul>
+        <ul v-if="databases.length > 0" class="database-list">
+          <li v-for="db in databases" :key="db.name">
+            <DatabaseView
+              :database="db"
+              @edit="edit(db)"
+              @delete="deleteDatabase(db.id)"
+              @connect="connect(db)"
+            />
+          </li>
+        </ul>
+        <Empty v-else description="No Databases"/>
+        <Pagination :pagination="pagination"/>
+      </div>
     </div>
+    <CreateDatabaseWindow ref="operaDatabaseWindow" @success="search"/>
   </div>
 </template>
 
@@ -46,26 +37,20 @@ import DatabaseView from "@/components/usr/project/DatabaseView.vue";
 import {deleteById, search} from "../../api/database";
 import Empty from "../../components/common/Empty.vue";
 import Pagination from "../../components/common/Pagination.vue";
+import CreateDatabaseWindow from "../../components/database/CreateDatabaseWindow.vue";
 
 export default {
-  components: {Pagination, Empty, DatabaseView, OperaDatabaseView, InnerRouterViewWindow, InnerRouterView},
+  components: {
+    CreateDatabaseWindow,
+    Pagination, Empty, DatabaseView, OperaDatabaseView, InnerRouterViewWindow, InnerRouterView},
   data () {
     return {
       databases: [],
-      currentDatabase: null,
       pagination: {
         pageIndex: 1,
         capacity: 10,
         total: 0
       }
-    }
-  },
-  computed: {
-    operaDbTitle () {
-      if (this.currentDatabase == null) {
-        return 'Create New Database'
-      }
-      return `Edit ${this.currentDatabase.name}`
     }
   },
   methods: {
@@ -79,14 +64,8 @@ export default {
           this.$tip.apiFailed(e)
         })
     },
-    // 添加数据库
-    add () {
-      this.currentDatabase = null
-      this.$refs.window.push('operaDatabase')
-    },
     // 修改数据库
     edit (db) {
-      this.currentDatabase = db
       this.$refs.window.push('operaDatabase')
     },
     // 删除数据库
@@ -102,21 +81,6 @@ export default {
             })
         })
         .catch(() => {})
-    },
-    // 测试连接
-    connect (db) {},
-    // 保存
-    __save () {
-      saveConfig({
-        id: this.project.id,
-        databases: this.project.databases
-      })
-        .then(() => {
-          this.$emit('success')
-        })
-        .catch(e => {
-          this.$tip.apiFailed(e)
-        })
     }
   },
   created () {
@@ -160,6 +124,7 @@ export default {
   }
   // 数据库列表
   .database-list-wrap {
+    padding: 0 20px;
     .toolbar {
       display: flex;
       justify-content: flex-end;

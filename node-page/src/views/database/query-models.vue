@@ -39,13 +39,14 @@
 
 <script>
 import {mapState} from "vuex";
-import Table from "../../../components/database/query-model/Table.vue";
-import RelationLine from "../../../components/database/query-model/RelationLine.vue";
-import TableSetting from "../../../components/database/query-model/TableSetting.vue";
-import QueryModelDesigner from "../../../components/database/query-model/Designer.vue";
-import TableLibrary from "../../../components/database/query-model/TableLibrary.vue";
-import {fetchTables} from "../../../api/database.util";
-import {saveModel} from "../../../api/user.project";
+import Table from "../../components/database/query-model/Table.vue";
+import RelationLine from "../../components/database/query-model/RelationLine.vue";
+import TableSetting from "../../components/database/query-model/TableSetting.vue";
+import QueryModelDesigner from "../../components/database/query-model/Designer.vue";
+import TableLibrary from "../../components/database/query-model/TableLibrary.vue";
+import {fetchTables} from "../../api/database.util";
+import {saveModel} from "../../api/user.project";
+import {search} from "../../api/database";
 
 export default {
   components: {
@@ -53,9 +54,12 @@ export default {
     QueryModelDesigner, TableSetting, RelationLine, Table},
   data () {
     return {
+      // 字段高度
       fieldHeight: 30,
       // 查询模型
       queryModels: [],
+      // 数据库
+      databases: [],
       // 表集合
       tables: [],
       // 关联线类型
@@ -158,9 +162,21 @@ export default {
     handleDragStart (tableName) {
       this.currentModel.dragData = this.tables.find(t => t.name === tableName)
     },
+    // 查询库
+    fetchDatabases () {
+      search ()
+        .then(data => {
+          this.databases = data
+          this.fetchTables()
+          // this.fetchModels()
+        })
+        .catch(e => {
+          this.$tip.apiFailed(e)
+        })
+    },
     // 查询数据库表
     fetchTables () {
-      const database = this.currentProject.databases.find(db => db.name === this.currentDatabase)
+      const database = this.databases.find(db => db.id === this.currentDatabase)
       fetchTables ({
         host: database.host,
         port: database.port,
@@ -190,8 +206,7 @@ export default {
     },
     // 查询模型
     fetchModels () {
-      console.log(this.currentProject.databases)
-      const models = this.currentProject.databases.find(db => db.name === this.currentDatabase).models
+      const models = this.databases.find(db => db.id === this.currentDatabase).models
       this.queryModels = models.map(model => {
         model.tables = model.tables.map(table => {
           const dbTable = this.tables.find(tb => tb.name.toLowerCase() === table.name.toLowerCase())
@@ -308,7 +323,7 @@ export default {
     }
   },
   created () {
-    this.fetchTables()
+    this.fetchDatabases()
   }
 }
 </script>
