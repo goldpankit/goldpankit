@@ -110,15 +110,20 @@ class Kit {
           try {
             // 写入文件
             fs.writeFiles(data.files, data.project.codespace)
-            // 返回构建信息
-            const result = {
-              projectId: data.project.id,
-              databaseId: data.database.id,
-              builds: serviceBuild.getBuildDetails(data.project, data.serviceConfig.builds),
-              variables: data.variables,
-              compiler: data.serviceConfig.compiler
-            }
-            resolve(result)
+            // 获取构建详情并返回
+            serviceBuild.getBuildDetails(data.project, data.serviceConfig.builds, data.serviceConfig.compiler, data.variables)
+              .then(builds => {
+                // 返回构建信息
+                const result = {
+                  projectId: data.project.id,
+                  databaseId: data.database.id,
+                  builds
+                }
+                resolve(result)
+              })
+              .catch(e => {
+                reject(e)
+              })
           } catch (e) {
             reject(e)
           }
