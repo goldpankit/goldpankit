@@ -1,5 +1,5 @@
 <template>
-  <div class="build-notice" :class="{ visible }">
+  <div class="build-notice" :class="{ visible: buildsLength > 0 }">
     <ul>
       <li v-for="(build,index) in builds" :key="build.name">
         <div class="title">
@@ -33,17 +33,12 @@
 
 <script>
 import {build} from "../../../api/service.compile";
+import {mapState} from "vuex";
 
 export default {
   name: "BuildNotice",
-  props: {
-    installData: {
-      required: true
-    }
-  },
   data () {
     return {
-      visible: false,
       executing: false,
       dialogData: {
         build: {
@@ -55,10 +50,12 @@ export default {
     }
   },
   computed: {
+    ...mapState(['installData']),
     builds () {
       if (this.installData == null) {
         return []
       }
+      console.log('this.installData', this.installData)
       return this.installData.builds
     },
     buildsLength () {
@@ -66,11 +63,6 @@ export default {
     },
     anyExecuting () {
       return this.executing || this.builds.filter(b => b.__executing === true).length > 0
-    }
-  },
-  watch: {
-    buildsLength () {
-      this.visible = this.buildsLength > 0
     }
   },
   methods: {

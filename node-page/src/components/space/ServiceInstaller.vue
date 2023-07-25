@@ -68,13 +68,12 @@ import InstallCheckbox from "../service/installer/Checkbox.vue";
 import InstallInput from "../service/installer/Input.vue";
 import InstallRadio from "../service/installer/Radio.vue";
 import VariableInput from "../service/installer/VariableInput.vue";
-import {install, uninstall} from "../../api/service.compile";
-import {fetchVersion} from "../../api/service.version";
 import MySqlFieldSelect from "../database/MySqlFieldSelect.vue";
 import FieldSetting from "../service/installer/FieldSetting.vue";
 import DirectorySelect from "../common/DirectorySelect.vue";
-import {create} from "../../api/user.project";
 import ProjectSelect from "../usr/project/ProjectSelect.vue";
+import {install, uninstall} from "../../api/service.compile";
+import {fetchVersion} from "../../api/service.version";
 
 export default {
   name: "ServiceInstaller",
@@ -138,7 +137,7 @@ export default {
     }
   },
   methods: {
-    ...mapMutations(['setCurrentProject']),
+    ...mapMutations(['setCurrentProject', 'setInstallData']),
     // 获取版本信息
     fetchVersion () {
       fetchVersion({
@@ -192,11 +191,13 @@ export default {
         version: this.version,
         variables: this.variables
       })
-        .then(() => {
+        .then(installData => {
           this.$tip.success('Install Successfully')
+          this.setInstallData(installData)
           this.$emit('installed')
         })
         .catch(e => {
+          this.$tip.apiFailed(e)
           this.$emit('error', e)
         })
         .finally(() => {
@@ -217,11 +218,13 @@ export default {
         version: this.version,
         variables: this.variables
       })
-        .then(() => {
+        .then(installData => {
           this.$tip.success('Uninstall Successfully')
+          this.setInstallData(installData)
           this.$emit('uninstalled')
         })
         .catch(e => {
+          this.$tip.apiFailed(e)
           this.$emit('error', e)
         })
         .finally(() => {

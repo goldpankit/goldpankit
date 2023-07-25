@@ -11,12 +11,18 @@ if (currentProjectStr != null) {
 let currentDatabase = window.localStorage.getItem('CURRENT_DATABASE')
 export default new Vuex.Store({
   state: {
+    // 用户信息
     userInfo: null,
+    // 当前项目ID
     currentProject,
+    // 当前数据库ID
     currentDatabase,
+    // 帮助中心，服务于当前查看的帮助内容
     help: {
       code: null
-    }
+    },
+    // 安装 & 编译信息，服务于自动构建提醒
+    installData: null
   },
   mutations: {
     setHelpCode (state, value) {
@@ -36,6 +42,9 @@ export default new Vuex.Store({
     setCurrentDatabase (state, database) {
       state.currentDatabase = database
       window.localStorage.setItem('CURRENT_DATABASE', database)
+    },
+    setInstallData (state, value) {
+      state.installData = value
     }
   },
   actions: {

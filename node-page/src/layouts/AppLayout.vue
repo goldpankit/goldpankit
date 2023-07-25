@@ -1,12 +1,16 @@
 <template>
   <slot></slot>
+  <!-- 执行构建窗口 -->
+  <BuildNotice :install-data="installData"/>
 </template>
 
 <script>
 import {mapActions} from "vuex";
+import BuildNotice from "../components/service/installer/BuildNotice.vue";
 
 export default {
   name: 'AppLayout',
+  components: {BuildNotice},
   props: {
     headerVisible: {
       type: Boolean,
