@@ -16,7 +16,7 @@
             >
               <p>{{model.name}}</p>
               <div>
-                <span><el-icon><Edit/></el-icon></span>
+                <span @click.stop="updateModel(model)"><el-icon><Edit/></el-icon></span>
                 <span @click.stop="deleteModel(model)"><el-icon><Delete/></el-icon></span>
               </div>
             </li>
@@ -33,8 +33,24 @@
               </el-form-item>
             </el-form>
             <div class="opera">
-              <el-button>Cancel</el-button>
+              <el-button @click="$refs.routerViewWindow.back()">Cancel</el-button>
               <el-button type="primary" @click="confirmCreate">Confirm</el-button>
+            </div>
+          </div>
+        </InnerRouterView>
+        <InnerRouterView name="update-model" title="Update Model">
+          <div class="create-model-form">
+            <el-form :model="editModel">
+              <el-form-item label="Model Name" required>
+                <el-input v-model="editModel.name"/>
+              </el-form-item>
+              <el-form-item label="Comment" required>
+                <el-input v-model="editModel.comment" type="textarea" :rows="2"/>
+              </el-form-item>
+            </el-form>
+            <div class="opera">
+              <el-button @click="$refs.routerViewWindow.back()">Cancel</el-button>
+              <el-button type="primary" @click="confirmUpdate">Confirm</el-button>
             </div>
           </div>
         </InnerRouterView>
@@ -60,7 +76,7 @@
 <script>
 import InnerRouterViewWindow from "../../common/InnerRouterView/InnerRouterViewWindow.vue";
 import InnerRouterView from "../../common/InnerRouterView/InnerRouterView.vue";
-import { deleteModel } from "../../../api/database";
+import { deleteModel, updateModel } from "../../../api/database";
 import {mapState} from "vuex";
 
 export default {
@@ -78,6 +94,11 @@ export default {
       newModel: {
         name: '',
         comment: ''
+      },
+      editModel: {
+        id: null,
+        name: '',
+        comment: ''
       }
     }
   },
@@ -92,6 +113,27 @@ export default {
     // 创建查询模型
     createQueryModel () {
       this.$refs.routerViewWindow.push('create-model')
+    },
+    // 修改模型
+    updateModel (model) {
+      for (const key in this.editModel) {
+        this.editModel[key] = model[key]
+      }
+      this.$refs.routerViewWindow.push('update-model')
+    },
+    // 确认修改
+    confirmUpdate() {
+      updateModel({
+        database: this.currentDatabase,
+        model: this.editModel
+      })
+        .then(() => {
+          Object.assign(this.currentModel, this.editModel)
+          this.$refs.routerViewWindow.back()
+        })
+        .catch(e => {
+          this.$tip.apiFailed(e)
+        })
     },
     // 确认创建
     confirmCreate () {
@@ -120,7 +162,7 @@ export default {
         .then(() => {
           deleteModel({
             database: this.currentDatabase,
-            model: model.name
+            model: model.id
           })
             .then(() => {
               const index = this.queryModels.findIndex(m => m === m)

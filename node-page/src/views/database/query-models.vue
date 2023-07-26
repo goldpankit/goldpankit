@@ -111,8 +111,8 @@ export default {
         database: this.currentDatabase,
         model: this.__getModelSettings(this.currentModel)
       })
-        .then(() => {
-          console.log('保存成功')
+        .then(modelId => {
+          this.currentModel.id = modelId
         })
         .catch(e => {
           this.$tip.apiFailed(e)
@@ -185,7 +185,6 @@ export default {
     fetchModels () {
       const database = this.databases.find(db => db.id === this.currentDatabase)
       const models = database.models
-      console.log('database.models', database.models)
       this.queryModels = models.map(model => {
         model.tables = model.tables.map(table => {
           const dbTable = this.tables.find(tb => tb.name.toLowerCase() === table.name.toLowerCase())
@@ -224,13 +223,13 @@ export default {
         model.aggregates = model.aggregates.filter(agg => agg != null)
         return model
       })
-      console.log('queryModels', this.queryModels)
       // 过滤掉无效的模型（不存在表的模型）
       // this.queryModels = this.queryModels.filter(m => m != null)
     },
     // 获取模型设置
     __getModelSettings (currentModel) {
       return {
+        id: currentModel.id,
         name: currentModel.name,
         comment: currentModel.comment,
         // 关联表信息
@@ -307,6 +306,7 @@ export default {
     },
     // 模型join转join详情
     __modelJoin2join (model, modelJoin) {
+      console.log('modelJoin', modelJoin)
       const table = model.tables.find(t => t.name.toLowerCase() === modelJoin.table.toLowerCase())
       const joinTable = model.tables.find(t => t.name.toLowerCase() === modelJoin.joinTable.toLowerCase())
       if (table == null || joinTable == null) {
