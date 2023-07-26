@@ -17,7 +17,7 @@
               <p>{{model.name}}</p>
               <div>
                 <span><el-icon><Edit/></el-icon></span>
-                <span><el-icon><Delete/></el-icon></span>
+                <span @click.stop="deleteModel(model)"><el-icon><Delete/></el-icon></span>
               </div>
             </li>
           </ul>
@@ -60,6 +60,8 @@
 <script>
 import InnerRouterViewWindow from "../../common/InnerRouterView/InnerRouterViewWindow.vue";
 import InnerRouterView from "../../common/InnerRouterView/InnerRouterView.vue";
+import { deleteModel } from "../../../api/database";
+import {mapState} from "vuex";
 
 export default {
   name: "TableLibrary",
@@ -78,6 +80,9 @@ export default {
         comment: ''
       }
     }
+  },
+  computed: {
+    ...mapState(['currentDatabase'])
   },
   methods: {
     // 开始拖动表放置在设计器中
@@ -108,6 +113,27 @@ export default {
       this.selectModel(this.queryModels[this.queryModels.length - 1])
       this.$refs.routerViewWindow.back()
       this.$emit('created', this.queryModels[this.queryModels.length - 1])
+    },
+    // 删除模型
+    deleteModel (model) {
+      this.$model.deleteConfirm(`Do you want to delete the query model named 「${model.name}」`)
+        .then(() => {
+          deleteModel({
+            database: this.currentDatabase,
+            model: model.name
+          })
+            .then(() => {
+              const index = this.queryModels.findIndex(m => m === m)
+              if (index !== -1) {
+                this.queryModels.splice(index, 1)
+              }
+              this.$tip.success('Delete successfully')
+            })
+            .catch(e => {
+              this.$tip.apiFailed(e)
+            })
+        })
+        .catch(() => {})
     },
     // 选择模型
     selectModel (model) {

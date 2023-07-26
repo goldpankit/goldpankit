@@ -146,7 +146,6 @@ export default {
         .then(data => {
           this.databases = data
           this.fetchTables()
-          // this.fetchModels()
         })
         .catch(e => {
           this.$tip.apiFailed(e)
