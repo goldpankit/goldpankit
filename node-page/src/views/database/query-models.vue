@@ -5,20 +5,30 @@
       :tables="tables"
       @table:drag="handleDragStart"
       v-model:current-model="currentModel"
-      @created="saveModel"
+      @created="confirmCreateModel"
     />
     <div class="designer-wrap">
-      <!-- 线条类型 -->
-      <ul v-if="currentModel != null" class="line-types">
-        <li :class="{selected: currentModel.lineType === 'join'}" @click="currentModel.lineType = 'join'">
-          <em class="join-line"></em>
-          <label>Join Line</label>
-        </li>
-        <li :class="{selected: currentModel.lineType === 'aggregate'}" @click="currentModel.lineType = 'aggregate'">
-          <em class="aggregate-line"></em>
-          <label>Aggregate Line</label>
-        </li>
-      </ul>
+      <div v-if="currentModel != null" class="toolbar">
+        <!-- 线条类型 -->
+        <ul class="line-types">
+          <li :class="{selected: currentModel.lineType === 'join'}" @click="currentModel.lineType = 'join'">
+            <em class="join-line"></em>
+            <label>Join Line</label>
+          </li>
+          <li :class="{selected: currentModel.lineType === 'aggregate'}" @click="currentModel.lineType = 'aggregate'">
+            <em class="aggregate-line"></em>
+            <label>Aggregate Line</label>
+          </li>
+        </ul>
+<!--        <ul class="opera">-->
+<!--          <li>-->
+<!--            <el-button icon="Edit">Edit</el-button>-->
+<!--          </li>-->
+<!--          <li>-->
+<!--            <el-button text type="danger">Delete</el-button>-->
+<!--          </li>-->
+<!--        </ul>-->
+      </div>
       <!-- 设计器 -->
       <QueryModelDesigner
         v-if="currentModel != null"
@@ -46,7 +56,7 @@ import TableSetting from "../../components/database/query-model/TableSetting.vue
 import QueryModelDesigner from "../../components/database/query-model/Designer.vue";
 import TableLibrary from "../../components/database/query-model/TableLibrary.vue";
 import {fetchTables} from "../../api/database.util";
-import {search,saveModel} from "../../api/database";
+import {search,createModel, updateModel} from "../../api/database";
 
 export default {
   components: {
@@ -96,59 +106,23 @@ export default {
   },
   methods: {
     // 保存查询模型
-    saveModel () {
-      const newModel = {
-        name: this.currentModel.name,
-        comment: this.currentModel.comment,
-        // 关联表信息
-        tables: this.currentModel.tables.map(item => {
-          return {
-            name: item.name,
-            alias: item.alias,
-            isVirtual: item.isVirtual,
-            type: item.type,
-            fields: item.fields.map(f => {
-              return {
-                name: f.name,
-                alias: f.alias,
-                type: f.type,
-                comment: f.comment,
-                isVirtual: f.isVirtual,
-              }
-            }),
-            x: item.x,
-            y: item.y
-          }
-        }),
-        // join关系
-        joins: this.currentModel.joins.map(item => {
-          return {
-            ...item,
-            table: item.table.name,
-            joinTable:item.joinTable.name,
-            ons: item.ons.map(on => {
-              return {
-                startField: on.startField.name,
-                endField: on.endField.name,
-                relation: on.relation
-              }
-            })
-          }
-        }),
-        // 聚合关系
-        aggregates: this.currentModel.aggregates.map(agg => {
-          return {
-            table: agg.table.name,
-            targetTable: agg.targetTable.name,
-            field: agg.field.name,
-            targetField: agg.targetField.name,
-            function: agg.function
-          }
-        })
-      }
-      saveModel ({
+    confirmCreateModel () {
+      createModel ({
         database: this.currentDatabase,
-        model: newModel
+        model: this.__getModelSettings(this.currentModel)
+      })
+        .then(() => {
+          console.log('保存成功')
+        })
+        .catch(e => {
+          this.$tip.apiFailed(e)
+        })
+    },
+    // 保存查询模型
+    saveModel () {
+      updateModel ({
+        database: this.currentDatabase,
+        model: this.__getModelSettings(this.currentModel)
       })
         .then(() => {
           console.log('保存成功')
@@ -255,6 +229,58 @@ export default {
       // 过滤掉无效的模型（不存在表的模型）
       // this.queryModels = this.queryModels.filter(m => m != null)
     },
+    // 获取模型设置
+    __getModelSettings (currentModel) {
+      return {
+        name: currentModel.name,
+        comment: currentModel.comment,
+        // 关联表信息
+        tables: currentModel.tables.map(item => {
+          return {
+            name: item.name,
+            alias: item.alias,
+            isVirtual: item.isVirtual,
+            type: item.type,
+            fields: item.fields.map(f => {
+              return {
+                name: f.name,
+                alias: f.alias,
+                type: f.type,
+                comment: f.comment,
+                isVirtual: f.isVirtual,
+              }
+            }),
+            x: item.x,
+            y: item.y
+          }
+        }),
+        // join关系
+        joins: currentModel.joins.map(item => {
+          return {
+            ...item,
+            table: item.table.name,
+            joinTable:item.joinTable.name,
+            ons: item.ons.map(on => {
+              return {
+                startField: on.startField.name,
+                endField: on.endField.name,
+                relation: on.relation
+              }
+            })
+          }
+        }),
+        // 聚合关系
+        aggregates: currentModel.aggregates.map(agg => {
+          return {
+            table: agg.table.name,
+            targetTable: agg.targetTable.name,
+            field: agg.field.name,
+            targetField: agg.targetField.name,
+            function: agg.function
+          }
+        })
+      }
+    },
     // 模型字段转字段详情, modelField: 查询模型中的字段信息，dbField: 数据库字段信息
     __modelField2field (modelField, dbField) {
       // 没有模型字段，但有表字段（新增的表字段或未展示的字段）
@@ -351,48 +377,66 @@ export default {
     flex-grow: 1;
     position: relative;
     background: var(--primary-color);
-    .line-types {
+    .toolbar {
       display: flex;
+      align-items: center;
       position: absolute;
-      top: 20px;
-      left: 20px;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 62px;
+      background: var(--background-color);
       z-index: 100;
-      li {
-        width: 120px;
-        height: 50px;
-        background: var(--background-color);
-        margin-right: 10px;
+      padding: 0 20px;
+      box-sizing: border-box;
+      .line-types {
         display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        border-radius: 10px;
-        &.selected {
-          background: #fff;
+        li {
+          width: 120px;
+          height: 50px;
+          background: var(--background-color);
+          margin-right: 10px;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          border-radius: 10px;
+          &.selected {
+            background: #fff;
+            label {
+              color: var(--primary-color-match-2);
+              font-weight: bold;
+            }
+          }
           label {
-            color: var(--primary-color-match-2);
-            font-weight: bold;
+            margin-top: 5px;
+            font-size: var(--font-size-mini);
+            color: var(--color-gray);
+          }
+          &:last-of-type {
+            margin-right: 0;
           }
         }
-        label {
-          margin-top: 5px;
-          font-size: var(--font-size-mini);
-          color: var(--color-gray);
+        .join-line, .aggregate-line {
+          display: block;
+          width: 50px;
+          height: 3px;
+          background: #ccc;
+          border: 5px solid var(--primary-color);
+          box-sizing: content-box;
         }
-        &:last-of-type {
-          margin-right: 0;
+        .aggregate-line {
+          background: var(--primary-color-match-1);
         }
       }
-      .join-line, .aggregate-line {
-        display: block;
-        width: 50px;
-        height: 3px;
-        background: #ccc;
-        border: 5px solid var(--primary-color);
-        box-sizing: content-box;
-      }
-      .aggregate-line {
-        background: var(--primary-color-match-1);
+      .opera {
+        display: flex;
+        align-items: center;
+        &::before {
+          content: '|';
+          margin: 0 30px;
+          color: #ccc;
+        }
       }
     }
   }

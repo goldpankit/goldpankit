@@ -20,8 +20,17 @@ export function deleteById (id) {
   return request.get(`/database/delete/${id}`)
 }
 
-// 保存查询模型
-export function saveModel (data) {
-  return request.post('/database/model/save', data)
+// 创建模型
+export function createModel (data) {
+  return request.post('/database/model/create', data)
 }
 
+// 修改模型
+export function updateModel (data) {
+  return request.post('/database/model/update', data)
+}
+
+// 删除模型
+export function deleteModel (data) {
+  return request.post('/database/model/delete', data)
+}

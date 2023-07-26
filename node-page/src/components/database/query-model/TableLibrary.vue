@@ -7,14 +7,18 @@
             <h4>Query Models</h4>
             <el-button type="primary" icon="Plus" class="button-icon" @click="createQueryModel"></el-button>
           </div>
-          <ul>
+          <ul class="model-list">
             <li
               v-for="model in queryModels"
               :key="model.name"
               :class="{selected: currentModel != null && currentModel.name === model.name}"
               @click="selectModel(model)"
             >
-              {{model.name}}
+              <p>{{model.name}}</p>
+              <div>
+                <span><el-icon><Edit/></el-icon></span>
+                <span><el-icon><Delete/></el-icon></span>
+              </div>
             </li>
           </ul>
         </InnerRouterView>
@@ -40,14 +44,14 @@
       <div class="header">
         <h4>Tables</h4>
       </div>
-      <ul>
+      <ul class="table-list">
         <li
           v-for="table in tables"
           :key="table.name"
           :name="table.name"
           draggable="true"
           @dragstart="handleDragStart"
-        >{{table.name}}</li>
+        >{{table.name}}({{table.comment}})</li>
       </ul>
     </div>
   </div>
@@ -144,21 +148,69 @@ export default {
       padding: 0 20px;
       margin-bottom: 10px;
     }
-    ul {
-      flex-grow: 1;
-      overflow-y: auto;
-      li {
-        padding: 5px 20px;
-        &.selected {
-          color: var(--primary-color-match-2);
-        }
-      }
-    }
     &:first-of-type {
       flex-grow: 0;
       flex-shrink: 0;
       height: 300px;
       border-top: 0;
+    }
+  }
+  // 模型列表
+  :deep(.model-list) {
+    flex-grow: 1;
+    overflow-y: auto;
+    li {
+      padding: 5px 10px 5px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      & > p {
+        word-break: break-all;
+      }
+      & > div {
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        opacity: 0;
+        transition: all ease .15s;
+        margin-left: 10px;
+        span {
+          padding: 3px;
+          margin-left: 5px;
+          margin-top: 2px;
+          color: var(--color-gray);
+          &:first-of-type {
+            margin-left: 0;
+          }
+          &:hover {
+            color: var(--font-color);
+          }
+        }
+      }
+      &.selected {
+        color: var(--primary-color-match-2);
+        background: #e0e0e0;
+        &:hover {
+          background: #e0e0e0;
+        }
+      }
+      &:hover {
+        background: #efefef;
+        & > div {
+          opacity: 1;
+        }
+      }
+    }
+  }
+  // 表格列表
+  :deep(.table-list) {
+    flex-grow: 1;
+    overflow-y: auto;
+    li {
+      padding: 5px 20px;
+      &:hover {
+        background: #efefef;
+      }
     }
   }
 }
