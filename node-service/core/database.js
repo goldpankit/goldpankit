@@ -23,22 +23,5 @@ module.exports = {
   // 删除
   deleteById(databaseId) {
     cache.databases.remove(databaseId)
-  },
-  // 保存查询模型
-  saveModel (databaseId, newModel) {
-    const database = cache.databases.get(databaseId)
-    if (database == null) {
-      throw new Error(`Can not found database by id ${databaseId}`)
-    }
-    if (database.models == null) {
-      database.models = []
-    }
-    const model = database.models.find(m => m.name === newModel.name)
-    if (model == null) {
-      database.models.push(newModel)
-    } else {
-      Object.assign(model, newModel)
-    }
-    cache.databases.save(database)
-  },
+  }
 }

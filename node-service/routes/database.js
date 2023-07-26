@@ -1,5 +1,6 @@
 const request = require('../utils/request.define')
 const database = require('../core/database')
+const databaseModel = require('../core/database.model')
 
 // 查询分页
 request
@@ -29,11 +30,25 @@ request
     return database.deleteById(req.params.databaseId)
   })
 
-// 保存查询模型
+// 创建模型
 request
-  .post('/database/model/save')
+  .post('/database/model/create')
   .data(req => {
-    return database.saveModel(req.body.database, req.body.model)
+    return databaseModel.create(req.body.database, req.body.model)
+  })
+
+// 修改模型
+request
+  .post('/database/model/update')
+  .data(req => {
+    return databaseModel.update(req.body.database, req.body.model)
+  })
+
+// 删除模型
+request
+  .post('/database/model/delete')
+  .data(req => {
+    return databaseModel.delete(req.body.database, req.body.model)
   })
 
 module.exports = request.router
