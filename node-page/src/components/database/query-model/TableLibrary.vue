@@ -11,7 +11,7 @@
             <li
               v-for="model in queryModels"
               :key="model.name"
-              :class="{selected: currentModel != null && currentModel.name === model.name}"
+              :class="{selected: currentModel != null && currentModel.id === model.id}"
               @click="selectModel(model)"
             >
               <p>{{model.name}}</p>
@@ -76,7 +76,7 @@
 <script>
 import InnerRouterViewWindow from "../../common/InnerRouterView/InnerRouterViewWindow.vue";
 import InnerRouterView from "../../common/InnerRouterView/InnerRouterView.vue";
-import { deleteModel, updateModel } from "../../../api/database";
+import {createModel, deleteModel, updateModel} from "../../../api/database";
 import {mapState} from "vuex";
 
 export default {
@@ -137,7 +137,7 @@ export default {
     },
     // 确认创建
     confirmCreate () {
-      this.queryModels.unshift({
+      const newModel = {
         ...this.newModel,
         // 当前选择的关系线类型
         lineType: 'join',
@@ -151,10 +151,20 @@ export default {
         selectedTableId: null,
         // 拖动数据
         dragData: null
+      }
+      createModel ({
+        database: this.currentDatabase,
+        model: newModel
       })
-      this.selectModel(this.queryModels[this.queryModels.length - 1])
-      this.$refs.routerViewWindow.back()
-      this.$emit('created', this.queryModels[this.queryModels.length - 1])
+        .then(modelId => {
+          newModel.id = modelId
+          this.queryModels.unshift(newModel)
+          this.selectModel(newModel)
+          this.$refs.routerViewWindow.back()
+        })
+        .catch(e => {
+          this.$tip.apiFailed(e)
+        })
     },
     // 删除模型
     deleteModel (model) {
@@ -232,6 +242,7 @@ export default {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      cursor: default;
       & > p {
         word-break: break-all;
       }
@@ -276,6 +287,7 @@ export default {
     overflow-y: auto;
     li {
       padding: 5px 20px;
+      cursor: move;
       &:hover {
         background: #efefef;
       }

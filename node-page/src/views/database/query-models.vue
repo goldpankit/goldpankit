@@ -5,7 +5,6 @@
       :tables="tables"
       @table:drag="handleDragStart"
       v-model:current-model="currentModel"
-      @created="confirmCreateModel"
     />
     <div class="designer-wrap">
       <div v-if="currentModel != null" class="toolbar">
@@ -105,19 +104,6 @@ export default {
     }
   },
   methods: {
-    // 保存查询模型
-    confirmCreateModel () {
-      createModel ({
-        database: this.currentDatabase,
-        model: this.__getModelSettings(this.currentModel)
-      })
-        .then(modelId => {
-          this.currentModel.id = modelId
-        })
-        .catch(e => {
-          this.$tip.apiFailed(e)
-        })
-    },
     // 保存查询模型
     saveModel () {
       updateModel ({
