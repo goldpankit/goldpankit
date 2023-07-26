@@ -1,6 +1,11 @@
 <template>
   <!-- 提醒和创建虚拟表 -->
-  <div v-if="model.tables.length === 0" class="empty-tip" @dragover.prevent @drop="handleDrop">
+  <div
+    v-if="model.tables.length === 0"
+    class="empty-tip"
+    @dragover.prevent
+    @drop="handleDrop"
+  >
     <div class="wrap">
       <p>Drag and drop the table on the left here or fill out the form below to create a virtual table.</p>
 <!--      <el-table :data="virtualTable.fields">-->
@@ -25,37 +30,39 @@
 <!--      </div>-->
     </div>
   </div>
-  <v-stage
-    v-if="rendered"
-    ref="stage"
-    :config="configKonva"
-    @mouseup="$refs.stage.getNode().draggable(true)"
-    @click="globalClick"
-  >
-    <Table
-      v-for="table in model.tables"
-      :ref="table.id"
-      :key="table.name"
-      :field-height="fieldHeight"
-      :x="table.x"
-      :y="table.y"
-      :table="table"
-      :relations="model.joins"
-      :selected="model.selectedTableId === table.id"
-      @dragmove="moveTable"
-      @field:mousedown="handleFieldMouseDown"
-      @field:mouseup="handleFieldMouseUp"
-      @table:select="handleTableSelect"
-    />
-    <v-layer>
-      <RelationLine
-        v-for="line in relationLines"
-        :line-type="line.type"
-        :start="line.start"
-        :end="line.end"
+  <div class="stage-wrap" tabindex="-1" @keyup.delete="handleDelete">
+    <v-stage
+      v-if="rendered"
+      ref="stage"
+      :config="configKonva"
+      @mouseup="$refs.stage.getNode().draggable(true)"
+      @click="globalClick"
+    >
+      <Table
+        v-for="table in model.tables"
+        :ref="table.id"
+        :key="table.name"
+        :field-height="fieldHeight"
+        :x="table.x"
+        :y="table.y"
+        :table="table"
+        :relations="model.joins"
+        :selected="model.selectedTableId === table.id"
+        @dragmove="moveTable"
+        @field:mousedown="handleFieldMouseDown"
+        @field:mouseup="handleFieldMouseUp"
+        @table:select="handleTableSelect"
       />
-    </v-layer>
-  </v-stage>
+      <v-layer>
+        <RelationLine
+          v-for="line in relationLines"
+          :line-type="line.type"
+          :start="line.start"
+          :end="line.end"
+        />
+      </v-layer>
+    </v-stage>
+  </div>
 </template>
 
 <script>
@@ -107,6 +114,10 @@ export default {
     }
   },
   methods: {
+    // 处理删除
+    handleDelete () {
+      console.log('delete table id', this.model.selectedTableId)
+    },
     // 全局点击
     globalClick (e) {
       // 如果点击的是空白部分，则清空选择
@@ -263,6 +274,9 @@ export default {
             e.preventDefault();
             this.handleDrop(e)
           })
+          container.addEventListener('keydown', (e) => {
+            console.log('keypress')
+          })
           this.computeRelations()
         })
       })
@@ -363,6 +377,11 @@ export default {
       justify-content: center;
       margin-top: 20px;
     }
+  }
+}
+.stage-wrap {
+  &:focus {
+    outline: none;
   }
 }
 </style>
