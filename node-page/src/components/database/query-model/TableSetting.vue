@@ -38,6 +38,7 @@
             :type="field.isVirtual ? 'virtual-field': 'field'"
             v-model:visible="field.visible"
             @field:delete="deleteVirtualField(index)"
+            @update:visible="fieldVisibleChange"
           >
             <span>)</span>
             <em>AS</em>
@@ -59,6 +60,7 @@
           v-model:visible="field.visible"
           indent="20"
           @field:delete="deleteVirtualField(index)"
+          @update:visible="fieldVisibleChange"
         >
           <DynamicWidthInput v-model="field.table.alias"/>
           <span>.</span>
@@ -235,6 +237,10 @@ export default {
         return null
       }
       return aggregate
+    },
+    // 字段显示改变
+    fieldVisibleChange () {
+      this.$emit('field:change')
     },
     // 获取聚合函数宽度
     __getAggregateFunctionWidth (functionName) {

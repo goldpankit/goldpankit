@@ -166,6 +166,9 @@ export default {
         for (const on of join.ons) {
           const startPosition = this.__getFieldPosition(join.table, on.startField)
           const endPosition = this.__getFieldPosition(join.joinTable, on.endField, false)
+          if (startPosition == null || endPosition == null) {
+            continue
+          }
           this.relationLines.push({
             id: Math.random(),
             start: startPosition,
@@ -182,6 +185,9 @@ export default {
       for (const aggregate of this.model.aggregates) {
         const startPosition = this.__getFieldPosition(aggregate.table, aggregate.field)
         const endPosition = this.__getFieldPosition(aggregate.targetTable, aggregate.targetField, false)
+        if (startPosition == null || endPosition == null) {
+          continue
+        }
         this.relationLines.push({
           id: Math.random(),
           start: startPosition,
@@ -413,7 +419,21 @@ export default {
     __getFieldPosition (table, field, withWidth=true) {
       const stageNode = this.$refs.stage.getNode()
       const stagePosition = stageNode.getAbsolutePosition()
-      const fieldIndex = table.fields.findIndex(f => f.name === field.name)
+      let fieldIndex = table.fields.findIndex(f => f.visible && f.name === field.name)
+      console.log('fieldIndex', fieldIndex)
+      if (fieldIndex === -1) {
+        return null
+      }
+      let staticFieldIndex = fieldIndex
+      // 计算出前面隐藏的字段，每隐藏一个，坐标-1，最终才是字段真正展示的坐标
+      for (let i = 0; i < staticFieldIndex; i++) {
+        if (!table.fields[i].visible) {
+          fieldIndex--
+        }
+      }
+      if (fieldIndex === -1) {
+        return null
+      }
       const x = table.x + (withWidth ? 200 : 0) - stagePosition.x
       const y = table.y + this.fieldHeight + (fieldIndex + 1) * this.fieldHeight - 15 - stagePosition.y
       return { x, y }
