@@ -56,9 +56,13 @@
       <v-layer>
         <RelationLine
           v-for="line in relationLines"
+          :key="line.id"
           :line-type="line.type"
           :start="line.start"
           :end="line.end"
+          :selected="model.selectedLineId === line.id"
+          @select="model.selectedLineId = line.id"
+          @unselect="model.selectedLineId = null"
         />
       </v-layer>
     </v-stage>
@@ -108,7 +112,16 @@ export default {
       }
     }
   },
+  computed: {
+    tableLength () {
+      return this.model.tables.length
+    }
+  },
   watch: {
+    tableLength () {
+      this.$emit('change')
+      this.render()
+    },
     model () {
       this.render()
     }
@@ -116,13 +129,22 @@ export default {
   methods: {
     // 处理删除
     handleDelete () {
-      console.log('delete table id', this.model.selectedTableId)
+      // 删除线
+      if (this.model.selectedLineId != null) {
+        this.__deleteLine()
+        return
+      }
+      // 删除表
+      if (this.model.selectedTableId != null) {
+        this.__deleteTable()
+      }
     },
     // 全局点击
     globalClick (e) {
       // 如果点击的是空白部分，则清空选择
       if (e.target.nodeType === 'Stage') {
         this.model.selectedTableId = null
+        this.model.selectedLineId = null
       }
     },
     // 移动表
@@ -143,9 +165,14 @@ export default {
           const startPosition = this.__getFieldPosition(join.table, on.startField)
           const endPosition = this.__getFieldPosition(join.joinTable, on.endField, false)
           this.relationLines.push({
+            id: Math.random(),
             start: startPosition,
             end: endPosition,
-            type: 'join'
+            type: 'join',
+            table: join.table,
+            startField: on.startField,
+            joinTable: join.joinTable,
+            endField: on.endField
           })
         }
       }
@@ -280,6 +307,40 @@ export default {
           this.computeRelations()
         })
       })
+    },
+    // 删除线
+    __deleteLine () {
+      // 查找行信息
+      const line = this.relationLines.find(line => line.id === this.model.selectedLineId)
+      // 查找对应join
+      const join = this.model.joins.find(join => {
+        return join.table.id === line.table.id && join.joinTable.id === line.joinTable.id
+      })
+      // 找到对应的on
+      const onIndex = join.ons.findIndex(on => {
+        return on.startField.name === line.startField.name && on.endField.name === line.endField.name
+      })
+      if (onIndex !== -1) {
+        join.ons.splice(onIndex, 1)
+      }
+      this.model.selectedLineId = null
+      this.$emit('change')
+      this.render()
+    },
+    // 删除表
+    __deleteTable () {
+      // 删除join关系
+      this.model.joins = this.model.joins.filter(join => {
+        if (join.table.id === this.model.selectedTableId) {
+          return false
+        }
+        if (join.joinTable.id === this.model.selectedTableId) {
+          return false
+        }
+        return true
+      })
+      // 删除table
+      this.model.tables = this.model.tables.filter(table => table.id !== this.model.selectedTableId)
     },
     // 添加join关系
     __addJoinRelation () {

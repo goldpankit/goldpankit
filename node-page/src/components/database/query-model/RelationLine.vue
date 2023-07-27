@@ -2,8 +2,9 @@
   <v-line
     ref="line"
     :config="lineConfig"
-    @mouseenter="highlight(true)"
-    @mouseleave="highlight(false)"
+    @mouseenter="highlight(true, selected)"
+    @mouseleave="highlight(false, selected)"
+    @click="handleSelect"
   />
 </template>
 
@@ -12,12 +13,12 @@
 const COLORS = {
   join: {
     color: '#eee',
-    hoverColor: '#FC777D',
+    hoverColor: '#faa5aa',
     selectedColor: '#FC777D'
   },
   aggregate: {
-    color: '#FFE957',
-    hoverColor: '#FFE957',
+    color: '#9b8e35',
+    hoverColor: '#d9c64b',
     selectedColor: '#FFE957'
   }
 }
@@ -32,19 +33,13 @@ export default {
     end: {
       required: true
     },
+    // 是否已选中
+    selected: {
+      default: false
+    },
     // 线条类型
     lineType: {
       required: true
-    }
-  },
-  computed: {
-    position () {
-      return [this.start, this.end]
-    }
-  },
-  watch: {
-    position () {
-      this.init()
     }
   },
   data () {
@@ -63,24 +58,57 @@ export default {
         // points: [...point1, ...point2],
         stroke: '#ccc',
         // 线条粗细（1个像素时无法出发mouseenter等事件）
-        strokeWidth: 2,
+        strokeWidth: 4,
         lineJoin: 'round',
         lineCap: 'round'
       }
     }
   },
+  computed: {
+    position () {
+      return [this.start, this.end]
+    }
+  },
+  watch: {
+    position () {
+      this.init()
+    },
+    selected () {
+      if (this.selected) {
+        this.highlight(true, this.selected)
+      } else {
+        this.highlight(false, this.selected)
+      }
+    }
+  },
   methods: {
+    // 选中
+    handleSelect () {
+      if (!this.selected) {
+        this.$emit('select')
+      } else {
+        this.$emit('unselect')
+      }
+    },
     // 高亮
-    highlight (highlight=true) {
+    highlight (highlight=true,selected=false) {
       const node = this.$refs.line.getNode()
       if (highlight) {
-        node.setAttr('stroke', COLORS[this.lineType].hoverColor)
-        node.setAttr('strokeWidth', 3)
-        node.zIndex(100)
+        if (selected) {
+          node.setAttr('stroke', COLORS[this.lineType].selectedColor)
+          node.zIndex(101)
+        } else {
+          node.setAttr('stroke', COLORS[this.lineType].hoverColor)
+          node.zIndex(100)
+        }
+        node.setAttr('strokeWidth', 5)
       } else {
-        node.setAttr('stroke', COLORS[this.lineType].color)
-        node.setAttr('strokeWidth', 2)
         node.zIndex(1)
+        if (selected) {
+          return
+        }
+        node.setAttr('stroke', COLORS[this.lineType].color)
+        node.setAttr('strokeWidth', 4)
       }
     },
     // 初始化
