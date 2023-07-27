@@ -91,7 +91,6 @@ export default {
       if (this.currentTable == null || this.currentTable.type !== 'MAIN') {
         return []
       }
-      console.log('joins', this.currentModel.joins)
       return this.currentModel.joins
       // return this.currentModel.joins.filter(r => r.table.id === this.currentTable.id || r.joinTable.id === this.currentTable.id)
     },

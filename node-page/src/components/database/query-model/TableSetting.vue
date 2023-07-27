@@ -8,7 +8,7 @@
       <!-- 查询语句 -->
       <SQLLine type="select" @field:create="createVirtualField"><em>SELECT</em></SQLLine>
       <!-- 字段列表 -->
-      <template v-for="(field,index) in table.fields">
+      <template v-for="(field,index) in visibleFields">
         <!-- 聚合字段 -->
         <template v-if="getAggregate(field)">
           <SQLLine indent="20" :visible="field.visible">(</SQLLine>
@@ -28,8 +28,8 @@
           </SQLLine>
           <!-- 聚合表 -->
           <SQLLine indent="40" :visible="field.visible">
-            <em>FROM&nbsp;</em>
-            <span>{{getAggregate(field).targetTable.name}}</span>&nbsp;
+            <em>FROM</em>
+            <span>{{getAggregate(field).targetTable.name}}</span>
             <DynamicWidthInput v-model="getAggregate(field).targetTable.alias"/>
           </SQLLine>
           <!-- 聚合表别名的等信息 -->
@@ -40,9 +40,9 @@
             @field:delete="deleteVirtualField(index)"
           >
             <span>)</span>
-            <em>&nbsp;AS&nbsp;</em>
+            <em>AS</em>
             <DynamicWidthInput v-model="field.alias"/>
-            <span>{{table.fields.length === index + 1 ? '' : ','}}</span>
+            <span>{{visibleFields.length === index + 1 ? '' : ','}}</span>
             <!-- 虚拟字段展示类型和注释 -->
             <template v-if="field.isVirtual">
               <span class="comment">#</span>
@@ -60,21 +60,21 @@
           indent="20"
           @field:delete="deleteVirtualField(index)"
         >
-          <DynamicWidthInput v-model="table.alias"/>
+          <DynamicWidthInput v-model="field.table.alias"/>
           <span>.</span>
           <!-- 非虚拟字段 -->
           <template v-if="!field.isVirtual">
             <span>{{field.name}}</span>
-            <em>&nbsp;AS&nbsp;</em>
+            <em>AS</em>
             <DynamicWidthInput v-model="field.alias"/>
-            <span>{{table.fields.length === index + 1 ? '' : ','}}</span>
+            <span>{{visibleFields.length === index + 1 ? '' : ','}}</span>
           </template>
           <!-- 虚拟字段 -->
           <template v-else>
             <DynamicWidthInput v-model="field.name"/>
-            <em>&nbsp;AS&nbsp;</em>
-            <DynamicWidthInput v-model="field.name"/>
-            <span>{{table.fields.length === index + 1 ? '' : ','}}</span>
+            <em>AS</em>
+            <DynamicWidthInput v-model="field.alias"/>
+            <span>{{visibleFields.length === index + 1 ? '' : ','}}</span>
             <span class="comment">#</span>
             <DynamicWidthInput v-model="field.type" class="comment"/>
             <DynamicWidthInput v-model="field.comment" class="comment"/>
@@ -82,9 +82,9 @@
         </SQLLine>
       </template>
       <SQLLine v-if="!table.isVirtual">
-        <em>FROM&nbsp;</em>
+        <em>FROM</em>
         <span>{{table.name}}</span>
-        <em>&nbsp;AS&nbsp;</em>
+        <em>AS</em>
         <DynamicWidthInput v-model="table.alias"/>
       </SQLLine>
       <ul class="joins">
@@ -96,10 +96,10 @@
               class="keyword"
               style="width: 100px;"
             />
-            <span class="hidden">{{join.joinType}}&nbsp;</span>
-            <span>{{join.joinTable.name}}&nbsp;</span>
+            <span class="hidden">{{join.joinType}}</span>
+            <span>{{join.joinTable.name}}</span>
             <DynamicWidthInput v-model="join.joinTable.alias"/>
-            <span>&nbsp;ON&nbsp;</span>
+            <span>ON</span>
             <SQLLineKeywordSelect
               v-model="join.relation"
               :data="['ONE-TO-ONE', 'ONE-TO-MANY', 'MANY-TO-ONE']"
@@ -109,7 +109,7 @@
           </SQLLine>
           <ul class="join-ons">
             <SQLLine v-for="(on,index) in join.ons" indent="20">
-              <DynamicWidthInput v-if="index !== 0" v-model="on.relation"/>&nbsp;
+              <DynamicWidthInput v-if="index !== 0" v-model="on.relation"/>
               <DynamicWidthInput v-model="join.joinTable.alias"/>
               <span>.</span>
               <span>{{on.endField.name}}</span>
@@ -142,6 +142,10 @@ export default {
     table: {
       required: true
     },
+    // 模型信息
+    model: {
+      required: true
+    },
     // 表join信息
     tableJoins: {
       type: Array
@@ -152,13 +156,36 @@ export default {
     }
   },
   computed: {
-    ...mapState(['currentDatabase'])
+    ...mapState(['currentDatabase']),
+    // 展示字段
+    visibleFields () {
+      let fields = new Set()
+      for (const field of this.table.fields) {
+        field.table = this.table
+        field.alias = field.name
+        fields.add(field)
+      }
+      for (const join of this.tableJoins) {
+        for (const field of join.table.fields) {
+          field.table = join.table
+          field.alias = field.name
+          fields.add(field)
+        }
+        for (const field of join.joinTable.fields) {
+          field.table = join.joinTable
+          field.alias = field.name
+          fields.add(field)
+        }
+      }
+      console.log('tableJoins', this.tableJoins)
+      return [...fields]
+    }
   },
   methods: {
     // 拷贝语句
     copy () {
       formatSql({
-        sql: this.$el.querySelector('.wrap').innerText
+        sql: this.__getSql()
       })
         .then(sql => {
           return navigator.clipboard.writeText(sql)
@@ -172,9 +199,11 @@ export default {
     },
     // 执行语句
     execute () {
+      const sql = this.__getSql()
+      console.log('sql', sql)
       execSql({
         database: this.currentDatabase,
-        sql: this.$el.querySelector('.wrap').innerText
+        sql
       })
         .then(data => {
           this.$refs.sqlPreview.open(data)
@@ -217,6 +246,38 @@ export default {
         MIN: 38
       }
       return widths[functionName]
+    },
+    // 获取sql语句
+    __getSql () {
+      const sqlLines = []
+      sqlLines.push('SELECT')
+      // 字段列表
+      for (const field of this.visibleFields) {
+        if (!field.visible) {
+          continue
+        }
+        const agg = this.getAggregate(field)
+        if (agg != null) {
+          console.log('agg', agg)
+          sqlLines.push('(SELECT')
+          sqlLines.push(`${agg.function}(${agg.targetTable.alias}.${agg.targetField.name})`)
+          sqlLines.push(`FROM ${agg.targetTable.name} AS ${agg.targetTable.alias}) AS ${agg.field.name},`)
+        } else {
+          sqlLines.push(`${field.table.alias}.${field.name} AS ${field.alias},`)
+        }
+      }
+      // 最后一个字段去掉逗号
+      sqlLines[sqlLines.length - 1] = sqlLines[sqlLines.length - 1].substring(0, sqlLines[sqlLines.length - 1].length - 1)
+      // from 表
+      sqlLines.push(`FROM ${this.table.name} AS ${this.table.alias}`)
+      // join关系
+      for (const join of this.tableJoins) {
+        sqlLines.push(`${join.joinType} ${join.joinTable.name}`)
+        for (const on of join.ons) {
+          sqlLines.push(`ON ${join.table.alias}.${on.startField.name} = ${join.joinTable.alias}.${on.endField.name}`)
+        }
+      }
+      return sqlLines.join('\n')
     }
   },
   mounted () {
