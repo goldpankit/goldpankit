@@ -10,3 +10,13 @@ export function fetchTables (data) {
   return request.post('/db/mysql/tables', data)
 }
 
+// 格式化语句
+export function formatSql (data) {
+  return request.post('/db/mysql/format', data)
+}
+
+// 执行SQL
+export function execSql (data) {
+  return request.post('/db/mysql/exec', data)
+}
+

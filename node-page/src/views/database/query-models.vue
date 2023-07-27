@@ -371,7 +371,6 @@ export default {
       width: 100%;
       height: 62px;
       background: var(--background-color);
-      z-index: 100;
       padding: 0 20px;
       box-sizing: border-box;
       .line-types {

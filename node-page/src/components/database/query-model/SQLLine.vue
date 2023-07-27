@@ -70,13 +70,15 @@ export default {
       color: var(--primary-color-match-2);
       font-style: normal;
     }
-    // 关系
-    :deep(.dynamic-width-input.comment) {
-      background: #e5ffda;
-    }
     // 注释
     :deep(span.comment) {
       color: var(--color-gray);
+    }
+    :deep(span) {
+      &.hidden {
+        width: 0;
+        overflow: hidden;
+      }
     }
   }
   // 操作

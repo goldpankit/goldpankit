@@ -29,6 +29,11 @@ export default {
       color: var(--primary-color-match-2);
     }
   }
+  &.relation {
+    :deep(.el-input__inner) {
+      background: #e5ffda;
+    }
+  }
   :deep(.el-input__wrapper) {
     padding: 0;
     box-shadow: none !important;
