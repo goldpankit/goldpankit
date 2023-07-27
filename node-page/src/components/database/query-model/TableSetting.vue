@@ -1,6 +1,7 @@
 <template>
   <div class="table-setting" :class="{ visible: table != null }">
     <div class="toolbar">
+      <el-button type="primary" class="button-copy" data-clipboard-text="Hello World" @click="copy">Copy</el-button>
       <el-button type="primary" @click="execute">Execute</el-button>
     </div>
     <div class="wrap" v-if="table != null">
@@ -121,6 +122,7 @@
         </li>
       </ul>
     </div>
+    <SQLPreview ref="sqlPreview"/>
   </div>
 </template>
 
@@ -129,11 +131,12 @@ import {mapState} from "vuex";
 import SQLLine from "./SQLLine.vue";
 import DynamicWidthInput from "../../common/DynamicWidthInput.vue";
 import SQLLineKeywordSelect from "./SQLLineKeywordSelect.vue";
-import {execSql} from "../../../api/database.util";
+import SQLPreview from "./SQLPreview.vue";
+import {execSql, formatSql} from "../../../api/database.util";
 
 export default {
   name: "TableSetting",
-  components: {SQLLineKeywordSelect, DynamicWidthInput, SQLLine},
+  components: {SQLPreview, SQLLineKeywordSelect, DynamicWidthInput, SQLLine},
   props: {
     // 表
     table: {
@@ -152,15 +155,29 @@ export default {
     ...mapState(['currentDatabase'])
   },
   methods: {
+    // 拷贝语句
+    copy () {
+      formatSql({
+        sql: this.$el.querySelector('.wrap').innerText
+      })
+        .then(sql => {
+          return navigator.clipboard.writeText(sql)
+        })
+        .then(() => {
+          this.$tip.success('Copy successfully.')
+        })
+        .catch(e => {
+          this.$tip.apiFailed(e)
+        })
+    },
     // 执行语句
     execute () {
-      console.log('sql', this.$el.querySelector('.wrap').innerText)
       execSql({
         database: this.currentDatabase,
         sql: this.$el.querySelector('.wrap').innerText
       })
         .then(data => {
-          console.log('data', data)
+          this.$refs.sqlPreview.open(data)
         })
         .catch(e => {
           this.$tip.apiFailed(e)
@@ -201,6 +218,8 @@ export default {
       }
       return widths[functionName]
     }
+  },
+  mounted () {
   }
 }
 </script>

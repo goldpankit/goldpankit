@@ -36,14 +36,14 @@
         :field-height="30"
         @change="saveModel"
       />
+      <!-- 表设置 -->
+      <TableSetting
+        :table="currentTable"
+        :table-joins="currentTableJoins"
+        :aggregates="currentTableAggregates"
+        @field:change="handleSettingChange"
+      />
     </div>
-    <!-- 表设置 -->
-    <TableSetting
-      :table="currentTable"
-      :table-joins="currentTableJoins"
-      :aggregates="currentTableAggregates"
-      @field:change="handleSettingChange"
-    />
   </div>
 </template>
 
