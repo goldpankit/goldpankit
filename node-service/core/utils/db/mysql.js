@@ -1,8 +1,18 @@
 const mysql = require('mysql');
 const fs = require('../fs')
+const sqlFormatter = require('sql-formatter')
 
 class MySQL {
   constructor() {
+  }
+
+  /**
+   * 格式化sql语句
+   * @param sql sql语句
+   * @returns {string} 格式化好后的语句
+   */
+  format (sql) {
+    return sqlFormatter.format(sql)
   }
 
   /**
