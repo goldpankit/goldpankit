@@ -14,7 +14,11 @@
           <SQLLine indent="20" :visible="field.visible">(</SQLLine>
           <SQLLine indent="40" :visible="field.visible"><em>SELECT</em></SQLLine>
           <SQLLine indent="60" :visible="field.visible">
-            <DynamicWidthInput v-model="getAggregate(field).function"/>
+            <SQLLineKeywordSelect
+              v-model="getAggregate(field).function"
+              :data="['COUNT', 'SUM', 'AVG', 'MAX', 'MIN']"
+              :style="`width: ${__getAggregateFunctionWidth(getAggregate(field).function)}px;`"
+            />
             <span>(</span>
             <DynamicWidthInput v-model="getAggregate(field).targetTable.alias"/>
             <span>.</span>
@@ -84,13 +88,22 @@
       </SQLLine>
       <ul class="joins">
         <li v-for="join in tableJoins">
-          <SQLLine class="sql-line">
-            <em>INNER JOIN</em>
+          <SQLLine>
+            <SQLLineKeywordSelect
+              v-model="join.joinType"
+              :data="['INNER JOIN', 'LEFT JOIN', 'RIGHT JOIN', 'OUTER JOIN']"
+              class="keyword"
+              style="width: 100px;"
+            />
             <span>{{join.joinTable.name}}</span>
             <DynamicWidthInput v-model="join.joinTable.alias"/>
             <em>ON</em>
             <span>#</span>
-            <DynamicWidthInput v-model="join.relation" class="comment"/>
+            <SQLLineKeywordSelect
+              v-model="join.relation"
+              :data="['ONE-TO-ONE', 'ONE-TO-MANY', 'MANY-TO-ONE']"
+              style="width: 115px;"
+            />
           </SQLLine>
           <ul class="join-ons">
             <SQLLine v-for="(on,index) in join.ons" indent="20">
@@ -113,10 +126,11 @@
 <script>
 import SQLLine from "./SQLLine.vue";
 import DynamicWidthInput from "../../common/DynamicWidthInput.vue";
+import SQLLineKeywordSelect from "./SQLLineKeywordSelect.vue";
 
 export default {
   name: "TableSetting",
-  components: {DynamicWidthInput, SQLLine},
+  components: {SQLLineKeywordSelect, DynamicWidthInput, SQLLine},
   props: {
     // 表
     table: {
@@ -159,6 +173,17 @@ export default {
         return null
       }
       return aggregate
+    },
+    // 获取聚合函数宽度
+    __getAggregateFunctionWidth (functionName) {
+      const widths = {
+        COUNT: 63,
+        SUM: 42,
+        AVG: 40,
+        MAX: 42,
+        MIN: 38
+      }
+      return widths[functionName]
     }
   }
 }

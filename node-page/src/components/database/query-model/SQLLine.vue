@@ -66,7 +66,7 @@ export default {
       //font-weight: bold;
       //text-decoration: underline;
     }
-    :deep(em) {
+    :deep(em, .keyword) {
       color: var(--primary-color-match-2);
       font-style: normal;
     }
