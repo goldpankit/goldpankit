@@ -129,6 +129,7 @@ export default {
   methods: {
     // 处理删除
     handleDelete () {
+      console.log('line id', this.model.selectedLineId)
       // 删除线
       if (this.model.selectedLineId != null) {
         this.__deleteLine()
@@ -143,6 +144,7 @@ export default {
     globalClick (e) {
       // 如果点击的是空白部分，则清空选择
       if (e.target.nodeType === 'Stage') {
+        console.log('清空选择')
         this.model.selectedTableId = null
         this.model.selectedLineId = null
       }
@@ -170,9 +172,9 @@ export default {
             end: endPosition,
             type: 'join',
             table: join.table,
-            startField: on.startField,
-            joinTable: join.joinTable,
-            endField: on.endField
+            field: on.startField,
+            targetTable: join.joinTable,
+            targetField: on.endField
           })
         }
       }
@@ -181,9 +183,14 @@ export default {
         const startPosition = this.__getFieldPosition(aggregate.table, aggregate.field)
         const endPosition = this.__getFieldPosition(aggregate.targetTable, aggregate.targetField, false)
         this.relationLines.push({
+          id: Math.random(),
           start: startPosition,
           end: endPosition,
-          type: 'aggregate'
+          type: 'aggregate',
+          table: aggregate.table,
+          field: aggregate.field,
+          targetTable: aggregate.targetTable,
+          targetField: aggregate.targetField
         })
       }
     },
@@ -310,18 +317,27 @@ export default {
     },
     // 删除线
     __deleteLine () {
-      // 查找行信息
+      // 查找线条信息
       const line = this.relationLines.find(line => line.id === this.model.selectedLineId)
-      // 查找对应join
-      const join = this.model.joins.find(join => {
-        return join.table.id === line.table.id && join.joinTable.id === line.joinTable.id
-      })
-      // 找到对应的on
-      const onIndex = join.ons.findIndex(on => {
-        return on.startField.name === line.startField.name && on.endField.name === line.endField.name
-      })
-      if (onIndex !== -1) {
-        join.ons.splice(onIndex, 1)
+      // 删除join线
+      if (line.type === 'join') {
+        // 查找对应join
+        const join = this.model.joins.find(join => {
+          return join.table.id === line.table.id && join.joinTable.id === line.targetTable.id
+        })
+        // 找到对应的on
+        const onIndex = join.ons.findIndex(on => {
+          return on.startField.name === line.field.name && on.endField.name === line.targetField.name
+        })
+        if (onIndex !== -1) {
+          join.ons.splice(onIndex, 1)
+        }
+      }
+      // 删除聚合线
+      else {
+        // 查询聚合
+        const aggIndex = this.model.aggregates.findIndex(agg => agg.table.id === line.table.id && agg.targetTable.id === line.targetTable.id)
+        this.model.aggregates.splice(aggIndex, 1)
       }
       this.model.selectedLineId = null
       this.$emit('change')
