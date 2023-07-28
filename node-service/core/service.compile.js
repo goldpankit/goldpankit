@@ -357,6 +357,8 @@ class Kit {
     return variables.map(item => {
       return new Promise((resolve, reject) => {
         try {
+          // 查询模型变量（当前仅支持一个查询模型变量）
+          let model = null
           // 如果类型为数据库，则查询出库信息
           if (item.inputType === 'database') {
             const database = cache.databases.get(item.value || item.defaultValue)
@@ -389,20 +391,19 @@ class Kit {
           // 如果类型为查询模型，则查询出模型信息
           if (item.inputType === 'query_model') {
             const modelId = item.value || item.defaultValue
-            const model = database.models.find(model => model.id === modelId)
-            console.log('model', model)
+            model = database.models.find(model => model.id === modelId)
             // 主表
             const mainTable = model.tables.find(t => t.type === 'MAIN')
             // 子表
             const subTables = model.tables.filter(t => t.type !== 'MAIN')
             // join
             const joins = model.joins.map(join => {
-              const joinTable = model.tables.find(t => t.name === join.joinTable)
+              const targetTable = model.tables.find(t => t.name === join.targetTable)
               const ons = join.ons.map((on,index) => {
                 const relationText = index === 0 ? '' : on.relation
-                return `${relationText} ${mainTable.alias}.${on.startField} = ${joinTable.alias}.${on.endField}`
+                return `${relationText} ${mainTable.alias}.${on.field} = ${targetTable.alias}.${on.targetField}`
               })
-              return `${join.joinType} ${join.joinTable} ON
+              return `${join.joinType} ${join.targetTable} ON
   ${ons.join('\n  ')}`
             })
             // 查询字段
@@ -426,22 +427,39 @@ class Kit {
                 }
               }
             }
+            const value = {
+              name: model.name,
+              comment: model.comment,
+              mainTable,
+              subTables,
+              joins: model.joins.map(join => {
+                const table = model.tables.find(t => t.name === join.table)
+                const targetTable = model.tables.find(t => t.name === join.targetTable)
+                const ons = join.ons.map(on => {
+                  return {
+                    ...on,
+                    field: table.fields.find(f => f.name === on.field),
+                    targetField: targetTable.fields.find(f => f.name === on.targetField),
+                  }
+                })
+                return {
+                  ...join,
+                  table,
+                  targetTable,
+                  ons
+                }
+              }),
+              aggregates: model.aggregates,
+              sql: {
+                fields: fields,
+                joins: joins,
+                where: '',
+                orderBy: ''
+              }
+            }
             resolve({
               ...item,
-              value: {
-                name: model.name,
-                comment: model.comment,
-                mainTable,
-                subTables,
-                joins: model.joins,
-                aggregates: model.aggregates,
-                sql: {
-                  fields: fields.join(',\n  '),
-                  joins: joins.join('\n'),
-                  where: '',
-                  orderBy: ''
-                }
-              }
+              value
             })
             return
           }
