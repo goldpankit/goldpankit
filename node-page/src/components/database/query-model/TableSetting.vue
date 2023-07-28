@@ -18,10 +18,11 @@
               v-model="getAggregate(field).function"
               :data="['COUNT', 'SUM', 'AVG', 'MAX', 'MIN']"
               :style="`width: ${__getAggregateFunctionWidth(getAggregate(field).function)}px;`"
+              @change="handleChange"
             />
             <span class="hidden">{{getAggregate(field).function}}</span>
             <span>(</span>
-            <DynamicWidthInput v-model="getAggregate(field).targetTable.alias"/>
+            <DynamicWidthInput v-model="getAggregate(field).targetTable.alias" @change="handleChange"/>
             <span>.</span>
             <span>{{getAggregate(field).targetField.name}}</span>
             <span>)</span>
@@ -30,7 +31,7 @@
           <SQLLine indent="40" :visible="field.visible">
             <em>FROM</em>
             <span>{{getAggregate(field).targetTable.name}}</span>
-            <DynamicWidthInput v-model="getAggregate(field).targetTable.alias"/>
+            <DynamicWidthInput v-model="getAggregate(field).targetTable.alias" @change="handleChange"/>
           </SQLLine>
           <!-- 聚合表别名的等信息 -->
           <SQLLine
@@ -47,8 +48,8 @@
             <!-- 虚拟字段展示类型和注释 -->
             <template v-if="field.isVirtual">
               <span class="comment">#</span>
-              <DynamicWidthInput v-model="field.type" class="comment"/>
-              <DynamicWidthInput v-model="field.comment" class="comment"/>
+              <DynamicWidthInput v-model="field.type" class="comment" @change="handleChange"/>
+              <DynamicWidthInput v-model="field.comment" class="comment" @change="handleChange"/>
             </template>
           </SQLLine>
         </template>
@@ -62,24 +63,24 @@
           @field:delete="deleteVirtualField(index)"
           @update:visible="fieldVisibleChange"
         >
-          <DynamicWidthInput v-model="field.table.alias"/>
+          <DynamicWidthInput v-model="field.table.alias" @change="handleChange"/>
           <span>.</span>
           <!-- 非虚拟字段 -->
           <template v-if="!field.isVirtual">
             <span>{{field.name}}</span>
             <em>AS</em>
-            <DynamicWidthInput v-model="field.alias"/>
+            <DynamicWidthInput v-model="field.alias" @change="handleChange"/>
             <span>{{visibleFields.length === index + 1 ? '' : ','}}</span>
           </template>
           <!-- 虚拟字段 -->
           <template v-else>
-            <DynamicWidthInput v-model="field.name"/>
+            <DynamicWidthInput v-model="field.name" @change="handleChange"/>
             <em>AS</em>
-            <DynamicWidthInput v-model="field.alias"/>
+            <DynamicWidthInput v-model="field.alias" @change="handleChange"/>
             <span>{{visibleFields.length === index + 1 ? '' : ','}}</span>
             <span class="comment">#</span>
-            <DynamicWidthInput v-model="field.type" class="comment"/>
-            <DynamicWidthInput v-model="field.comment" class="comment"/>
+            <DynamicWidthInput v-model="field.type" class="comment" @change="handleChange"/>
+            <DynamicWidthInput v-model="field.comment" class="comment" @change="handleChange"/>
           </template>
         </SQLLine>
       </template>
@@ -87,7 +88,7 @@
         <em>FROM</em>
         <span>{{table.name}}</span>
         <em>AS</em>
-        <DynamicWidthInput v-model="table.alias"/>
+        <DynamicWidthInput v-model="table.alias" @change="handleChange"/>
       </SQLLine>
       <ul class="joins">
         <li v-for="join in tableJoins">
@@ -97,26 +98,28 @@
               :data="['INNER JOIN', 'LEFT JOIN', 'RIGHT JOIN', 'OUTER JOIN']"
               class="keyword"
               style="width: 100px;"
+              @change="handleChange"
             />
             <span class="hidden">{{join.joinType}}</span>
             <span>{{join.targetTable.name}}</span>
-            <DynamicWidthInput v-model="join.targetTable.alias"/>
+            <DynamicWidthInput v-model="join.targetTable.alias" @change="handleChange"/>
             <span>ON</span>
             <SQLLineKeywordSelect
               v-model="join.relation"
               :data="['ONE-TO-ONE', 'ONE-TO-MANY', 'MANY-TO-ONE']"
               class="relation"
               style="width: 115px;"
+              @change="handleChange"
             />
           </SQLLine>
           <ul class="join-ons">
             <SQLLine v-for="(on,index) in join.ons" indent="20">
-              <DynamicWidthInput v-if="index !== 0" v-model="on.relation"/>
-              <DynamicWidthInput v-model="join.joinTable.alias"/>
+              <DynamicWidthInput v-if="index !== 0" v-model="on.relation" @change="handleChange"/>
+              <DynamicWidthInput v-model="join.targetTable.alias" @change="handleChange"/>
               <span>.</span>
               <span>{{on.targetField.name}}</span>
               <span>=</span>
-              <DynamicWidthInput v-model="join.table.alias"/>
+              <DynamicWidthInput v-model="join.table.alias" @change="handleChange"/>
               <span>.</span>
               <span>{{on.field.name}}</span>
             </SQLLine>
@@ -223,12 +226,12 @@ export default {
         comment: 'Virtual field 1',
         isVirtual: true
       })
-      this.$emit('field:change')
+      this.handleChange()
     },
     // 删除虚拟字段
     deleteVirtualField (index) {
       this.table.fields.splice(index, 1)
-      this.$emit('field:change')
+      this.handleChange()
     },
     // 获取聚合语句
     getAggregate (field) {
@@ -240,6 +243,10 @@ export default {
     },
     // 字段显示改变
     fieldVisibleChange () {
+      this.$emit('field:change')
+    },
+    // 修改设置
+    handleChange () {
       this.$emit('field:change')
     },
     // 获取聚合函数宽度
@@ -278,7 +285,7 @@ export default {
       sqlLines.push(`FROM ${this.table.name} AS ${this.table.alias}`)
       // join关系
       for (const join of this.tableJoins) {
-        sqlLines.push(`${join.joinType} ${join.targetTable.name}`)
+        sqlLines.push(`${join.joinType} ${join.targetTable.name} ${join.targetTable.alias}`)
         for (const on of join.ons) {
           sqlLines.push(`ON ${join.table.alias}.${on.field.name} = ${join.targetTable.alias}.${on.targetField.name}`)
         }
@@ -295,7 +302,8 @@ export default {
 .table-setting {
   position: absolute;
   background: #fff;
-  padding: 30px;
+  padding: 0 30px 30px 30px;
+  box-sizing: border-box;
   top: 62px;
   right: 0;
   height: 100%;
@@ -317,6 +325,8 @@ export default {
     justify-content: flex-end;
     margin-bottom: 10px;
     flex-shrink: 0;
+    border-bottom: 1px solid var(--border-default-color);
+    padding: 10px 0;
   }
   .wrap {
     flex-grow: 1;

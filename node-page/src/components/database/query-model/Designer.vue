@@ -129,7 +129,6 @@ export default {
   methods: {
     // 处理删除
     handleDelete () {
-      console.log('line id', this.model.selectedLineId)
       // 删除线
       if (this.model.selectedLineId != null) {
         this.__deleteLine()
@@ -144,7 +143,6 @@ export default {
     globalClick (e) {
       // 如果点击的是空白部分，则清空选择
       if (e.target.nodeType === 'Stage') {
-        console.log('清空选择')
         this.model.selectedTableId = null
         this.model.selectedLineId = null
       }
@@ -314,9 +312,6 @@ export default {
             e.preventDefault();
             this.handleDrop(e)
           })
-          container.addEventListener('keydown', (e) => {
-            console.log('keypress')
-          })
           this.computeRelations()
         })
       })
@@ -420,7 +415,6 @@ export default {
       const stageNode = this.$refs.stage.getNode()
       const stagePosition = stageNode.getAbsolutePosition()
       let fieldIndex = table.fields.findIndex(f => f.visible && f.name === field.name)
-      console.log('fieldIndex', fieldIndex)
       if (fieldIndex === -1) {
         return null
       }

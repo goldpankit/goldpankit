@@ -105,9 +105,11 @@ export default {
   methods: {
     // 保存查询模型
     saveModel () {
+      const modelSettings = this.__getModelSettings(this.currentModel)
+      console.log('modelSettings', modelSettings)
       updateModel ({
         database: this.currentDatabase,
-        model: this.__getModelSettings(this.currentModel)
+        model: modelSettings
       })
         .then(() => {
           console.log('保存成功')
@@ -213,56 +215,62 @@ export default {
     },
     // 获取模型设置
     __getModelSettings (currentModel) {
+      // 相关表信息
+      const tables = currentModel.tables.map(item => {
+        return {
+          name: item.name,
+          alias: item.alias,
+          isVirtual: item.isVirtual,
+          type: item.type,
+          fields: item.fields.map(f => {
+            const obj = {}
+            for (const key in f) {
+              if (key === 'table' || key.startsWith('__')) {
+                continue
+              }
+              obj[key] = f[key]
+            }
+            return obj
+          }),
+          x: item.x,
+          y: item.y
+        }
+      })
+      // 关联关系信息
+      const joins = currentModel.joins.map(item => {
+        return {
+          ...item,
+          table: item.table.name,
+          targetTable:item.targetTable.name,
+          ons: item.ons.map(on => {
+            return {
+              field: on.field.name,
+              targetField: on.targetField.name,
+              relation: on.relation
+            }
+          })
+        }
+      })
+      // 聚合关系信息
+      const aggregates = currentModel.aggregates.map(agg => {
+        return {
+          table: agg.table.name,
+          targetTable: agg.targetTable.name,
+          field: agg.field.name,
+          targetField: agg.targetField.name,
+          function: agg.function
+        }
+      })
       return {
         id: currentModel.id,
         name: currentModel.name,
         comment: currentModel.comment,
         // 关联表信息
-        tables: currentModel.tables.map(item => {
-          return {
-            name: item.name,
-            alias: item.alias,
-            isVirtual: item.isVirtual,
-            type: item.type,
-            fields: item.fields.map(f => {
-              const obj = {}
-              for (const key in f) {
-                if (key.startsWith('__')) {
-                  continue
-                }
-                obj[key] = f[key]
-              }
-              return obj
-            }),
-            x: item.x,
-            y: item.y
-          }
-        }),
+        tables,
         // join关系
-        joins: currentModel.joins.map(item => {
-          return {
-            ...item,
-            table: item.table.name,
-            targetTable:item.targetTable.name,
-            ons: item.ons.map(on => {
-              return {
-                field: on.field.name,
-                targetField: on.targetField.name,
-                relation: on.relation
-              }
-            })
-          }
-        }),
+        joins,
         // 聚合关系
-        aggregates: currentModel.aggregates.map(agg => {
-          return {
-            table: agg.table.name,
-            targetTable: agg.targetTable.name,
-            field: agg.field.name,
-            targetField: agg.targetField.name,
-            function: agg.function
-          }
-        })
+        aggregates
       }
     },
     // 模型字段转字段详情, modelField: 查询模型中的字段信息，dbField: 数据库字段信息
