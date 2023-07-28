@@ -99,8 +99,8 @@
               style="width: 100px;"
             />
             <span class="hidden">{{join.joinType}}</span>
-            <span>{{join.joinTable.name}}</span>
-            <DynamicWidthInput v-model="join.joinTable.alias"/>
+            <span>{{join.targetTable.name}}</span>
+            <DynamicWidthInput v-model="join.targetTable.alias"/>
             <span>ON</span>
             <SQLLineKeywordSelect
               v-model="join.relation"
@@ -114,11 +114,11 @@
               <DynamicWidthInput v-if="index !== 0" v-model="on.relation"/>
               <DynamicWidthInput v-model="join.joinTable.alias"/>
               <span>.</span>
-              <span>{{on.endField.name}}</span>
+              <span>{{on.targetField.name}}</span>
               <span>=</span>
               <DynamicWidthInput v-model="join.table.alias"/>
               <span>.</span>
-              <span>{{on.startField.name}}</span>
+              <span>{{on.field.name}}</span>
             </SQLLine>
           </ul>
         </li>
@@ -173,8 +173,8 @@ export default {
           field.alias = field.name
           fields.add(field)
         }
-        for (const field of join.joinTable.fields) {
-          field.table = join.joinTable
+        for (const field of join.targetTable.fields) {
+          field.table = join.targetTable
           field.alias = field.name
           fields.add(field)
         }
@@ -278,9 +278,9 @@ export default {
       sqlLines.push(`FROM ${this.table.name} AS ${this.table.alias}`)
       // join关系
       for (const join of this.tableJoins) {
-        sqlLines.push(`${join.joinType} ${join.joinTable.name}`)
+        sqlLines.push(`${join.joinType} ${join.targetTable.name}`)
         for (const on of join.ons) {
-          sqlLines.push(`ON ${join.table.alias}.${on.startField.name} = ${join.joinTable.alias}.${on.endField.name}`)
+          sqlLines.push(`ON ${join.table.alias}.${on.field.name} = ${join.targetTable.alias}.${on.targetField.name}`)
         }
       }
       return sqlLines.join('\n')

@@ -105,7 +105,7 @@ export default {
       }
     },
     relation () {
-      return this.relations.find(r => r.endTable === this.table.name)
+      return this.relations.find(r => r.targetTable === this.table.name)
     },
     visibleFields () {
       return this.table.fields.filter(f => f.visible === true)

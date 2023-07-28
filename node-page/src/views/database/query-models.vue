@@ -243,11 +243,11 @@ export default {
           return {
             ...item,
             table: item.table.name,
-            joinTable:item.joinTable.name,
+            targetTable:item.targetTable.name,
             ons: item.ons.map(on => {
               return {
-                startField: on.startField.name,
-                endField: on.endField.name,
+                field: on.field.name,
+                targetField: on.targetField.name,
                 relation: on.relation
               }
             })
@@ -294,22 +294,22 @@ export default {
     __modelJoin2join (model, modelJoin) {
       console.log('modelJoin', modelJoin)
       const table = model.tables.find(t => t.name.toLowerCase() === modelJoin.table.toLowerCase())
-      const joinTable = model.tables.find(t => t.name.toLowerCase() === modelJoin.joinTable.toLowerCase())
-      if (table == null || joinTable == null) {
+      const targetTable = model.tables.find(t => t.name.toLowerCase() === modelJoin.targetTable.toLowerCase())
+      if (table == null || targetTable == null) {
         return null
       }
       modelJoin.table = table
-      modelJoin.joinTable = joinTable
+      modelJoin.targetTable = targetTable
       const ons = []
       for (const on of modelJoin.ons) {
-        const startField = table.fields.find(f => f.name.toLowerCase() === on.startField.toLowerCase())
-        const endField = joinTable.fields.find(f => f.name.toLowerCase() === on.endField.toLowerCase())
-        if (startField == null || endField == null) {
+        const field = table.fields.find(f => f.name.toLowerCase() === on.field.toLowerCase())
+        const targetField = targetTable.fields.find(f => f.name.toLowerCase() === on.targetField.toLowerCase())
+        if (field == null || targetField == null) {
           continue
         }
         ons.push({
-          startField,
-          endField,
+          field,
+          targetField,
           relation: on.relation
         })
       }

@@ -96,10 +96,10 @@ export default {
       relationLines: [],
       // 拖动关联时的数据
       relationRuntime: {
-        startTable: null,
-        startField: null,
-        endTable: null,
-        endField: null
+        table: null,
+        field: null,
+        targetTable: null,
+        targetField: null
       },
       // 虚拟表数据
       virtualTable: {
@@ -164,8 +164,8 @@ export default {
       // 计算join关系线
       for (const join of this.model.joins) {
         for (const on of join.ons) {
-          const startPosition = this.__getFieldPosition(join.table, on.startField)
-          const endPosition = this.__getFieldPosition(join.joinTable, on.endField, false)
+          const startPosition = this.__getFieldPosition(join.table, on.field)
+          const endPosition = this.__getFieldPosition(join.targetTable, on.targetField, false)
           if (startPosition == null || endPosition == null) {
             continue
           }
@@ -175,9 +175,9 @@ export default {
             end: endPosition,
             type: 'join',
             table: join.table,
-            field: on.startField,
-            targetTable: join.joinTable,
-            targetField: on.endField
+            field: on.field,
+            targetTable: join.targetTable,
+            targetField: on.targetField
           })
         }
       }
@@ -205,8 +205,8 @@ export default {
       // 禁用stage拖动，用于实现字段拖动关联
       const stageNode = this.$refs.stage.getNode()
       stageNode.draggable(false)
-      this.relationRuntime.startTable = table
-      this.relationRuntime.startField = field
+      this.relationRuntime.table = table
+      this.relationRuntime.field = field
     },
     // 处理字段按下弹起（添加字段关联）
     handleFieldMouseUp ({ table, field }) {
@@ -214,10 +214,10 @@ export default {
       const stageNode = this.$refs.stage.getNode()
       stageNode.draggable(true)
       // 记录结束表个字段
-      this.relationRuntime.endTable = table
-      this.relationRuntime.endField = field
+      this.relationRuntime.targetTable = table
+      this.relationRuntime.targetField = field
       // 如果开始表和结束表是同一个，则不做关联操作
-      if (this.relationRuntime.startTable.id === this.relationRuntime.endTable.id) {
+      if (this.relationRuntime.table.id === this.relationRuntime.targetTable.id) {
         return
       }
       // 添加关联
@@ -329,11 +329,11 @@ export default {
       if (line.type === 'join') {
         // 查找对应join
         const join = this.model.joins.find(join => {
-          return join.table.id === line.table.id && join.joinTable.id === line.targetTable.id
+          return join.table.id === line.table.id && join.targetTable.id === line.targetTable.id
         })
         // 找到对应的on
         const onIndex = join.ons.findIndex(on => {
-          return on.startField.name === line.field.name && on.endField.name === line.targetField.name
+          return on.field.name === line.field.name && on.targetField.name === line.targetField.name
         })
         if (onIndex !== -1) {
           join.ons.splice(onIndex, 1)
@@ -356,7 +356,7 @@ export default {
         if (join.table.id === this.model.selectedTableId) {
           return false
         }
-        if (join.joinTable.id === this.model.selectedTableId) {
+        if (join.targetTable.id === this.model.selectedTableId) {
           return false
         }
         return true
@@ -367,18 +367,18 @@ export default {
     // 添加join关系
     __addJoinRelation () {
       // 如果开始表和结束表是同一个，则不做关联操作
-      if (this.relationRuntime.startTable.id === this.relationRuntime.endTable.id) {
+      if (this.relationRuntime.table.id === this.relationRuntime.targetTable.id) {
         return
       }
       // 添加关联
       let join = this.model.joins.find(
-        r => r.table.id === this.relationRuntime.startTable.id &&
-          r.joinTable.id === this.relationRuntime.endTable.id
+        r => r.table.id === this.relationRuntime.table.id &&
+          r.targetTable.id === this.relationRuntime.targetTable.id
       )
       if (join == null) {
         join = {
-          table: this.relationRuntime.startTable,
-          joinTable: this.relationRuntime.endTable,
+          table: this.relationRuntime.table,
+          targetTable: this.relationRuntime.targetTable,
           joinType: 'INNER JOIN',
           relation: 'ONE-TO-ONE',
           ons: []
@@ -386,8 +386,8 @@ export default {
         this.model.joins.push(join)
       }
       join.ons.push({
-        startField: this.relationRuntime.startField,
-        endField: this.relationRuntime.endField,
+        field: this.relationRuntime.field,
+        targetField: this.relationRuntime.targetField,
         relation: 'AND'
       })
       this.computeRelations()
@@ -395,20 +395,20 @@ export default {
     // 添加聚合关系
     __addAggregate () {
       // 如果开始表和结束表是同一个，则不做关联操作
-      if (this.relationRuntime.startTable.id === this.relationRuntime.endTable.id) {
+      if (this.relationRuntime.table.id === this.relationRuntime.targetTable.id) {
         return
       }
       // 添加聚合
       let aggregate = this.model.aggregates.find(
-        r => r.table.id === this.relationRuntime.startTable.id &&
-          r.targetTable.id === this.relationRuntime.endTable.id
+        r => r.table.id === this.relationRuntime.table.id &&
+          r.targetTable.id === this.relationRuntime.targetTable.id
       )
       if (aggregate == null) {
         aggregate = {
-          table: this.relationRuntime.startTable,
-          targetTable: this.relationRuntime.endTable,
-          field: this.relationRuntime.startField,
-          targetField: this.relationRuntime.endField,
+          table: this.relationRuntime.table,
+          targetTable: this.relationRuntime.targetTable,
+          field: this.relationRuntime.field,
+          targetField: this.relationRuntime.targetField,
           function: 'COUNT'
         }
         this.model.aggregates.push(aggregate)

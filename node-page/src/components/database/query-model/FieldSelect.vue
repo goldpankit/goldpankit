@@ -3,17 +3,21 @@
     class="mysql-field-select"
     popper-class="mysql-field-select__popper"
     :multiple="multiple"
-    :model-value="modelValue == null ? [] : modelValue.map(f => f.name)"
+    :model-value="modelValue == null ? [] : modelValue.map(f => f.table.name + '.' + f.name)"
     @update:modelValue="handleInput"
   >
     <el-option-group
       v-for="fieldGroup in fieldGroups"
-      :key="fieldGroup.label"
-      :label="fieldGroup.label"
+      :key="fieldGroup.alias"
+      :label="fieldGroup.name"
     >
-      <el-option v-for="field in fieldGroup.options" :value="field.name" :label="fieldGroup.label + '.' + field.name">
+      <el-option
+        v-for="field in fieldGroup.options"
+        :value="fieldGroup.name + '.' + field.name"
+        :label="fieldGroup.name + '.' + field.name"
+      >
         <p class="option-content">
-          <span>{{fieldGroup.label}}.{{ field.name }}</span>
+          <span>{{fieldGroup.name}}.{{ field.name }}</span>
           <span class="text-info-1">{{ field.comment }}</span>
         </p>
       </el-option>
@@ -38,7 +42,8 @@ export default {
       let fieldGroups = []
       for (const table of this.model.tables) {
         fieldGroups.push({
-          label: table.name,
+          name: table.name,
+          alias: table.alias,
           options: table.fields
         })
       }
@@ -54,11 +59,23 @@ export default {
   },
   methods: {
     handleInput (fieldNames) {
+      console.log('fieldNames', fieldNames)
       this.$emit('update:modelValue',
         fieldNames
-          // 找到field对象
+          // 找到field对象并填充table字段
           .map(name => {
-            return this.fields.find(field => field.name === name)
+            // 选中的value值类似为xxxx.NAME，其中xxxx为表名，NAME为字段名称
+            const tableName = name.split('.')[0]
+            const fieldName = name.split('.')[1]
+            // 找到字段所在的表
+            const table = this.model.tables.find(t => t.name === tableName)
+            const tableDump = JSON.parse(JSON.stringify(table))
+            // 找到字段
+            const field = table.fields.find(field => field.name === fieldName)
+            // 填充表信息（表信息中不要再包含字段信息，避免数据循环依赖）
+            delete tableDump.fields
+            field.table = tableDump
+            return field
           })
           // 过滤掉未找到的对象
           .filter(field => field != null)
