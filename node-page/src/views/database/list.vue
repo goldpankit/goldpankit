@@ -32,7 +32,6 @@
 <script>
 import InnerRouterView from "@/components/common/InnerRouterView/InnerRouterView.vue";
 import InnerRouterViewWindow from "@/components/common/InnerRouterView/InnerRouterViewWindow.vue";
-import OperaDatabaseView from "@/components/usr/project/OperaDatabaseView.vue";
 import DatabaseView from "@/components/usr/project/DatabaseView.vue";
 import {deleteById, search} from "../../api/database";
 import Empty from "../../components/common/Empty.vue";
@@ -42,7 +41,7 @@ import CreateDatabaseWindow from "../../components/database/CreateDatabaseWindow
 export default {
   components: {
     CreateDatabaseWindow,
-    Pagination, Empty, DatabaseView, OperaDatabaseView, InnerRouterViewWindow, InnerRouterView},
+    Pagination, Empty, DatabaseView, InnerRouterViewWindow, InnerRouterView},
   data () {
     return {
       databases: [],

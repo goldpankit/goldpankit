@@ -296,23 +296,31 @@ export default {
   position: absolute;
   background: #fff;
   padding: 30px;
-  top: 0;
+  top: 62px;
   right: 0;
   height: 100%;
   width: 800px;
+  overflow: hidden;
   flex-shrink: 0;
   overflow-y: auto;
   transform: translateX(2000px);
   transition: all ease .3s;
   letter-spacing: 1px;
   box-shadow: -1px 0 10px -2px rgba(0,0,0,.5);
+  display: flex;
+  flex-direction: column;
+  &.visible {
+    transform: translateX(0);
+  }
   .toolbar {
     display: flex;
     justify-content: flex-end;
     margin-bottom: 10px;
+    flex-shrink: 0;
   }
-  &.visible {
-    transform: translateX(0);
+  .wrap {
+    flex-grow: 1;
+    overflow-y: auto;
   }
 }
 </style>

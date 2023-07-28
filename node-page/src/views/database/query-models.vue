@@ -372,6 +372,7 @@ export default {
       background: var(--background-color);
       padding: 0 20px;
       box-sizing: border-box;
+      z-index: 100;
       .line-types {
         display: flex;
         li {
