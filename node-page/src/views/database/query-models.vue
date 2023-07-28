@@ -185,7 +185,6 @@ export default {
             return this.__modelField2field(mField, f)
           })
           return {
-            id: '' + Math.random(),
             ...table,
             fields,
             // 添加joins，用于存放join关系
@@ -301,9 +300,8 @@ export default {
     },
     // 模型join转join详情
     __modelJoin2join (model, modelJoin) {
-      console.log('modelJoin', modelJoin)
-      const table = model.tables.find(t => t.name.toLowerCase() === modelJoin.table.toLowerCase())
-      const targetTable = model.tables.find(t => t.name.toLowerCase() === modelJoin.targetTable.toLowerCase())
+      const table = model.tables.find(t => t.id === modelJoin.table)
+      const targetTable = model.tables.find(t => t.id === modelJoin.targetTable)
       if (table == null || targetTable == null) {
         return null
       }

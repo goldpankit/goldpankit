@@ -161,8 +161,8 @@ export default {
       this.relationLines = []
       // 计算join关系线
       for (const join of this.model.joins) {
-        const table = this.model.tables.find(t => t.id === join.table)
-        const targetTable = this.model.tables.find(t => t.id === join.targetTable)
+        const table = this.model.tables.find(t => t.id === join.table.id)
+        const targetTable = this.model.tables.find(t => t.id === join.targetTable.id)
         for (const on of join.ons) {
           const startPosition = this.__getFieldPosition(table, on.field)
           const endPosition = this.__getFieldPosition(targetTable, on.targetField, false)
@@ -413,11 +413,10 @@ export default {
       this.computeRelations()
     },
     // 获取字段坐标
-    __getFieldPosition (table, fieldName, withWidth=true) {
+    __getFieldPosition (table, field, withWidth=true) {
       const stageNode = this.$refs.stage.getNode()
       const stagePosition = stageNode.getAbsolutePosition()
-      let fieldIndex = table.fields.findIndex(f => f.visible && f.name === fieldName)
-      console.log('找坐标', fieldName, fieldIndex, table)
+      let fieldIndex = table.fields.findIndex(f => f.visible && f.name === field.name)
       if (fieldIndex === -1) {
         return null
       }

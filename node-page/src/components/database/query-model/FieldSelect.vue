@@ -3,21 +3,21 @@
     class="mysql-field-select"
     popper-class="mysql-field-select__popper"
     :multiple="multiple"
-    :model-value="modelValue == null ? [] : modelValue.map(f => f.table.name + '.' + f.name)"
+    :model-value="modelValue == null ? [] : modelValue.map(f => f.table.alias + '.' + f.name)"
     @update:modelValue="handleInput"
   >
     <el-option-group
       v-for="fieldGroup in fieldGroups"
       :key="fieldGroup.alias"
-      :label="fieldGroup.name"
+      :label="`${fieldGroup.name} AS ${fieldGroup.alias}`"
     >
       <el-option
         v-for="field in fieldGroup.options"
-        :value="fieldGroup.name + '.' + field.name"
-        :label="fieldGroup.name + '.' + field.name"
+        :value="fieldGroup.alias + '.' + field.name"
+        :label="fieldGroup.alias + '.' + field.name"
       >
         <p class="option-content">
-          <span>{{fieldGroup.name}}.{{ field.name }}</span>
+          <span>{{fieldGroup.alias}}.{{ field.name }}</span>
           <span class="text-info-1">{{ field.comment }}</span>
         </p>
       </el-option>
@@ -68,7 +68,7 @@ export default {
             const tableName = name.split('.')[0]
             const fieldName = name.split('.')[1]
             // 找到字段所在的表
-            const table = this.model.tables.find(t => t.name === tableName)
+            const table = this.model.tables.find(t => t.alias === tableName)
             const tableDump = JSON.parse(JSON.stringify(table))
             // 找到字段
             const field = table.fields.find(field => field.name === fieldName)

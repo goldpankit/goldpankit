@@ -9,7 +9,7 @@
   <el-table size="small" :data="group[valueKey]">
     <el-table-column label="字段名" width="150px" prop="name" fixed>
       <template #default="{row}">
-        {{row.table.name}}.{{row.name}}
+        {{row.table.alias}}.{{row.name}}
       </template>
     </el-table-column>
     <el-table-column

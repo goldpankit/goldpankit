@@ -147,10 +147,6 @@ export default {
     table: {
       required: true
     },
-    // 模型信息
-    model: {
-      required: true
-    },
     // 表join信息
     tableJoins: {
       type: Array
