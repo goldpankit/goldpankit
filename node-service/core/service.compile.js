@@ -388,8 +388,9 @@ class Kit {
           }
           // 如果类型为查询模型，则查询出模型信息
           if (item.inputType === 'query_model') {
-            const modelName = item.value || item.defaultValue
-            const model = database.models.find(model => model.name === modelName)
+            const modelId = item.value || item.defaultValue
+            const model = database.models.find(model => model.id === modelId)
+            console.log('model', model)
             // 主表
             const mainTable = model.tables.find(t => t.type === 'MAIN')
             // 子表
