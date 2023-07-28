@@ -218,6 +218,7 @@ export default {
       // 相关表信息
       const tables = currentModel.tables.map(item => {
         return {
+          id: item.id,
           name: item.name,
           alias: item.alias,
           isVirtual: item.isVirtual,
@@ -240,8 +241,8 @@ export default {
       const joins = currentModel.joins.map(item => {
         return {
           ...item,
-          table: item.table.name,
-          targetTable:item.targetTable.name,
+          table: item.table.id,
+          targetTable:item.targetTable.id,
           ons: item.ons.map(on => {
             return {
               field: on.field.name,

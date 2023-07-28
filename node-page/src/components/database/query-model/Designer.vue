@@ -70,9 +70,9 @@
 </template>
 
 <script>
-
 import RelationLine from "./RelationLine.vue";
 import Table from "./Table.vue";
+import {generateId} from "../../../utils/generator";
 
 export default {
   name: "QueryModelDesigner",
@@ -161,14 +161,16 @@ export default {
       this.relationLines = []
       // 计算join关系线
       for (const join of this.model.joins) {
+        const table = this.model.tables.find(t => t.id === join.table)
+        const targetTable = this.model.tables.find(t => t.id === join.targetTable)
         for (const on of join.ons) {
-          const startPosition = this.__getFieldPosition(join.table, on.field)
-          const endPosition = this.__getFieldPosition(join.targetTable, on.targetField, false)
+          const startPosition = this.__getFieldPosition(table, on.field)
+          const endPosition = this.__getFieldPosition(targetTable, on.targetField, false)
           if (startPosition == null || endPosition == null) {
             continue
           }
           this.relationLines.push({
-            id: Math.random(),
+            id: generateId(),
             start: startPosition,
             end: endPosition,
             type: 'join',
@@ -187,7 +189,7 @@ export default {
           continue
         }
         this.relationLines.push({
-          id: Math.random(),
+          id: generateId(),
           start: startPosition,
           end: endPosition,
           type: 'aggregate',
@@ -261,7 +263,7 @@ export default {
         x: position.x - size.width / 2,
         y: position.y - size.height / 2,
         // 增加设计器元素ID
-        id: '' + Math.random(),
+        id: generateId(),
         // 添加joins，用于存放join关系
         joins: []
       }
@@ -286,7 +288,7 @@ export default {
         x: 100,
         y: 100,
         // 增加设计器元素ID
-        id: '' + Math.random(),
+        id: generateId(),
         // 添加joins，用于存放join关系
         joins: []
       }
@@ -411,10 +413,11 @@ export default {
       this.computeRelations()
     },
     // 获取字段坐标
-    __getFieldPosition (table, field, withWidth=true) {
+    __getFieldPosition (table, fieldName, withWidth=true) {
       const stageNode = this.$refs.stage.getNode()
       const stagePosition = stageNode.getAbsolutePosition()
-      let fieldIndex = table.fields.findIndex(f => f.visible && f.name === field.name)
+      let fieldIndex = table.fields.findIndex(f => f.visible && f.name === fieldName)
+      console.log('找坐标', fieldName, fieldIndex, table)
       if (fieldIndex === -1) {
         return null
       }
