@@ -225,13 +225,14 @@ export default {
             isVirtual: item.isVirtual,
             type: item.type,
             fields: item.fields.map(f => {
-              return {
-                name: f.name,
-                alias: f.alias,
-                type: f.type,
-                comment: f.comment,
-                isVirtual: f.isVirtual,
+              const obj = {}
+              for (const key in f) {
+                if (key.startsWith('__')) {
+                  continue
+                }
+                obj[key] = f[key]
               }
+              return obj
             }),
             x: item.x,
             y: item.y
