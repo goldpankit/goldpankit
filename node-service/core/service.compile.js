@@ -398,7 +398,7 @@ class Kit {
             const subTables = model.tables.filter(t => t.type !== 'MAIN')
             // join
             const joins = model.joins.map(join => {
-              const targetTable = model.tables.find(t => t.name === join.targetTable)
+              const targetTable = model.tables.find(t => t.id === join.targetTable)
               const ons = join.ons.map((on,index) => {
                 const relationText = index === 0 ? '' : on.relation
                 return `${relationText} ${mainTable.alias}.${on.field} = ${targetTable.alias}.${on.targetField}`
@@ -433,8 +433,8 @@ class Kit {
               mainTable,
               subTables,
               joins: model.joins.map(join => {
-                const table = model.tables.find(t => t.name === join.table)
-                const targetTable = model.tables.find(t => t.name === join.targetTable)
+                const table = model.tables.find(t => t.id === join.table)
+                const targetTable = model.tables.find(t => t.id === join.targetTable)
                 const ons = join.ons.map(on => {
                   return {
                     ...on,
