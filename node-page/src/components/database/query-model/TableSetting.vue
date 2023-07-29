@@ -74,9 +74,9 @@
           </template>
           <!-- 虚拟字段 -->
           <template v-else>
-            <DynamicWidthInput v-model="field.name" @change="handleChange"/>
+            <DynamicWidthInput :model-value="field.name" v-model:blur-model-value="field.name" @blur="handleChange"/>
             <em>AS</em>
-            <DynamicWidthInput v-model="field.alias" @change="handleChange"/>
+            <DynamicWidthInput :model-value="field.alias" v-model:blur-model-value="field.alias" @blur="handleChange"/>
             <span>{{visibleFields.length === index + 1 ? '' : ','}}</span>
             <span class="comment">#</span>
             <DynamicWidthInput v-model="field.type" class="comment" @change="handleChange"/>
@@ -225,7 +225,8 @@ export default {
         alias: 'virtual1',
         type: 'int',
         comment: 'Virtual field 1',
-        isVirtual: true
+        isVirtual: true,
+        visible: true
       })
       this.handleChange()
     },
@@ -282,7 +283,9 @@ export default {
       // 最后一个字段去掉逗号
       sqlLines[sqlLines.length - 1] = sqlLines[sqlLines.length - 1].substring(0, sqlLines[sqlLines.length - 1].length - 1)
       // from 表
-      sqlLines.push(`FROM ${this.table.name} AS ${this.table.alias}`)
+      if (!this.table.isVirtual) {
+        sqlLines.push(`FROM ${this.table.name} AS ${this.table.alias}`)
+      }
       // join关系
       for (const join of this.tableJoins) {
         sqlLines.push(`${join.joinType} ${join.targetTable.name} ${join.targetTable.alias}`)
@@ -294,8 +297,6 @@ export default {
       }
       return sqlLines.join('\n')
     }
-  },
-  mounted () {
   }
 }
 </script>

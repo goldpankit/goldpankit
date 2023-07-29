@@ -7,7 +7,9 @@
     @drop="handleDrop"
   >
     <div class="wrap">
-      <p>Drag and drop the table on the left here or fill out the form below to create a virtual table.</p>
+      <p>Drag and drop the table on the left here.</p>
+      <p>OR</p>
+      <p><em @click="confirmCreateVirtualTable">create a virtual table</em></p>
 <!--      <el-table :data="virtualTable.fields">-->
 <!--        <el-table-column prop="name" label="*Name">-->
 <!--          <template #default="{ row }">-->
@@ -100,15 +102,6 @@ export default {
         field: null,
         targetTable: null,
         targetField: null
-      },
-      // 虚拟表数据
-      virtualTable: {
-        name: 'test',
-        alias: 'test',
-        comment: '',
-        fields: [
-          { name: 'regisCount', type: 'int', comment: '注册数' }
-        ]
       }
     }
   },
@@ -276,21 +269,26 @@ export default {
     confirmCreateVirtualTable () {
       const size = {
         width: 200,
-        height: (this.virtualTable.fields.length + 1) * this.fieldHeight
+        height: this.fieldHeight
       }
       const newTable = {
-        ...this.virtualTable,
-        ...size,
-        // 虚拟表
-        isVirtual: true,
-        // 第一个表标记为主表
-        type: this.model.tables.length === 0 ? 'MAIN' : 'SUB',
-        x: 100,
-        y: 100,
         // 增加设计器元素ID
         id: generateId(),
+        name: this.model.name,
+        alias: this.model.name,
+        comment: this.model.comment,
+        ...size,
+        // 第一个表标记为主表
+        type: 'MAIN',
+        // 标记为虚拟表
+        isVirtual: true,
+        fields: [],
+        x: 100,
+        y: 100,
         // 添加joins，用于存放join关系
-        joins: []
+        joins: [],
+        // 添加aggregates，用于存放聚合列
+        aggregates: []
       }
       this.model.tables.push(newTable)
       // 重新渲染，使新添加的元素绘制在stage中
@@ -357,6 +355,15 @@ export default {
           return false
         }
         return true
+      })
+      // 删除聚合关系
+      this.model.aggregates = this.model.aggregates.filter(agg => {
+        if (agg.table.id === this.model.selectedTableId) {
+          return false
+        }
+        if (agg.targetTable.id === this.model.selectedTableId) {
+          return false
+        }
       })
       // 删除table
       this.model.tables = this.model.tables.filter(table => table.id !== this.model.selectedTableId)
@@ -461,6 +468,12 @@ export default {
       font-size: var(--font-size-middle);
       text-align: center;
       line-height: 25px;
+      em {
+        color: var(--primary-color-match-2);
+        font-style: normal;
+        text-decoration: underline;
+        cursor: pointer;
+      }
     }
     .el-table {
       margin-top: 20px;

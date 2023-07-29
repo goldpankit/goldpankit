@@ -175,15 +175,18 @@ export default {
       this.queryModels = models.map(model => {
         model.tables = model.tables.map(table => {
           const dbTable = this.tables.find(tb => tb.name.toLowerCase() === table.name.toLowerCase())
-          // 如果表不存在，则返回null（表已被删除）
-          if (dbTable == null) {
+          // 如果表不存在 && 不是虚拟表，则返回null（表已被删除）
+          if (dbTable == null && !table.isVirtual) {
             return null
           }
           // 获取字段信息
-          const fields = dbTable.fields.map(f => {
-            const mField = table.fields.find(dbField => dbField.name === f.name)
-            return this.__modelField2field(mField, f)
-          })
+          let fields = table.fields
+          if (dbTable != null) {
+            fields = dbTable.fields.map(f => {
+              const mField = table.fields.find(dbField => dbField.name === f.name)
+              return this.__modelField2field(mField, f)
+            })
+          }
           return {
             ...table,
             fields,
