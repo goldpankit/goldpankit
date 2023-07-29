@@ -30,8 +30,6 @@
         <div>
           <label>Options</label>
           <div class="opera">
-            <el-button icon="Top" class="button-icon"></el-button>
-            <el-button icon="Bottom" class="button-icon"></el-button>
             <el-button type="primary" @click="createOption">Add</el-button>
           </div>
         </div>
@@ -61,12 +59,15 @@
             <el-input v-model="row.remark" type="textarea" :rows="1" @input="handleChange"/>
           </template>
         </el-table-column>
-        <el-table-column v-if="variable.options.length > 0" min-width="60px" fixed="right">
+        <el-table-column v-if="variable.options.length > 0" min-width="120px" fixed="right">
           <template #default="{ row, index }">
+            <el-button icon="Setting" class="button-icon" @click="$refs.optionSettingWindow.open(row)"></el-button>
             <el-button icon="Delete" class="button-icon" @click="deleteOption(index)"></el-button>
           </template>
         </el-table-column>
       </el-table>
+      <!-- 选项设置 -->
+      <OptionSettingWindow ref="optionSettingWindow" @change="handleChange"/>
     </el-form-item>
     <el-form-item label="Default Value">
       <VariableInput
@@ -96,10 +97,11 @@ import InputTypeSelect from "../../../common/InputTypeSelect.vue";
 import CompilerSelect from "../../../common/CompilerSelect.vue";
 import VariableInput from "../../installer/VariableInput.vue";
 import SortableButton from "../../../common/SortableButton.vue";
+import OptionSettingWindow from "./OptionSettingWindow.vue";
 
 export default {
   name: "VariableSettingForm",
-  components: {SortableButton, VariableInput, CompilerSelect, InputTypeSelect},
+  components: {OptionSettingWindow, SortableButton, VariableInput, CompilerSelect, InputTypeSelect},
   props: {
     // 当前设置的变量
     variable: {
@@ -123,7 +125,8 @@ export default {
       this.variable.options.push({
         value: '',
         label: '',
-        remark: ''
+        remark: '',
+        settings: []
       })
     },
     // 删除选项
@@ -137,7 +140,6 @@ export default {
       } else {
         this.variable.defaultValue = this.variable.defaultValue instanceof Array ? this.variable.defaultValue[0] : this.variable.defaultValue
       }
-      console.log('this.variable.defaultValue', this.variable.defaultValue)
       this.handleChange()
     },
     // 处理选项排序

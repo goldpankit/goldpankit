@@ -12,6 +12,7 @@
       :model-value="modelValue"
       @update:modelValue="$emit('update:modelValue', $event)"
       multiple
+      class="install-checkbox-select"
     >
       <el-option
         v-for="option in options"

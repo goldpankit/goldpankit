@@ -1,43 +1,47 @@
 <template>
-  <InstallInput
-    v-if="variable.inputType === 'input'"
-    v-model="variable[valueKey]"
-    @input="$emit('change', $event)"
-  />
-  <InstallInput
-    v-else-if="variable.inputType === 'textarea'"
-    type="textarea"
-    v-model="variable[valueKey]"
-    @input="$emit('change', $event)"
-  />
-  <InstallCheckbox
-    v-else-if="variable.inputType === 'checkbox'"
-    v-model="variable[valueKey]"
-    :options="variable.options"
-  />
-  <InstallRadio
-    v-else-if="variable.inputType === 'radio'"
-    v-model="variable[valueKey]"
-    :options="variable.options"
-  />
-  <DatabaseSelect
-    v-else-if="variable.inputType === 'database'"
-    v-model="variable[valueKey]"
-    :with-prefix="false"
-    :with-block="true"
-  />
-  <TableSelect
-    v-else-if="variable.inputType === 'table'"
-    :variable="variable"
-    :value-key="valueKey"
-    v-model="variable[valueKey]"
-  />
-  <QueryModelSelect
-    v-else-if="variable.inputType === 'query_model'"
-    :variable="variable"
-    :value-key="valueKey"
-    v-model="variable[valueKey]"
-  />
+  <div class="variable-input">
+    <InstallInput
+      v-if="variable.inputType === 'input'"
+      v-model="variable[valueKey]"
+      @input="$emit('change', $event)"
+    />
+    <InstallInput
+      v-else-if="variable.inputType === 'textarea'"
+      type="textarea"
+      v-model="variable[valueKey]"
+      @input="$emit('change', $event)"
+    />
+    <InstallCheckbox
+      v-else-if="variable.inputType === 'checkbox'"
+      type="select"
+      v-model="variable[valueKey]"
+      :options="variable.options"
+    />
+    <InstallRadio
+      v-else-if="variable.inputType === 'radio'"
+      type="select"
+      v-model="variable[valueKey]"
+      :options="variable.options"
+    />
+    <DatabaseSelect
+      v-else-if="variable.inputType === 'database'"
+      v-model="variable[valueKey]"
+      :with-prefix="false"
+      :with-block="true"
+    />
+    <TableSelect
+      v-else-if="variable.inputType === 'table'"
+      :variable="variable"
+      :value-key="valueKey"
+      v-model="variable[valueKey]"
+    />
+    <QueryModelSelect
+      v-else-if="variable.inputType === 'query_model'"
+      :variable="variable"
+      :value-key="valueKey"
+      v-model="variable[valueKey]"
+    />
+  </div>
 </template>
 
 <script>
@@ -72,4 +76,13 @@ export default {
 </script>
 
 <style scoped lang="scss">
+.variable-input {
+  width: 100%;
+  :deep(.install-radio-select) {
+    width: 100%;
+  }
+  :deep(.install-checkbox-select) {
+    width: 100%;
+  }
+}
 </style>

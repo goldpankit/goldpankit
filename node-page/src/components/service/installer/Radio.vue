@@ -11,6 +11,7 @@
       v-else
       :model-value="modelValue"
       @change="handleSelect"
+      class="install-radio-select"
     >
       <el-option
         v-for="option in options"
