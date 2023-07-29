@@ -377,10 +377,14 @@ class Kit {
               password: database.password,
               database: database.schema
             }, item.value || item.defaultValue)
-              .then(table => {
+              .then(value => {
+                // 补充动态字段，children为变量信息
+                for (const group of item.children) {
+                  value[group.name] = group.value || group.defaultValue
+                }
                 resolve({
                   ...item,
-                  value: table
+                  value
                 })
               })
               .catch(e => {
@@ -457,6 +461,7 @@ class Kit {
                 orderBy: ''
               }
             }
+            // 补充动态字段，children为变量信息
             for (const group of item.children) {
               value[group.name] = group.value || group.defaultValue
             }
