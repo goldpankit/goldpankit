@@ -6,10 +6,12 @@
         <el-button icon="Plus" type="primary" @click="createGroup(null, 'service')">Add Group</el-button>
       </div>
       <el-tree
+        ref="tree"
         class="variables"
         :expand-on-click-node="false"
         :default-expand-all="true"
         :data="variables"
+        node-key="name"
         @node-click="selectVariable"
         draggable
         :allow-drop="allowDrop"
@@ -73,8 +75,9 @@ import InputTypeSelect from "../../../common/InputTypeSelect.vue";
 import I18nInput from "../../../common/I18nInput.vue";
 import VariableInput from "../../installer/VariableInput.vue";
 import VariableSettingForm from "./VariableSettingForm.vue";
-import {fetchConfig, saveVariables} from "../../../../api/service";
 import VariableGroupSettingForm from "./VariableGroupSettingForm.vue";
+import {fetchConfig, saveVariables} from "../../../../api/service";
+import {generateId} from "../../../../utils/generator";
 
 export default {
   name: "Variables",
@@ -133,8 +136,8 @@ export default {
     createVariable (group) {
       const varName = this.__generateVariableName(group == null ? this.variables : group.children)
       const newVar = {
+        id: generateId(),
         type: 'variable',
-        scope: group == null ? 'service' : group.scope,
         name: varName,
         label: varName,
         inputType: 'input',
@@ -160,14 +163,15 @@ export default {
         }
       }
       this.currentVariable = newVar
+      this.$refs.tree.setCurrentKey(this.currentVariable.name)
       this.saveVariables()
     },
     // 添加变量组
-    createGroup (variable, scope='service') {
+    createGroup (variable) {
       const groupName = this.__generateGroupName()
       const newGroup = {
+        id: generateId(),
         type: 'group',
-        scope,
         name: groupName,
         label: groupName,
         children: []
@@ -262,7 +266,7 @@ export default {
       this.$model.deleteConfirm(`Do you want to delete the ${type} named 「${this.currentVariable.name}」?`)
         .then(() => {
           if (this.currentGroup != null) {
-            const index = this.currentGroup.children.findIndex(v => v.name === this.currentVariable.name)
+            const index = this.currentGroup.children.findIndex(v => v.id === this.currentVariable.id)
             if (index === -1) {
               return
             }
@@ -271,7 +275,7 @@ export default {
             this.saveVariables()
             return
           }
-          const index = this.variables.findIndex(v => v.name === this.currentVariable.name)
+          const index = this.variables.findIndex(v => v.id === this.currentVariable.id)
           if (index === -1) {
             return
           }
@@ -370,7 +374,7 @@ export default {
     }
     // 变量列表
     .variables {
-      --selected-background-color: #fff8d3;
+      --selected-background-color: #ececea;
       :deep(.el-tree-node) {
         min-height: 30px;
         .el-tree-node__content {
@@ -379,15 +383,15 @@ export default {
         &:last-of-type {
           border-bottom: 0;
         }
-        &.is-current .el-tree-node__content {
+        &.is-current > .el-tree-node__content {
           background: var(--selected-background-color);
           &:hover {
             background: var(--selected-background-color);
           }
         }
-        &:focus,&:hover {
-          background: var(--selected-background-color);
-        }
+        //&:focus > .el-tree-node__content, &:hover > .el-tree-node__content {
+        //  background: var(--selected-background-color);
+        //}
       }
       :deep(.title) {
         width: 100%;

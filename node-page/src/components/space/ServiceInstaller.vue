@@ -119,7 +119,7 @@ export default {
     ...mapState(['currentProject', 'currentDatabase']),
     // 服务变量集
     serviceVariables () {
-      return this.variables.filter(v => v.scope === 'service')
+      return this.variables
     },
     unique () {
       return [this.space, this.service, this.version]
@@ -148,25 +148,20 @@ export default {
         .then(data => {
           this.variables = JSON.parse(data.variables).map(item => {
             // 根服务变量
-            if (item.type === 'variable' && item.scope === 'service') {
+            if (item.type === 'variable') {
               return {
                 ...item,
                 value: this.__getVariableValue(item)
               }
             }
             // 根服务变量组
-            if (item.type === 'group' && item.scope === 'service') {
+            if (item.type === 'group') {
               item.children = item.children.map(v => {
                 return {
                   ...v,
                   value: this.__getVariableValue(v)
                 }
               })
-              return item
-            }
-            // 表字段变量组
-            if (item.type === 'group' && item.scope === 'table_field') {
-              item.value = this.__getVariableValue(item)
               return item
             }
             return item
@@ -241,11 +236,8 @@ export default {
         if (service != null) {
           value = service.variables[variable.name]
         }
-        // 如果没有获取到值 && 变量为变量类型 || 服务变量组类型，则还可以从主服务中获取
-        if (value == null &&
-            (variable.type === 'variable' ||
-            (variable.type === 'group' && variable.scope === 'service'))
-        ) {
+        // 如果没有获取到值，则还可以从主服务中获取
+        if (value == null) {
           let mainService = null
           for (const key in this.projectConfig.main) {
             mainService = key
