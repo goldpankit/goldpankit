@@ -40,8 +40,8 @@ export default {
     valueKey: {
       default: 'value'
     },
-    // 变量列表，用于查找表字段变量
-    variables: {
+    // 当前变量
+    variable: {
       required: true
     }
   },
@@ -56,7 +56,7 @@ export default {
     ...mapState(['currentProject', 'currentDatabase']),
     // 获取表字段变量组，组中包含了表字段的扩展变量
     fieldVariableGroup () {
-      return this.variables.filter(v => v.type === 'group' && v.scope === 'table_field')
+      return this.variable.children || []
     }
   },
   watch: {
