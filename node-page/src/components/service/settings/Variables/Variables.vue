@@ -3,7 +3,7 @@
     <div class="variables-wrap">
       <div class="tools">
         <el-button icon="Plus" type="primary" @click="createVariable()">Add Variable</el-button>
-        <el-button icon="Plus" type="primary" @click="createGroup">Add Group</el-button>
+        <el-button icon="Plus" type="primary" @click="createGroup(null, 'service')">Add Group</el-button>
       </div>
       <el-tree
         class="variables"
@@ -22,14 +22,14 @@
           <div class="title">
             <span>{{data.label}}</span>
             <div
-              v-if="data.type === 'group'"
+              v-if="data.type === 'group' || data.inputType === 'query_model' || data.inputType === 'table'"
               class="opera"
             >
               <el-button
                 class="button-icon"
                 icon="Plus"
                 size="small"
-                @click.stop="createVariable(data)"
+                @click.stop="createChild(data)"
               ></el-button>
             </div>
           </div>
@@ -112,6 +112,23 @@ export default {
         }
       })
     },
+    // 添加子节点
+    createChild (variable) {
+      // 为组添加子变量
+      if (variable.type === 'group') {
+        this.createVariable(variable)
+        return
+      }
+      // 为查询模型添加模型字段作用域变量
+      if (variable.inputType === 'query_model') {
+        this.createGroup(variable,'query_model_field')
+        return
+      }
+      // 为表添加表字段作用域变量
+      if (variable.inputType === 'table') {
+        this.createGroup(variable,'table_field')
+      }
+    },
     // 添加变量
     createVariable (group) {
       const varName = this.__generateVariableName(group == null ? this.variables : group.children)
@@ -146,16 +163,24 @@ export default {
       this.saveVariables()
     },
     // 添加变量组
-    createGroup () {
+    createGroup (variable, scope='service') {
       const groupName = this.__generateGroupName()
       const newGroup = {
         type: 'group',
-        scope: 'service',
+        scope,
         name: groupName,
         label: groupName,
         children: []
       }
-      this.variables.push(newGroup)
+      if (variable == null) {
+        this.variables.push(newGroup)
+      } else {
+        if (variable.children == null) {
+          variable.children = []
+        }
+        variable.children.push(newGroup)
+        console.log('variable', variable)
+      }
       this.currentVariable = newGroup
       this.saveVariables()
     },
@@ -174,7 +199,18 @@ export default {
             copyItem.children = copyItem.children.map(v => {
               return this.__getSaveVariable(v)
             })
-            return item
+            return copyItem
+          }
+          // 模型变量
+          if (item.inputType === 'query_model' || item.inputType === 'table') {
+            const copyItem = JSON.parse(JSON.stringify(item))
+            console.log('copyItem', copyItem)
+            copyItem.children.forEach(group => {
+              group.children.map(v => {
+                return this.__getSaveVariable(v)
+              })
+            })
+            return copyItem
           }
           // 变量
           return this.__getSaveVariable(item)

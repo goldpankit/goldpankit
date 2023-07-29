@@ -34,7 +34,7 @@
   />
   <QueryModelSelect
     v-else-if="variable.inputType === 'query_model'"
-    :variables="variables"
+    :variable="variable"
     :value-key="valueKey"
     v-model="variable[valueKey]"
   />

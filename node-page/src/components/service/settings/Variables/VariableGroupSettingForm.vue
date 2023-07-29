@@ -1,12 +1,12 @@
 <template>
   <el-form :model="variable">
-    <el-form-item label="Scope" required>
-      <el-radio-group v-model="variable.scope" @change="changeScope">
-        <el-radio label="service" border>Service</el-radio>
-        <el-radio label="table_field" border>Table Field</el-radio>
-        <el-radio label="query_model_field" border>Query Model Field</el-radio>
-      </el-radio-group>
-    </el-form-item>
+<!--    <el-form-item label="Scope" required>-->
+<!--      <el-radio-group v-model="variable.scope" @change="changeScope">-->
+<!--        <el-radio label="service" border>Service</el-radio>-->
+<!--        <el-radio label="table_field" border>Table Field</el-radio>-->
+<!--        <el-radio label="query_model_field" border>Query Model Field</el-radio>-->
+<!--      </el-radio-group>-->
+<!--    </el-form-item>-->
     <el-form-item label="Label" required>
       <el-input v-model="variable.label" @input="handleChange"/>
     </el-form-item>
