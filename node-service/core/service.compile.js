@@ -457,6 +457,9 @@ class Kit {
                 orderBy: ''
               }
             }
+            for (const group of item.children) {
+              value[group.name] = group.value || group.defaultValue
+            }
             resolve({
               ...item,
               value
