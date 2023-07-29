@@ -2,13 +2,13 @@
   <InstallInput
     v-if="variable.inputType === 'input'"
     :model-value="modelValue"
-    @change="$emit('update:modelValue', $event)"
+    @update:modelValue="$emit('update:modelValue', $event)"
   />
   <InstallInput
     v-else-if="variable.inputType === 'textarea'"
     type="textarea"
     :model-value="modelValue"
-    @change="$emit('update:modelValue', $event)"
+    @update:modelValue="$emit('update:modelValue', $event)"
   />
   <InstallCheckbox
     v-else-if="variable.inputType === 'checkbox'"

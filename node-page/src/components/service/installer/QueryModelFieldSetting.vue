@@ -6,7 +6,7 @@
     placeholder="Select fields"
     @update:modelValue="handleSelect"
   />
-  <el-table size="small" :data="group[valueKey]">
+  <el-table v-if="group.children.length > 0" size="small" :data="group[valueKey]">
     <el-table-column label="字段名" width="150px" prop="name" fixed>
       <template #default="{row}">
         {{row.table.alias}}.{{row.name}}
@@ -48,7 +48,6 @@ export default {
   },
   methods: {
     handleSelect (fields) {
-      console.log('fields', fields)
       for (const field of fields) {
         // 将字段变量添加到字段对象中，但需要保留原来的值
         for (const variable of this.group.children) {
