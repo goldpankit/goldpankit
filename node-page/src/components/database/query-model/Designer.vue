@@ -356,27 +356,45 @@ export default {
     },
     // 删除表
     __deleteTable () {
-      // 删除join关系
-      this.model.joins = this.model.joins.filter(join => {
-        if (join.table.id === this.model.selectedTableId) {
-          return false
-        }
-        if (join.targetTable.id === this.model.selectedTableId) {
-          return false
-        }
-        return true
-      })
-      // 删除聚合关系
-      this.model.aggregates = this.model.aggregates.filter(agg => {
-        if (agg.table.id === this.model.selectedTableId) {
-          return false
-        }
-        if (agg.targetTable.id === this.model.selectedTableId) {
-          return false
-        }
-      })
-      // 删除table
-      this.model.tables = this.model.tables.filter(table => table.id !== this.model.selectedTableId)
+      // 找到表
+      const tableIndex = this.model.tables.findIndex(t => t.id === this.model.selectedTableId)
+      const table = this.model.tables[tableIndex]
+      let promise = Promise.resolve()
+      if (table.type === 'MAIN' && this.model.tables.length > 1) {
+        promise = this.$model.deleteConfirm(`Deleting the main table will delete all the schedules and associations. Are you sure to delete it?`)
+      }
+      promise
+        .then(() => {
+          // 删除主表，清空一切
+          if (table.type === 'MAIN') {
+            this.model.tables = []
+            this.model.joins = []
+            this.model.aggregates = []
+            return
+          }
+          // 删除join关系
+          this.model.joins = this.model.joins.filter(join => {
+            if (join.table.id === this.model.selectedTableId) {
+              return false
+            }
+            if (join.targetTable.id === this.model.selectedTableId) {
+              return false
+            }
+            return true
+          })
+          // 删除聚合关系
+          this.model.aggregates = this.model.aggregates.filter(agg => {
+            if (agg.table.id === this.model.selectedTableId) {
+              return false
+            }
+            if (agg.targetTable.id === this.model.selectedTableId) {
+              return false
+            }
+          })
+          // 删除table
+          this.model.tables.splice(tableIndex, 1)
+        })
+        .catch(() => {})
     },
     // 添加join关系
     __addJoinRelation () {
