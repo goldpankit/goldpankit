@@ -114,7 +114,13 @@
           </SQLLine>
           <ul class="join-ons">
             <SQLLine v-for="(on,index) in join.ons" indent="20">
-              <DynamicWidthInput v-if="index !== 0" v-model="on.relation" @change="handleChange"/>
+              <SQLLineKeywordSelect
+                v-if="index !== 0"
+                v-model="on.relation"
+                :data="['AND', 'OR']"
+                style="width:40px"
+                @change="handleChange"
+              />
               <DynamicWidthInput v-model="join.targetTable.alias" @change="handleChange"/>
               <span>.</span>
               <span>{{on.targetField.name}}</span>
