@@ -206,7 +206,7 @@ export default {
       // 开启stage拖动，用于恢复整体拖动
       const stageNode = this.$refs.stage.getNode()
       stageNode.draggable(true)
-      // 记录结束表个字段
+      // 记录结束表字段
       this.relationRuntime.targetTable = table
       this.relationRuntime.targetField = field
       // 如果开始表和结束表是同一个，则不做关联操作
@@ -342,7 +342,12 @@ export default {
       // 删除聚合线
       else {
         // 查询聚合
-        const aggIndex = this.model.aggregates.findIndex(agg => agg.table.id === line.table.id && agg.targetTable.id === line.targetTable.id)
+        const aggIndex = this.model.aggregates.findIndex(agg => {
+          return agg.table.id === line.table.id &&
+            agg.targetTable.id === line.targetTable.id &&
+            agg.field.name === line.field.name &&
+            agg.targetField.name === line.targetField.name
+        })
         this.model.aggregates.splice(aggIndex, 1)
       }
       this.model.selectedLineId = null
@@ -377,6 +382,7 @@ export default {
     __addJoinRelation () {
       // 如果开始表和结束表是同一个，则不做关联操作
       if (this.relationRuntime.table.id === this.relationRuntime.targetTable.id) {
+        this.$tip.warning('The join relationship cannot be created.')
         return
       }
       // 添加关联
@@ -405,12 +411,14 @@ export default {
     __addAggregate () {
       // 如果开始表和结束表是同一个，则不做关联操作
       if (this.relationRuntime.table.id === this.relationRuntime.targetTable.id) {
+        this.$tip.warning('The aggregate relationship cannot be created.')
         return
       }
       // 添加聚合
       let aggregate = this.model.aggregates.find(
         r => r.table.id === this.relationRuntime.table.id &&
-          r.targetTable.id === this.relationRuntime.targetTable.id
+          r.targetTable.id === this.relationRuntime.targetTable.id &&
+          (r.field.name === this.relationRuntime.field.name || r.targetField.name === this.relationRuntime.targetField.name)
       )
       if (aggregate == null) {
         aggregate = {

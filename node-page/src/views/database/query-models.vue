@@ -257,8 +257,8 @@ export default {
       // 聚合关系信息
       const aggregates = currentModel.aggregates.map(agg => {
         return {
-          table: agg.table.name,
-          targetTable: agg.targetTable.name,
+          table: agg.table.id,
+          targetTable: agg.targetTable.id,
           field: agg.field.name,
           targetField: agg.targetField.name,
           function: agg.function
@@ -332,8 +332,8 @@ export default {
     // 模型join转join详情
     __modelAggregate2Aggregate (model, modelAggregate) {
       // 查询表信息
-      const table = model.tables.find(t => t.name.toLowerCase() === modelAggregate.table.toLowerCase())
-      const targetTable = model.tables.find(t => t.name.toLowerCase() === modelAggregate.targetTable.toLowerCase())
+      const table = model.tables.find(t => t.id === modelAggregate.table)
+      const targetTable = model.tables.find(t => t.id === modelAggregate.targetTable)
       if (table == null || targetTable == null) {
         return null
       }
