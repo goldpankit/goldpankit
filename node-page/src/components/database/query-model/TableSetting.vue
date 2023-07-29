@@ -103,7 +103,7 @@
             <span class="hidden">{{join.joinType}}</span>
             <span>{{join.targetTable.name}}</span>
             <DynamicWidthInput v-model="join.targetTable.alias" @change="handleChange"/>
-            <span>ON</span>
+            <em>ON</em>
             <SQLLineKeywordSelect
               v-model="join.relation"
               :data="['ONE-TO-ONE', 'ONE-TO-MANY', 'MANY-TO-ONE']"
@@ -184,7 +184,6 @@ export default {
           fields.add(field)
         }
       }
-      console.log('tableJoins', this.tableJoins)
       return [...fields]
     }
   },
@@ -273,7 +272,6 @@ export default {
         }
         const agg = this.getAggregate(field)
         if (agg != null) {
-          console.log('agg', agg)
           sqlLines.push('(SELECT')
           sqlLines.push(`${agg.function}(${agg.targetTable.alias}.${agg.targetField.name})`)
           sqlLines.push(`FROM ${agg.targetTable.name} AS ${agg.targetTable.alias}) AS ${agg.field.name},`)
@@ -288,8 +286,10 @@ export default {
       // join关系
       for (const join of this.tableJoins) {
         sqlLines.push(`${join.joinType} ${join.targetTable.name} ${join.targetTable.alias}`)
-        for (const on of join.ons) {
-          sqlLines.push(`ON ${join.table.alias}.${on.field.name} = ${join.targetTable.alias}.${on.targetField.name}`)
+        for (let i = 0; i < join.ons.length; i++) {
+          const on = join.ons[i]
+          let relationText = i === 0 ? 'ON ': `${on.relation} `
+          sqlLines.push(`${relationText}${join.targetTable.alias}.${on.targetField.name} = ${join.table.alias}.${on.field.name}`)
         }
       }
       return sqlLines.join('\n')
@@ -304,11 +304,11 @@ export default {
 .table-setting {
   position: absolute;
   background: #fff;
-  padding: 0 30px 30px 30px;
+  padding: 0 30px 10px 30px;
   box-sizing: border-box;
   top: 62px;
+  bottom: 0;
   right: 0;
-  height: 100%;
   width: 800px;
   overflow: hidden;
   flex-shrink: 0;
