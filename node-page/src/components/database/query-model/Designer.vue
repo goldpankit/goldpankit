@@ -323,15 +323,20 @@ export default {
       // 删除join线
       if (line.type === 'join') {
         // 查找对应join
-        const join = this.model.joins.find(join => {
+        const joinIndex = this.model.joins.findIndex(join => {
           return join.table.id === line.table.id && join.targetTable.id === line.targetTable.id
         })
+        const join = this.model.joins[joinIndex]
         // 找到对应的on
         const onIndex = join.ons.findIndex(on => {
           return on.field.name === line.field.name && on.targetField.name === line.targetField.name
         })
         if (onIndex !== -1) {
           join.ons.splice(onIndex, 1)
+        }
+        // 如果没有了关联关系，则删除join
+        if (join.ons.length === 0) {
+          this.model.joins.splice(joinIndex, 1)
         }
       }
       // 删除聚合线
