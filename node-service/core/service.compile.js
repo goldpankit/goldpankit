@@ -472,7 +472,7 @@ class Kit {
             return
           }
           // 如果为服务变量组，则修改子变量值
-          if (item.type === 'group' && item.scope === 'service') {
+          if (item.type === 'group') {
             resolve({
               ...item,
               children: item.children.map(v => {
