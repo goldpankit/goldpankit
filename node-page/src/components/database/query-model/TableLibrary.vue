@@ -146,11 +146,7 @@ export default {
         // 关联关系
         joins: [],
         // 聚合关系
-        aggregates: [],
-        // 当前选中的表
-        selectedTableId: null,
-        // 拖动数据
-        dragData: null
+        aggregates: []
       }
       createModel ({
         database: this.currentDatabase,
