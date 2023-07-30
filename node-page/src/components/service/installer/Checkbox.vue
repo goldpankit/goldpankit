@@ -69,6 +69,7 @@ export default {
         }
       }
       this.$emit('update:modelValue', selectedValues)
+      this.$emit('change', selectedValues)
     }
   }
 }

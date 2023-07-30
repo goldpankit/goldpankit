@@ -15,34 +15,40 @@
       v-else-if="variable.inputType === 'select'"
       v-model="variable[valueKey]"
       :options="variable.options"
+      @change="$emit('change', $event)"
     />
     <InstallCheckbox
       v-else-if="variable.inputType === 'checkbox'"
       v-model="variable[valueKey]"
       :options="variable.options"
+      @change="$emit('change', $event)"
     />
     <InstallRadio
       v-else-if="variable.inputType === 'radio'"
       v-model="variable[valueKey]"
       :options="variable.options"
+      @change="$emit('change', $event)"
     />
     <DatabaseSelect
       v-else-if="variable.inputType === 'database'"
       v-model="variable[valueKey]"
       :with-prefix="false"
       :with-block="true"
+      @change="$emit('change', $event)"
     />
     <TableSelect
       v-else-if="variable.inputType === 'table'"
       :variable="variable"
       :value-key="valueKey"
       v-model="variable[valueKey]"
+      @change="$emit('change', $event)"
     />
     <QueryModelSelect
       v-else-if="variable.inputType === 'query_model'"
       :variable="variable"
       :value-key="valueKey"
       v-model="variable[valueKey]"
+      @change="$emit('change', $event)"
     />
   </div>
 </template>

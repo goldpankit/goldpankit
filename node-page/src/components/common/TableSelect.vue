@@ -3,6 +3,7 @@
     class="table-select"
     popper-class="table-select__popper"
     :model-value="modelValue"
+    clearable
     @change="handleChange"
   >
     <el-option
