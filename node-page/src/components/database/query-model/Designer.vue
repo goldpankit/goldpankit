@@ -54,6 +54,7 @@
         @field:mousedown="handleFieldMouseDown"
         @field:mouseup="handleFieldMouseUp"
         @table:select="handleTableSelect"
+        @table:preview="handleTablePreview"
       />
       <v-layer>
         <RelationLine
@@ -63,7 +64,7 @@
           :start="line.start"
           :end="line.end"
           :selected="model.selectedLineId === line.id"
-          @select="model.selectedLineId = line.id"
+          @select="handleLineSelect(line)"
           @unselect="model.selectedLineId = null"
         />
       </v-layer>
@@ -137,6 +138,7 @@ export default {
       // 如果点击的是空白部分，则清空选择
       if (e.target.nodeType === 'Stage') {
         this.model.selectedTableId = null
+        this.model.previewTableId = null
         this.model.selectedLineId = null
       }
     },
@@ -228,6 +230,18 @@ export default {
     // 处理表格选中
     handleTableSelect (tableId) {
       this.model.selectedTableId = tableId
+      this.model.selectedLineId = null
+      this.model.previewTableId = null
+    },
+    // 选中行
+    handleLineSelect (line) {
+      this.model.selectedLineId = line.id
+      this.model.selectedTableId = null
+      this.model.previewTableId = null
+    },
+    // 预览表
+    handleTablePreview (tableId) {
+      this.model.previewTableId = tableId
     },
     // stage拖拽放下
     handleDrop (e) {

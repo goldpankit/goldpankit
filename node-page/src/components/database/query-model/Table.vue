@@ -11,6 +11,7 @@
       @mouseover="handleHeaderMouseover"
       @mouseleave="handleHeaderMouseleave"
       @click="selectTable"
+      @dblclick="previewTable"
     />
     <!-- 表头文字 -->
     <v-text
@@ -18,6 +19,7 @@
       @mouseover="handleHeaderMouseover"
       @mouseleave="handleHeaderMouseleave"
       @click="selectTable"
+      @dblclick="previewTable"
     />
     <v-rect
       v-for="(field,index) in visibleFields"
@@ -123,6 +125,9 @@ export default {
   methods: {
     selectTable (e) {
       this.$emit('table:select', this.table.id)
+    },
+    previewTable (e) {
+      this.$emit('table:preview', this.table.id)
     },
     // 选择/取消选择表
     select (selected=true) {

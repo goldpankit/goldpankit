@@ -81,10 +81,10 @@ export default {
     ...mapState(['currentProject', 'currentDatabase']),
     // 当前表
     currentTable () {
-      if (this.currentModel == null || this.currentModel.selectedTableId == null) {
+      if (this.currentModel == null || this.currentModel.previewTableId == null) {
         return null
       }
-      return this.currentModel.tables.find(t => t.id === this.currentModel.selectedTableId)
+      return this.currentModel.tables.find(t => t.id === this.currentModel.previewTableId)
     },
     // 当前表joins
     currentTableJoins () {
