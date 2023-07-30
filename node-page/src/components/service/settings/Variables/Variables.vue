@@ -213,6 +213,8 @@ export default {
                 return this.__getSaveVariable(v)
               })
             })
+            // 删除选项列表
+            delete copyItem.options
             return copyItem
           }
           // 变量
@@ -317,15 +319,15 @@ export default {
     __getSaveVariable (variable) {
       // 变量
       const copyVariable = JSON.parse(JSON.stringify(variable))
-      // 输入类型去掉选项
-      if (copyVariable.inputType === 'input') {
-        delete copyVariable.options
-      }
       // 选项类型过滤掉无效选项
-      else if (copyVariable.inputType === 'select' || copyVariable.inputType === 'radio' || copyVariable.inputType === 'checkbox'){
+      if (copyVariable.inputType === 'select' || copyVariable.inputType === 'radio' || copyVariable.inputType === 'checkbox'){
         copyVariable.options = copyVariable.options.filter(
           opt => opt.value.trim().length > 0 && opt.label.trim().length > 0
         )
+      }
+      // 其他非选项类型删掉options
+      else {
+        delete copyVariable.options
       }
       return copyVariable
     },

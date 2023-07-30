@@ -24,6 +24,7 @@
             v-for="setting in currentOption.settings"
             :key="setting.name"
             :label="setting.label"
+            :required="setting.required"
           >
             <el-input v-model="setting.value"/>
           </el-form-item>
@@ -73,9 +74,6 @@ export default {
         }
       })
     }
-  },
-  created () {
-    console.log('radio value', this.modelValue)
   }
 }
 </script>

@@ -27,9 +27,14 @@
           </el-select>
         </template>
       </el-table-column>
-      <el-table-column prop="defaultValue" label="Default Value">
+      <el-table-column prop="required" label="Input Type">
         <template #default="{row}">
-          <el-input v-model="row.defaultValue" @input="emitChange"/>
+          <el-switch v-model="row.required"></el-switch>
+        </template>
+      </el-table-column>
+      <el-table-column prop="value" label="Default Value">
+        <template #default="{row}">
+          <el-input v-model="row.value" @input="emitChange"/>
         </template>
       </el-table-column>
     </el-table>
@@ -56,7 +61,8 @@ export default {
         label: '',
         name: '',
         inputType: 'input',
-        defaultValue: ''
+        required: true,
+        value: ''
       })
     },
     emitChange () {

@@ -144,15 +144,20 @@ export default {
     handleInputTypeChange () {
       // select的值为{value: '', settings: []}
       const value = this.variable.defaultValue.value || this.variable.defaultValue
+      // 如果切换到checkbox，则值调整为数组
       if (this.variable.inputType === 'checkbox') {
         this.variable.defaultValue = [value]
-      } else if (this.variable.inputType === 'select') {
+      }
+      // 如果切换到select，则需填充settings，值调整为{value: '', settings: []}格式
+      else if (this.variable.inputType === 'select') {
         const currentOption = this.variable.options.find(opt => opt.value === value)
         this.variable.defaultValue = {
           value,
           settings: currentOption == null ? [] : currentOption.settings
         }
-      } else {
+      }
+      // 其他值调整为字符串
+      else {
         this.variable.defaultValue = value instanceof Array ? value[0] : value
       }
       this.handleChange()
