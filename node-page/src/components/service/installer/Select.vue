@@ -13,7 +13,13 @@
           :label="option.label"
         />
       </el-select>
-      <el-button v-if="currentOption != null && currentOption.settings.length > 0" type="primary" icon="Setting" class="button-icon" @click="optionSettingData.visible = true"></el-button>
+      <el-button
+        v-if="currentOption != null && currentOption.settings.length > 0"
+        type="primary"
+        icon="Setting"
+        class="button-icon"
+        @click="optionSettingData.visible = true"
+      ></el-button>
       <el-dialog
         v-if="currentOption != null"
         v-model="optionSettingData.visible"

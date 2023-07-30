@@ -183,7 +183,6 @@ export default {
           variable.children = []
         }
         variable.children.push(newGroup)
-        console.log('variable', variable)
       }
       this.currentVariable = newGroup
       this.saveVariables()
@@ -356,16 +355,20 @@ export default {
       if (copyVariable.inputType === 'select') {
         // 1. 过滤掉无效的option
         copyVariable.options = this.__getValidOptions(copyVariable.options)
+        console.log('copyVariable.options', copyVariable.options)
         // 2. 过滤掉option中无效的setting
         copyVariable.options.forEach(option => {
           option.settings = option.settings.filter(sett => sett.name.trim() !== '' && sett.label.trim() !== '')
         })
-        // 3. 将option中的settings改为对象（让存储更合理）
+        // 3. 将option中的settings改为对象（让配置文件内容存储更合理）
         const setting = {}
         const targetOption = copyVariable.options.find(opt => opt.value === copyVariable.defaultValue.value)
         if (targetOption != null) {
           for (const sett of targetOption.settings) {
+            console.log('sett', JSON.parse(JSON.stringify(sett)))
+            console.log('sett.value', sett.value)
             setting[sett.name] = sett.value
+            console.log('setting[sett.name]', setting[sett.name])
           }
         }
         copyVariable.defaultValue.settings = setting

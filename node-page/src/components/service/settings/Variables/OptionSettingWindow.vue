@@ -24,6 +24,7 @@
           <el-select v-model="row.inputType" @change="emitChange">
             <el-option value="input" label="Input"/>
             <el-option value="number_input" label="Number Input"/>
+            <el-option value="textarea" label="Textarea"/>
           </el-select>
         </template>
       </el-table-column>
@@ -34,7 +35,7 @@
       </el-table-column>
       <el-table-column prop="defaultValue" label="Default Value">
         <template #default="{row}">
-          <el-input v-model="row.defaultValue" @input="emitChange"/>
+          <OptionValueInput :option-setting="row" v-model="row.defaultValue" @input="emitChange"/>
         </template>
       </el-table-column>
       <el-table-column width="60px">
@@ -48,8 +49,11 @@
 
 <script>
 
+import OptionValueInput from "../../installer/OptionValueInput.vue";
+
 export default {
   name: "OptionSettingWindow",
+  components: {OptionValueInput},
   data () {
     return {
       visible: false,
