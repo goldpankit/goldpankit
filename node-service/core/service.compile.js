@@ -381,6 +381,7 @@ class Kit {
                 // 补充动态字段，children为变量信息
                 for (const group of item.children) {
                   value[group.name] = group.value || group.defaultValue
+                  console.log('group', group)
                 }
                 resolve({
                   ...item,
@@ -464,6 +465,22 @@ class Kit {
             // 补充动态字段，children为变量信息
             for (const group of item.children) {
               value[group.name] = group.value || group.defaultValue
+              // 字段变量处理，当字段变量为单选或多选时，补充选项设置值，例如输入类型inputType，当用户选择“输入框”时，可能需要设置输入框的最大输入长度。
+              // 此时获取输入框类型为inputType，获取输入框的设置为inputTypeSettings，通过inputTypeSettings可以进一步获取定义好的值，如inputTypeSettings.maxlength
+              for (const fieldVariable of group.children) {
+                if (fieldVariable.inputType !== 'radio' && fieldVariable.inputType !== 'checkbox') {
+                  continue
+                }
+                for (const fieldInfo of value[group.name]) {
+                  const variableSetting = {}
+                  fieldInfo[fieldVariable.name].settings.forEach(setting => {
+                    variableSetting[setting.name] = setting.value
+                  })
+                  fieldInfo[fieldVariable.name].settings = variableSetting
+                  fieldInfo[fieldVariable.name] = fieldInfo[fieldVariable.name].value
+                  fieldInfo[`${fieldVariable.name}Settings`] = variableSetting
+                }
+              }
             }
             resolve({
               ...item,
