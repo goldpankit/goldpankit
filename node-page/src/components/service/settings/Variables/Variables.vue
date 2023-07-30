@@ -205,10 +205,9 @@ export default {
             })
             return copyItem
           }
-          // 模型变量
+          // 模型变量 || 表变量
           if (item.inputType === 'query_model' || item.inputType === 'table') {
             const copyItem = JSON.parse(JSON.stringify(item))
-            console.log('copyItem', copyItem)
             copyItem.children.forEach(group => {
               group.children.map(v => {
                 return this.__getSaveVariable(v)

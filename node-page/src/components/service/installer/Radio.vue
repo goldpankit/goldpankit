@@ -3,13 +3,13 @@
     <ul v-if="type === 'radio'" class="installer-checkbox">
       <li
         v-for="option in options" :key="option.value"
-        :class="{ selected: modelValue === option.value }"
+        :class="{ selected: modelValue.value === option.value }"
         @click="handleSelect(option.value)"
       >{{option.label}}</li>
     </ul>
     <div v-else class="install-radio-select">
       <el-select
-        :model-value="modelValue"
+        :model-value="modelValue.value"
         clearable
         @change="handleSelect"
       >
@@ -60,17 +60,20 @@ export default {
   },
   computed: {
     currentOption () {
-      return this.options.find(opt => opt.value === this.modelValue)
+      return this.options.find(opt => opt.value === this.modelValue.value)
     }
   },
   methods: {
     handleSelect (value) {
-      this.$emit('update:modelValue', value)
-      this.$emit('change', value)
+      const valueObj = {
+        value: value,
+        settings: this.currentOption.settings
+      }
+      this.$emit('update:modelValue', valueObj)
+      this.$emit('change', valueObj)
       // 填充设置值
       this.$nextTick(() => {
         for (const setting of this.currentOption.settings) {
-          console.log('setting', setting)
           setting.value = setting.value || setting.defaultValue
         }
       })
