@@ -224,16 +224,20 @@ export default {
             const targetOption = copyItem.options.find(opt => opt.value === copyItem.defaultValue.value)
             if (targetOption != null) {
               for (const sett of targetOption.settings) {
-                console.log('sett', sett)
                 setting[sett.name] = sett.value
               }
             }
-            console.log('value settings', setting)
             copyItem.defaultValue.settings = setting
             // 过滤掉无效的选项
             copyItem.options = copyItem.options.filter(
               opt => opt.value.trim().length > 0 && opt.label.trim().length > 0
             )
+            // 删除选项的配置选项中的value，不让其存储在配置文件中
+            copyItem.options.forEach(option => {
+              option.settings.forEach(sett => {
+                delete sett.value
+              })
+            })
             return copyItem
           }
           // 变量
@@ -267,6 +271,23 @@ export default {
             }
             // 无论是可选变量还是输入变量，都增加options，在保存时会根据类型自动过滤该属性
             variable.options = variable.options == null ? [] : variable.options
+            /**
+             * select处理
+             * select在配置文件中的存储结构为defaultValue: { value: null, settings: [] }
+             * 此处处理为初始化选项的配置项value字段，即settings中的value字段，该字段为正式填写时的值字段
+             */
+            if (variable.inputType === 'select') {
+              if (JSON.stringify(variable.defaultValue.settings) !== '{}') {
+                variable.options.forEach(option => {
+                  option.settings = option.settings.map(sett => {
+                    return {
+                      ...item,
+                      value: variable.defaultValue.settings[sett.name]
+                    }
+                  })
+                })
+              }
+            }
             return variable
           })
           this.variables = this.variables.sort((item1, item2) => {
