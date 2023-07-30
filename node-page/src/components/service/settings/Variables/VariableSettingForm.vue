@@ -21,7 +21,7 @@
       />
     </el-form-item>
     <el-form-item
-      v-if="variable.inputType === 'checkbox' || variable.inputType === 'radio'"
+      v-if="variable.inputType === 'select' || variable.inputType === 'checkbox' || variable.inputType === 'radio'"
       label="Options"
       class="item-options"
       required
@@ -59,9 +59,13 @@
             <el-input v-model="row.remark" type="textarea" :rows="1" @input="handleChange"/>
           </template>
         </el-table-column>
-        <el-table-column v-if="variable.options.length > 0" min-width="120px" fixed="right">
+        <el-table-column
+          v-if="variable.options.length > 0"
+          :min-width="variable.inputType === 'select' ? '120px' : '60px'"
+          fixed="right"
+        >
           <template #default="{ row, index }">
-            <el-button icon="Setting" class="button-icon" @click="$refs.optionSettingWindow.open(row)"></el-button>
+            <el-button v-if="variable.inputType === 'select'" icon="Setting" class="button-icon" @click="$refs.optionSettingWindow.open(row)"></el-button>
             <el-button icon="Delete" class="button-icon" @click="deleteOption(index)"></el-button>
           </template>
         </el-table-column>
@@ -135,10 +139,18 @@ export default {
     },
     // 处理输入类型变更
     handleInputTypeChange () {
+      // select的值为{value: '', settings: []}
+      const value = this.variable.defaultValue.value || this.variable.defaultValue
       if (this.variable.inputType === 'checkbox') {
-        this.variable.defaultValue = [this.variable.defaultValue]
+        this.variable.defaultValue = [value]
+      } else if (this.variable.inputType === 'select') {
+        const currentOption = this.variable.options.find(opt => opt.value === value)
+        this.variable.defaultValue = {
+          value,
+          settings: currentOption == null ? [] : currentOption.settings
+        }
       } else {
-        this.variable.defaultValue = this.variable.defaultValue instanceof Array ? this.variable.defaultValue[0] : this.variable.defaultValue
+        this.variable.defaultValue = value instanceof Array ? value[0] : value
       }
       this.handleChange()
     },

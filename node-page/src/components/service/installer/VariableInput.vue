@@ -11,6 +11,11 @@
       v-model="variable[valueKey]"
       @input="$emit('change', $event)"
     />
+    <InstallSelect
+      v-else-if="variable.inputType === 'select'"
+      v-model="variable[valueKey]"
+      :options="variable.options"
+    />
     <InstallCheckbox
       v-else-if="variable.inputType === 'checkbox'"
       type="select"
@@ -51,10 +56,11 @@ import InstallCheckbox from "./Checkbox.vue";
 import TableSelect from "../../common/TableSelect.vue";
 import QueryModelSelect from "../../common/QueryModelSelect.vue";
 import DatabaseSelect from "../../database/DatabaseSelect.vue";
+import InstallSelect from "./Select.vue";
 
 export default {
   name: "VariableInput",
-  components: {DatabaseSelect, QueryModelSelect, TableSelect, InstallCheckbox, InstallRadio, InstallInput},
+  components: {InstallSelect, DatabaseSelect, QueryModelSelect, TableSelect, InstallCheckbox, InstallRadio, InstallInput},
   props: {
     // 当前变量
     variable: {

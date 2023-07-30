@@ -1,13 +1,6 @@
 <template>
   <template v-if="options.length > 0">
-    <ul v-if="type === 'radio'" class="installer-checkbox">
-      <li
-        v-for="option in options" :key="option.value"
-        :class="{ selected: modelValue.value === option.value }"
-        @click="handleSelect(option.value)"
-      >{{option.label}}</li>
-    </ul>
-    <div v-else class="install-radio-select">
+    <div class="install-radio-select">
       <el-select
         :model-value="modelValue.value"
         clearable
@@ -43,7 +36,7 @@
 
 <script>
 export default {
-  name: "InstallRadio",
+  name: "InstallSelect",
   props: {
     modelValue: {},
     options: {},

@@ -322,7 +322,7 @@ export default {
         delete copyVariable.options
       }
       // 选项类型过滤掉无效选项
-      else {
+      else if (copyVariable.inputType === 'select' || copyVariable.inputType === 'radio' || copyVariable.inputType === 'checkbox'){
         copyVariable.options = copyVariable.options.filter(
           opt => opt.value.trim().length > 0 && opt.label.trim().length > 0
         )

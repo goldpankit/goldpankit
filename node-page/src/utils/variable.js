@@ -5,7 +5,7 @@ export function isEmptyValue (value) {
 
 // 给定输入类型，返回默认的空值
 export function getDefaultEmptyValue (inputType) {
-  if (inputType === 'input' || inputType === 'textarea' || inputType === 'radio') {
+  if (inputType === 'input' || inputType === 'textarea' || inputType === 'radio' || inputType === 'select') {
     return ''
   }
   if (inputType === 'checkbox') {
