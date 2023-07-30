@@ -370,6 +370,9 @@ export default {
         if (targetOption != null) {
           for (const sett of targetOption.settings) {
             setting[sett.name] = sett.value
+            if (sett.inputType === 'number_input') {
+              setting[sett.name] = parseInt(sett.value)
+            }
           }
         }
         copyVariable.defaultValue.settings = setting
