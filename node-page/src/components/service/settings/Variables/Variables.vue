@@ -217,7 +217,13 @@ export default {
             delete copyItem.options
             return copyItem
           }
-          // select类型
+          /**
+           * select类型处理
+           * select类型的变量有options字段，option中有settings字段。需要干一下事情来处理
+           * 1. 过滤掉无效的option
+           * 2. 过滤掉option中无效的setting
+           * 2. 将option中的settings改为对象（让存储更合理）
+           */
           if (item.inputType === 'select') {
             const copyItem = JSON.parse(JSON.stringify(item))
             const setting = {}
@@ -240,7 +246,27 @@ export default {
             })
             return copyItem
           }
-          // 变量
+          /**
+           * checkbox和radio类型处理
+           * select类型的变量有options字段，option中有settings字段。需要干一下事情来处理
+           * 1. 将options中的无效项去掉
+           * 2. 去掉option中的settings字段，checkbox和radio是不支持选项设置的
+           */
+          if (item.inputType === 'radio' || item.inputType === 'checkbox') {
+            const copyItem = JSON.parse(JSON.stringify(item))
+            // 1. 将options中的无效项去掉
+            copyItem.options = this.__getValidOptions(copyItem.options)
+            // 2. 去掉option中的settings字段，checkbox和radio是不支持选项设置的
+            copyItem.options.forEach(option => {
+              delete option.settings
+            })
+            return copyItem
+          }
+          /**
+           * 其他变量（剩下未处理的变量为input，textarea，database）
+           * 在获取变量时，无论是否需要存在options都添加上了，所以此处需要删除
+           */
+          delete item.options
           return this.__getSaveVariable(item)
         })
       })
@@ -354,6 +380,12 @@ export default {
         return true
       }
       return false
+    },
+    // 获取有效的option
+    __getValidOptions (options) {
+      return options.filter(
+        opt => opt.value.trim().length > 0 && opt.label.trim().length > 0
+      )
     },
     // 获取保存变量内容
     __getSaveVariable (variable) {
