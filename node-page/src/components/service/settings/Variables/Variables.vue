@@ -197,76 +197,6 @@ export default {
         space: this.space,
         service: this.service,
         variables: variables.map(item => {
-          // 变量组
-          if (item.type === 'group') {
-            const copyItem = JSON.parse(JSON.stringify(item))
-            copyItem.children = copyItem.children.map(v => {
-              return this.__getSaveVariable(v)
-            })
-            return copyItem
-          }
-          // 模型变量 || 表变量
-          if (item.inputType === 'query_model' || item.inputType === 'table') {
-            const copyItem = JSON.parse(JSON.stringify(item))
-            copyItem.children && copyItem.children.forEach(group => {
-              group.children.map(v => {
-                return this.__getSaveVariable(v)
-              })
-            })
-            // 删除选项列表
-            delete copyItem.options
-            return copyItem
-          }
-          /**
-           * select类型处理
-           * select类型的变量有options字段，option中有settings字段。需要干一下事情来处理
-           * 1. 过滤掉无效的option
-           * 2. 过滤掉option中无效的setting
-           * 2. 将option中的settings改为对象（让存储更合理）
-           */
-          if (item.inputType === 'select') {
-            const copyItem = JSON.parse(JSON.stringify(item))
-            const setting = {}
-            const targetOption = copyItem.options.find(opt => opt.value === copyItem.defaultValue.value)
-            if (targetOption != null) {
-              for (const sett of targetOption.settings) {
-                setting[sett.name] = sett.value
-              }
-            }
-            copyItem.defaultValue.settings = setting
-            // 过滤掉无效的选项
-            copyItem.options = copyItem.options.filter(
-              opt => opt.value.trim().length > 0 && opt.label.trim().length > 0
-            )
-            // 删除选项的配置选项中的value，不让其存储在配置文件中
-            copyItem.options.forEach(option => {
-              option.settings.forEach(sett => {
-                delete sett.value
-              })
-            })
-            return copyItem
-          }
-          /**
-           * checkbox和radio类型处理
-           * select类型的变量有options字段，option中有settings字段。需要干一下事情来处理
-           * 1. 将options中的无效项去掉
-           * 2. 去掉option中的settings字段，checkbox和radio是不支持选项设置的
-           */
-          if (item.inputType === 'radio' || item.inputType === 'checkbox') {
-            const copyItem = JSON.parse(JSON.stringify(item))
-            // 1. 将options中的无效项去掉
-            copyItem.options = this.__getValidOptions(copyItem.options)
-            // 2. 去掉option中的settings字段，checkbox和radio是不支持选项设置的
-            copyItem.options.forEach(option => {
-              delete option.settings
-            })
-            return copyItem
-          }
-          /**
-           * 其他变量（剩下未处理的变量为input，textarea，database）
-           * 在获取变量时，无论是否需要存在options都添加上了，所以此处需要删除
-           */
-          delete item.options
           return this.__getSaveVariable(item)
         })
       })
@@ -389,18 +319,84 @@ export default {
     },
     // 获取保存变量内容
     __getSaveVariable (variable) {
-      // 变量
       const copyVariable = JSON.parse(JSON.stringify(variable))
-      // 选项类型过滤掉无效选项
-      if (copyVariable.inputType === 'select' || copyVariable.inputType === 'radio' || copyVariable.inputType === 'checkbox'){
-        copyVariable.options = copyVariable.options.filter(
-          opt => opt.value.trim().length > 0 && opt.label.trim().length > 0
-        )
+      // 变量组
+      if (copyVariable.type === 'group') {
+        copyVariable.children = copyVariable.children.map(v => {
+          return this.__getSaveVariable(v)
+        })
+        return copyVariable
       }
-      // 其他非选项类型删掉options
-      else {
+      /**
+       * 模型变量 & 表变量处理
+       * 模型变量和表变量都存在子变量，这些子变量均为变量组，且变量组的作用域为字段。针对字段的变量与普通变量就只是在输入类型上有区别而已了。
+       * 所以，此处需要将字段变量进行处理，处理内容如下
+       * 1. 递归处理字段变量，即copyVariable.children.children
+       * 2. 删除copyVariable的options字段
+       */
+      if (copyVariable.inputType === 'query_model' || copyVariable.inputType === 'table') {
+        // 1. 递归处理字段变量，即copyVariable.children.children
+        copyVariable.children && copyVariable.children.forEach(group => {
+          group.children.map(v => {
+            return this.__getSaveVariable(v)
+          })
+        })
+        // 2. 删除copyVariable的options字段
         delete copyVariable.options
+        return copyVariable
       }
+      /**
+       * select类型处理
+       * select类型的变量有options字段，option中有settings字段。需要干一下事情来处理
+       * 1. 过滤掉无效的option
+       * 2. 过滤掉option中无效的setting
+       * 3. 将option中的settings改为对象（让存储更合理）
+       * 4. settings中的每一项选项配置都存在value字段，用于存储正式用户填充的配置值，当此处作为选项存储，无需存储value字段，所以在此需要进行删除
+       */
+      if (copyVariable.inputType === 'select') {
+        // 1. 过滤掉无效的option
+        copyVariable.options = this.__getValidOptions(copyVariable.options)
+        // 2. 过滤掉option中无效的setting
+        copyVariable.options.forEach(option => {
+          option.settings = option.settings.filter(sett => sett.name.trim() !== '' && sett.label.trim() !== '')
+        })
+        // 3. 将option中的settings改为对象（让存储更合理）
+        const setting = {}
+        const targetOption = copyVariable.options.find(opt => opt.value === copyVariable.defaultValue.value)
+        if (targetOption != null) {
+          for (const sett of targetOption.settings) {
+            setting[sett.name] = sett.value
+          }
+        }
+        copyVariable.defaultValue.settings = setting
+        // 4. settings中的每一项选项配置都存在value字段，用于存储正式用户填充的配置值，当此处作为选项存储，无需存储value字段，所以在此需要进行删除
+        copyVariable.options.forEach(option => {
+          option.settings.forEach(sett => {
+            delete sett.value
+          })
+        })
+        return copyVariable
+      }
+      /**
+       * checkbox和radio类型处理
+       * select类型的变量有options字段，option中有settings字段。需要干一下事情来处理
+       * 1. 将options中的无效项去掉
+       * 2. 去掉option中的settings字段，checkbox和radio是不支持选项设置的
+       */
+      if (copyVariable.inputType === 'radio' || copyVariable.inputType === 'checkbox') {
+        // 1. 将options中的无效项去掉
+        copyVariable.options = this.__getValidOptions(copyVariable.options)
+        // 2. 去掉option中的settings字段，checkbox和radio是不支持选项设置的
+        copyVariable.options.forEach(option => {
+          delete option.settings
+        })
+        return copyVariable
+      }
+      /**
+       * 其他变量（剩下未处理的变量为input，textarea，database）
+       * 在获取变量时，无论是否需要存在options都添加上了，所以此处需要删除
+       */
+      delete copyVariable.options
       return copyVariable
     },
     // 生成变量名
