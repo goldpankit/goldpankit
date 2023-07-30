@@ -32,7 +32,7 @@
             :label="setting.label"
             :required="setting.required"
           >
-            <el-input v-model="setting.value" @input="$emit('change')"/>
+            <OptionValueInput v-model="setting.value" :option-setting="setting" @input="$emit('change')"/>
           </el-form-item>
         </el-form>
       </el-dialog>
@@ -42,8 +42,11 @@
 </template>
 
 <script>
+import OptionValueInput from "./OptionValueInput.vue";
+
 export default {
   name: "InstallSelect",
+  components: {OptionValueInput},
   props: {
     modelValue: {},
     options: {},

@@ -236,7 +236,7 @@ export default {
                 variable.options.forEach(option => {
                   option.settings = option.settings.map(sett => {
                     return {
-                      ...item,
+                      ...sett,
                       value: variable.defaultValue.settings[sett.name]
                     }
                   })
@@ -355,7 +355,7 @@ export default {
       if (copyVariable.inputType === 'select') {
         // 1. 过滤掉无效的option
         copyVariable.options = this.__getValidOptions(copyVariable.options)
-        console.log('copyVariable.options', copyVariable.options)
+        console.log('copyVariable.options1', JSON.parse(JSON.stringify(copyVariable.options)))
         // 2. 过滤掉option中无效的setting
         copyVariable.options.forEach(option => {
           option.settings = option.settings.filter(sett => sett.name.trim() !== '' && sett.label.trim() !== '')
@@ -365,10 +365,7 @@ export default {
         const targetOption = copyVariable.options.find(opt => opt.value === copyVariable.defaultValue.value)
         if (targetOption != null) {
           for (const sett of targetOption.settings) {
-            console.log('sett', JSON.parse(JSON.stringify(sett)))
-            console.log('sett.value', sett.value)
             setting[sett.name] = sett.value
-            console.log('setting[sett.name]', setting[sett.name])
           }
         }
         copyVariable.defaultValue.settings = setting
