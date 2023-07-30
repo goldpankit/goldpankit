@@ -5,6 +5,12 @@
       v-model="variable[valueKey]"
       @input="$emit('change', $event)"
     />
+    <InstallNumberInput
+      v-if="variable.inputType === 'number_input'"
+      v-model="variable[valueKey]"
+      :controls="false"
+      @input="$emit('change', $event)"
+    />
     <InstallInput
       v-else-if="variable.inputType === 'textarea'"
       type="textarea"
@@ -61,10 +67,13 @@ import TableSelect from "../../common/TableSelect.vue";
 import QueryModelSelect from "../../common/QueryModelSelect.vue";
 import DatabaseSelect from "../../database/DatabaseSelect.vue";
 import InstallSelect from "./Select.vue";
+import InstallNumberInput from "./NumberInput.vue";
 
 export default {
   name: "VariableInput",
-  components: {InstallSelect, DatabaseSelect, QueryModelSelect, TableSelect, InstallCheckbox, InstallRadio, InstallInput},
+  components: {
+    InstallNumberInput,
+    InstallSelect, DatabaseSelect, QueryModelSelect, TableSelect, InstallCheckbox, InstallRadio, InstallInput},
   props: {
     // 当前变量
     variable: {
@@ -92,6 +101,9 @@ export default {
     width: 100%;
   }
   :deep(.install-checkbox-select) {
+    width: 100%;
+  }
+  :deep(.install-number-input) {
     width: 100%;
   }
 }

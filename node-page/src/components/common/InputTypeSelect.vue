@@ -1,6 +1,7 @@
 <template>
   <el-select class="input-type-select">
     <el-option value="input" label="Input"/>
+    <el-option value="number_input" label="Number Input"/>
     <el-option value="textarea" label="Textarea"/>
     <el-option value="select" label="Select"/>
     <el-option value="checkbox" label="Checkbox"/>

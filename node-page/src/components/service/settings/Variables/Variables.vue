@@ -332,6 +332,14 @@ export default {
         return copyVariable
       }
       /**
+       * 数字输入
+       * 需要将值转为整数
+       */
+      if (copyVariable.inputType === 'number_input') {
+        copyVariable.defaultValue = parseInt(copyVariable.defaultValue)
+        return copyVariable
+      }
+      /**
        * 模型变量 & 表变量处理
        * 模型变量和表变量都存在子变量，这些子变量均为变量组，且变量组的作用域为字段。针对字段的变量与普通变量就只是在输入类型上有区别而已了。
        * 所以，此处需要将字段变量进行处理，处理内容如下
