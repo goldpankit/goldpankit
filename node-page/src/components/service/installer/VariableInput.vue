@@ -18,13 +18,11 @@
     />
     <InstallCheckbox
       v-else-if="variable.inputType === 'checkbox'"
-      type="select"
       v-model="variable[valueKey]"
       :options="variable.options"
     />
     <InstallRadio
       v-else-if="variable.inputType === 'radio'"
-      type="select"
       v-model="variable[valueKey]"
       :options="variable.options"
     />

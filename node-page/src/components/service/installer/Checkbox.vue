@@ -1,6 +1,6 @@
 <template>
   <template v-if="options.length > 0">
-    <ul v-if="type === 'checkbox'" class="installer-checkbox">
+    <ul class="installer-checkbox">
       <li
         v-for="option in options"
         :key="option.value"
@@ -27,17 +27,48 @@ export default {
   },
   data () {
     return {
-      selected: null
+    }
+  },
+  computed: {
+    optionValues () {
+      return this.options.map(opt => opt.value).join('\n')
+    }
+  },
+  watch: {
+    // 当值发生变化时，触发handleSelect，避免不存在值继续被选中
+    modelValue: {
+      immediate: true,
+      handler () {
+        this.filterValues(this.modelValue)
+      }
+    },
+    // 当选项列表发生变化时，触发handleSelect，避免不存在值继续被选中
+    optionValues () {
+      this.filterValues(this.modelValue)
     }
   },
   methods: {
     handleSelect (option) {
       let index = this.modelValue.findIndex(v => v === option.value)
+      let values = []
       if (index === -1) {
-        this.$emit('update:modelValue', this.modelValue.concat([option.value]))
+        values = this.modelValue.concat([option.value])
       } else {
-        this.$emit('update:modelValue', this.modelValue.filter((item,i) => i !== index))
+        values = this.modelValue.filter((item,i) => i !== index)
       }
+      // 过滤掉不存在的值
+      this.filterValues(values)
+    },
+    // 过滤掉不存在的值
+    filterValues (values) {
+      const selectedValues = []
+      for (const value of values) {
+        const targetOption = this.options.find(opt => opt.value === value)
+        if (targetOption != null) {
+          selectedValues.push(value)
+        }
+      }
+      this.$emit('update:modelValue', selectedValues)
     }
   }
 }

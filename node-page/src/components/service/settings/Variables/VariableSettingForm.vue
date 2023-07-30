@@ -84,10 +84,13 @@
     <el-form-item label="Required">
       <el-switch v-model="variable.required" @change="handleChange"/>
     </el-form-item>
-    <el-form-item v-if="variable.inputType !== 'table'" label="Hidden">
+    <el-form-item label="Hidden">
       <el-switch v-model="variable.hidden" @change="handleChange"/>
     </el-form-item>
-    <el-form-item v-if="variable.inputType !== 'table'" label="Compiler">
+    <el-form-item
+      v-if="variable.inputType !== 'table' && variable.inputType !== 'query_model' && variable.inputType !== 'database'"
+      label="Compiler"
+    >
       <CompilerSelect v-model="variable.compiler" @change="handleChange"/>
     </el-form-item>
     <el-form-item label="Remark">
