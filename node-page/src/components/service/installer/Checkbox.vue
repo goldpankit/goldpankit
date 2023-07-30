@@ -8,19 +8,6 @@
         @click="handleSelect(option)"
       >{{option.label}}</li>
     </ul>
-    <el-select
-      :model-value="modelValue"
-      @update:modelValue="$emit('update:modelValue', $event)"
-      multiple
-      class="install-checkbox-select"
-    >
-      <el-option
-        v-for="option in options"
-        :key="option.value"
-        :value="option.value"
-        :label="option.label"
-      />
-    </el-select>
   </template>
   <p v-else>Please add options first.</p>
 </template>

@@ -10,16 +10,20 @@
     :model-value="modelValue"
     @update:modelValue="$emit('update:modelValue', $event)"
   />
+  <InstallSelect
+    v-else-if="variable.inputType === 'select'"
+    :options="variable.options"
+    :model-value="modelValue"
+    @change="$emit('update:modelValue', $event)"
+  />
   <InstallCheckbox
     v-else-if="variable.inputType === 'checkbox'"
-    type="select"
     :options="variable.options"
     :model-value="modelValue"
     @change="$emit('update:modelValue', $event)"
   />
   <InstallRadio
     v-else-if="variable.inputType === 'radio'"
-    type="select"
     :options="variable.options"
     :model-value="modelValue"
     @change="$emit('update:modelValue', $event)"
@@ -30,10 +34,11 @@
 import InstallInput from "./Input.vue";
 import InstallRadio from "./Radio.vue";
 import InstallCheckbox from "./Checkbox.vue";
+import InstallSelect from "./Select.vue";
 
 export default {
   name: "TableFieldVariableInput",
-  components: {InstallCheckbox, InstallRadio, InstallInput},
+  components: {InstallSelect, InstallCheckbox, InstallRadio, InstallInput},
   props: {
     modelValue: {},
     variable: {
