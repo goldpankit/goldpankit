@@ -189,18 +189,14 @@ export default {
     },
     // 保存变量
     saveVariables () {
-      // 过滤掉无效的变量
-      const variables = this.variables.filter(v => v.name.trim().length > 0 && v.label.trim().length > 0)
       // 请求保存
       saveVariables({
         space: this.space,
         service: this.service,
-        variables: variables.map(item => {
-          return this.__getSaveVariable(item)
-        })
+        variables: this.getVariables()
       })
-        .then(data => {
-          console.log('data', data)
+        .then(() => {
+          console.log('变量保存成功')
         })
         .catch(e => {
           this.$tip.apiFailed(e)
@@ -255,6 +251,15 @@ export default {
         .catch(e => {
           this.$tip.apiFailed(e)
         })
+    },
+    // 获取最终变量
+    getVariables () {
+      // 过滤掉无效的变量
+      const variables = this.variables.filter(v => v.name.trim().length > 0 && v.label.trim().length > 0)
+      // 对变量逐个处理
+      return variables.map(item => {
+        return this.__getSaveVariable(item)
+      })
     },
     // 删除变量
     deleteVariable () {
@@ -355,7 +360,6 @@ export default {
       if (copyVariable.inputType === 'select') {
         // 1. 过滤掉无效的option
         copyVariable.options = this.__getValidOptions(copyVariable.options)
-        console.log('copyVariable.options1', JSON.parse(JSON.stringify(copyVariable.options)))
         // 2. 过滤掉option中无效的setting
         copyVariable.options.forEach(option => {
           option.settings = option.settings.filter(sett => sett.name.trim() !== '' && sett.label.trim() !== '')

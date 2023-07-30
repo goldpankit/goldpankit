@@ -168,12 +168,11 @@ export default {
         return
       }
       this.isWorking.compile = true
-      const variables = this.$refs.variables.variables
       compile({
         ...this.route,
         projectId: this.currentProject,
         database: this.currentDatabase,
-        variables
+        variables: this.$refs.variables.getVariables()
       })
         .then((installData) => {
           this.$tip.success('Compile successfully.')
@@ -192,12 +191,11 @@ export default {
         return
       }
       this.isWorking.cleanCompile = true
-      const variables = this.$refs.variables.variables
       cleanCompile({
         ...this.route,
         projectId: this.currentProject,
         database: this.currentDatabase,
-        variables
+        variables: this.$refs.variables.getVariables()
       })
         .then(installData => {
           this.$tip.success('Clean Compile successfully.')

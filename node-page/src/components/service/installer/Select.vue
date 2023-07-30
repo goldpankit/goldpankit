@@ -7,7 +7,7 @@
         @change="handleSelect"
       >
         <el-option
-          v-for="option in activeOptions"
+          v-for="option in validOptions"
           :key="option.value"
           :value="option.value"
           :label="option.label"
@@ -63,21 +63,21 @@ export default {
     }
   },
   computed: {
-    activeOptions () {
+    validOptions () {
       return this.options.filter(opt => opt.value.trim() !== '' && opt.label.trim() !== '')
     },
     currentOption () {
-      return this.activeOptions.find(opt => opt.value === this.modelValue.value)
+      return this.validOptions.find(opt => opt.value === this.modelValue.value)
     },
     optionValues () {
-      return this.activeOptions.map(opt => opt.value)
+      return this.validOptions.map(opt => opt.value)
     },
     // 当前选项的设置选项
     currenOptionSettings () {
       if (this.currentOption == null) {
         return []
       }
-      return this.currentOption.settings.map(sett => `${sett.name}_${sett.defaultValue}`)
+      return this.currentOption.settings.map(sett => sett.defaultValue)
     }
   },
   watch: {
@@ -94,7 +94,7 @@ export default {
   methods: {
     handleSelect (value) {
       // 获取当前选项
-      const currentOption = this.activeOptions.find(opt => opt.value === value)
+      const currentOption = this.validOptions.find(opt => opt.value === value)
       // select的选中包含了选中的值和设置的值
       let valueObj = {
         value: null,
@@ -116,8 +116,13 @@ export default {
       this.$nextTick(() => {
         if (this.currentOption != null) {
           for (const setting of this.currentOption.settings) {
-            // 填充value时保留原有的value，如果没有再使用默认值
-            setting.value = setting.value || setting.defaultValue
+            /**
+             * 填充value，直接赋值默认值即可，不能先从value中获取再从defaultValue中获取
+             * 因为当刚创建选项设置后，输入默认值时，会触发该方法，从而给value绑定了defaultValue，此时value已经存在了值，
+             * 如果先从value中获取，当默认值刚输入“a”时，value为“a”，默认值修改为“aa”时，value依然保留“a”，从而丢失默认值。
+             * 当前直接赋值默认值会出现一种情况，即当选项配置中任意一项的默认值发生了变化，都会整体覆盖现有的value。
+             */
+            setting.value = setting.defaultValue
           }
         }
       })
