@@ -7,19 +7,35 @@
         @click="handleSelect(option.value)"
       >{{option.label}}</li>
     </ul>
-    <el-select
-      v-else
-      :model-value="modelValue"
-      @change="handleSelect"
-      class="install-radio-select"
-    >
-      <el-option
-        v-for="option in options"
-        :key="option.value"
-        :value="option.value"
-        :label="option.label"
-      />
-    </el-select>
+    <div v-else class="install-radio-select">
+      <el-select
+        :model-value="modelValue"
+        clearable
+        @change="handleSelect"
+      >
+        <el-option
+          v-for="option in options"
+          :key="option.value"
+          :value="option.value"
+          :label="option.label"
+        />
+      </el-select>
+      <el-button type="primary" icon="Setting" class="button-icon" @click="optionSettingData.visible = true"></el-button>
+      <el-dialog
+        v-model="optionSettingData.visible"
+        :title="`${currentOption.label} Settings`"
+      >
+        <el-form>
+          <el-form-item
+            v-for="setting in currentOption.settings"
+            :key="setting.name"
+            :label="setting.label"
+          >
+            <el-input v-model="setting.value"/>
+          </el-form-item>
+        </el-form>
+      </el-dialog>
+    </div>
   </template>
   <p v-else>Please add options first.</p>
 </template>
@@ -35,10 +51,29 @@ export default {
       default: 'radio'
     }
   },
+  data () {
+    return {
+      optionSettingData: {
+        visible: false
+      }
+    }
+  },
+  computed: {
+    currentOption () {
+      return this.options.find(opt => opt.value === this.modelValue)
+    }
+  },
   methods: {
     handleSelect (value) {
       this.$emit('update:modelValue', value)
       this.$emit('change', value)
+      // 填充设置值
+      this.$nextTick(() => {
+        for (const setting of this.currentOption.settings) {
+          console.log('setting', setting)
+          setting.value = setting.value || setting.defaultValue
+        }
+      })
     }
   },
   created () {
@@ -71,6 +106,21 @@ export default {
     &:hover {
       border-color: var(--primary-color);
     }
+  }
+}
+.install-radio-select {
+  display: flex;
+  border: 1px solid var(--border-default-color);
+  border-radius: 5px;
+  overflow: hidden;
+  :deep(.el-select) {
+    flex-grow: 1;
+  }
+  .el-button {
+    flex-shrink: 0;
+    border: 0;
+    border-left: 1px solid var(--border-default-color);
+    border-radius: 0;
   }
 }
 </style>
