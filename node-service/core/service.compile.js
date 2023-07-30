@@ -354,11 +354,10 @@ class Kit {
         variables.unshift(variable)
       }
     }
+    const extVariables = []
     return variables.map(item => {
       return new Promise((resolve, reject) => {
         try {
-          // 查询模型变量（当前仅支持一个查询模型变量）
-          let model = null
           // 如果类型为数据库，则查询出库信息
           if (item.inputType === 'database') {
             const database = cache.databases.get(item.value || item.defaultValue)
@@ -379,9 +378,10 @@ class Kit {
             }, item.value || item.defaultValue)
               .then(value => {
                 // 补充动态字段，children为变量信息
-                for (const group of item.children) {
-                  value[group.name] = group.value || group.defaultValue
-                  console.log('group', group)
+                if (item.children != null && item.children.length > 0) {
+                  for (const group of item.children) {
+                    value[group.name] = group.value || group.defaultValue
+                  }
                 }
                 resolve({
                   ...item,
@@ -396,7 +396,7 @@ class Kit {
           // 如果类型为查询模型，则查询出模型信息
           if (item.inputType === 'query_model') {
             const modelId = item.value || item.defaultValue
-            model = database.models.find(model => model.id === modelId)
+            const model = database.models.find(model => model.id === modelId)
             // 主表
             const mainTable = model.tables.find(t => t.type === 'MAIN')
             // 子表
@@ -463,22 +463,24 @@ class Kit {
               }
             }
             // 补充动态字段，children为变量信息
-            for (const group of item.children) {
-              value[group.name] = group.value || group.defaultValue
-              // 字段变量处理，当字段变量为单选或多选时，补充选项设置值，例如输入类型inputType，当用户选择“输入框”时，可能需要设置输入框的最大输入长度。
-              // 此时获取输入框类型为inputType，获取输入框的设置为inputTypeSettings，通过inputTypeSettings可以进一步获取定义好的值，如inputTypeSettings.maxlength
-              for (const fieldVariable of group.children) {
-                if (fieldVariable.inputType !== 'radio' && fieldVariable.inputType !== 'checkbox') {
-                  continue
-                }
-                for (const fieldInfo of value[group.name]) {
-                  const variableSetting = {}
-                  fieldInfo[fieldVariable.name].settings.forEach(setting => {
-                    variableSetting[setting.name] = setting.value
-                  })
-                  fieldInfo[fieldVariable.name].settings = variableSetting
-                  fieldInfo[fieldVariable.name] = fieldInfo[fieldVariable.name].value
-                  fieldInfo[`${fieldVariable.name}Settings`] = variableSetting
+            if (item.children != null && item.children.length > 0) {
+              for (const group of item.children) {
+                value[group.name] = group.value || group.defaultValue
+                // 字段变量处理，当字段变量为select时，补充选项设置值，例如输入类型inputType，当用户选择“输入框”时，可能需要设置输入框的最大输入长度。
+                // 此时获取输入框类型为inputType，获取输入框的设置为inputTypeSettings，通过inputTypeSettings可以进一步获取定义好的值，如inputTypeSettings.maxlength
+                for (const fieldVariable of group.children) {
+                  if (fieldVariable.inputType !== 'select') {
+                    continue
+                  }
+                  for (const fieldInfo of value[group.name]) {
+                    const variableSetting = {}
+                    fieldInfo[fieldVariable.name].settings.forEach(setting => {
+                      variableSetting[setting.name] = setting.value
+                    })
+                    fieldInfo[fieldVariable.name].settings = variableSetting
+                    fieldInfo[fieldVariable.name] = fieldInfo[fieldVariable.name].value
+                    fieldInfo[`${fieldVariable.name}Settings`] = variableSetting
+                  }
                 }
               }
             }
@@ -501,6 +503,21 @@ class Kit {
             })
             return
           }
+          // 如果为输入类型为select，增加setting选项设置
+          if (item.inputType === 'select') {
+            const value = item.value || item.defaultValue
+            extVariables.push({
+              name: `${item.name}Settings`,
+              type: 'ext', // 标记为扩展变量
+              value: value.settings
+            })
+            resolve({
+              ...item,
+              value: value.value
+            })
+            return
+          }
+          // 其他
           resolve({
             ...item,
             value: item.value || item.defaultValue
@@ -509,7 +526,7 @@ class Kit {
           reject(e)
         }
       })
-    })
+    }).concat(extVariables)
   }
 }
 
