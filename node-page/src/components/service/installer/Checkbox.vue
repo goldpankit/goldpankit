@@ -31,7 +31,7 @@ export default {
   },
   computed: {
     optionValues () {
-      return this.options.map(opt => opt.value).join('\n')
+      return this.options.map(opt => opt.value)
     }
   },
   watch: {

@@ -7,7 +7,7 @@
         @change="handleSelect"
       >
         <el-option
-          v-for="option in options"
+          v-for="option in activeOptions"
           :key="option.value"
           :value="option.value"
           :label="option.label"
@@ -26,7 +26,7 @@
             :label="setting.label"
             :required="setting.required"
           >
-            <el-input v-model="setting.value"/>
+            <el-input v-model="setting.value" @input="$emit('change')"/>
           </el-form-item>
         </el-form>
       </el-dialog>
@@ -54,23 +54,62 @@ export default {
     }
   },
   computed: {
+    activeOptions () {
+      return this.options.filter(opt => opt.value.trim() !== '' && opt.label.trim() !== '')
+    },
     currentOption () {
-      return this.options.find(opt => opt.value === this.modelValue.value)
+      return this.activeOptions.find(opt => opt.value === this.modelValue.value)
+    },
+    optionValues () {
+      return this.activeOptions.map(opt => opt.value)
+    },
+    // 当前选项的设置选项
+    currenOptionSettings () {
+      if (this.currentOption == null) {
+        return []
+      }
+      return this.currentOption.settings.map(sett => `${sett.name}_${sett.defaultValue}`)
+    }
+  },
+  watch: {
+    // 当选项列表发生变化时，触发handleSelect，避免不存在值继续被选中
+    optionValues () {
+      // 给定选中的值即可，即modelValue.value
+      this.handleSelect(this.modelValue.value)
+    },
+    // 当前选项的设置选项发生变化时，为设置选项填充value值（例如添加了配置项，那么需要为新的配置项添加value字段）
+    currenOptionSettings () {
+      this.fillSettingValue()
     }
   },
   methods: {
     handleSelect (value) {
-      const currentOption = this.options.find(opt => opt.value === value)
-      const valueObj = {
-        value: value,
-        settings: currentOption.settings
+      // 获取当前选项
+      const currentOption = this.activeOptions.find(opt => opt.value === value)
+      // select的选中包含了选中的值和设置的值
+      let valueObj = {
+        value: null,
+        settings: []
+      }
+      if (currentOption != null) {
+        valueObj = {
+          value: value,
+          settings: currentOption.settings
+        }
       }
       this.$emit('update:modelValue', valueObj)
       this.$emit('change', valueObj)
-      // 填充设置值
+      // 切换了选项，需要为选项里的配置选项填充value
+      this.fillSettingValue()
+    },
+    // 补充value字段（正式填写时填写的时value字段，保存安装值到配置文件中时也是使用value字段）
+    fillSettingValue () {
       this.$nextTick(() => {
-        for (const setting of this.currentOption.settings) {
-          setting.value = setting.value || setting.defaultValue
+        if (this.currentOption != null) {
+          for (const setting of this.currentOption.settings) {
+            // 填充value时保留原有的value，如果没有再使用默认值
+            setting.value = setting.value || setting.defaultValue
+          }
         }
       })
     }

@@ -32,9 +32,14 @@
           <el-switch v-model="row.required"></el-switch>
         </template>
       </el-table-column>
-      <el-table-column prop="value" label="Default Value">
+      <el-table-column prop="defaultValue" label="Default Value">
         <template #default="{row}">
-          <el-input v-model="row.value" @input="emitChange"/>
+          <el-input v-model="row.defaultValue" @input="emitChange"/>
+        </template>
+      </el-table-column>
+      <el-table-column width="60px">
+        <template #default="{row, $index}">
+          <el-button icon="Delete" @click="deleteSetting($index)"></el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -62,8 +67,12 @@ export default {
         name: '',
         inputType: 'input',
         required: true,
-        value: ''
+        defaultValue: ''
       })
+    },
+    deleteSetting (index) {
+      this.option.settings.splice(index, 1)
+      this.emitChange()
     },
     emitChange () {
       this.$emit('change')

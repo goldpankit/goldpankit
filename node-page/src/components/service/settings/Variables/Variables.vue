@@ -208,7 +208,6 @@ export default {
           // 模型变量 || 表变量
           if (item.inputType === 'query_model' || item.inputType === 'table') {
             const copyItem = JSON.parse(JSON.stringify(item))
-            console.log('表嚯模型', copyItem)
             copyItem.children && copyItem.children.forEach(group => {
               group.children.map(v => {
                 return this.__getSaveVariable(v)
@@ -216,6 +215,25 @@ export default {
             })
             // 删除选项列表
             delete copyItem.options
+            return copyItem
+          }
+          // select类型
+          if (item.inputType === 'select') {
+            const copyItem = JSON.parse(JSON.stringify(item))
+            const setting = {}
+            const targetOption = copyItem.options.find(opt => opt.value === copyItem.defaultValue.value)
+            if (targetOption != null) {
+              for (const sett of targetOption.settings) {
+                console.log('sett', sett)
+                setting[sett.name] = sett.value
+              }
+            }
+            console.log('value settings', setting)
+            copyItem.defaultValue.settings = setting
+            // 过滤掉无效的选项
+            copyItem.options = copyItem.options.filter(
+              opt => opt.value.trim().length > 0 && opt.label.trim().length > 0
+            )
             return copyItem
           }
           // 变量

@@ -64,9 +64,9 @@
           :min-width="variable.inputType === 'select' ? '120px' : '60px'"
           fixed="right"
         >
-          <template #default="{ row, index }">
+          <template #default="{ row, $index }">
             <el-button v-if="variable.inputType === 'select'" icon="Setting" class="button-icon" @click="$refs.optionSettingWindow.open(row)"></el-button>
-            <el-button icon="Delete" class="button-icon" @click="deleteOption(index)"></el-button>
+            <el-button icon="Delete" class="button-icon" @click="deleteOption($index)"></el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -138,6 +138,7 @@ export default {
     },
     // 删除选项
     deleteOption (index) {
+      console.log('index', index)
       this.variable.options.splice(index, 1)
     },
     // 处理输入类型变更
