@@ -8,7 +8,6 @@
     <InstallNumberInput
       v-if="variable.inputType === 'number_input'"
       v-model="variable[valueKey]"
-      :controls="false"
       @input="$emit('change', $event)"
     />
     <InstallInput
@@ -79,8 +78,6 @@ export default {
     variable: {
       required: true
     },
-    // 变量列表，用于实现TableSelect的字段变量
-    variables: {},
     // 变量值字段
     valueKey: {
       default: 'value'

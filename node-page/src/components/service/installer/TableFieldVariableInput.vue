@@ -4,6 +4,11 @@
     :model-value="modelValue"
     @update:modelValue="$emit('update:modelValue', $event)"
   />
+  <InstallNumberInput
+    v-else-if="variable.inputType === 'number_input'"
+    :model-value="modelValue"
+    @update:modelValue="$emit('update:modelValue', $event)"
+  />
   <InstallInput
     v-else-if="variable.inputType === 'textarea'"
     type="textarea"
@@ -35,10 +40,11 @@ import InstallInput from "./Input.vue";
 import InstallRadio from "./Radio.vue";
 import InstallCheckbox from "./Checkbox.vue";
 import InstallSelect from "./Select.vue";
+import InstallNumberInput from "./NumberInput.vue";
 
 export default {
   name: "TableFieldVariableInput",
-  components: {InstallSelect, InstallCheckbox, InstallRadio, InstallInput},
+  components: {InstallNumberInput, InstallSelect, InstallCheckbox, InstallRadio, InstallInput},
   props: {
     modelValue: {},
     variable: {

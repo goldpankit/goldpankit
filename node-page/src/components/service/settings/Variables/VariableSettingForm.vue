@@ -1,12 +1,5 @@
 <template>
   <el-form :model="variable">
-<!--    <el-form-item v-if="!withGroup" label="Scope" required>-->
-<!--      <el-radio-group v-model="variable.scope" @change="handleChange">-->
-<!--        <el-radio label="service" border>Service</el-radio>-->
-<!--        <el-radio label="table_field" border>Table Field</el-radio>-->
-<!--        <el-radio label="query_model_field" border>Query Model Field</el-radio>-->
-<!--      </el-radio-group>-->
-<!--    </el-form-item>-->
     <el-form-item label="Label" required>
       <el-input v-model="variable.label" @input="handleChange"/>
     </el-form-item>
@@ -76,7 +69,6 @@
     <el-form-item label="Default Value">
       <VariableInput
         :variable="variable"
-        :variables="variables"
         value-key="defaultValue"
         @change="handleChange"
       />
@@ -88,7 +80,13 @@
       <el-switch v-model="variable.hidden" @change="handleChange"/>
     </el-form-item>
     <el-form-item
-      v-if="variable.inputType !== 'table' && variable.inputType !== 'query_model' && variable.inputType !== 'database'"
+      v-if="variable.inputType !== 'number_input' &&
+        variable.inputType !== 'table' &&
+        variable.inputType !== 'query_model' &&
+        variable.inputType !== 'database' &&
+        rootVariable.inputType !== 'query_model' &&
+        rootVariable.inputType !== 'table'
+      "
       label="Compiler"
     >
       <CompilerSelect v-model="variable.compiler" @change="handleChange"/>
@@ -114,8 +112,8 @@ export default {
     variable: {
       required: true
     },
-    // 所有变量
-    variables: {
+    // 根变量
+    rootVariable: {
       required: true
     },
     // 是否为组变量

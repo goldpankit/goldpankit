@@ -48,8 +48,8 @@
           <VariableSettingForm
             v-if="currentVariable.type === 'variable'"
             :variable="currentVariable"
-            :variables="variables"
             :with-group="currentGroup != null"
+            :root-variable="currentRootVariable"
             @change="saveVariables"
           />
           <VariableGroupSettingForm
@@ -97,6 +97,7 @@ export default {
       groupIndex: 1,
       currentVariable: null,
       currentGroup: null,
+      currentRootVariable: null,
       variables: [],
       dragData: {
         target: null
@@ -110,9 +111,36 @@ export default {
       this.$nextTick(() => {
         this.currentVariable = variable
         this.currentGroup = null
-        if (node.level > 1) {
+        this.currentRootVariable = null
+        /**
+         * 填充当前根变量和组
+         * 当层级大于2时，根变量只可能是查询模型或表变量，此时选中节点的上一级为组，上上级为根变量
+         */
+        if (node.level > 2) {
+          this.currentRootVariable = node.parent.parent.data
           this.currentGroup = node.parent.data
         }
+        /**
+         * 填充当前根变量和组
+         * 根变量为查询模型或表变量时，二级为组，一级为变量。
+         * 根变量为组时，二级为变量，一级为组
+         * 所以选中第二级时，一级可能是组也可能是变量，此处需要判断上级的类型，为组时才赋值
+         * 而根变量一定是上级
+         */
+        else if (node.level > 1) {
+          this.currentRootVariable = node.parent.data
+          if (node.parent.data.type === 'group') {
+            this.currentGroup = node.parent.data
+          }
+        }
+        /**
+         * 填充当前根变量和组
+         * 只有一级时，当前这级为根变量，不存在组
+         */
+        else {
+          this.currentRootVariable = node.data
+        }
+
       })
     },
     // 添加子节点
@@ -452,13 +480,18 @@ export default {
     flex-shrink: 0;
     border-right: 1px solid var(--border-default-color);
     padding-top: 10px;
+    display: flex;
+    flex-direction: column;
     .tools {
+      flex-shrink: 0;
       display: flex;
       padding-bottom: 10px;
     }
     // 变量列表
     .variables {
       --selected-background-color: #ececea;
+      flex-grow: 1;
+      overflow-y: auto;
       :deep(.el-tree-node) {
         min-height: 30px;
         .el-tree-node__content {

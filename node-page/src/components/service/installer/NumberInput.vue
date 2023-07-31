@@ -1,5 +1,5 @@
 <template>
-  <el-input-number class="install-number-input"/>
+  <el-input-number class="install-number-input" :controls="false"/>
 </template>
 
 <script>
