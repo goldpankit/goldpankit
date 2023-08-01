@@ -20,7 +20,12 @@
   </el-select>
   <ul v-if="selected != null && fieldVariableGroup.length > 0" class="field-settings">
     <li v-for="group of fieldVariableGroup" :key="group.label">
-      <QueryModelFieldSetting :value-key="valueKey" :table="selected" :group="group"/>
+      <QueryModelFieldSetting
+        :value-key="valueKey"
+        :table="selected"
+        :group="group"
+        @change="emitChange"
+      />
     </li>
   </ul>
 </template>
@@ -73,7 +78,10 @@ export default {
         group[this.valueKey] = []
       })
       this.$emit('update:modelValue', value)
-      this.$emit('change', value)
+      this.emitChange()
+    },
+    emitChange () {
+      this.$emit('change')
     },
     // 查询数据库
     fetchDatabases () {

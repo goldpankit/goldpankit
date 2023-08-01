@@ -3,35 +3,42 @@
     v-if="variable.inputType === 'input'"
     :model-value="modelValue"
     @update:modelValue="$emit('update:modelValue', $event)"
+    @input="$emit('change', $event)"
   />
   <InstallNumberInput
     v-else-if="variable.inputType === 'number_input'"
     :model-value="modelValue"
     @update:modelValue="$emit('update:modelValue', $event)"
+    @input="$emit('change', $event)"
   />
   <InstallInput
     v-else-if="variable.inputType === 'textarea'"
     type="textarea"
+    :rows="1"
     :model-value="modelValue"
     @update:modelValue="$emit('update:modelValue', $event)"
+    @input="$emit('change', $event)"
   />
   <InstallSelect
     v-else-if="variable.inputType === 'select'"
     :options="variable.options"
     :model-value="modelValue"
-    @change="$emit('update:modelValue', $event)"
+    @update:modelValue="$emit('update:modelValue', $event)"
+    @change="$emit('change', $event)"
   />
   <InstallCheckbox
     v-else-if="variable.inputType === 'checkbox'"
     :options="variable.options"
     :model-value="modelValue"
-    @change="$emit('update:modelValue', $event)"
+    @update:modelValue="$emit('update:modelValue', $event)"
+    @change="$emit('change', $event)"
   />
   <InstallRadio
     v-else-if="variable.inputType === 'radio'"
     :options="variable.options"
     :model-value="modelValue"
-    @change="$emit('update:modelValue', $event)"
+    @update:modelValue="$emit('update:modelValue', $event)"
+    @change="$emit('change', $event)"
   />
 </template>
 

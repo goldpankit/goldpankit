@@ -48,7 +48,7 @@
           <VariableSettingForm
             v-if="currentVariable.type === 'variable'"
             :variable="currentVariable"
-            :with-group="currentGroup != null"
+            :variable-group="currentGroup"
             :root-variable="currentRootVariable"
             @change="saveVariables"
           />

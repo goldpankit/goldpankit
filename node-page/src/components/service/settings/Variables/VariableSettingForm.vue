@@ -70,7 +70,7 @@
       <VariableInput
         :variable="variable"
         value-key="defaultValue"
-        @change="handleChange"
+        @change="handleDefaultValueChange"
       />
     </el-form-item>
     <el-form-item label="Required">
@@ -116,14 +116,57 @@ export default {
     rootVariable: {
       required: true
     },
-    // 是否为组变量
-    withGroup: {
+    // 组变量
+    variableGroup: {
       default: false
+    }
+  },
+  computed: {
+    withGroup () {
+      return this.variableGroup != null
+    }
+  },
+  watch: {
+    /**
+     * 改变默认值有两种情况
+     * 1. 主动修改默认值
+     * 2. 调整输入类型
+     * 此处是处理第二种情况，当输入类型调整后，会触发change事件来修改输入类型，但默认值改变后，可能需要调整字段变量的值。
+     * 在字段变量的值发生变化后，还需要触发一次change事件来保存字段的值，此处触发一次默认值变更事件来完成该事项。
+     */
+    'variable.defaultValue': function () {
+      this.handleDefaultValueChange()
     }
   },
   methods: {
     handleChange () {
       this.$emit('change')
+    },
+    // 处理默认值变更
+    handleDefaultValueChange () {
+      this.handleFieldVariableValues()
+      this.$emit('change')
+    },
+    /**
+     * 处理字段变量值
+     * 当根节点为查询模型变量或表变量时，当前变量则为字段变量，当字段变量的name或值发生变化时，需要将根变量下的组变量的默认值更新。
+     * e.g 查询模型变量下划分了条件组和列表组，条件组下有字段变量“输入类型-inputType”，当前修改“输入类型”的默认值时，
+     * 那么条件组下的字段应及时补充inputType的值为新的默认值，该方法专门处理此项内容
+     */
+    handleFieldVariableValues () {
+      // 选中根变量时不做处理
+      if (this.rootVariable === this.variable) {
+        return
+      }
+      if (this.rootVariable.inputType === 'query_model' || this.rootVariable.inputType === 'table') {
+        // 根变量的children为字段变量组
+        for (const fieldGroup of this.rootVariable.children) {
+          // 循环修改所有已选中的字段的当前变量值
+          for (const field of fieldGroup.defaultValue) {
+            field[this.variable.name] = this.variable.defaultValue
+          }
+        }
+      }
     },
     // 添加选项
     createOption () {
@@ -146,29 +189,45 @@ export default {
       if (value != null && value.value != null) {
         value = value.value
       }
-      // 如果切换到checkbox，则值调整为数组
-      if (this.variable.inputType === 'checkbox') {
-        this.variable.defaultValue = [value]
+      // checkbox的值为数组
+      if (value instanceof Array) {
+        value = value[0]
+      }
+      // number_input的值为数字，转为字符串
+      if (typeof value === 'number') {
+        value = value + ''
       }
       // 如果切换到number_input，则值调整为整数
-      else if (this.variable.inputType === 'number_input') {
-        let newValue = Number(parseInt(value instanceof Array ? value[0] : value))
+      if (this.variable.inputType === 'number_input') {
+        let newValue = Number(parseInt(value))
         if (isNaN(newValue)) {
           newValue = 0
         }
         this.variable.defaultValue = newValue
       }
-      // 如果切换到select，则需填充settings，值调整为{value: '', settings: []}格式
+      // 如果切换到select，则需填充settings，值调整为{value: null, settings: []}格式
       else if (this.variable.inputType === 'select') {
         const currentOption = this.variable.options.find(opt => opt.value === value)
         this.variable.defaultValue = {
-          value,
+          value: currentOption == null ? null : value,
           settings: currentOption == null ? [] : currentOption.settings
         }
       }
+      // 如果切换到checkbox，则值调整为数组
+      else if (this.variable.inputType === 'checkbox') {
+        this.variable.defaultValue = []
+      }
+      // 如果调整为radio，则值调整为空
+      else if (this.variable.inputType === 'radio') {
+        this.variable.defaultValue = ''
+      }
+      // 如果调整为database，query_model或table，值全部改为null
+      else if (this.variable.inputType === 'database' || this.variable.inputType === 'table' || this.variable.inputType === 'query_model') {
+        this.variable.defaultValue = null
+      }
       // 其他值调整为字符串
       else {
-        this.variable.defaultValue = value instanceof Array ? value[0] : value
+        this.variable.defaultValue = value
       }
       this.handleChange()
     },

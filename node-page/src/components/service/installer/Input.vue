@@ -1,5 +1,5 @@
 <template>
-  <el-input :type="type" class="install-input"/>
+  <el-input :type="type" :rows="rows" class="install-input"/>
 </template>
 
 <script>
@@ -8,6 +8,9 @@ export default {
   props: {
     type: {
       default: 'text'
+    },
+    rows: {
+      default: 3
     }
   }
 }
