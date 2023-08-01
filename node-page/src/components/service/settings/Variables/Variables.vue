@@ -237,37 +237,8 @@ export default {
         service: this.service
       })
         .then(data => {
-          this.variables = data.variables.map(item => {
-            const variable = JSON.parse(JSON.stringify(item))
-            // 变量组增加children，防止用户自行修改
-            if (variable.type === 'group') {
-              variable.children = variable.children == null ? [] : variable.children.map(v => {
-                // 无论是可选变量还是输入变量，都增加options，在保存时会根据类型自动过滤该属性
-                v.options = v.options == null ? [] : v.options
-                return v
-              })
-              return variable
-            }
-            // 无论是可选变量还是输入变量，都增加options，在保存时会根据类型自动过滤该属性
-            variable.options = variable.options == null ? [] : variable.options
-            /**
-             * select处理
-             * select在配置文件中的存储结构为defaultValue: { value: null, settings: [] }
-             * 此处处理为初始化选项的配置项value字段，即settings中的value字段，该字段为正式填写时的值字段
-             */
-            if (variable.inputType === 'select') {
-              if (JSON.stringify(variable.defaultValue.settings) !== '{}') {
-                variable.options.forEach(option => {
-                  option.settings = option.settings.map(sett => {
-                    return {
-                      ...sett,
-                      value: variable.defaultValue.settings[sett.name]
-                    }
-                  })
-                })
-              }
-            }
-            return variable
+          this.variables = data.variables.map(variable => {
+            return this.__getInitVariable(variable)
           })
           this.variables = this.variables.sort((item1, item2) => {
             if (item1.type === 'variable' && item2.type === 'group') {
@@ -348,6 +319,42 @@ export default {
       return options.filter(
         opt => opt.value.trim().length > 0 && opt.label.trim().length > 0
       )
+    },
+    // 获取初始变量内容
+    __getInitVariable (variable) {
+      const copyVariable = JSON.parse(JSON.stringify(variable))
+      // 变量组增加children，防止用户自行修改
+      if (copyVariable.type === 'group') {
+        copyVariable.children = copyVariable.children == null ? [] : copyVariable.children.map(v => {
+          // 无论是可选变量还是输入变量，都增加options，在保存时会根据类型自动过滤该属性
+          v.options = v.options == null ? [] : v.options
+          return this.__getInitVariable(v)
+        })
+        return copyVariable
+      }
+      // 无论是可选变量还是输入变量，都增加options，在保存时会根据类型自动过滤该属性
+      copyVariable.options = copyVariable.options == null ? [] : copyVariable.options
+      /**
+       * select处理
+       * select在配置文件中的存储结构为defaultValue: { value: null, settings: {} }，
+       * 其中选项配置的值放在了settings中，结构为settings: { a: 1, b: 2 }，其中ab表示选项配置的name
+       * 此处处理为初始化选项的配置项value字段，该字段为正式填写时的值字段
+       */
+      if (copyVariable.inputType === 'select') {
+        if (JSON.stringify(copyVariable.defaultValue.settings) === '{}') {
+          return copyVariable
+        }
+        copyVariable.options.forEach(option => {
+          option.settings = option.settings.map(sett => {
+            return {
+              ...sett,
+              value: copyVariable.defaultValue.settings[sett.name]
+            }
+          })
+        })
+        return copyVariable
+      }
+      return copyVariable
     },
     // 获取保存变量内容
     __getSaveVariable (variable) {
