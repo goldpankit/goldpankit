@@ -178,14 +178,13 @@ export default {
       }
       this.isWorking.install = true
       // 安装服务
-      console.log('this.variables', this.variables)
       install({
         projectId: this.currentProject,
         database: this.currentDatabase,
         space: this.space,
         service: this.service,
         version: this.version,
-        variables: this.variables
+        variables: this.__getInstallVariables(this.variables)
       })
         .then(installData => {
           this.$tip.success('Install Successfully')
@@ -212,7 +211,7 @@ export default {
         space: this.space,
         service: this.service,
         version: this.version,
-        variables: this.variables
+        variables: this.__getInstallVariables(this.variables)
       })
         .then(installData => {
           this.$tip.success('Uninstall Successfully')
@@ -226,6 +225,24 @@ export default {
         .finally(() => {
           this.isWorking.uninstall = false
         })
+    },
+    // 获取安装变量值
+    __getInstallVariables (variables) {
+      return variables.map(variable => {
+        // 如果是select，需要从option的settings中获取最新的值赋值
+        if (variable.inputType === 'select') {
+          const selectedOption = variable.options.find(opt => opt.value === variable.value.value)
+          if (selectedOption == null) {
+            return variable
+          }
+          const settings = {}
+          for (const setting of selectedOption.settings) {
+            settings[setting.name] = setting.value
+          }
+          variable.value.settings = settings
+        }
+        return variable
+      })
     },
     // 获取默认值
     __getVariableValue (variable) {
