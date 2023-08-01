@@ -20,7 +20,7 @@
   </el-select>
   <ul v-if="selected != null && fieldVariableGroup.length > 0" class="field-settings">
     <li v-for="group of fieldVariableGroup" :key="group.label">
-      <FieldSetting :value-key="valueKey" :table="selected" :group="group"/>
+      <FieldSetting :value-key="valueKey" :table="selected" :group="group" @change="emitChange"/>
     </li>
   </ul>
 </template>
@@ -76,6 +76,9 @@ export default {
       this.$emit('update:modelValue', value)
       this.$emit('change', value)
     },
+    emitChange () {
+      this.$emit('change')
+    },
     // 查询库
     fetchDatabases () {
       search ()
@@ -106,32 +109,32 @@ export default {
           if (this.modelValue != null) {
             this.selected = this.tables.find(v => v.name === this.modelValue)
           }
-          if (this.selected == null) {
-            return
-          }
+          // if (this.selected == null) {
+          //   return
+          // }
           // 填充字段的默认数据
-          for (const group of this.fieldVariableGroup) {
-            const cacheFields = group[this.valueKey]
-            for (const cacheField of cacheFields) {
-              const targetField = this.selected.fields.find(f => f.name === cacheField.name)
-              if (targetField == null) {
-                continue
-              }
-              // 将已安装的值赋给对应的表字段
-              Object.assign(targetField, cacheField)
-              // 初始化默认值
-              for (const variable of group.children) {
-                // 如果是空值，则设置为默认值
-                if (isEmptyValue(cacheField[variable.name])) {
-                  cacheField[variable.name] = variable.defaultValue
-                }
-                if (isEmptyValue(cacheField[variable.name])) {
-                  cacheField[variable.name] = getDefaultEmptyValue(variable.inputType)
-                }
-              }
-              console.log('cacheField', cacheField)
-            }
-          }
+          // for (const group of this.fieldVariableGroup) {
+          //   const cacheFields = group[this.valueKey]
+          //   for (const cacheField of cacheFields) {
+          //     const targetField = this.selected.fields.find(f => f.name === cacheField.name)
+          //     if (targetField == null) {
+          //       continue
+          //     }
+          //     // 将已安装的值赋给对应的表字段
+          //     Object.assign(targetField, cacheField)
+          //     // 初始化默认值
+          //     for (const variable of group.children) {
+          //       // 如果是空值，则设置为默认值
+          //       if (isEmptyValue(cacheField[variable.name])) {
+          //         cacheField[variable.name] = variable.defaultValue
+          //       }
+          //       if (isEmptyValue(cacheField[variable.name])) {
+          //         cacheField[variable.name] = getDefaultEmptyValue(variable.inputType)
+          //       }
+          //     }
+          //     console.log('cacheField', cacheField)
+          //   }
+          // }
         })
         .catch(e => {
           this.$tip.apiFailed(e)

@@ -93,6 +93,12 @@ export default {
   },
   data() {
     return {
+      isWorking: {
+        save: false
+      },
+      timeout: {
+        save: null
+      },
       varIndex: 1,
       groupIndex: 1,
       currentVariable: null,
@@ -215,18 +221,26 @@ export default {
     },
     // 保存变量
     saveVariables () {
-      // 请求保存
-      saveVariables({
-        space: this.space,
-        service: this.service,
-        variables: this.getVariables()
-      })
-        .then(() => {
-          console.log('变量保存成功')
+      if (this.timeout.save != null) {
+        clearTimeout(this.timeout.save)
+      }
+      this.timeout.save = setTimeout(() => {
+        // 请求保存
+        saveVariables({
+          space: this.space,
+          service: this.service,
+          variables: this.getVariables()
         })
-        .catch(e => {
-          this.$tip.apiFailed(e)
-        })
+          .then(() => {
+            console.log('变量保存成功')
+          })
+          .catch(e => {
+            this.$tip.apiFailed(e)
+          })
+          .finally(() => {
+            this.timeout.save = null
+          })
+      }, 1000)
     },
     // 获取变量配置
     fetchVariables () {
