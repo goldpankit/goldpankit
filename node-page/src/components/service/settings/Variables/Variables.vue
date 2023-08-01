@@ -190,8 +190,6 @@ export default {
           }
         }
       }
-      this.currentVariable = newVar
-      this.$refs.tree.setCurrentKey(this.currentVariable.name)
       this.saveVariables()
     },
     // 添加变量组
@@ -265,6 +263,43 @@ export default {
       const type = this.currentVariable.type === 'variable' ? 'variable' : 'variable group'
       this.$model.deleteConfirm(`Do you want to delete the ${type} named 「${this.currentVariable.name}」?`)
         .then(() => {
+          /**
+           * 删除字段变量
+           * 需要将字段变量组的默认值中的字段变量值给删除
+           */
+          if (this.currentRootVariable !== this.currentVariable &&
+            (this.currentRootVariable.inputType === 'query_model' ||
+              this.currentRootVariable.inputType === 'table')
+          ) {
+            console.log('删除字段变量')
+            // 将变量从组中移除
+            const index = this.currentGroup.children.findIndex(v => v.id === this.currentVariable.id)
+            if (index === -1) {
+              return
+            }
+            this.currentGroup.children.splice(index, 1)
+            // 根变量的children为字段变量组
+            for (const fieldGroup of this.currentRootVariable.children) {
+              for (const field of fieldGroup.defaultValue) {
+                // 将不存在的变量的值删除
+                for (const fieldName in field) {
+                  // 字段中的origin为原始字段内容，该字段为特殊字段，不做处理
+                  if (fieldName === 'origin') {
+                    continue
+                  }
+                  const fieldVariable = fieldGroup.children.find(variable => variable.name === fieldName)
+                  // 找不到字段变量的定义，又在不存在于原始字段信息中，则删除
+                  if (fieldVariable == null && !field.origin.hasOwnProperty(fieldName)) {
+                    delete field[fieldName]
+                  }
+                }
+              }
+            }
+            this.currentVariable = null
+            this.saveVariables()
+            return
+          }
+          // 删除组内变量
           if (this.currentGroup != null) {
             const index = this.currentGroup.children.findIndex(v => v.id === this.currentVariable.id)
             if (index === -1) {
@@ -275,6 +310,7 @@ export default {
             this.saveVariables()
             return
           }
+          // 删除组或删除根变量
           const index = this.variables.findIndex(v => v.id === this.currentVariable.id)
           if (index === -1) {
             return

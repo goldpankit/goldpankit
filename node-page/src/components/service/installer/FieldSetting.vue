@@ -17,6 +17,7 @@
         <TableFieldVariableInput
           :variable="variable"
           v-model="row[variable.name]"
+          @change="emitChange"
         />
       </template>
     </el-table-column>
@@ -45,6 +46,10 @@ export default {
   methods: {
     handleSelect (fields) {
       for (const field of fields) {
+        // 增加字段原始信息
+        if (field.origin == null) {
+          field.origin = JSON.parse(JSON.stringify(field))
+        }
         // 将字段变量添加到字段对象中，但需要保留原来的值
         for (const variable of this.group.children) {
           field[variable.name] = isEmptyValue(field[variable.name]) ? variable.defaultValue : field[variable.name]
@@ -54,10 +59,11 @@ export default {
         }
       }
       this.group[this.valueKey] = fields
+      this.emitChange()
+    },
+    emitChange () {
+      this.$emit('change')
     }
-  },
-  created () {
-    console.log('group', this.group)
   }
 }
 </script>

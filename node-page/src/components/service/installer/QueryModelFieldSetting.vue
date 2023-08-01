@@ -50,6 +50,7 @@ export default {
   methods: {
     handleSelect (fields) {
       for (const field of fields) {
+        // 增加字段原始信息
         if (field.origin == null) {
           field.origin = JSON.parse(JSON.stringify(field))
         }
