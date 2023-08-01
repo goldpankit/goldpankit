@@ -344,6 +344,7 @@ export default {
       display: flex;
       flex-direction: column;
       border-left: 1px solid var(--border-default-color);
+      overflow: hidden;
       h3 {
         flex-shrink: 0;
         margin: 20px 30px 10px 30px;
