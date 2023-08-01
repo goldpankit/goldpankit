@@ -102,8 +102,8 @@ export default {
       }
       if (currentOption != null) {
         const settings = {}
-        for (const sett of this.currentOption.settings) {
-          settings[sett.name] = sett.value
+        for (const sett of currentOption.settings) {
+          settings[sett.name] = sett.defaultValue
         }
         valueObj = { value, settings }
       }

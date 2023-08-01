@@ -22,7 +22,7 @@
     <li v-for="group of fieldVariableGroup" :key="group.label">
       <QueryModelFieldSetting
         :value-key="valueKey"
-        :table="selected"
+        :model="selected"
         :group="group"
         @change="emitChange"
       />

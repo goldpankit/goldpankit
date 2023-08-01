@@ -1,7 +1,7 @@
 <template>
   <h5>{{group.label}}</h5>
   <QueryModelFieldSelect
-    :model="table"
+    :model="model"
     :model-value="group[valueKey]"
     placeholder="Select fields"
     @update:modelValue="handleSelect"
@@ -40,7 +40,7 @@ export default {
     valueKey: {
       default: 'value'
     },
-    table: {
+    model: {
       required: true
     },
     group: {
