@@ -135,7 +135,12 @@ export default {
      * 在字段变量的值发生变化后，还需要触发一次change事件来保存字段的值，此处触发一次默认值变更事件来完成该事项。
      */
     'variable.defaultValue': function () {
-      this.handleDefaultValueChange()
+      this.handleFieldVariableValues()
+      this.handleChange()
+    },
+    'variable.name': function () {
+      this.handleFieldVariableValues()
+      this.handleChange()
     }
   },
   methods: {
@@ -164,6 +169,18 @@ export default {
           // 循环修改所有已选中的字段的当前变量值
           for (const field of fieldGroup.defaultValue) {
             field[this.variable.name] = this.variable.defaultValue
+            // 将不存在的变量的值删除
+            for (const fieldName in field) {
+              // 字段中的origin为原始字段内容，该字段为特殊字段，不做处理
+              if (fieldName === 'origin') {
+                continue
+              }
+              const fieldVariable = fieldGroup.children.find(variable => variable.name === fieldName)
+              // 找不到字段变量的定义，又在不存在于原始字段信息中，则删除
+              if (fieldVariable == null && !field.origin.hasOwnProperty(fieldName)) {
+                delete field[fieldName]
+              }
+            }
           }
         }
       }
