@@ -422,19 +422,7 @@ export default {
         if (copyVariable.children != null && copyVariable.children.length > 0) {
           copyVariable.children = copyVariable.children.map(group => {
             group.children = group.children.map(v => {
-              const newVariable = this.__getSaveVariable(v)
-              // /**
-              //  * 字段变量经过类型处理后，默认值可能会发生变化，例如number_input的值会被转为整数，select的值的结构会发生变化。
-              //  * 所以在处理后，group中的默认值也要发生变化
-              //  */
-              // if (newVariable.inputType === 'select') {
-              //   console.log("group", group, newVariable.defaultValue)
-              // }
-              // for (const field of group.defaultValue) {
-              //   field[newVariable.name] = newVariable.defaultValue
-              // }
-              // console.log(newVariable.name, group.defaultValue[newVariable.name])
-              return newVariable
+              return this.__getSaveVariable(v)
             })
             return group
           })
