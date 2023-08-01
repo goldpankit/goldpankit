@@ -178,6 +178,7 @@ export default {
       }
       this.isWorking.install = true
       // 安装服务
+      console.log('this.variables', this.variables)
       install({
         projectId: this.currentProject,
         database: this.currentDatabase,
@@ -259,6 +260,7 @@ export default {
       if (value == null) {
         value = variable.defaultValue
       }
+      console.log(variable.name, value)
       return value
     }
   },

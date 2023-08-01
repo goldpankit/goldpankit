@@ -89,6 +89,13 @@ export default {
     // 当前选项的设置选项发生变化时，为设置选项填充value值（例如添加了配置项，那么需要为新的配置项添加value字段）
     currenOptionSettings () {
       this.fillSettingValue()
+    },
+    // 监听modelValue
+    modelValue: {
+      immediate: true,
+      handler () {
+        this.fillSettingValueFromModelValue()
+      }
     }
   },
   methods: {
@@ -127,6 +134,19 @@ export default {
           }
         }
       })
+    },
+    // 从modelValue中赋值
+    fillSettingValueFromModelValue () {
+      for (const settName in this.modelValue.settings) {
+        const option = this.options.find(opt => opt.value === this.modelValue.value)
+        if (option == null) {
+          continue
+        }
+        const setting = option.settings.find(sett => sett.name === settName)
+        if (setting != null) {
+          setting.value = this.modelValue.settings[settName]
+        }
+      }
     }
   }
 }
