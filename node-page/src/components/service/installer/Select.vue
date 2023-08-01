@@ -98,13 +98,14 @@ export default {
       // select的选中包含了选中的值和设置的值
       let valueObj = {
         value: null,
-        settings: []
+        settings: {}
       }
       if (currentOption != null) {
-        valueObj = {
-          value: value,
-          settings: currentOption.settings
+        const settings = {}
+        for (const sett of this.currentOption.settings) {
+          settings[sett.name] = sett.value
         }
+        valueObj = { value, settings }
       }
       this.$emit('update:modelValue', valueObj)
       this.$emit('change', valueObj)

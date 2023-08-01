@@ -412,18 +412,33 @@ export default {
       }
       /**
        * 模型变量 & 表变量处理
-       * 模型变量和表变量都存在子变量，这些子变量均为变量组，且变量组的作用域为字段。针对字段的变量与普通变量就只是在输入类型上有区别而已了。
+       * 模型变量和表变量都存在子变量，这些子变量均为变量组。针对字段的变量与普通变量就只是在输入类型上有区别而已了。
        * 所以，此处需要将字段变量进行处理，处理内容如下
        * 1. 递归处理字段变量，即copyVariable.children.children
        * 2. 删除copyVariable的options字段
        */
       if (copyVariable.inputType === 'query_model' || copyVariable.inputType === 'table') {
         // 1. 递归处理字段变量，即copyVariable.children.children
-        copyVariable.children && copyVariable.children.forEach(group => {
-          group.children.map(v => {
-            return this.__getSaveVariable(v)
+        if (copyVariable.children != null && copyVariable.children.length > 0) {
+          copyVariable.children = copyVariable.children.map(group => {
+            group.children = group.children.map(v => {
+              const newVariable = this.__getSaveVariable(v)
+              // /**
+              //  * 字段变量经过类型处理后，默认值可能会发生变化，例如number_input的值会被转为整数，select的值的结构会发生变化。
+              //  * 所以在处理后，group中的默认值也要发生变化
+              //  */
+              // if (newVariable.inputType === 'select') {
+              //   console.log("group", group, newVariable.defaultValue)
+              // }
+              // for (const field of group.defaultValue) {
+              //   field[newVariable.name] = newVariable.defaultValue
+              // }
+              // console.log(newVariable.name, group.defaultValue[newVariable.name])
+              return newVariable
+            })
+            return group
           })
-        })
+        }
         // 2. 删除copyVariable的options字段
         delete copyVariable.options
         return copyVariable
@@ -433,8 +448,7 @@ export default {
        * select类型的变量有options字段，option中有settings字段。需要干一下事情来处理
        * 1. 过滤掉无效的option
        * 2. 过滤掉option中无效的setting
-       * 3. 将option中的settings改为对象（让存储更合理）
-       * 4. settings中的每一项选项配置都存在value字段，用于存储正式用户填充的配置值，当此处作为选项存储，无需存储value字段，所以在此需要进行删除
+       * 3. settings中的每一项选项配置都存在value字段，用于存储正式用户填充的配置值，当此处作为选项存储，无需存储value字段，所以在此需要进行删除
        */
       if (copyVariable.inputType === 'select') {
         // 1. 过滤掉无效的option
@@ -443,19 +457,7 @@ export default {
         copyVariable.options.forEach(option => {
           option.settings = option.settings.filter(sett => sett.name.trim() !== '' && sett.label.trim() !== '')
         })
-        // 3. 将option中的settings改为对象（让配置文件内容存储更合理）
-        const setting = {}
-        const targetOption = copyVariable.options.find(opt => opt.value === copyVariable.defaultValue.value)
-        if (targetOption != null) {
-          for (const sett of targetOption.settings) {
-            setting[sett.name] = sett.value
-            if (sett.inputType === 'number_input') {
-              setting[sett.name] = parseInt(sett.value)
-            }
-          }
-        }
-        copyVariable.defaultValue.settings = setting
-        // 4. settings中的每一项选项配置都存在value字段，用于存储正式用户填充的配置值，当此处作为选项存储，无需存储value字段，所以在此需要进行删除
+        // 3. settings中的每一项选项配置都存在value字段，用于存储正式用户填充的配置值，当此处作为选项存储，无需存储value字段，所以在此需要进行删除
         copyVariable.options.forEach(option => {
           option.settings.forEach(sett => {
             delete sett.value
