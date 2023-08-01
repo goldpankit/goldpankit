@@ -12,6 +12,7 @@
       v-for="variable in group.children"
       :key="variable.name"
       :label="variable.label"
+      :min-width="getColumnMinWidth(variable)"
     >
       <template #default="{ row }">
         <TableFieldVariableInput
@@ -63,6 +64,12 @@ export default {
     },
     emitChange () {
       this.$emit('change')
+    },
+    getColumnMinWidth (variable) {
+      if (variable.inputType === 'select') {
+        return '150px'
+      }
+      return '120px'
     }
   }
 }
