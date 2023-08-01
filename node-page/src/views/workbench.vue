@@ -59,6 +59,7 @@
                     v-show="currentServiceDimension === 'install'"
                     :space="space"
                     :service="currentService.name"
+                    :service-type="currentService.type"
                     :version="currentService.lastVersion"
                     :with-project="false"
                     :project-config="project"

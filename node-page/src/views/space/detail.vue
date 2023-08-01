@@ -46,6 +46,7 @@
                 v-if="currentMainServiceVersion != null"
                 :space="space.name"
                 :service="currentMainService.name"
+                :service-type="currentMainService.type"
                 :version="currentMainServiceVersion"
                 :with-breadcrumbs="true"
                 :with-install-button="true"

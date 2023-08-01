@@ -355,7 +355,6 @@ export default {
       }
       // 移动变量组
       if (draggingNode.data.type === 'group') {
-        console.log('dropType', dropType)
         // 不允许移动到其他变量或变量组内部
         if (dropNode.data.type === 'variable') {
           return false

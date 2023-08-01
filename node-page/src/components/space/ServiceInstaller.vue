@@ -90,6 +90,9 @@ export default {
     service: {
       required: true
     },
+    serviceType: {
+      required: true
+    },
     version: {
       required: true
     },
@@ -147,14 +150,14 @@ export default {
       })
         .then(data => {
           this.variables = JSON.parse(data.variables).map(item => {
-            // 根服务变量
+            // 变量
             if (item.type === 'variable') {
               return {
                 ...item,
                 value: this.__getVariableValue(item)
               }
             }
-            // 根服务变量组
+            // 变量组
             if (item.type === 'group') {
               item.children = item.children.map(v => {
                 return {
@@ -183,6 +186,7 @@ export default {
         database: this.currentDatabase,
         space: this.space,
         service: this.service,
+        serviceType: this.serviceType,
         version: this.version,
         variables: this.__getInstallVariables(this.variables)
       })
@@ -210,6 +214,7 @@ export default {
         database: this.currentDatabase,
         space: this.space,
         service: this.service,
+        serviceType: this.serviceType,
         version: this.version,
         variables: this.__getInstallVariables(this.variables)
       })
@@ -273,12 +278,25 @@ export default {
           }
         }
       }
-      // 如果从已安装的自身服务和主服务中均为获取到，则使用默认值
-      if (value == null) {
-        value = variable.defaultValue
+      // 如果值不为空，则进行值处理
+      if (value != null) {
+        if (variable.inputType === 'table') {
+          console.log('variable', variable)
+          console.log('value', value)
+          for (const groupName in value.settings) {
+            console.log('groupName', groupName)
+            const targetGroup = variable.children.find(group => group.name === groupName)
+            console.log(groupName, targetGroup, value.settings[groupName])
+            if (targetGroup == null) {
+              continue
+            }
+            targetGroup.value = value.settings[groupName]
+          }
+          value = value.value
+        }
+        return value
       }
-      console.log(variable.name, value)
-      return value
+      return value == null ? variable.defaultValue : value
     }
   },
   created () {
