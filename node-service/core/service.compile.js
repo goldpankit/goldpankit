@@ -382,9 +382,8 @@ class Kit {
               .then(value => {
                 // 补充动态字段，children为变量信息
                 if (item.children != null && item.children.length > 0) {
-                  for (const group of item.children) {
-                    value[group.name] = group.value || group.defaultValue
-                  }
+                  this.#paddingFieldVariablesWithResolve(project, database, item, value, resolve, reject)
+                  return
                 }
                 resolve({
                   ...item,
@@ -465,40 +464,9 @@ class Kit {
                 orderBy: ''
               }
             }
-            // 补充动态字段，children为字段变量组
+            // 处理字段变量
             if (item.children != null && item.children.length > 0) {
-              const groupPromises = []
-              for (const group of item.children) {
-                value[group.name] = group.value || group.defaultValue
-                groupPromises.push(Promise.all(this.#getVariables(project, database, group.children, false))
-                  .then(vars => {
-                    group.children = vars
-                    return Promise.resolve()
-                  })
-                  .catch(e => {
-                    return Promise.reject(e)
-                  }))
-                Promise.all(groupPromises)
-                  .then(() => {
-                    for (const variable of group.children) {
-                      if (variable.inputType !== 'select') {
-                        continue
-                      }
-                      for (const field of value[group.name]) {
-                        const varValue = field[variable.name]
-                        field[variable.name] = varValue.value
-                        field[`${variable.name}Settings`] = varValue.settings
-                      }
-                    }
-                    resolve({
-                      ...item,
-                      value
-                    })
-                  })
-                  .catch(e => {
-                    reject(e)
-                  })
-              }
+              this.#paddingFieldVariablesWithResolve(project, database, item, value, resolve, reject)
               return
             }
             resolve({
@@ -546,6 +514,72 @@ class Kit {
         }
       })
     }).concat(extVariables)
+  }
+
+  /**
+   * 处理字段变量
+   * 输入类型为select的字段变量处理
+   *   输入类型为select的字段变量，得到的value格式为{value: null, settings: {}}
+   *   所以需要修改字段值为value.value，并且为字段增加xxxSettings为value.settings
+   * e.g
+   * 根变量：table 表
+   *   字段变量组: 查询条件 queryFields
+   *     变量1: 输入类型 inputType（输入类型为select）
+   * 查询条件选择某个字段，那么这个字段会有inputType，数据结构如下
+   * {
+   *   name: 'table',
+   *   defaultValue: '已选的表名',
+   *   children: [ // 字段变量组
+   *     {
+   *       name: 'queryFields',
+   *       defaultValue: [ // 已选的字段
+   *         // 调整前
+   *         { ... 已选字段信息1, inputType: { value: 'input', settings: {maxlength: 10} }},
+   *         // 调整后
+   *         { ... 已选字段信息1, inputType: 'input', inputTypeSettings: {maxlength: 10} }
+   *       ]
+   *     }
+   *   ]
+   * }
+   */
+  #paddingFieldVariablesWithResolve (project, database, variable, value, resolve, reject) {
+    const groupPromises = []
+    for (const group of variable.children) {
+      value[group.name] = group.value || group.defaultValue
+      groupPromises.push(Promise.all(this.#getVariables(project, database, group.children, false))
+        .then(vars => {
+          group.children = vars
+          return Promise.resolve()
+        })
+        .catch(e => {
+          return Promise.reject(e)
+        }))
+      Promise.all(groupPromises)
+        .then(() => {
+          /**
+           * 输入类型为select的字段变量处理
+           *   输入类型为select的字段变量，得到的value格式为{value: null, settings: {}}
+           *   所以需要修改字段值为value.value，并且为字段增加xxxSettings为value.settings
+           */
+          for (const v of group.children) {
+            if (v.inputType !== 'select') {
+              continue
+            }
+            for (const field of value[group.name]) {
+              const varValue = field[v.name]
+              field[v.name] = varValue.value
+              field[`${v.name}Settings`] = varValue.settings
+            }
+          }
+          resolve({
+            ...variable,
+            value
+          })
+        })
+        .catch(e => {
+          reject(e)
+        })
+    }
   }
 }
 
