@@ -339,21 +339,24 @@ class Kit {
   }
 
   // 获取安装/编译变量
-  #getVariables (project, database, variables) {
-    // 获取项目信息
-    const projectConfig = fs.readJSONFile(userProject.__getConfigPath(project.codespace))
-    if (projectConfig != null && projectConfig.main != null) {
-      let mainServiceName = null
-      for (const servceName in projectConfig.main) {
-        mainServiceName = servceName
-        break
-      }
-      // 将项目主服务的变量添加到最前
-      const mainServiceVariables = projectConfig.main[mainServiceName].variables.reverse()
-      for (const variable of mainServiceVariables) {
-        variables.unshift(variable)
+  #getVariables (project, database, variables, withMainServiceVariables = true) {
+    // 补充主服务变量
+    if (withMainServiceVariables) {
+      const projectConfig = fs.readJSONFile(userProject.__getConfigPath(project.codespace))
+      if (projectConfig != null && projectConfig.main != null) {
+        let mainServiceName = null
+        for (const servceName in projectConfig.main) {
+          mainServiceName = servceName
+          break
+        }
+        // 将项目主服务的变量添加到最前
+        const mainServiceVariables = projectConfig.main[mainServiceName].variables.reverse()
+        for (const variable of mainServiceVariables) {
+          variables.unshift(variable)
+        }
       }
     }
+    // 扩展变量
     const extVariables = []
     return variables.map(item => {
       return new Promise((resolve, reject) => {
@@ -462,27 +465,41 @@ class Kit {
                 orderBy: ''
               }
             }
-            // 补充动态字段，children为变量信息
+            // 补充动态字段，children为字段变量组
             if (item.children != null && item.children.length > 0) {
+              const groupPromises = []
               for (const group of item.children) {
                 value[group.name] = group.value || group.defaultValue
-                // 字段变量处理，当字段变量为select时，补充选项设置值，例如输入类型inputType，当用户选择“输入框”时，可能需要设置输入框的最大输入长度。
-                // 此时获取输入框类型为inputType，获取输入框的设置为inputTypeSettings，通过inputTypeSettings可以进一步获取定义好的值，如inputTypeSettings.maxlength
-                for (const fieldVariable of group.children) {
-                  if (fieldVariable.inputType !== 'select') {
-                    continue
-                  }
-                  for (const fieldInfo of value[group.name]) {
-                    const variableSetting = {}
-                    fieldInfo[fieldVariable.name].settings.forEach(setting => {
-                      variableSetting[setting.name] = setting.value
+                groupPromises.push(Promise.all(this.#getVariables(project, database, group.children, false))
+                  .then(vars => {
+                    group.children = vars
+                    return Promise.resolve()
+                  })
+                  .catch(e => {
+                    return Promise.reject(e)
+                  }))
+                Promise.all(groupPromises)
+                  .then(() => {
+                    for (const variable of group.children) {
+                      if (variable.inputType !== 'select') {
+                        continue
+                      }
+                      for (const field of value[group.name]) {
+                        const varValue = field[variable.name]
+                        field[variable.name] = varValue.value
+                        field[`${variable.name}Settings`] = varValue.settings
+                      }
+                    }
+                    resolve({
+                      ...item,
+                      value
                     })
-                    fieldInfo[fieldVariable.name].settings = variableSetting
-                    fieldInfo[fieldVariable.name] = fieldInfo[fieldVariable.name].value
-                    fieldInfo[`${fieldVariable.name}Settings`] = variableSetting
-                  }
-                }
+                  })
+                  .catch(e => {
+                    reject(e)
+                  })
               }
+              return
             }
             resolve({
               ...item,
@@ -492,18 +509,19 @@ class Kit {
           }
           // 如果为服务变量组，则修改子变量值
           if (item.type === 'group') {
-            resolve({
-              ...item,
-              children: item.children.map(v => {
-                return {
-                  ...v,
-                  value: v.value || v.defaultValue
-                }
+            Promise.all(this.#getVariables(project, database, item.children, false))
+              .then(vars => {
+                resolve({
+                  ...item,
+                  children: vars
+                })
               })
-            })
+              .catch(e => {
+                reject(e)
+              })
             return
           }
-          // 如果为输入类型为select，增加setting选项设置
+          // 如果输入类型为select，扩展出Settings选项设置变量
           if (item.inputType === 'select') {
             const value = item.value || item.defaultValue
             extVariables.push({
@@ -511,6 +529,7 @@ class Kit {
               type: 'ext', // 标记为扩展变量
               value: value.settings
             })
+            // select的存储结构为{value: null, settings: {}}，所以value最终为value.value
             resolve({
               ...item,
               value: value.value
