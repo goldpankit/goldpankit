@@ -59,7 +59,6 @@ export default {
   },
   methods: {
     handleInput (fieldNames) {
-      console.log('fieldNames', fieldNames)
       this.$emit('update:modelValue',
         fieldNames
           // 找到field对象并填充table字段

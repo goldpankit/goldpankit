@@ -55,7 +55,6 @@ export default {
       if (this.installData == null) {
         return []
       }
-      console.log('this.installData', this.installData)
       return this.installData.builds
     },
     buildsLength () {

@@ -28,9 +28,6 @@ export default {
       this.$emit('update:modelValue', value)
       this.$emit('change', value)
     }
-  },
-  created () {
-    console.log('radio value', this.modelValue)
   }
 }
 </script>

@@ -106,7 +106,6 @@ export default {
     // 保存查询模型
     saveModel () {
       const modelSettings = this.__getModelSettings(this.currentModel)
-      console.log('modelSettings', modelSettings)
       updateModel ({
         database: this.currentDatabase,
         model: modelSettings

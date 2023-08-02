@@ -37,7 +37,7 @@
                   </template>
                 </template>
                 <!-- 根变量 -->
-                <VariableInput v-if="variable.type === 'variable'" :variable="variable" :variables="variables"/>
+                <VariableInput v-if="variable.type === 'variable'" :variable="variable"/>
                 <!-- 服务变量组 -->
                 <ul v-else-if="variable.type === 'group'" class="group-vars">
                   <li v-for="v of variable.children" :key="`${variable.name}_${v.name}`">
@@ -74,6 +74,7 @@ import DirectorySelect from "../common/DirectorySelect.vue";
 import ProjectSelect from "../usr/project/ProjectSelect.vue";
 import {install, uninstall} from "../../api/service.compile";
 import {fetchVersion} from "../../api/service.version";
+import {getDefaultEmptyValue} from "../../utils/variable";
 
 export default {
   name: "ServiceInstaller",
@@ -150,24 +151,7 @@ export default {
       })
         .then(data => {
           this.variables = JSON.parse(data.variables).map(item => {
-            // 变量
-            if (item.type === 'variable') {
-              return {
-                ...item,
-                value: this.__getVariableValue(item)
-              }
-            }
-            // 变量组
-            if (item.type === 'group') {
-              item.children = item.children.map(v => {
-                return {
-                  ...v,
-                  value: this.__getVariableValue(v)
-                }
-              })
-              return item
-            }
-            return item
+            return this.__initVariableValue(item)
           })
         })
         .catch(e => {
@@ -250,53 +234,70 @@ export default {
       })
     },
     // 获取默认值
-    __getVariableValue (variable) {
-      let value = null
-      // 项目已安装，则从项目已安装信息中获取
-      if (this.projectConfig != null) {
-        const service = this.projectConfig.services[this.service]
-        // 从自身服务中获取
-        if (service != null) {
-          value = service.variables[variable.name]
-        }
-        // 如果没有获取到值，则还可以从主服务中获取
-        if (value == null) {
-          let mainService = null
-          for (const key in this.projectConfig.main) {
-            mainService = key
-            break
+    __initVariableValue (variable, value) {
+      if (value == null) {
+        // 项目已安装，则从项目已安装信息中获取
+        if (this.projectConfig != null) {
+          const service = this.projectConfig.services[this.service]
+          // 从自身服务中获取
+          if (service != null) {
+            value = service.variables[variable.name]
           }
-          /**
-           * 此处存在漏洞，例如主服务中存在queryFields，子服务中也存在queryFields，但他们想要表达的不是同一层含义。
-           * 对比默认值和主服务中的值，如果类型不匹配，则不视为是同一层含义，此时将value置为null。
-           * 但这样依然可能存在类型相同但含义不同的情况，为少数情况，暂不做处理
-           */
-          const valueFromMain = this.projectConfig.main[mainService].variables[variable.name]
-          value = valueFromMain
-          if (valueFromMain != null && valueFromMain.constructor !== variable.defaultValue.constructor) {
-            value = null
+          // 如果没有获取到值，则还可以从主服务中获取
+          if (value == null) {
+            let mainService = null
+            for (const key in this.projectConfig.main) {
+              mainService = key
+              break
+            }
+            /**
+             * 此处存在漏洞，例如主服务中存在queryFields，子服务中也存在queryFields，但他们想要表达的不是同一层含义。
+             * 对比默认值和主服务中的值，如果类型不匹配，则不视为是同一层含义，此时将value置为null。
+             * 但这样依然可能存在类型相同但含义不同的情况，为少数情况，暂不做处理
+             */
+            const valueFromMain = this.projectConfig.main[mainService].variables[variable.name]
+            value = valueFromMain
+            if (valueFromMain != null && valueFromMain.constructor !== variable.defaultValue.constructor) {
+              value = null
+            }
           }
         }
       }
       // 如果值不为空，则进行值处理
       if (value != null) {
-        if (variable.inputType === 'table') {
-          console.log('variable', variable)
-          console.log('value', value)
+        /**
+         * 表格和查询模型值处理
+         * 表格和查询模型的存储结构如下
+         * {
+         *   value: 选中的表名或模型ID,
+         *   settings: {
+         *     字段变量组1: [已选中的字段和自定义字段变量值]
+         *   }
+         * }
+         * 要初始化值，需要将variable.children（也就是字段变量组）的value值给定为settings下的组值
+         */
+        if (variable.inputType === 'table' || variable.inputType === 'query_model') {
           for (const groupName in value.settings) {
-            console.log('groupName', groupName)
             const targetGroup = variable.children.find(group => group.name === groupName)
-            console.log(groupName, targetGroup, value.settings[groupName])
             if (targetGroup == null) {
               continue
             }
             targetGroup.value = value.settings[groupName]
           }
-          value = value.value
+          variable.value = value.value
+          return variable
         }
-        return value
+        if (variable.type === 'group') {
+          variable.children.forEach(item => {
+            return this.__initVariableValue(item, value[item.name])
+          })
+          return variable
+        }
       }
-      return value == null ? variable.defaultValue : value
+      value = value == null ? variable.defaultValue : value
+      value = value == null ? getDefaultEmptyValue(variable.inputType) : value
+      variable.value = value
+      return variable
     }
   },
   created () {

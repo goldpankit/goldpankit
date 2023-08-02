@@ -174,17 +174,6 @@ export default {
         }
       }
     }
-  },
-  created () {
-    console.log('translator', this.translator)
-      // {
-      //   "name": "logback %处理",
-      //   "path": ".*logback.xml",
-      //   "type": "pattern",
-      //   "source": "\\%",
-      //   "target": "<#noparse>%</#noparse>",
-      //   "code": ""
-      // }
   }
 }
 </script>

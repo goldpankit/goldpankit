@@ -1,5 +1,6 @@
 <template>
   <div class="variable-input">
+    {{variable[valueKey]}}
     <InstallInput
       v-if="variable.inputType === 'input'"
       v-model="variable[valueKey]"

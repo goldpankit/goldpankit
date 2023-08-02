@@ -115,7 +115,6 @@ export default {
     },
     // 保存文件配置
     saveFileSetting () {
-      console.log('save')
       if (this.saveTimeout != null) {
         clearTimeout(this.saveTimeout)
       }

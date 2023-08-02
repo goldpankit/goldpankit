@@ -206,7 +206,6 @@ export default {
     // 执行语句
     execute () {
       const sql = this.__getSql()
-      console.log('sql', sql)
       execSql({
         database: this.currentDatabase,
         sql

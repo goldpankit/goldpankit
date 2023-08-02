@@ -53,12 +53,10 @@ export default {
   },
   methods: {
     open (result) {
-      console.log('open')
       this.visible = true
       this.result = result
     },
     getColumnWidth (columnName) {
-      console.log(columnName.length * 10)
       return columnName.length * 15
     }
   }

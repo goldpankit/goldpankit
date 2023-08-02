@@ -196,7 +196,6 @@ export default {
     },
     // 删除选项
     deleteOption (index) {
-      console.log('index', index)
       this.variable.options.splice(index, 1)
     },
     // 处理输入类型变更

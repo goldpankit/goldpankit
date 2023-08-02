@@ -40,5 +40,6 @@ app.use(ElementUI, {
 })
 app.use(plugins)
 app.use(directives)
+console.warn = function () {}
 
 app.mount('#app')

@@ -105,7 +105,6 @@ export default {
           this.pagination.total = data.total
           this.pagination.pageCount = data.pageCount
           this.spaces = data.records
-          console.log('data.records', data.records)
         })
         .catch(e => {
           this.$tip.apiFailed(e)
