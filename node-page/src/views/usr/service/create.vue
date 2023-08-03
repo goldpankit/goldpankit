@@ -5,16 +5,16 @@
       <section class="tip" v-if="space != null">
         Create Service for <em>{{space}}</em>.
       </section>
-      <el-form>
-        <el-form-item label="Service Name" required>
+      <el-form ref="form" :model="form" :rules="rules">
+        <el-form-item label="Service Name" prop="name" required>
           <el-input v-model="form.name"/>
         </el-form-item>
-        <el-form-item label="Service Type" required>
+        <el-form-item label="Service Type" prop="type" required>
           <ServiceTypeSelect v-model="form.type"/>
         </el-form-item>
         <!-- 为子服务时需选择跟随服务 -->
         <template v-if="form.type !== 'MAIN'">
-          <el-form-item label="Main Service" required>
+          <el-form-item label="Main Service" prop="mainServiceName" required>
             <MainServiceSelect v-model="form.mainServiceName" :space="space" />
           </el-form-item>
         </template>
@@ -55,25 +55,38 @@ export default {
         mainServiceName: null,
         repository: '',
         introduce: ''
+      },
+      rules: {
+        name: [
+          { required: true, message: 'Please input service name'}
+        ],
+        mainServiceName: [
+          { required: true, message: 'Please select main service'}
+        ],
       }
     }
   },
   methods: {
     // 创建服务
     create () {
-      create({
-        space: this.space,
-        ...this.form
-      })
-        .then(() => {
-          this.$router.push({
-            name: 'ServiceSettings',
-            query: { space: this.space, service: this.form.name }
+      this.$refs.form.validate((pass) => {
+        if (!pass) {
+          return
+        }
+        create({
+          space: this.space,
+          ...this.form
+        })
+          .then(() => {
+            this.$router.push({
+              name: 'ServiceSettings',
+              query: { space: this.space, service: this.form.name }
+            })
           })
-        })
-        .catch(e => {
-          this.$tip.apiFailed(e)
-        })
+          .catch(e => {
+            this.$tip.apiFailed(e)
+          })
+      })
     }
   },
   created () {
