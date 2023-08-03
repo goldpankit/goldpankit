@@ -24,11 +24,11 @@
         </InnerRouterView>
         <InnerRouterView name="create-model" title="Create New Model">
           <div class="create-model-form">
-            <el-form :model="newModel">
-              <el-form-item label="Model Name" required>
+            <el-form ref="createForm" :model="newModel" :rules="rules">
+              <el-form-item label="Model Name" prop="name" required>
                 <el-input v-model="newModel.name"/>
               </el-form-item>
-              <el-form-item label="Comment" required>
+              <el-form-item label="Comment" prop="comment">
                 <el-input v-model="newModel.comment" type="textarea" :rows="2"/>
               </el-form-item>
             </el-form>
@@ -40,11 +40,11 @@
         </InnerRouterView>
         <InnerRouterView name="update-model" title="Update Model">
           <div class="create-model-form">
-            <el-form :model="editModel">
-              <el-form-item label="Model Name" required>
+            <el-form ref="editForm" :model="editModel" :rules="rules">
+              <el-form-item label="Model Name" prop="name" required>
                 <el-input v-model="editModel.name"/>
               </el-form-item>
-              <el-form-item label="Comment" required>
+              <el-form-item label="Comment" prop="comment">
                 <el-input v-model="editModel.comment" type="textarea" :rows="2"/>
               </el-form-item>
             </el-form>
@@ -76,8 +76,9 @@
 <script>
 import InnerRouterViewWindow from "../../common/InnerRouterView/InnerRouterViewWindow.vue";
 import InnerRouterView from "../../common/InnerRouterView/InnerRouterView.vue";
-import {createModel, deleteModel, updateModel} from "../../../api/database";
 import {mapState} from "vuex";
+import {createModel, deleteModel, updateModel} from "../../../api/database";
+import {checkTableName} from '../../../utils/form.check'
 
 export default {
   name: "TableLibrary",
@@ -99,6 +100,12 @@ export default {
         id: null,
         name: '',
         comment: ''
+      },
+      rules: {
+        name: [
+          { required: true, message: 'Please input model name' },
+          { validator: (rule, value, callback) => checkTableName(rule, value, callback, 'Model name is incorrectly formatted') },
+        ]
       }
     }
   },
@@ -106,6 +113,7 @@ export default {
     ...mapState(['currentDatabase'])
   },
   methods: {
+    checkTableName,
     // 开始拖动表放置在设计器中
     handleDragStart (e) {
       this.$emit('table:drag', e.target.getAttribute('name'))
@@ -113,6 +121,12 @@ export default {
     // 创建查询模型
     createQueryModel () {
       this.$refs.routerViewWindow.push('create-model')
+      for (const key in this.newModel) {
+        this.newModel[key] = ''
+      }
+      this.$nextTick(() => {
+        this.$refs.createForm.clearValidate()
+      })
     },
     // 修改模型
     updateModel (model) {
@@ -120,47 +134,60 @@ export default {
         this.editModel[key] = model[key]
       }
       this.$refs.routerViewWindow.push('update-model')
+      this.$nextTick(() => {
+        this.$refs.createForm.clearValidate()
+      })
     },
     // 确认修改
     confirmUpdate() {
-      updateModel({
-        database: this.currentDatabase,
-        model: this.editModel
+      this.$refs.editForm.validate(pass => {
+        if (!pass) {
+          return
+        }
+        updateModel({
+          database: this.currentDatabase,
+          model: this.editModel
+        })
+          .then(() => {
+            Object.assign(this.currentModel, this.editModel)
+            this.$refs.routerViewWindow.back()
+          })
+          .catch(e => {
+            this.$tip.apiFailed(e)
+          })
       })
-        .then(() => {
-          Object.assign(this.currentModel, this.editModel)
-          this.$refs.routerViewWindow.back()
-        })
-        .catch(e => {
-          this.$tip.apiFailed(e)
-        })
     },
     // 确认创建
     confirmCreate () {
-      const newModel = {
-        ...this.newModel,
-        // 当前选择的关系线类型
-        lineType: 'join',
-        // 表
-        tables: [],
-        // 关联关系
-        joins: [],
-        // 聚合关系
-        aggregates: []
-      }
-      createModel ({
-        database: this.currentDatabase,
-        model: newModel
+      this.$refs.createForm.validate(pass => {
+        if (!pass) {
+          return
+        }
+        const newModel = {
+          ...this.newModel,
+          // 当前选择的关系线类型
+          lineType: 'join',
+          // 表
+          tables: [],
+          // 关联关系
+          joins: [],
+          // 聚合关系
+          aggregates: []
+        }
+        createModel ({
+          database: this.currentDatabase,
+          model: newModel
+        })
+          .then(modelId => {
+            newModel.id = modelId
+            this.queryModels.unshift(newModel)
+            this.selectModel(newModel)
+            this.$refs.routerViewWindow.back()
+          })
+          .catch(e => {
+            this.$tip.apiFailed(e)
+          })
       })
-        .then(modelId => {
-          newModel.id = modelId
-          this.queryModels.unshift(newModel)
-          this.selectModel(newModel)
-          this.$refs.routerViewWindow.back()
-        })
-        .catch(e => {
-          this.$tip.apiFailed(e)
-        })
     },
     // 删除模型
     deleteModel (model) {
@@ -171,7 +198,7 @@ export default {
             model: model.id
           })
             .then(() => {
-              const index = this.queryModels.findIndex(m => m === m)
+              const index = this.queryModels.findIndex(m => m.id === model.id)
               if (index !== -1) {
                 this.queryModels.splice(index, 1)
               }
