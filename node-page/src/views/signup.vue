@@ -2,31 +2,36 @@
   <div class="signup">
     <div class="wrap">
       <h2>Sign Up</h2>
-      <el-form ref="form" :model="form" @submit.stop>
+      <el-form ref="form" :model="form" :rules="rules" @submit.stop>
         <el-form-item label="Username" prop="username" required>
           <el-input v-model="form.username" type="text" size="large"/>
         </el-form-item>
         <el-form-item label="Password" prop="password" required>
           <el-input v-model="form.password" type="password" size="large"/>
         </el-form-item>
-        <el-form-item label="Mobile" prop="mobile" required>
-          <el-input v-model="form.mobile" type="text" size="large">
-            <template #prepend>
-              <span>+86</span>
-            </template>
+        <el-form-item label="Email" prop="otpElement" required>
+          <el-input v-model="form.otpElement" type="text" size="large">
+<!--            <template #prepend>-->
+<!--              <span>+86</span>-->
+<!--            </template>-->
           </el-input>
         </el-form-item>
-        <el-form-item label="Mobile Code" prop="smsCode" required class="mobile-code">
+        <el-form-item label="OTP code" prop="otpCode" required class="otp-code">
           <div>
-            <el-input type="text" v-model="form.smsCode" size="large"/>
-            <el-button size="large" type="primary" :disabled="sendSmsData.isWorking || sendSmsData.timeout !== 0" @click="sendSms">
-              <template v-if="sendSmsData.isWorking">Sending...</template>
-              <template v-else-if="sendSmsData.timeout === 0 && !sendSmsData.sended">Send Code</template>
-              <template v-else-if="sendSmsData.timeout === 0 && sendSmsData.sended">Resend Code</template>
-              <template v-else>{{sendSmsData.timeout}}s</template>
+            <el-input type="text" v-model="form.otpCode" size="large"/>
+            <el-button
+              size="large"
+              type="primary"
+              :disabled="sendOtpCodeData.isWorking || sendOtpCodeData.timeout !== 0"
+              @click="sendOtpCode"
+            >
+              <template v-if="sendOtpCodeData.isWorking">Sending...</template>
+              <template v-else-if="sendOtpCodeData.timeout === 0 && !sendOtpCodeData.sended">Send OTP Code</template>
+              <template v-else-if="sendOtpCodeData.timeout === 0 && sendOtpCodeData.sended">Resend OTP Code</template>
+              <template v-else>{{sendOtpCodeData.timeout}}s</template>
             </el-button>
           </div>
-          <p v-if="sendSmsData.sended">tips: we sended a message to your mobile phone for number <em>{{this.form.mobile}}</em>.you can resend if you are not received our message .</p>
+          <p v-if="sendOtpCodeData.sended">tips: We are sending you a OTP code to {{form.otpElement}}. If you do not receive it, you can resend it in 60 seconds.</p>
         </el-form-item>
       </el-form>
       <div class="login-box">
@@ -43,7 +48,8 @@
 </template>
 
 <script>
-import {regisByMobile, sendRegisByMobileSms} from "../api/user.regis";
+import {regisByEmail, sendRegisByEmailOtpCode} from "../api/user.regis";
+import {checkEmail} from "../utils/form.check";
 
 export default {
   data () {
@@ -51,11 +57,27 @@ export default {
       form: {
         username: '',
         password: '',
-        mobile: '',
-        smsId: null,
-        smsCode: ''
+        otpElement: '',
+        otpCodeId: null,
+        otpCode: ''
       },
-      sendSmsData: {
+      rules: {
+        username: [
+          { required: true, message: 'Please input Username'}
+        ],
+        password: [
+          { required: true, message: 'Please input password'}
+        ],
+        otpElement: [
+          { required: true, message: 'Please input email'},
+          { validator: (rule, value, callback) => checkEmail(rule, value, callback, 'Please enter the correct email address')},
+        ],
+        otpCode: [
+          { required: true, message: 'Please input OTP code'},
+          { required: true, message: 'Please input OTP code'}
+        ],
+      },
+      sendOtpCodeData: {
         isWorking: false,
         timeout: 0,
         sended: false
@@ -74,9 +96,9 @@ export default {
             return
           }
           this.regisData.isWorking = true
-          regisByMobile(this.form)
+          regisByEmail(this.form)
             .then(() => {
-              this.$message.info('Register successful.')
+              this.$message.success('Register successful.')
               this.$router.push({ name: 'SignIn'})
             })
             .catch(e => {
@@ -88,24 +110,25 @@ export default {
         })
         .catch(() => {})
     },
-    // 发送短信验证码
-    sendSms () {
-      this.$refs.form.validateField('mobile')
+    // 发送动态码
+    sendOtpCode () {
+      this.$refs.form.validateField('otpElement')
         .then(() => {
-          if (this.sendSmsData.isWorking) {
+          if (this.sendOtpCodeData.isWorking) {
             return
           }
-          this.sendSmsData.isWorking = true
-          sendRegisByMobileSms({
-            mobile: this.form.mobile
+          this.sendOtpCodeData.isWorking = true
+          sendRegisByEmailOtpCode({
+            email: this.form.otpElement,
+            username: this.form.username
           })
             .then(data => {
-              this.form.smsId = data
-              this.sendSmsData.timeout = 60
-              this.sendSmsData.sended = true
+              this.form.otpCodeId = data
+              this.sendOtpCodeData.timeout = 60
+              this.sendOtpCodeData.sended = true
               const interval = setInterval(() => {
-                this.sendSmsData.timeout--
-                if (this.sendSmsData.timeout === 0) {
+                this.sendOtpCodeData.timeout--
+                if (this.sendOtpCodeData.timeout === 0) {
                   clearInterval(interval)
                 }
               }, 1000)
@@ -114,7 +137,7 @@ export default {
               this.$tip.apiFailed(e)
             })
             .finally(() => {
-              this.sendSmsData.isWorking = false
+              this.sendOtpCodeData.isWorking = false
             })
         })
         .catch(() => {})
@@ -146,7 +169,7 @@ export default {
   }
   // 表单
   .el-form {
-    .mobile-code {
+    .otp-code {
       :deep(.el-form-item__content > div) {
         width: 100%;
         display: flex;

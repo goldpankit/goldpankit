@@ -9,4 +9,15 @@ export function checkTableName (rule, value, callback, message) {
   callback()
 }
 
+/**
+ * 验证邮箱
+ */
+export function checkEmail (rule, value, callback, message) {
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+    callback(new Error(message))
+    return
+  }
+  callback()
+}
+
 export function checkVariable () {}
