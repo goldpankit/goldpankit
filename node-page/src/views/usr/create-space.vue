@@ -3,26 +3,26 @@
     <div class="wrap">
       <h2>Create Space</h2>
       <div class="form-wrap">
-        <el-form :model="form">
-        <el-form-item label="Space Name" required>
-          <template #label>
-            <span>Space Name</span>
-            <HelpButton code="space-name"/>
-          </template>
-          <el-input v-model="form.name" />
-        </el-form-item>
-        <el-form-item label="Private">
-          <el-switch v-model="form.withPrivate" />
-        </el-form-item>
-        <el-form-item label="Homepage">
-          <el-input v-model="form.homepage" />
-        </el-form-item>
-        <el-form-item label="Introduce" required>
-          <i18n-input v-model="form.introduce" type="textarea" maxlength="200"/>
-        </el-form-item>
-      </el-form>
-        <el-form class="description-form" :model="form">
-          <el-form-item label="Description" required>
+        <el-form ref="form" :model="form" :rules="rules">
+          <el-form-item label="Space Name" prop="name" required>
+            <template #label>
+              <span>Space Name</span>
+              <HelpButton code="space-name"/>
+            </template>
+            <el-input v-model="form.name" maxlength="20"/>
+          </el-form-item>
+          <el-form-item label="Private" prop="withPrivate">
+            <el-switch v-model="form.withPrivate" />
+          </el-form-item>
+          <el-form-item label="Homepage" prop="homepage">
+            <el-input v-model="form.homepage" />
+          </el-form-item>
+          <el-form-item label="Introduce" prop="introduce" required>
+            <i18n-input v-model="form.introduce" type="textarea" maxlength="200"/>
+          </el-form-item>
+        </el-form>
+        <el-form ref="descForm" class="description-form" :model="form">
+          <el-form-item label="Description / Space Readme" prop="description" required>
             <MarkdownEditor v-model="form.description"/>
           </el-form-item>
         </el-form>
@@ -50,18 +50,38 @@ export default {
         homepage: '',
         introduce: '',
         description: ''
+      },
+      rules: {
+        name: [
+          { required: true, message: 'Please input space name' }
+        ],
+        introduce: [
+          { required: true, message: 'Please input space introduce' }
+        ],
+        description: [
+          { required: true, message: 'Please input space description' }
+        ],
       }
     }
   },
   methods: {
     create () {
-      create(this.form)
-        .then(data => {
-          this.$router.push({ name: 'CreateService', query: { space: this.form.name } })
-        })
-        .catch(e => {
-          this.$tip.apiFailed(e)
-        })
+      this.$refs.form.validate((pass) => {
+        if (!pass) {
+          return
+        }
+        if (this.form.description.trim() === '') {
+          this.$tip.warning('Please input space description')
+          return
+        }
+        create(this.form)
+          .then(() => {
+            this.$router.push({ name: 'CreateService', query: { space: this.form.name } })
+          })
+          .catch(e => {
+            this.$tip.apiFailed(e)
+          })
+      })
     }
   }
 }
