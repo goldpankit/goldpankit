@@ -1,5 +1,6 @@
 const { exec } = require('child_process');
 const fs = require('../utils/fs')
+const log = require('../utils/log')
 module.exports = {
   /**
    * 执行node命令
@@ -9,9 +10,9 @@ module.exports = {
    * @returns {Promise<unknown>}
    */
   exec (dir, command) {
-    console.log('执行SQL', command)
     return new Promise((resolve, reject) => {
       const commands = command.split('\n')
+      log.debug(`execute node command: ${commands.join(' && ')}`)
       exec(commands.join('&&'), {cwd: dir}, (err) => {
         if (err) {
           return reject(err)

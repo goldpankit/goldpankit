@@ -9,6 +9,7 @@ const logger = require('morgan');
 const autoopen = require('./core/utils/autoopen')
 const routers = require('./routes/index');
 const log = require('./core/utils/log')
+const client = require('./core/client')
 
 const app = express();
 // app.use((req, res, next) => {
@@ -29,26 +30,29 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(publicPath, 'index.html'));
 });
 
-// catch 404 and forward to error handler
+// 404处理
 app.use(function(req, res, next) {
   res.send('404')
 });
 
 // error handler
 app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-  // render the error page
   res.status(err.status || 500);
   res.send('error');
 });
 
-autoopen.findAvailablePort(80, (port) => {
-  app.listen(port, () => {
-    log.success(`Server is listening on port ${port}`)
-    autoopen.open(port)
+client.autoUpgrade()
+  .then(() => {
+    autoopen.findAvailablePort(80, (port) => {
+      app.listen(port, () => {
+        log.success(`Server is listening on port ${port}`)
+        autoopen.open(port)
+      })
+    })
   })
-})
+  .catch(e => {
+    log.error(e)
+  })
 
