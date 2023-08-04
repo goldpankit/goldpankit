@@ -37,6 +37,7 @@ module.exports = {
   success (message) {
     console.log(this.__prefix(), colors('green', message))
   },
+  // 日志前缀
   __prefix () {
     return colors('grey', getTimestamp()) + colors('cyan', ' [gold pan kit] ')
   }
