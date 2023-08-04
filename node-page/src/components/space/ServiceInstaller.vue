@@ -94,6 +94,9 @@ export default {
     serviceType: {
       required: true
     },
+    servicePrice: {
+      required: true
+    },
     version: {
       required: true
     },
@@ -160,6 +163,18 @@ export default {
     },
     // 安装服务
     install () {
+      if (this.servicePrice < 50) {
+        this.__install()
+        return
+      }
+      // 超过服务金额伐值时做提醒
+      this.$model.installConfirm(this.servicePrice)
+        .then(() => {
+          this.__install()
+        })
+        .catch(() => {})
+    },
+    __install () {
       if (this.isWorking.install) {
         return
       }
@@ -189,6 +204,18 @@ export default {
     },
     // 卸载服务
     uninstall () {
+      if (this.servicePrice < 50) {
+        this.__uninstall()
+        return
+      }
+      // 超过服务金额伐值时做提醒
+      this.$model.uninstallConfirm()
+        .then(() => {
+          this.__uninstall()
+        })
+        .catch(() => {})
+    },
+    __uninstall () {
       if (this.isWorking.uninstall) {
         return
       }

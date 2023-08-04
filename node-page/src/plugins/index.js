@@ -15,6 +15,26 @@ export default {
           confirmButtonText: 'Delete',
           confirmButtonClass: 'danger-button'
         })
+      },
+      // 确认安装
+      installConfirm (price) {
+        return ElMessageBox({
+          title: 'Confirm Install?',
+          message: `Installing this service will deduct ${price} gold beans from your account. Are you sure you want to proceed with the installation?`,
+          showCancelButton: true,
+          cancelButtonText: 'Cancel',
+          confirmButtonText: 'INSTALL'
+        })
+      },
+      // 确认卸载
+      uninstallConfirm () {
+        return ElMessageBox({
+          title: 'Confirm Uninstall?',
+          message: 'Are you sure you want to uninstall this service?',
+          showCancelButton: true,
+          cancelButtonText: 'Cancel',
+          confirmButtonText: 'INSTALL'
+        })
       }
     }
     for (const method in globalMethods) {

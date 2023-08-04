@@ -55,6 +55,7 @@
                     :space="space"
                     :service="currentService.name"
                     :service-type="currentService.type"
+                    :service-price="currentService.price.price"
                     :version="currentService.lastVersion"
                     :with-project="false"
                     :project-config="project"
