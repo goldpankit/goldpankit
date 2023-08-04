@@ -1,5 +1,6 @@
 import { ElMessageBox } from 'element-plus'
 import message from "./message";
+import globalMethods from "./global.methods";
 export default {
   install (app, options) {
     app.config.globalProperties.$tip = message
@@ -15,6 +16,9 @@ export default {
           confirmButtonClass: 'danger-button'
         })
       }
+    }
+    for (const method in globalMethods) {
+      app.config.globalProperties[method] = globalMethods[method]
     }
   }
 }

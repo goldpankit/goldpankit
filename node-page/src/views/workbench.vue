@@ -33,7 +33,10 @@
                 </h5>
                 <p>{{service.lastVersion}}</p>
                 <p>{{service.introduce}}</p>
-                <p class="text-info-1 text-mini">Last publish: {{service.lastPublishTime}}</p>
+                <div class="price-wrap">
+                  <p class="text-info-1 text-mini">Last publish: {{getDateOffsetText(service.lastPublishTime)}}</p>
+                  <BeanAmount :price="service.price.price" :type="service.price.priceType"/>
+                </div>
               </li>
             </ul>
             <Empty v-else description="No Sub Services"/>
@@ -127,9 +130,10 @@ import {fetchById} from "../api/user.project";
 import MarkdownEditor from "../components/common/MarkdownEditor.vue";
 import Empty from "../components/common/Empty.vue";
 import IssueListView from "../components/space/IssueListView.vue";
+import BeanAmount from "../components/common/BeanAmount.vue";
 
 export default {
-  components: {IssueListView, Empty, MarkdownEditor, ServiceInstaller},
+  components: {BeanAmount, IssueListView, Empty, MarkdownEditor, ServiceInstaller},
   data () {
     return {
       isWorking: {
@@ -334,6 +338,11 @@ export default {
           }
           p {
             color: var(--color-gray);
+          }
+          .price-wrap {
+            margin-top: 10px;
+            display: flex;
+            justify-content: space-between;
           }
         }
       }
