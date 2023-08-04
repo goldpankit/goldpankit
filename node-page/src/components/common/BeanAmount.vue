@@ -1,6 +1,6 @@
 <template>
   <div
-    v-if="type !== 'free'"
+    v-if="type !== 'FREE'"
     class="bean-amount"
   >
     <img src="/images/bean.png">
@@ -33,6 +33,8 @@ export default {
   em {
     font-weight: bold;
     margin-left: 5px;
+    color: var(--font-color);
+    font-style: normal;
   }
 }
 </style>
