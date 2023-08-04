@@ -248,9 +248,13 @@ class Kit {
           variables: this.#getSimpleMainServiceVariables(dto.variables)
         }
       } else {
+        const installVariables = {}
+        dto.variables.forEach(v => {
+          installVariables[v.name] = this.#getInstallVariableValue(v)
+        })
         config.services[dto.service] = {
           version: dto.version,
-          variables: this.#getSimpleVariables(dto.variables)
+          variables: installVariables
         }
       }
       fs.createFile(userProject.getConfigPath(project.id), fs.toJSONFileString(config), true)
@@ -290,33 +294,46 @@ class Kit {
       return {
         name: v.name,
         type: v.type,
-        scope: v.scope,
         label: v.label,
         inputType: v.inputType,
         compiler: v.compiler,
-        value: v.value
+        value: this.#getInstallVariableValue(v)
       }
     })
   }
 
   // 获取简化变量
-  #getSimpleVariables (variables) {
-    const vars = {}
-    for (const v of variables) {
-      if (v.inputType === 'table') {
+  #getInstallVariableValue (variable) {
+      // 变量组
+      if (variable.type === 'group') {
+        const installVariables = {}
+        variable.children.forEach(v => {
+          installVariables[v.name] = this.#getInstallVariableValue(v)
+        })
+        return installVariables
+      }
+      /**
+       * 表和查询模型
+       * 表和查询模型需要记录字段变量的内容，以实现初始化，存储结构为
+       * {
+       *   value: 选中的表或模型,
+       *   settings: {
+       *     字段变量组1如查询字段queryFields: [选中的字段和字段变量值信息],
+       *     字段变量组2如列表字段tableFields: [选中的字段和字段变量值信息]
+       *   }
+       * }
+       */
+      if (variable.inputType === 'table' || variable.inputType === 'query_model') {
         const settings = {}
-        v.children.map(group => {
+        variable.children.map(group => {
           settings[group.name] = group.value
         })
-        vars[v.name] = {
-          value: v.value,
+        return {
+          value: variable.value,
           settings
         }
-        continue
       }
-      vars[v.name] = v.value
-    }
-    return vars
+      return variable.value
   }
 
   // 获取文件配置列表
