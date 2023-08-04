@@ -20,26 +20,18 @@
               <el-input size="large" placeholder="Search"/>
             </div>
             <!-- 服务列表 -->
-            <ul v-if="subServices.length > 0" class="service-list">
-              <li
-                v-for="service in subServices"
-                :key="service.id"
-                :class="{ selected: currentService != null && currentService.name === service.name }"
-                @click="selectService(service)"
-              >
-                <h5>
-                  {{service.name}}
-                  <em v-if="hasNewVersion(service)">Upgradable</em>
-                </h5>
-                <p>{{service.lastVersion}}</p>
-                <p>{{service.introduce}}</p>
-                <div class="price-wrap">
-                  <p class="text-info-1 text-mini">Last publish: {{getDateOffsetText(service.lastPublishTime)}}</p>
-                  <BeanAmount :price="service.price.price" :type="service.price.priceType"/>
-                </div>
-              </li>
-            </ul>
-            <Empty v-else description="No Sub Services"/>
+            <SubServiceList
+              :services="subServices"
+              :custom-class="(service) => {
+                return {selected: currentService != null && currentService.name === service.name}
+              }"
+              @click="selectService($event)"
+            >
+              <template #title="{service}">
+                {{service.name}}
+                <em v-if="hasNewVersion(service)">Upgradable</em>
+              </template>
+            </SubServiceList>
           </div>
           <!-- 服务信息 -->
           <div class="setting-wrap">
@@ -131,9 +123,10 @@ import MarkdownEditor from "../components/common/MarkdownEditor.vue";
 import Empty from "../components/common/Empty.vue";
 import IssueListView from "../components/space/IssueListView.vue";
 import BeanAmount from "../components/common/BeanAmount.vue";
+import SubServiceList from "../components/service/SubServiceList.vue";
 
 export default {
-  components: {BeanAmount, IssueListView, Empty, MarkdownEditor, ServiceInstaller},
+  components: {SubServiceList, BeanAmount, IssueListView, Empty, MarkdownEditor, ServiceInstaller},
   data () {
     return {
       isWorking: {
@@ -312,38 +305,10 @@ export default {
           }
         }
       }
-      // 服务列表
-      .service-list {
-        flex-grow: 1;
-        background-color: var(--color-light);
-        overflow-y: auto;
+      // 子服务列表
+      :deep(.sub-service-list) {
         li {
-          border-top: 1px solid var(--border-default-color);
-          padding: 15px var(--gap-page-padding);
-          cursor: pointer;
-          &.selected {
-            //background: var(--primary-color-match-1);
-            color: var(--primary-color-match-2)
-          }
-          h5 {
-            font-size: var(--font-size-middle);
-            margin-bottom: 5px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            em {
-              color: var(--primary-color-match-2);
-              font-size: var(--font-size-mini);
-            }
-          }
-          p {
-            color: var(--color-gray);
-          }
-          .price-wrap {
-            margin-top: 10px;
-            display: flex;
-            justify-content: space-between;
-          }
+          padding: 15px 30px;
         }
       }
     }

@@ -26,7 +26,8 @@
         <li :class="{ selected: currentDim === 'structure' }" @click="currentDim = 'structure'">Structure</li>
       </ul>
       <MarkdownEditor v-show="currentDim === 'readme'" v-model="majorVersionDetail.description" :readonly="true"/>
-      <ServiceListView v-show="currentDim === 'subServices'" :services="majorVersionDetail.subServices"/>
+      <SubServiceList v-show="currentDim === 'subServices'" :services="majorVersionDetail.subServices"/>
+<!--      <ServiceListView v-show="currentDim === 'subServices'" :services="majorVersionDetail.subServices"/>-->
       <ServiceStructureView v-show="currentDim === 'structure'" :nodes="majorVersionDetail.structure"/>
     </div>
   </div>
@@ -38,9 +39,10 @@ import ServiceListView from "./ServiceListView.vue";
 import {fetchMainServiceDetail} from "../../api/service";
 import ServiceStructureView from "./ServiceStructureView.vue";
 import MarkdownEditor from "../common/MarkdownEditor.vue";
+import SubServiceList from "../service/SubServiceList.vue";
 export default {
   name: "MainServiceDetail",
-  components: {MarkdownEditor, ServiceStructureView, ServiceListView},
+  components: {SubServiceList, MarkdownEditor, ServiceStructureView, ServiceListView},
   props: {
     space: {
       required: true

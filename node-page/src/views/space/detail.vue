@@ -246,6 +246,13 @@ export default {
       // 维度详情
       .detail {
         padding: 20px 20px 0 0;
+        :deep(.service-list) {
+          justify-content: space-between;
+          li {
+            width: 49%;
+            margin-right: 0;
+          }
+        }
       }
     }
     .info {
