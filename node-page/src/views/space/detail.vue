@@ -21,19 +21,11 @@
               </div>
             </template>
             <template v-else-if="currentTab === 'services'">
-              <ul v-if="currentMainService == null && mainServices.length > 0" class="service-list">
-                <li v-for="service in mainServices" @click="currentMainService = service">
-                  <h4>{{service.name}}</h4>
-                  <p>{{service.introduce}}</p>
-                  <section class="infos">
-                    <p>{{service.versionCount}} versions</p>
-                    <p>Latest version: {{service.lastVersion}}</p>
-                  </section>
-                  <section class="infos text-info-1">
-                    <p>Last publish: {{service.lastPublish}}</p>
-                  </section>
-                </li>
-              </ul>
+              <ServiceList
+                v-if="currentMainService == null && mainServices.length > 0"
+                :services="mainServices"
+                @click="currentMainService = $event"
+              />
               <Empty v-else-if="currentMainService == null && mainServices.length === 0" description="No Services"/>
               <MainServiceDetail
                 v-if="currentMainService != null && currentMainServiceVersion == null"
@@ -114,9 +106,10 @@ import MarkdownEditor from "../../components/common/MarkdownEditor.vue";
 import Empty from "../../components/common/Empty.vue";
 import IssueListView from "../../components/space/IssueListView.vue";
 import ServiceListView from "../../components/space/ServiceListView.vue";
+import ServiceList from "../../components/service/ServiceList.vue";
 
 export default {
-  components: {IssueListView, ServiceListView, Empty, MarkdownEditor, ServiceInstaller, MainServiceDetail},
+  components: {ServiceList, IssueListView, ServiceListView, Empty, MarkdownEditor, ServiceInstaller, MainServiceDetail},
   data () {
     return {
       spaceName: null,
@@ -341,42 +334,6 @@ export default {
         }
         &:hover {
           color: var(--font-color);
-        }
-      }
-    }
-    // 服务列表
-    ul.service-list {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      & > li {
-        width: 325px;
-        border: 1px solid var(--border-default-color);
-        padding: 20px;
-        cursor: pointer;
-        margin-bottom: 15px;
-        border-radius: 10px;
-        transition: all ease .15s;
-        background: var(--background-color);
-        &:hover {
-          border-color: var(--primary-color);
-          background: var(--background-color);
-        }
-        h4 {
-          font-size: var(--font-size-middle);
-          margin-bottom: 10px;
-        }
-        .infos {
-          display: flex;
-          margin-top: 10px;
-          font-size: var(--font-size-mini);
-          p {
-            margin-right: 10px;
-          }
-        }
-        .opera {
-          display: flex;
-          justify-content: flex-end;
         }
       }
     }

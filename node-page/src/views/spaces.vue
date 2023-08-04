@@ -28,27 +28,16 @@
           >
             <h3>{{space.name}}</h3>
             <p>{{space.introduce}}</p>
-            <ul class="service-list">
-              <li
-                v-for="service in space.mainServices"
-                :key="service.id"
-                @click.stop="$router.push({
-                  name: 'SpaceDetail',
-                  params: { name: space.name },
-                  query: { service: service.name }
-                })"
-              >
-                <h4>{{service.name}}</h4>
-                <p>{{service.introduce}}</p>
-                <section class="infos">
-                  <p>{{service.subServiceCount}} sub services</p>
-                  <p>Latest version: {{service.lastVersion}}</p>
-                </section>
-                <section class="infos text-info-1">
-                  <p>Last publish: {{service.lastPublish}}</p>
-                </section>
-              </li>
-            </ul>
+            <!-- 服务列表 -->
+            <ServiceList
+              :services="space.mainServices"
+              @click="$router.push({
+                name: 'SpaceDetail',
+                params: { name: space.name },
+                query: { service: $event.name }
+              })"
+            />
+            <!-- 用户信息 -->
             <div class="user-profile">
               <img v-if="space.user.avatar == null" src="/images/avatar/1.png">
               <img v-else :src="space.user.avatar">
@@ -72,9 +61,10 @@
 import {search} from "../api/service.space";
 import Pagination from "../components/common/Pagination.vue";
 import Empty from "../components/common/Empty.vue";
+import ServiceList from "../components/service/ServiceList.vue";
 
 export default {
-  components: {Empty, Pagination},
+  components: {ServiceList, Empty, Pagination},
   data () {
     return {
       loading: false,
@@ -218,7 +208,7 @@ export default {
             text-decoration: underline;
           }
         }
-        h3 {
+        & > h3 {
           font-size: var(--font-size-large);
           margin-bottom: 15px;
         }
@@ -230,47 +220,48 @@ export default {
           display: -webkit-box;
           -webkit-box-orient: vertical;
           line-height: 25px;
+          margin: 10px 0;
         }
       }
     }
     // 服务列表
-    ul.service-list {
-      margin-top: 10px;
-      display: flex;
-      flex-wrap: wrap;
-      & > li {
-        margin-right: 10px;
-        width: 325px;
-        border: 2px solid var(--border-default-color);
-        padding: 20px;
-        cursor: pointer;
-        margin-bottom: 15px;
-        transition: all ease .15s;
-        &:hover {
-          background: var(--background-color);
-          border-color: var(--border-default-color-deep)
-        }
-        h4 {
-          font-size: var(--font-size-middle);
-          margin-bottom: 10px;
-        }
-        & > p {
-          font-size: var(--font-size);
-        }
-        .infos {
-          display: flex;
-          margin-top: 10px;
-          font-size: var(--font-size-mini);
-          p {
-            margin-right: 10px;
-          }
-        }
-        .opera {
-          display: flex;
-          justify-content: flex-end;
-        }
-      }
-    }
+    //ul.service-list {
+    //  margin-top: 10px;
+    //  display: flex;
+    //  flex-wrap: wrap;
+    //  & > li {
+    //    margin-right: 10px;
+    //    width: 325px;
+    //    border: 2px solid var(--border-default-color);
+    //    padding: 20px;
+    //    cursor: pointer;
+    //    margin-bottom: 15px;
+    //    transition: all ease .15s;
+    //    &:hover {
+    //      background: var(--background-color);
+    //      border-color: var(--border-default-color-deep)
+    //    }
+    //    h4 {
+    //      font-size: var(--font-size-middle);
+    //      margin-bottom: 10px;
+    //    }
+    //    & > p {
+    //      font-size: var(--font-size);
+    //    }
+    //    .infos {
+    //      display: flex;
+    //      margin-top: 10px;
+    //      font-size: var(--font-size-mini);
+    //      p {
+    //        margin-right: 10px;
+    //      }
+    //    }
+    //    .opera {
+    //      display: flex;
+    //      justify-content: flex-end;
+    //    }
+    //  }
+    //}
     // 用户信息
     .user-profile {
       display: flex;
