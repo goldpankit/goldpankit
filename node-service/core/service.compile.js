@@ -27,6 +27,7 @@ class Kit {
    */
   install (dto) {
     return new Promise((resolve, reject) => {
+      dto.operaType = 'INSTALL'
       this.#install(dto)
         .then(({ data, project, database, variables}) => {
           // 写入文件
@@ -57,6 +58,7 @@ class Kit {
    */
   uninstall (dto) {
     return new Promise((resolve, reject) => {
+      dto.operaType = 'UNINSTALL'
       this.#install(dto)
         .then(({ data, project, database, variables}) => {
           // 获取构建详情并返回
@@ -269,6 +271,7 @@ class Kit {
             space: dto.space,
             service: dto.service,
             version: dto.version,
+            operaType: dto.operaType,
             variables: vars
           })
         })
@@ -325,9 +328,11 @@ class Kit {
        */
       if (variable.inputType === 'table' || variable.inputType === 'query_model') {
         const settings = {}
-        variable.children.map(group => {
-          settings[group.name] = group.value
-        })
+        if (variable.children != null && variable.children.length > 0) {
+          variable.children.map(group => {
+            settings[group.name] = group.value
+          })
+        }
         return {
           value: variable.value,
           settings
