@@ -9,7 +9,7 @@
       </section>
       <div class="price-wrap">
         <p class="text-info-1 text-mini">Last publish: {{getDateOffsetText(service.lastPublish)}}</p>
-        <BeanAmount :price="service.price.price" :type="service.price.priceType"/>
+        <BeanAmount :price="service.price.price" :type="service.price.leaseType"/>
       </div>
     </li>
   </ul>

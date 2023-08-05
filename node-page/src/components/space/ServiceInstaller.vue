@@ -97,6 +97,9 @@ export default {
     servicePrice: {
       required: true
     },
+    serviceLease: {
+      required: false
+    },
     version: {
       required: true
     },
@@ -164,6 +167,12 @@ export default {
     },
     // 安装服务
     install () {
+      // 用户已租赁服务，直接安装
+      if (this.serviceLease != null) {
+        this.__install()
+        return
+      }
+      // 用户未租赁服务 || 按次收费且金额超过伐值，则做金额提醒
       if (this.servicePrice < 50) {
         this.__install()
         return
@@ -206,6 +215,12 @@ export default {
     },
     // 卸载服务
     uninstall () {
+      // 用户已租赁服务，直接卸载
+      if (this.serviceLease != null) {
+        this.__uninstall()
+        return
+      }
+      // 用户未租赁服务 || 按次收费且金额超过伐值，则做金额提醒
       if (this.servicePrice < 50) {
         this.__uninstall()
         return

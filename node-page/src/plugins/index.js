@@ -25,7 +25,7 @@ export default {
           message: `Installing this service will deduct ${price} gold beans from your account. Are you sure you want to proceed with the installation?`,
           showCancelButton: true,
           cancelButtonText: 'Cancel',
-          confirmButtonText: 'INSTALL'
+          confirmButtonText: 'PAY AND INSTALL'
         })
       },
       // 确认卸载

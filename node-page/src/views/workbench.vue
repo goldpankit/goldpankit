@@ -56,6 +56,7 @@
                     :service="currentService.name"
                     :service-type="currentService.type"
                     :service-price="currentService.price.price"
+                    :service-lease="currentService.latestLease"
                     :version="currentService.lastVersion"
                     :with-project="false"
                     :project-config="project"

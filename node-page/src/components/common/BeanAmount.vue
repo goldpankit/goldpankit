@@ -22,7 +22,7 @@ export default {
   },
   methods: {
     getTypeText () {
-      return this.$const.SERVICE_PRICE_TYPES.find(t => t.code === this.type).abbLabel
+      return this.$const.SERVICE_LEASE_TYPES.find(t => t.code === this.type).abbLabel
     }
   }
 }
@@ -40,6 +40,7 @@ export default {
     margin-left: 5px;
     color: var(--font-color);
     font-style: normal;
+    font-size: var(--font-size-mini);
   }
 }
 </style>

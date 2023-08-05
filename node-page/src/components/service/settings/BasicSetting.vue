@@ -17,7 +17,7 @@
         <el-form-item label="Charge" prop="prices[0].type" required>
           <el-radio-group v-model="form.prices[0].type" @change="changePriceType">
             <el-radio-button
-              v-for="option in $const.SERVICE_PRICE_TYPES"
+              v-for="option in $const.SERVICE_LEASE_TYPES"
               :key="option.code"
               :label="option.code"
             >{{option.label}}</el-radio-button>

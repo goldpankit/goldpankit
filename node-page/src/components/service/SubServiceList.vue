@@ -15,7 +15,14 @@
       <p>{{service.introduce}}</p>
       <div class="price-wrap">
         <p class="text-info-1 text-mini">Last publish: {{getDateOffsetText(service.lastPublishTime)}}</p>
-        <BeanAmount :price="service.price.price" :type="service.price.priceType"/>
+        <em v-if="service.latestLease != null">
+          {{getRemainingDay(service.latestLease.leaseEndTime)}} days
+        </em>
+        <BeanAmount
+          v-else
+          :price="service.price.price"
+          :type="service.price.leaseType"
+        />
       </div>
     </li>
   </ul>

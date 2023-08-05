@@ -39,5 +39,13 @@ export default {
       tip = Math.floor(offset / (daySeconds * 365)) + '年前';
     }
     return tip;
+  },
+  // 获取剩余天数
+  getRemainingDay (dateText) {
+    const timestamp = dayjs(dateText)
+    const now = new Date().getTime()
+    let offset = timestamp - now
+    offset = offset <= 0 ? 0 : offset / 1000
+    return Math.ceil(offset / (3600 * 24))
   }
 }
