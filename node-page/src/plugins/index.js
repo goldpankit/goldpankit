@@ -1,8 +1,10 @@
 import { ElMessageBox } from 'element-plus'
 import message from "./message";
 import globalMethods from "./global.methods";
+import constants from './constants'
 export default {
   install (app, options) {
+    app.config.globalProperties.$const = constants
     app.config.globalProperties.$tip = message
     app.config.globalProperties.$model = {
       // 删除确认

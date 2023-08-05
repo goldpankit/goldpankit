@@ -4,7 +4,7 @@
     class="bean-amount"
   >
     <img src="/images/bean.png">
-    <em>{{price}}</em>
+    <em>{{price}} / {{getTypeText()}}</em>
   </div>
 </template>
 
@@ -18,6 +18,11 @@ export default {
     },
     price: {
       required: true
+    }
+  },
+  methods: {
+    getTypeText () {
+      return this.$const.SERVICE_PRICE_TYPES.find(t => t.code === this.type).abbLabel
     }
   }
 }

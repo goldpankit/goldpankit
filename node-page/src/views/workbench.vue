@@ -29,7 +29,7 @@
             >
               <template #title="{service}">
                 {{service.name}}
-                <em v-if="hasNewVersion(service)">Upgradable</em>
+                <el-icon v-if="hasNewVersion(service)"><Upload /></el-icon>
               </template>
             </SubServiceList>
           </div>
@@ -310,6 +310,8 @@ export default {
       :deep(.sub-service-list) {
         li {
           padding: 15px 30px;
+          h5 .el-icon {
+          }
         }
       }
     }

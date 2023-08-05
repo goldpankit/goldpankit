@@ -16,11 +16,11 @@
         </el-form-item>
         <el-form-item label="Charge" prop="prices[0].type" required>
           <el-radio-group v-model="form.prices[0].type" @change="changePriceType">
-            <el-radio-button label="FREE">Free</el-radio-button>
-            <el-radio-button label="TIMES">Charge per ride</el-radio-button>
-            <el-radio-button label="MONTH">Monthly charge</el-radio-button>
-            <el-radio-button label="QUARTER">Quarterly charge</el-radio-button>
-            <el-radio-button label="YEAR">Annual charge</el-radio-button>
+            <el-radio-button
+              v-for="option in $const.SERVICE_PRICE_TYPES"
+              :key="option.code"
+              :label="option.code"
+            >{{option.label}}</el-radio-button>
           </el-radio-group>
         </el-form-item>
         <el-form-item v-if="form.prices[0].type !== 'free'" label="Price" prop="prices[0].value" class="item-price" required>
