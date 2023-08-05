@@ -63,7 +63,7 @@
 </template>
 
 <script>
-import {mapMutations, mapState} from "vuex";
+import {mapActions, mapMutations, mapState} from "vuex";
 import InstallCheckbox from "../service/installer/Checkbox.vue";
 import InstallInput from "../service/installer/Input.vue";
 import InstallRadio from "../service/installer/Radio.vue";
@@ -145,6 +145,7 @@ export default {
   },
   methods: {
     ...mapMutations(['setCurrentProject', 'setInstallData']),
+    ...mapActions(['refreshBalance']),
     // 获取版本信息
     fetchVersion () {
       fetchVersion({
@@ -192,6 +193,7 @@ export default {
         .then(installData => {
           this.$tip.success('Install Successfully')
           this.setInstallData(installData)
+          this.refreshBalance()
           this.$emit('installed')
         })
         .catch(e => {

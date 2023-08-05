@@ -4,6 +4,10 @@
     <el-button type="important" @click="$router.push({ name: 'SignUp' })">Sign Up</el-button>
   </template>
   <template v-else>
+    <div class="bean-wrap">
+      <img src="/images/bean.png">
+      <em>{{userInfo.balance.total}}</em>
+    </div>
     <div class="user-info" @click="$router.push({ name: 'Index'})">
       <img
         v-if="userInfo.avatar == null || userInfo.avatar === ''"
@@ -28,6 +32,21 @@ export default {
 </script>
 
 <style scoped lang="scss">
+.bean-wrap {
+  margin-left: 30px;
+  margin-right: 30px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  img {
+    width: 20px;
+  }
+  em {
+    font-style: normal;
+    font-weight: bold;
+    margin-left: 2px;
+  }
+}
 .user-info {
   display: flex;
   flex-direction: column;

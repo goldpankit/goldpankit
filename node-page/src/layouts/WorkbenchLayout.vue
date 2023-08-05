@@ -15,10 +15,6 @@
         <li>
           <DatabaseSelect :model-value="currentDatabase" @change="setCurrentDatabase"/>
         </li>
-        <li v-if="userInfo != null" class="bean-wrap" @click="$router.push({ name: 'RechargeBean' })">
-          <img src="/images/bean.png">
-          <em>3201</em>
-        </li>
         <li>
           <LoginView/>
         </li>

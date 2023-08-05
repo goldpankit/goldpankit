@@ -1,6 +1,7 @@
 import Vuex from 'vuex'
 import {getToken} from "../api/user.token";
 import {getLoginInfo, logout} from "../api/user.login";
+import {getBalance} from "../api/user";
 // 获取本地项目
 let currentProject = null
 const currentProjectStr = window.localStorage.getItem('CURRENT_PROJECT')
@@ -33,7 +34,7 @@ export default new Vuex.Store({
         state.userInfo = value
         return
       }
-      Object.assign(value, state.userInfo)
+      Object.assign(state.userInfo, value)
     },
     setCurrentProject(state, project) {
       state.currentProject = project
@@ -48,6 +49,14 @@ export default new Vuex.Store({
     }
   },
   actions: {
+    // 刷新余额
+    refreshBalance ({commit}) {
+      getBalance()
+        .then(balance => {
+          commit('setUserInfo', { balance })
+        })
+        .catch(() => {})
+    },
     // 退出登录
     logout ({commit}) {
       return new Promise((resolve, reject) => {
