@@ -1,8 +1,6 @@
 <template>
-  <div id="app">
-    <RouterView />
-    <HelpCenter/>
-  </div>
+  <RouterView />
+  <HelpCenter/>
 </template>
 
 <script>
@@ -14,7 +12,7 @@ export default {
 }
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
 html,body {
   height: 100%;
   width: 100%;

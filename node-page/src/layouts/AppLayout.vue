@@ -1,7 +1,7 @@
 <template>
   <slot></slot>
   <!-- 执行构建窗口 -->
-  <BuildNotice :install-data="installData"/>
+  <BuildNotice />
 </template>
 
 <script>

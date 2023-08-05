@@ -11,19 +11,24 @@
             </template>
             <el-input v-model="form.name" maxlength="20"/>
           </el-form-item>
-          <el-form-item label="Private" prop="withPrivate">
-            <el-switch v-model="form.withPrivate" />
-          </el-form-item>
           <el-form-item label="Homepage" prop="homepage">
             <el-input v-model="form.homepage" />
           </el-form-item>
           <el-form-item label="Introduce" prop="introduce" required>
-            <i18n-input v-model="form.introduce" type="textarea" maxlength="200"/>
+            <el-input v-model="form.introduce" type="textarea" :rows="3" maxlength="200"/>
+          </el-form-item>
+          <el-form-item label="Other settings" class="item-other-settings">
+            <div>
+              <el-checkbox v-model="form.withPrivate" label="Is a private space"/>
+            </div>
+            <div>
+              <el-checkbox v-model="form.subServiceReceivable" label="Receive sub services."/>
+            </div>
           </el-form-item>
         </el-form>
         <el-form ref="descForm" class="description-form" :model="form">
           <el-form-item label="Description / Space Readme" prop="description" required>
-            <MarkdownEditor v-model="form.description"/>
+            <MarkdownEditor v-model="form.description" placeholder="space description"/>
           </el-form-item>
         </el-form>
       </div>
@@ -47,6 +52,7 @@ export default {
       form: {
         name: '',
         withPrivate: false,
+        subServiceReceivable: false,
         homepage: '',
         introduce: '',
         description: ''
@@ -91,10 +97,14 @@ export default {
 .page {
   height: 100%;
   overflow-y: auto;
+  padding: 30px 0;
+  box-sizing: border-box;
   .wrap {
+    height: 100%;
+    min-height: 600px;
     width: var(--page-width);
     background-color: var(--color-light);
-    margin: 30px auto 60px auto;
+    margin: 0px auto 0px auto;
     box-shadow: var(--form-shadow);
     padding-bottom: 30px;
     display: flex;
@@ -112,14 +122,26 @@ export default {
     display: flex;
     .el-form {
       width: 450px;
-      height: 500px;
+      height: 100%;
       padding: 0 30px;
       border-right: 1px solid var(--border-default-color);
+      .item-other-settings {
+        .el-form-item__content {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+      }
     }
     .description-form {
       width: 100%;
+      :deep(.el-form-item) {
+        height: 100%;
+        .el-form-item__content {
+          overflow-y: auto;
+        }
+      }
       .markdown-editor {
-        height: 500px;
+        height: 100%;
       }
     }
   }

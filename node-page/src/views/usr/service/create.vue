@@ -40,7 +40,7 @@ import ServiceTypeSelect from "../../../components/service/ServiceTypeSelect.vue
 import DatabaseSelect from "../../../components/database/DatabaseSelect.vue";
 import VersionSelect from "../../../components/common/VersionSelect.vue";
 import MainServiceSelect from "../../../components/service/MainServiceSelect.vue";
-import { create } from "../../../api/service";
+import { create } from "../../../api/user.service";
 
 export default {
   components: {

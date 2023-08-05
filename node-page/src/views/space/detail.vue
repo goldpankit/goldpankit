@@ -65,6 +65,7 @@
           </div>
           <div class="install">
             <el-button
+              v-if="space.subServiceReceivable || (userInfo != null && userInfo.id === space.userId)"
               type="primary"
               size="large"
               @click="$router.push({ name: 'CreateService', query: { space: spaceName } })"
@@ -107,6 +108,7 @@ import Empty from "../../components/common/Empty.vue";
 import IssueListView from "../../components/space/IssueListView.vue";
 import ServiceListView from "../../components/space/ServiceListView.vue";
 import ServiceList from "../../components/service/ServiceList.vue";
+import {mapState} from "vuex";
 
 export default {
   components: {ServiceList, IssueListView, ServiceListView, Empty, MarkdownEditor, ServiceInstaller, MainServiceDetail},
@@ -122,6 +124,9 @@ export default {
       // 框架服务列表
       mainServices: []
     }
+  },
+  computed: {
+    ...mapState(['userInfo'])
   },
   methods: {
     // 查询空间信息

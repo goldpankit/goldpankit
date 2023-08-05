@@ -29,12 +29,7 @@
         </el-form-item>
         <el-form-item label="Other settings" class="item-other-settings">
           <div>
-            <el-checkbox v-model="form.private" @change="saveConfig"/>
-            <p>Is a private service.</p>
-          </div>
-          <div v-if="serviceType === 'MAIN'">
-            <el-checkbox v-model="form.receivable" @change="saveConfig"/>
-            <p>Receive sub services added by others.</p>
+            <el-checkbox v-model="form.private" label="Is a private service" @change="saveConfig"/>
           </div>
         </el-form-item>
         <el-form-item label="Translator" prop="translator">
@@ -269,12 +264,6 @@ export default {
         .el-form-item__content {
           flex-direction: column;
           align-items: flex-start;
-          & > div {
-            display: flex;
-            .el-checkbox {
-              margin-right: 10px;
-            }
-          }
         }
       }
     }

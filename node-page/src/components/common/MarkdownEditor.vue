@@ -7,6 +7,7 @@
       right-toolbar=""
       :disabled-menus="[]"
       :mode="readonly ? 'preview' : 'editable'"
+      :placeholder="placeholder"
       @upload-image="handleUploadImage"
       @update:modelValue="$emit('update:modelValue', $event)"
     />
@@ -14,7 +15,6 @@
 </template>
 
 <script>
-
 import {uploadImage} from "../../api/common";
 
 export default {
@@ -29,6 +29,9 @@ export default {
     },
     withoutPadding: {
       default: false
+    },
+    placeholder: {
+      default: ''
     }
   },
   data () {
