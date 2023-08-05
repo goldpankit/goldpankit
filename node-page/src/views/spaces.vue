@@ -38,7 +38,7 @@
               })"
             />
             <!-- 用户信息 -->
-            <div class="user-profile">
+            <div v-if="space.user != null" class="user-profile">
               <img v-if="space.user.avatar == null" src="/images/avatar/1.png">
               <img v-else :src="space.user.avatar">
               <span>{{space.user.nickname}}</span>
