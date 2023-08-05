@@ -1,9 +1,5 @@
 import request from "../utils/request";
 
-// 创建
-export function create (data) {
-  return request.post('/service/create', data)
-}
 // 搜索
 export function search (data) {
   return request.post('/service/search', data)
