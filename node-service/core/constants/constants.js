@@ -14,7 +14,7 @@ module.exports = {
     supportedDatabases: [], // 支持的数据库列表
     prices: [ // 价格定义
       {
-        type: 'free',
+        type: 'FREE',
         value: 0
       }
     ],
