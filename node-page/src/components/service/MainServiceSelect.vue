@@ -28,7 +28,7 @@ export default {
     fetchServices () {
       search({
         space: this.space,
-        serviceTypes: ['MAIN']
+        serviceType: 'MAIN'
       })
         .then(data => {
           this.services = data

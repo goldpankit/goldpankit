@@ -147,7 +147,7 @@ export default {
     fetchServiceList () {
       search({
         space: this.spaceName,
-        serviceTypes: ['MAIN']
+        serviceType: 'MAIN'
       })
         .then(data => {
           this.mainServices = data
