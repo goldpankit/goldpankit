@@ -2,6 +2,7 @@ const service = require('./service')
 const serviceSpace = require('./service.space')
 const serviceCompile = require('./service.compile')
 const serviceVersion = require('./service.version')
+const user = require('./user')
 const userProject = require('./user.project')
 const userRegis = require('./user.regis')
 const userLogin = require('./user.login')
@@ -15,6 +16,7 @@ module.exports = {
   serviceSpace,
   serviceCompile,
   serviceVersion,
+  user,
   userProject,
   userRegis,
   userLogin,
