@@ -3,6 +3,7 @@
     class="avatar-uploader"
     action="/remote-api/upload/image"
     :show-file-list="false"
+    accept=".jpeg,.png,.jpg,.gif"
     :on-success="handleAvatarSuccess"
     :before-upload="beforeAvatarUpload"
   >
@@ -37,7 +38,13 @@ export default {
       }
       this.$emit('update:modelValue', res.data.accessUri)
     },
-    beforeAvatarUpload () {}
+    beforeAvatarUpload (rawFile) {
+      if (rawFile.size / 1024 / 1024 > 2) {
+        this.$tip.error('Avatar picture size can not exceed 2MB!')
+        return false
+      }
+      return true
+    }
   }
 }
 </script>

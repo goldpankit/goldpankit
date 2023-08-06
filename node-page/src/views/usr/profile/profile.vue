@@ -3,14 +3,14 @@
     <div v-if="copyUserInfo != null" class="wrap">
       <div class="avatar-wrap">
         <AvatarUploader v-model="copyUserInfo.avatar"/>
-        <el-input v-model="copyUserInfo.nickname"></el-input>
+        <h2>{{copyUserInfo.username}}</h2>
       </div>
       <div class="introduce-wrap">
         <label>Introduce</label>
-        <el-input type="textarea" :rows="5"/>
+        <el-input v-model="copyUserInfo.introduce" type="textarea" :rows="5"/>
       </div>
       <div class="opera">
-        <el-button type="primary" size="large">Save</el-button>
+        <el-button type="primary" size="large" :disabled="isWorking" @click="save">Save</el-button>
       </div>
     </div>
   </div>
@@ -18,7 +18,8 @@
 
 <script>
 import AvatarUploader from "../../../components/common/AvatarUploader.vue";
-import {mapState} from "vuex";
+import {mapMutations, mapState} from "vuex";
+import {saveProfile} from "../../../api/user";
 
 export default {
   components: {AvatarUploader},
@@ -27,12 +28,36 @@ export default {
   },
   data () {
     return {
-      copyUserInfo: null
+      copyUserInfo: null,
+      isWorking: false
     }
   },
   watch: {
-    userInfo () {
-      this.copyUserInfo = JSON.parse(JSON.stringify(this.userInfo))
+    userInfo: {
+      immediate: true,
+      handler: function () {
+        this.copyUserInfo = JSON.parse(JSON.stringify(this.userInfo))
+      }
+    }
+  },
+  methods: {
+    ...mapMutations(['setUserInfo']),
+    // 保存资料
+    save () {
+      if (this.isWorking) {
+        return
+      }
+      this.isWorking = true
+      saveProfile(this.copyUserInfo)
+        .then(()  => {
+          this.setUserInfo(this.copyUserInfo)
+        })
+        .catch(e => {
+          this.$tip.apiFailed(e)
+        })
+        .finally(() => {
+          this.isWorking = false
+        })
     }
   }
 }
@@ -49,14 +74,6 @@ export default {
       display: flex;
       align-items: center;
       flex-direction: column;
-      :deep(.el-input) {
-        width: 120px;
-        font-size: var(--font-size-middle);
-        .el-input__inner {
-          text-align: center;
-          font-weight: bold;
-        }
-      }
     }
     .introduce-wrap {
       width: 450px;
