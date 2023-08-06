@@ -11,8 +11,13 @@
           {{service.name}}
         </slot>
       </h5>
-      <p>{{service.lastVersion}}</p>
+      <p class="latest-version">Latest version: v{{service.lastVersion}}</p>
       <p>{{service.introduce}}</p>
+      <!-- 用户信息 -->
+      <div class="user-profile">
+        <img :src="getAccessUri(service.user.avatar, '/images/avatar/default.png')">
+        <span>{{service.user.username}}</span>
+      </div>
       <div class="price-wrap">
         <p class="text-info-1 text-mini">Last publish: {{getDateOffsetText(service.lastPublishTime)}}</p>
         <em v-if="service.latestLease != null">
@@ -78,11 +83,30 @@ export default {
     }
     p {
       color: var(--color-gray);
+      font-size: var(--font-size-mini);
     }
     .price-wrap {
       margin-top: 10px;
       display: flex;
       justify-content: space-between;
+    }
+    .latest-version {
+      margin-bottom: 5px;
+      color: var(--font-color);
+    }
+    // 用户信息
+    .user-profile {
+      display: flex;
+      align-items: center;
+      margin-top: 10px;
+      color: var(--font-color);
+      img {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        object-fit: contain;
+        margin-right: 10px;
+      }
     }
   }
 }
