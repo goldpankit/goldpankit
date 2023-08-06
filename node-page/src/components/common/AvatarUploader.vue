@@ -7,7 +7,7 @@
     :on-success="handleAvatarSuccess"
     :before-upload="beforeAvatarUpload"
   >
-    <img :src="url" class="avatar" />
+    <img :src="getAccessUri(modelValue)" class="avatar" />
   </el-upload>
 </template>
 
@@ -18,16 +18,6 @@ export default {
   props: {
     modelValue: {
       required: true
-    }
-  },
-  computed: {
-    url () {
-      console.log('this.modelValue', this.modelValue)
-      // 远程路径
-      if (this.modelValue.startsWith('/resource')) {
-        return import.meta.env.VITE_REMOTE_API_PREFIX + this.modelValue
-      }
-      return this.modelValue
     }
   },
   methods: {

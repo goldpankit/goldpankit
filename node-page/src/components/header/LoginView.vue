@@ -9,7 +9,7 @@
       <em>{{userInfo.balance.total}}</em>
     </div>
     <div class="user-info" @click="$router.push({ name: 'Index'})">
-      <img :src="userInfo.avatar" class="avatar"/>
+      <img :src="getAccessUri(userInfo.avatar, '/images/avatar/default.png')" class="avatar"/>
     </div>
   </template>
 </template>

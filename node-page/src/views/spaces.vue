@@ -39,8 +39,7 @@
             />
             <!-- 用户信息 -->
             <div v-if="space.user != null" class="user-profile">
-              <img v-if="space.user.avatar == null" src="/images/avatar/default.png">
-              <img v-else :src="space.user.avatar">
+              <img :src="getAccessUri(space.user.avatar, '/images/avatar/default.png')">
               <span>{{space.user.username}}</span>
             </div>
           </a>

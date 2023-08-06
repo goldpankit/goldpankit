@@ -58,10 +58,12 @@
         <div class="info">
           <div class="user-profile">
             <div class="user-info">
-              <img src="/images/avatar/default.png">
-              <h4>Caesar Liu</h4>
+              <img :src="getAccessUri(space.user.avatar, '/images/avatar/default.png')">
+              <h4>{{space.user.username}}</h4>
             </div>
-            <p class="description">Kit联合创始人，从业10年，精通Java、Vue等技术栈。</p>
+            <p class="introduce">
+              {{space.user.introduce === '' || space.user.introduce == null ? 'No introduce' : space.user.introduce }}
+            </p>
           </div>
           <div class="install">
             <el-button
@@ -282,7 +284,7 @@ export default {
             margin-right: 10px;
           }
         }
-        .description {
+        .introduce {
           margin-top: 5px;
           font-size: var(--font-size-mini);
         }

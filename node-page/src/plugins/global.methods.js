@@ -47,5 +47,15 @@ export default {
     let offset = timestamp - now
     offset = offset <= 0 ? 0 : offset / 1000
     return Math.ceil(offset / (3600 * 24))
+  },
+  // 获取文件访问路径
+  getAccessUri (value, defaultValue) {
+    if (value == null || value === '') {
+      return defaultValue
+    }
+    if (value.startsWith('/resource')) {
+      return import.meta.env.VITE_REMOTE_API_PREFIX + value
+    }
+    return value
   }
 }
