@@ -7,5 +7,7 @@ export function publish (data) {
 
 // 获取版本信息
 export function fetchVersion (data) {
-  return request.post('/service/version', data)
+  return request.post('/service/version', data, {
+    baseURL: '/remote-api'
+  })
 }

@@ -2,7 +2,9 @@ import request from "../utils/request";
 
 // 搜索
 export function search (data) {
-  return request.post('/service/search', data)
+  return request.post('/service/search', data, {
+    baseURL: '/remote-api'
+  })
 }
 // 初始化
 export function initialize (data) {
@@ -10,11 +12,15 @@ export function initialize (data) {
 }
 // 查询主服务详情
 export function fetchMainServiceDetail (data) {
-  return request.post('/service/main/detail', data)
+  return request.post('/service/main/detail', data, {
+    baseURL: '/remote-api'
+  })
 }
 // 查询子服务列表
 export function fetchSubServices (data) {
-  return request.post('/service/main/subs', data)
+  return request.post('/service/main/subs', data, {
+    baseURL: '/remote-api'
+  })
 }
 // 获取服务信息
 export function fetchProfile (data) {

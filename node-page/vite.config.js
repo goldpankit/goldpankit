@@ -28,6 +28,11 @@ export default ({ mode }) => {
           changeOrigin: true,
           rewrite: (path) => path.replace(new RegExp(`^${apiPrefix}`), "")
         },
+        '/remote-api': {
+          target: 'http://localhost:10088',
+          changeOrigin: true,
+          rewrite: (path) => path.replace(new RegExp('/remote-api'), "")
+        },
       }
     }
   })

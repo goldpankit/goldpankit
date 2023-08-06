@@ -1,1 +1,0 @@
-import{n as s}from"./index-509f7063.js";function a(e){return s.post("/usr/space/create",e)}function r(e){return s.get(`/space/${e}`)}function c(e){return s.post("/space/search",e)}export{a as c,r as f,c as s};

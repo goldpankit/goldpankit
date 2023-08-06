@@ -1,7 +1,7 @@
 import request from "../utils/request";
 
 // 获取令牌
-export function getToken (data) {
+export function getToken () {
   return request.get('/usr/token')
 }
 
