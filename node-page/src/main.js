@@ -1,5 +1,6 @@
 import { createApp } from 'vue'
 import App from './App.vue'
+import i18n from './i18n'
 import router from './router'
 import ElementUI from 'element-plus'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
@@ -31,6 +32,7 @@ app.component('I18nInput', I18nInput)
 app.component('HelpButton', HelpButton)
 app.component('SortableButton', SortableButton)
 
+app.use(i18n)
 app.use(VueMarkdownEditor)
 app.use(VueKonva)
 app.use(router)

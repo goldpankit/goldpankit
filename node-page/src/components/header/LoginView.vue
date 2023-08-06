@@ -1,4 +1,8 @@
 <template>
+  <el-radio-group v-model="$i18n.locale">
+    <el-radio-button label="en">English</el-radio-button>
+    <el-radio-button label="zh">中文</el-radio-button>
+  </el-radio-group>
   <template v-if="userInfo == null">
     <el-button @click="$router.push({ name: 'SignIn' })">Sign In</el-button>
     <el-button type="important" @click="$router.push({ name: 'SignUp' })">Sign Up</el-button>
