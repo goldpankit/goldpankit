@@ -9,12 +9,7 @@
       <em>{{userInfo.balance.total}}</em>
     </div>
     <div class="user-info" @click="$router.push({ name: 'Index'})">
-      <img
-        v-if="userInfo.avatar == null || userInfo.avatar === ''"
-        src="/images/avatar/1.png"
-        class="avatar"
-      >
-      <img v-else :src="userInfo.avatar" class="avatar"/>
+      <img :src="userInfo.avatar" class="avatar"/>
     </div>
   </template>
 </template>
