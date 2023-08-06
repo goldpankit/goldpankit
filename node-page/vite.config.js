@@ -8,6 +8,7 @@ import prismjs from 'vite-plugin-prismjs'
 // https://vitejs.dev/config/
 export default ({ mode }) => {
   const apiPrefix = loadEnv(mode, process.cwd()).VITE_API_PREFIX
+  const remoteApiPrefix = loadEnv(mode, process.cwd()).VITE_REMOTE_API_PREFIX
   return defineConfig({
     plugins: [
       vue(),
@@ -28,10 +29,10 @@ export default ({ mode }) => {
           changeOrigin: true,
           rewrite: (path) => path.replace(new RegExp(`^${apiPrefix}`), "")
         },
-        '/remote-api': {
+        [remoteApiPrefix]: {
           target: 'http://localhost:10088',
           changeOrigin: true,
-          rewrite: (path) => path.replace(new RegExp('/remote-api'), "")
+          rewrite: (path) => path.replace(new RegExp(`^${remoteApiPrefix}`), "")
         },
       }
     }

@@ -3,7 +3,7 @@ import request from "../utils/request";
 // 搜索
 export function search (data) {
   return request.post('/service/search', data, {
-    baseURL: '/remote-api'
+    baseURL: import.meta.env.VITE_REMOTE_API_PREFIX
   })
 }
 // 初始化
@@ -13,13 +13,13 @@ export function initialize (data) {
 // 查询主服务详情
 export function fetchMainServiceDetail (data) {
   return request.post('/service/main/detail', data, {
-    baseURL: '/remote-api'
+    baseURL: import.meta.env.VITE_REMOTE_API_PREFIX
   })
 }
 // 查询子服务列表
 export function fetchSubServices (data) {
   return request.post('/service/main/subs', data, {
-    baseURL: '/remote-api'
+    baseURL: import.meta.env.VITE_REMOTE_API_PREFIX
   })
 }
 // 获取服务信息
