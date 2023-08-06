@@ -7,7 +7,7 @@ import prismjs from 'vite-plugin-prismjs'
 
 // https://vitejs.dev/config/
 export default ({ mode }) => {
-  const apiPrefix = loadEnv(mode, process.cwd()).VITE_API_PREFIX
+  const localApiPrefix = loadEnv(mode, process.cwd()).VITE_LOCAL_API_PREFIX
   const remoteApiPrefix = loadEnv(mode, process.cwd()).VITE_REMOTE_API_PREFIX
   return defineConfig({
     plugins: [
@@ -24,10 +24,10 @@ export default ({ mode }) => {
     },
     server: {
       proxy: {
-        [apiPrefix]: {
+        [localApiPrefix]: {
           target: 'http://localhost/api',
           changeOrigin: true,
-          rewrite: (path) => path.replace(new RegExp(`^${apiPrefix}`), "")
+          rewrite: (path) => path.replace(new RegExp(`^${localApiPrefix}`), "")
         },
         [remoteApiPrefix]: {
           target: 'http://localhost:10088',
