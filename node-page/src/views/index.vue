@@ -3,8 +3,8 @@
     <div class="wrap">
       <div class="line gap-bottom">
         <router-link :to="{ name: 'PublicSpaces' }" class="module public-space">
-          <h2>Public Spaces</h2>
-          <p>For all technical teams, you can click in to view all the service space, select and open the service space you need.</p>
+          <h2>{{$t('space.publicSpaces')}}</h2>
+          <p>{{$t('space.publicSpaceIntroduce')}}</p>
         </router-link>
         <a @click="$router.push({ name: 'UserProfile' })" class="module profile">
           <h2 v-if="userInfo == null">Profile</h2>
@@ -16,17 +16,17 @@
         </a>
       </div>
       <router-link class="module private-space" :to="{ name: 'UserSpaces' }">
-        <h2>Private service spaces</h2>
-        <p>Private space only serves you or your team, you can organize technical staff to create and develop your service space for better and more efficient research and development work.</p>
+        <h2>{{$t('space.privateSpaces')}}</h2>
+        <p>{{$t('space.privateSpaceIntroduce')}}</p>
       </router-link>
       <div class="line gap-top">
         <router-link :to="{ name: 'CreateSpace' }" class="module new-space">
-          <h2>Create New Space</h2>
-          <p>Create a new service space and start a new journey of research and development.</p>
+          <h2>{{$t('space.createNewSpace')}}</h2>
+          <p>{{$t('space.createNewSpaceIntroduce')}}</p>
         </router-link>
         <router-link :to="{ name: 'Databases' }" class="module database">
-          <h2>Databases</h2>
-          <p>Connect and save your database connection information to help you get the code you want more easily.</p>
+          <h2>{{$t('database.databases')}}</h2>
+          <p>{{$t('database.databaseIntroduce')}}</p>
         </router-link>
       </div>
       <div class="project-wrap">
