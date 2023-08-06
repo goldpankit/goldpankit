@@ -52,9 +52,12 @@ app.use(function(err, req, res, next) {
   res.send('error');
 });
 
+// 自动升级
 client.autoUpgrade()
   .then(() => {
+    // 升级完成后，找到可用的端口号，默认80
     autoopen.findAvailablePort(80, (port) => {
+      // 开启应用监听
       app.listen(port, () => {
         log.success(`Server is listening on port ${port}`)
         autoopen.open(port)
