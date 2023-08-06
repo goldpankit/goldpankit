@@ -1,9 +1,9 @@
 <template>
   <div class="page">
-    <div class="wrap">
+    <div v-if="copyUserInfo != null" class="wrap">
       <div class="avatar-wrap">
-        <AvatarUploader avatar-url="/images/avatar/1.png"/>
-        <el-input model-value="刘大逵"></el-input>
+        <AvatarUploader v-model="copyUserInfo.avatar"/>
+        <el-input v-model="copyUserInfo.nickname"></el-input>
       </div>
       <div class="introduce-wrap">
         <label>Introduce</label>
@@ -17,11 +17,24 @@
 </template>
 
 <script>
-
 import AvatarUploader from "../../../components/common/AvatarUploader.vue";
+import {mapState} from "vuex";
 
 export default {
-  components: {AvatarUploader}
+  components: {AvatarUploader},
+  computed: {
+    ...mapState(['userInfo'])
+  },
+  data () {
+    return {
+      copyUserInfo: null
+    }
+  },
+  watch: {
+    userInfo () {
+      this.copyUserInfo = JSON.parse(JSON.stringify(this.userInfo))
+    }
+  }
 }
 </script>
 
