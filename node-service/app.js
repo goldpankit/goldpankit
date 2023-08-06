@@ -10,6 +10,7 @@ const autoopen = require('./core/utils/autoopen')
 const routers = require('./routes/index');
 const log = require('./core/utils/log')
 const client = require('./core/client')
+const { createProxyMiddleware } = require('http-proxy-middleware');
 
 const app = express();
 // app.use((req, res, next) => {
@@ -18,6 +19,14 @@ const app = express();
 //   next();
 // })
 // app.use(logger('dev'));
+// 开启远程接口代理
+app.use('/remote-api', createProxyMiddleware({
+  target: 'http://localhost:10088',  // 目标服务器的地址
+  changeOrigin: true,  // 修改请求头中的origin为目标服务器地址
+  pathRewrite: {
+    '^/remote-api': '',  // 将路径前缀/remote-api替换为空
+  },
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
