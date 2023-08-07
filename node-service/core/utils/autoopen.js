@@ -17,7 +17,7 @@ module.exports = {
       }
     }
     // 找不到配置文件或项目，则打开公共空间页面
-    open(`http://localhost:${port}/spaces`)
+    open(`http://localhost:${port}`)
   },
   // 查询可用的端口号
   findAvailablePort(port, callback) {

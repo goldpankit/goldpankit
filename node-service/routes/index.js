@@ -1,3 +1,4 @@
+const client = require('./client')
 const service = require('./service')
 const serviceCompile = require('./service.compile')
 const serviceVersion = require('./service.version')
@@ -8,6 +9,7 @@ const localFile = require('./local.file')
 const database = require('./database')
 const databaseUtil = require('./database.util')
 module.exports = {
+  client,
   service,
   serviceCompile,
   serviceVersion,
