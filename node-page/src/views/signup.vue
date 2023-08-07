@@ -1,22 +1,22 @@
 <template>
   <div class="signup">
     <div class="wrap">
-      <h2>Sign Up</h2>
+      <h2>{{ $t('common.signUp') }}</h2>
       <el-form ref="form" :model="form" :rules="rules" @submit.stop>
-        <el-form-item label="Username" prop="username" required>
+        <el-form-item :label="$t('user.username')" prop="username" required>
           <el-input v-model="form.username" type="text" size="large"/>
         </el-form-item>
-        <el-form-item label="Password" prop="password" required>
+        <el-form-item :label="$t('user.password')" prop="password" required>
           <el-input v-model="form.password" type="password" size="large"/>
         </el-form-item>
-        <el-form-item label="Email" prop="otpElement" required>
+        <el-form-item :label="$t('user.email')" prop="otpElement" required>
           <el-input v-model="form.otpElement" type="text" size="large">
 <!--            <template #prepend>-->
 <!--              <span>+86</span>-->
 <!--            </template>-->
           </el-input>
         </el-form-item>
-        <el-form-item label="OTP code" prop="otpCode" required class="otp-code">
+        <el-form-item :label="$t('user.otpCode')" prop="otpCode" required class="otp-code">
           <div>
             <el-input type="text" v-model="form.otpCode" size="large"/>
             <el-button
@@ -25,24 +25,24 @@
               :disabled="sendOtpCodeData.isWorking || sendOtpCodeData.timeout !== 0"
               @click="sendOtpCode"
             >
-              <template v-if="sendOtpCodeData.isWorking">Sending...</template>
-              <template v-else-if="sendOtpCodeData.timeout === 0 && !sendOtpCodeData.sended">Send OTP Code</template>
-              <template v-else-if="sendOtpCodeData.timeout === 0 && sendOtpCodeData.sended">Resend OTP Code</template>
+              <template v-if="sendOtpCodeData.isWorking">{{$t('common.otp.sending')}}</template>
+              <template v-else-if="sendOtpCodeData.timeout === 0 && !sendOtpCodeData.sended">{{$t('common.otp.send')}}</template>
+              <template v-else-if="sendOtpCodeData.timeout === 0 && sendOtpCodeData.sended">{{$t('common.otp.resend')}}</template>
               <template v-else>{{sendOtpCodeData.timeout}}s</template>
             </el-button>
           </div>
-          <p v-if="sendOtpCodeData.sended">tips: We are sending you a OTP code to {{form.otpElement}}. If you do not receive it, you can resend it in 60 seconds.</p>
+          <p v-if="sendOtpCodeData.sended">{{$t('common.otp.sendTip', { email: form.otpElement })}}</p>
         </el-form-item>
       </el-form>
       <div class="login-box">
         <div>
-          <el-button type="important" @click="regis" :disabled="regisData.isWorking">Create an account</el-button>
+          <el-button type="important" @click="regis" :disabled="regisData.isWorking">{{$t('user.createAccount')}}</el-button>
         </div>
       </div>
     </div>
     <div class="have-an-account">
-      <p>Already have an account?</p>
-      <router-link :to="{ name: 'SignIn' }">Sign In</router-link>
+      <p>{{$t('user.haveAnAccount')}}</p>
+      <router-link :to="{ name: 'SignIn' }">{{$t('common.signIn')}}</router-link>
     </div>
   </div>
 </template>

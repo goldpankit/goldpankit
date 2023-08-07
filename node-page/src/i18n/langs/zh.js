@@ -22,6 +22,13 @@ export default {
       daysAgo: '{value}天前',
       monthsAgo: '{value}月前',
       yearsAgo: '{value}年前',
+    },
+    // 动态码
+    otp: {
+      send: '发送动态码',
+      sending: '发送中...',
+      resend: '重发动态码',
+      sendTip: '提示:我们已经发送动态码到您的邮箱 {email}. 如果没有接收到, 你可以在60秒后重发.'
     }
   },
   // 组件
@@ -36,8 +43,11 @@ export default {
     account: '账号',
     username: '用户名',
     password: '密码',
+    email: '邮箱地址',
+    otpCode: '动态码',
     forgotPassword: '忘记密码',
-    createAccount: '创建新账号'
+    createAccount: '创建新账号',
+    haveAnAccount: '已有账号？',
   },
   // 空间相关
   space: {

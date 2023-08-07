@@ -14,6 +14,7 @@ export default {
     name: 'Name',
     remark: 'Remark',
     cancel: 'Cancel',
+    // 日期差
     dateOffset: {
       aMomentAgo: 'A moment ago',
       minutesAgo: '{value} minutes ago',
@@ -21,6 +22,13 @@ export default {
       daysAgo: '{value} days ago',
       monthsAgo: '{value} months ago',
       yearsAgo: '{value} years ago',
+    },
+    // 动态码
+    otp: {
+      send: 'Send OTP Code',
+      sending: 'Sending...',
+      resend: 'Resend OTP Code',
+      sendTip: 'tips: We are sending you a OTP code to {email}. If you do not receive it, you can resend it in 60 seconds.'
     }
   },
   // 组件
@@ -35,8 +43,11 @@ export default {
     account: 'Account',
     username: 'Username',
     password: 'Password',
+    email: 'Email Address',
+    otpCode: 'OTP code',
     forgotPassword: 'Forgot Password',
-    createAccount: 'Create Account'
+    createAccount: 'Create Account',
+    haveAnAccount: 'Already have an account?',
   },
   // 空间相关
   space: {
