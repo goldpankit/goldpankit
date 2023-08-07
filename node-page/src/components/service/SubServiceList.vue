@@ -31,7 +31,7 @@
       </div>
     </li>
   </ul>
-  <Empty v-else description="No Sub Services"/>
+  <Empty v-else :description="$t('service.noSubServices')"/>
 </template>
 
 <script>

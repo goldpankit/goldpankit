@@ -6,11 +6,11 @@
         <h2>{{copyUserInfo.username}}</h2>
       </div>
       <div class="introduce-wrap">
-        <label>Introduce</label>
+        <label>{{$t('common.introduce')}}</label>
         <el-input v-model="copyUserInfo.introduce" type="textarea" :rows="5"/>
       </div>
       <div class="opera">
-        <el-button type="primary" size="large" :disabled="isWorking" @click="save">Save</el-button>
+        <el-button type="primary" size="large" :disabled="isWorking" @click="save">{{$t('common.save')}}</el-button>
       </div>
     </div>
   </div>

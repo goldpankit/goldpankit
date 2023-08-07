@@ -19,6 +19,8 @@ export default {
     copy: '复制',
     execute: '执行',
     or: '或',
+    introduce: '简介',
+    save: '保存',
     // 日期差
     dateOffset: {
       aMomentAgo: '刚刚',
@@ -85,7 +87,8 @@ export default {
     upgrade: '立即升级',
     installSuccessfully: '安装成功',
     uninstallSuccessfully: '卸载完成',
-    noServices: '无服务'
+    noServices: '无服务',
+    noSubServices: '无子服务'
   },
   issue: {
     createNewIssue: '创建问题'
