@@ -1,6 +1,8 @@
 export default {
   // 通用
   common: {
+    signIn: '登录',
+    signUp: '注册',
     search: '搜索',
     delete: '删除',
     private: '私有',
@@ -31,6 +33,11 @@ export default {
   user: {
     profile: '个人资料',
     logout: '退出登录',
+    account: '账号',
+    username: '用户名',
+    password: '密码',
+    forgotPassword: '忘记密码',
+    createAccount: '创建新账号'
   },
   // 空间相关
   space: {
@@ -39,7 +46,7 @@ export default {
     searchEmpty: '未找到空间或服务',
     publicSpaces: '公共服务空间',
     publicSpaceIntroduce: '点击此处进入公共服务空间，您可以阅读空间的说明和查看提供的服务信息来选择您需要的空间，以协助您快速的研发项目。',
-    privateSpaces: '私有的服务空间',
+    privateSpaces: '私有服务空间',
     privateSpaceIntroduce: '点击此处进入您创建的私有的服务空间列表，私有的服务仅有您或您的团队可以使用。',
     createNewSpace: '创建新的空间',
     createNewSpaceIntroduce: '点击此处可创建一个新的空间，您可以自由选择是私有空间或公共空间。',

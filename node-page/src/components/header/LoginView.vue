@@ -1,11 +1,11 @@
 <template>
-  <el-radio-group v-model="$i18n.locale">
+  <el-radio-group class="i18n" v-model="$i18n.locale">
     <el-radio-button label="en">English</el-radio-button>
     <el-radio-button label="zh">简体中文</el-radio-button>
   </el-radio-group>
   <template v-if="userInfo == null">
-    <el-button @click="$router.push({ name: 'SignIn' })">Sign In</el-button>
-    <el-button type="important" @click="$router.push({ name: 'SignUp' })">Sign Up</el-button>
+    <el-button @click="$router.push({ name: 'SignIn' })">{{$t('common.signIn')}}</el-button>
+    <el-button type="important" @click="$router.push({ name: 'SignUp' })">{{$t('common.signUp')}}</el-button>
   </template>
   <template v-else>
     <div class="bean-wrap">
@@ -31,6 +31,9 @@ export default {
 </script>
 
 <style scoped lang="scss">
+.i18n {
+  margin-right: 15px;
+}
 .bean-wrap {
   margin-left: 30px;
   margin-right: 30px;

@@ -1,6 +1,8 @@
 export default {
   // 通用
   common: {
+    signIn: 'Sign In',
+    signUp: 'Sign Up',
     search: 'Search',
     delete: 'Delete',
     private: 'Private',
@@ -30,6 +32,11 @@ export default {
   user: {
     profile: 'Profile',
     logout: 'Logout',
+    account: 'Account',
+    username: 'Username',
+    password: 'Password',
+    forgotPassword: 'Forgot Password',
+    createAccount: 'Create Account'
   },
   // 空间相关
   space: {

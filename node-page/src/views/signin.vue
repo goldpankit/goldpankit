@@ -1,27 +1,27 @@
 <template>
   <div class="signup">
     <div class="wrap">
-      <h2>Sign In</h2>
+      <h2>{{$t('common.signIn')}}</h2>
       <el-form ref="form" :model="form" @submit.stop>
-        <el-form-item label="Username" prop="username" required>
+        <el-form-item :label="$t('user.username')" prop="username" required>
           <el-input v-model="form.username" type="text" size="large"/>
         </el-form-item>
-        <el-form-item class="password-item" label="Password" prop="password" required>
+        <el-form-item class="password-item" :label="$t('user.password')" prop="password" required>
           <template #label>
-            <label>Password</label>
-            <router-link to="#">Forgot Password</router-link>
+            <label>{{$t('user.password')}}</label>
+            <router-link to="#">{{$t('user.forgotPassword')}}</router-link>
           </template>
           <el-input v-model="form.password" show-password type="password" size="large" @keypress.enter.native="login"/>
         </el-form-item>
       </el-form>
       <div class="login-box">
         <div>
-          <el-button type="important" :disabled="loginData.isWorking" @click="login">Sign In</el-button>
+          <el-button type="important" :disabled="loginData.isWorking" @click="login">{{$t('common.signIn')}}</el-button>
         </div>
       </div>
     </div>
     <div class="create-account">
-      <router-link :to="{ name: 'SignUp' }">Create Account</router-link>
+      <router-link :to="{ name: 'SignUp' }">{{$t('user.createAccount')}}</router-link>
     </div>
   </div>
 </template>

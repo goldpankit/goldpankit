@@ -7,7 +7,7 @@
           <p>{{$t('space.publicSpaceIntroduce')}}</p>
         </router-link>
         <a @click="$router.push({ name: 'UserProfile' })" class="module profile">
-          <h2 v-if="userInfo == null">Profile</h2>
+          <h2 v-if="userInfo == null">{{$t('user.account')}}</h2>
           <h2 v-else>{{userInfo.username}}</h2>
           <ul v-if="userInfo != null">
             <li><el-button @click.stop="$router.push({ name: 'UserProfile' })" icon="UserFilled">{{$t('user.profile')}}</el-button></li>
