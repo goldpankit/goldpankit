@@ -3,16 +3,16 @@
     <div class="wrap">
       <h2>{{ space.name }}</h2>
       <div class="tech-stack-wrap">
-        <em>{{ space.withPrivate ? 'Private' : 'Public' }}</em>
-        <p class="tech-stack">{{space.serviceCount}} services</p>
+        <em>{{ space.withPrivate ? $t('common.private') : $t('common.public') }}</em>
+        <p class="tech-stack">{{space.serviceCount}} {{$t('service.services')}}</p>
       </div>
       <div class="content-wrap">
         <div class="dimension-wrap">
           <ul class="dimensions">
-            <li :class="{ selected: currentTab === 'readme' }" @click="currentTab = 'readme'">Readme</li>
-            <li :class="{ selected: currentTab === 'services' }" @click="currentTab = 'services'">Services</li>
-            <li :class="{ selected: currentTab === 'prices' }" @click="currentTab = 'prices'">Prices</li>
-            <li :class="{ selected: currentTab === 'issues' }" @click="currentTab = 'issues'">Issues</li>
+            <li :class="{ selected: currentTab === 'readme' }" @click="currentTab = 'readme'">{{$t('common.readme')}}</li>
+            <li :class="{ selected: currentTab === 'services' }" @click="currentTab = 'services'">{{$t('service.services2')}}</li>
+            <li :class="{ selected: currentTab === 'prices' }" @click="currentTab = 'prices'">{{$t('common.prices')}}</li>
+            <li :class="{ selected: currentTab === 'issues' }" @click="currentTab = 'issues'">{{$t('common.issues')}}</li>
           </ul>
           <div class="detail">
             <template v-if="currentTab === 'readme'">
@@ -71,25 +71,24 @@
               type="primary"
               size="large"
               @click="$router.push({ name: 'CreateService', query: { space: spaceName } })"
-            >Create New Service</el-button>
+            >{{$t('service.createNewService')}}</el-button>
             <el-button
               type="primary"
               size="large"
-              @click="$router.push({ name: 'CreateService', query: { space: spaceName } })"
-            >Create New Issue</el-button>
+            >{{$t('issue.createNewIssue')}}</el-button>
           </div>
           <ul>
             <li>
-              <label>Home Page</label>
+              <label>{{$t('space.homePage')}}</label>
               <a v-if="space.homePage != null && space.homePage !== ''" href="#">{{space.homePage}}</a>
-              <p v-else>None</p>
+              <p v-else>{{$t('common.none')}}</p>
             </li>
             <li>
-              <label>Services</label>
+              <label>{{$t('service.services2')}}</label>
               <p>{{space.serviceCount}}</p>
             </li>
             <li>
-              <label>Last Publish</label>
+              <label>{{$t('service.lastPublish')}}</label>
               <p v-if="space.lastPublish != null">{{space.lastPublish}}</p>
               <p v-else>None</p>
             </li>

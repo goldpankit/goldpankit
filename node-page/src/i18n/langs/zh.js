@@ -3,6 +3,13 @@ export default {
   common: {
     search: '搜索',
     delete: '删除',
+    private: '私有',
+    public: '公开',
+    readme: '说明',
+    prices: '价格',
+    issues: '问题',
+    none: '无',
+    // 日期差
     dateOffset: {
       aMomentAgo: '刚刚',
       minutesAgo: '{value}分钟前',
@@ -19,6 +26,7 @@ export default {
   },
   // 空间相关
   space: {
+    homePage: '首页',
     searchPlaceholder: '输入关键字，搜索空间和服务',
     searchEmpty: '未找到空间或服务',
     publicSpaces: '公共服务空间',
@@ -30,9 +38,15 @@ export default {
   },
   // 服务
   service: {
+    services: '个服务',
+    services2: '服务',
     versions: '个版本',
     latestVersion: '最新版本',
     lastPublish: '最后发布于',
+    createNewService: '创建服务'
+  },
+  issue: {
+    createNewIssue: '创建问题'
   },
   // 数据库相关
   database: {
