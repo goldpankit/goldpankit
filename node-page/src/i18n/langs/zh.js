@@ -1,5 +1,13 @@
 export default {
-  welcome: '你好',
+  // 通用
+  common: {
+    delete: '删除',
+  },
+  // 用户
+  user: {
+    profile: '个人资料',
+    logout: '退出登录',
+  },
   // 空间相关
   space: {
     publicSpaces: '公共服务空间',
@@ -13,5 +21,11 @@ export default {
   database: {
     databases: '数据库',
     databaseIntroduce: '保存您的数据库连接信息到您的当前设备上，服务可以更方便的为您安装代码。'
+  },
+  // 项目相关
+  project: {
+    myProjects: '我的项目',
+    createProject: '创建项目',
+    noProjects: '暂无项目'
   }
 }

@@ -1,6 +1,13 @@
 export default {
-  welcome: 'Welcome',
-  search: 'Search',
+  // 通用
+  common: {
+    delete: 'Delete'
+  },
+  // 用户
+  user: {
+    profile: 'Profile',
+    logout: 'Logout',
+  },
   // 空间相关
   space: {
     publicSpaces: 'Public Spaces',
@@ -14,5 +21,11 @@ export default {
   database: {
     databases: 'Databases',
     databaseIntroduce: 'Connect and save your database connection information to help you get the code you want more easily.'
+  },
+  // 项目相关
+  project: {
+    myProjects: 'My Projects',
+    createProject: 'Create Project',
+    noProjects: 'No Projects'
   }
 }

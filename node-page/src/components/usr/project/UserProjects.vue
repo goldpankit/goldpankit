@@ -1,10 +1,10 @@
 <template>
   <div class="user-projects">
     <div class="title">
-      <h2>My Projects</h2>
-      <el-button type="primary" @click="$router.push({ name: 'CreateProject' })">
+      <h2>{{ $t('project.myProjects') }}</h2>
+      <el-button type="primary" @click="$refs.createProjectWindow.open()">
         <el-icon :size="14" style="margin-right: 5px;"><Plus /></el-icon>
-        Create Project
+        {{ $t('project.createProject') }}
       </el-button>
     </div>
     <ul v-if="projects.length > 0">
@@ -15,21 +15,23 @@
           <p>{{project.codespace}}</p>
         </div>
         <div class="opera">
-          <el-button type="danger" text @click="deleteProject(project)">Delete</el-button>
+          <el-button type="danger" text @click="deleteProject(project)">{{$t('common.delete')}}</el-button>
         </div>
       </li>
     </ul>
-    <Empty v-else description="No Projects."/>
+    <Empty v-else :description="$t('project.noProjects')"/>
+    <CreateProjectWindow ref="createProjectWindow" @success="search"/>
   </div>
 </template>
 
 <script>
 import {deleteProject, search} from "../../../api/user.project";
 import Empty from "../../common/Empty.vue";
+import CreateProjectWindow from "./CreateProjectWindow.vue";
 
 export default {
   name: "UserProjects",
-  components: {Empty},
+  components: {CreateProjectWindow, Empty},
   data () {
     return {
       projects: []
