@@ -48,9 +48,10 @@ export default {
     selectService: 'Select a service',
     selectService2: 'SELECT SERVICES',
     serviceIntroduce: 'In the service space, there are services available such as framework setup, project development, module creation, and more.',
-    installService: 'INSTALL',
+    installService: 'Install Service',
     installIntroduce: 'Click the 「INSTALL」 button on the service page to install the service code into your project.',
-    completed: 'COMPLETED'
+    completed: 'COMPLETED',
+    goToServiceSpaces: 'Go to the service space'
   },
   // 组件
   component: {

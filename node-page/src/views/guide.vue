@@ -6,13 +6,13 @@
         <p>{{$t('guide.kitIntroduce')}}</p>
         <p class="description">{{$t('guide.kitDescription')}}</p>
         <div class="opera">
-          <el-button @click="$router.push({name: 'SignIn'})" type="important">{{$t('common.signIn')}}</el-button>
-          <el-button @click="$router.push({name: 'SignUp'})" type="primary">{{$t('common.signUp')}}</el-button>
+          <el-button @click="$router.push({name: 'SignUp'})" type="important">{{$t('common.signUp')}}</el-button>
+          <el-button type="primary" @click="$router.push({name: 'PublicSpaces'})">{{$t('guide.goToServiceSpaces')}}</el-button>
         </div>
       </div>
       <span class="emb">G</span>
       <span class="emb service">{{$t('guide.selectService2')}}</span>
-      <span class="emb install">{{$t('guide.installService')}}</span>
+      <span class="emb install">{{$t('service.install')}}</span>
       <span class="emb done">{{$t('guide.completed')}}</span>
     </div>
     <div class="content">
@@ -20,16 +20,16 @@
         <h3>{{$t('guide.start')}}</h3>
         <ul>
           <li>
-            <h4>{{$t('guide.selectService')}}</h4>
+            <h4>i. {{$t('guide.selectService')}}</h4>
             <p>{{$t('guide.serviceIntroduce')}}</p>
           </li>
           <li>
-            <h4>{{$t('guide.installService')}}</h4>
+            <h4>ii. {{$t('guide.installService')}}</h4>
             <p>{{$t('guide.installIntroduce')}}</p>
           </li>
         </ul>
         <div class="opera">
-          <el-button type="primary" size="large"  @click="$router.push({name: 'PublicSpaces'})">去服务空间</el-button>
+          <el-button type="primary" size="large"  @click="$router.push({name: 'PublicSpaces'})">{{$t('guide.goToServiceSpaces')}}</el-button>
         </div>
       </div>
     </div>
@@ -93,7 +93,7 @@ export default {
     .opera {
       margin-top: 50px;
       .el-button {
-        width: 200px;
+        width: 245px;
         height: 60px;
         font-size: 18px;
         border-radius: 100px;
@@ -147,7 +147,7 @@ export default {
     }
     &.done {
       font-size: 50px;
-      left: 1000px;
+      left: 1050px;
       top: initial;
       bottom: 200px;
       transform: none;
@@ -186,7 +186,7 @@ export default {
       justify-content: center;
       margin-top: 100px;
       .el-button {
-        width: 200px;
+        width: 255px;
         height: 80px;
         font-size: 20px;
       }

@@ -1,7 +1,6 @@
 <template>
   <div class="signup">
     <div class="wrap">
-      <img src="/images/icon.svg" alt="">
       <h2>{{$t('common.signIn')}}</h2>
       <el-form ref="form" :model="form" @submit.stop>
         <el-form-item :label="$t('user.username')" prop="username" required>
@@ -87,6 +86,7 @@ export default {
 
 <style scoped lang="scss">
 .signup {
+  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -95,7 +95,7 @@ export default {
 }
 .wrap {
   width: 500px;
-  padding: 30px;
+  padding: 50px 30px;
   background-color: var(--color-light);
   box-sizing: border-box;
   box-shadow: var(--page-shadow);

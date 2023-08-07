@@ -50,7 +50,8 @@ export default {
     serviceIntroduce: '服务空间中包含了服务，这些服务可以是框架的搭建、项目的构建、模块的开发等。',
     installService: '安装服务',
     installIntroduce: '在服务页点击「安装」按钮即可将服务代码安装到您的项目中。',
-    completed: '开发完成'
+    completed: '开发完成',
+    goToServiceSpaces: '前往服务空间'
   },
   // 组件
   component: {
