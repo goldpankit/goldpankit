@@ -22,6 +22,7 @@ export default {
     introduce: 'Introduce',
     save: 'Save',
     days: 'days',
+    currentVersion: 'current version',
     // 日期差
     dateOffset: {
       aMomentAgo: 'A moment ago',
@@ -38,6 +39,18 @@ export default {
       resend: 'Resend OTP Code',
       sendTip: 'tips: We are sending you a OTP code to {email}. If you do not receive it, you can resend it in 60 seconds.'
     }
+  },
+  // 向导
+  guide: {
+    kitIntroduce: 'To assist you and your team in efficient project research and development.',
+    kitDescription: 'GoldPanKit, jointly developed by the original team of CodeRd and Tsinghua Cross-Strait Research Institute, is a brand-new research and development toolkit that offers one-click installation service for functionalities and technology stack.',
+    start: `Let's Start`,
+    selectService: 'Select a service',
+    selectService2: 'SELECT SERVICES',
+    serviceIntroduce: 'In the service space, there are services available such as framework setup, project development, module creation, and more.',
+    installService: 'INSTALL',
+    installIntroduce: 'Click the 「INSTALL」 button on the service page to install the service code into your project.',
+    completed: 'COMPLETED'
   },
   // 组件
   component: {

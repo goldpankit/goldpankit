@@ -22,6 +22,7 @@ export default {
     introduce: '简介',
     save: '保存',
     days: '天',
+    currentVersion: '当前版本',
     // 日期差
     dateOffset: {
       aMomentAgo: '刚刚',
@@ -38,6 +39,18 @@ export default {
       resend: '重发动态码',
       sendTip: '提示:我们已经发送动态码到您的邮箱 {email}. 如果没有接收到, 你可以在60秒后重发.'
     }
+  },
+  // 向导
+  guide: {
+    kitIntroduce: '助力您和您的团队进行高效的项目研发',
+    kitDescription: 'GoldPanKit由CodeRd原班人马和清华海峡研究院共同研制，是一个全新的研发套件，为您提供功能和技术栈一键安装服务。',
+    start: '开始使用',
+    selectService: '选择服务',
+    selectService2: '选择服务',
+    serviceIntroduce: '服务空间中包含了服务，这些服务可以是框架的搭建、项目的构建、模块的开发等。',
+    installService: '安装服务',
+    installIntroduce: '在服务页点击「安装」按钮即可将服务代码安装到您的项目中。',
+    completed: '开发完成'
   },
   // 组件
   component: {
