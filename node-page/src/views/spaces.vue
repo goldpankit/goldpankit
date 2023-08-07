@@ -7,11 +7,11 @@
           <el-input
             v-model="keyword"
             size="large"
-            placeholder="Search spaces & services"
+            :placeholder="$t('space.searchPlaceholder')"
             @keypress.enter.native="search"
           />
         </div>
-        <el-button size="large" type="primary" @click="search">Search</el-button>
+        <el-button size="large" type="primary" @click="search">{{$t('common.search')}}</el-button>
       </div>
       <Pagination
         v-if="pagination.pageCount > 1"
@@ -45,7 +45,7 @@
           </a>
         </li>
       </ul>
-      <Empty v-if="keyword.trim() !== '' && spaces.length === 0" description="Not Found Spaces"/>
+      <Empty v-if="keyword.trim() !== '' && spaces.length === 0" :description="$t('space.searchEmpty')"/>
       <Pagination
         v-if="pagination.pageCount > 1"
         :pagination="pagination"

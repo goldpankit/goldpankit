@@ -4,11 +4,11 @@
       <h4>{{service.name}}</h4>
       <p>{{service.introduce}}</p>
       <section class="infos">
-        <p>{{service.versionCount}} versions</p>
-        <p>Latest version: {{service.lastVersion}}</p>
+        <p>{{service.versionCount}} {{$t('service.versions')}}</p>
+        <p>{{$t('service.latestVersion')}}: {{service.lastVersion}}</p>
       </section>
       <div class="price-wrap">
-        <p class="text-info-1 text-mini">Last publish: {{getDateOffsetText(service.lastPublish)}}</p>
+        <p class="text-info-1 text-mini">{{$t('service.lastPublish')}}: {{getDateOffsetText(service.lastPublish, $t)}}</p>
         <BeanAmount :price="service.price.price" :type="service.price.leaseType"/>
       </div>
     </li>

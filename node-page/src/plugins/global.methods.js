@@ -2,10 +2,11 @@ import dayjs from 'dayjs'
 export default {
   /**
    * 获取时间差文本
-   * @param dateText
+   * @param dateText 时间字符串
+   * @param $t 国际化文案获取函数
    * @returns {*}
    */
-  getDateOffsetText(dateText) {
+  getDateOffsetText(dateText, $t) {
     const timestamp = dayjs(dateText)
     const now = new Date().getTime()
     let offset = now - timestamp
@@ -13,30 +14,30 @@ export default {
     const daySeconds = 3600 * 24
     let tip = '';
     if (offset === 0) {
-      tip = '刚刚'
+      tip = $t('common.dateOffset.aMomentAgo')
     }
     // 1分钟以内
     else if (offset < 60) {
-      tip = '刚刚'
+      tip = $t('common.dateOffset.aMomentAgo')
     }
     // 一个小时以内
     else if (offset < 3600) {
-      tip = Math.floor(offset / 60) + '分钟前';
+      tip = $t('common.dateOffset.minutesAgo', { value: Math.floor(offset / 60) });
     }
     // 一天内
     else if (offset < daySeconds) {
-      tip = Math.floor(offset / 3600) + '小时前';
+      tip = $t('common.dateOffset.hoursAgo', { value: Math.floor(offset / 3600) });
     }
     // 一个月内
     else if (offset < daySeconds * 31) {
-      tip = Math.floor(offset / (3600 * 24)) + '天前';
+      tip = $t('common.dateOffset.daysAgo', { value: Math.floor(offset / (3600 * 24)) })
     }
     // 一年内
     else if (offset < daySeconds * 365) {
-      tip = Math.floor(offset / (daySeconds * 31)) + '月前';
+      tip = $t('common.dateOffset.monthsAgo', { value: Math.floor(offset / (daySeconds * 31)) })
     }
     else {
-      tip = Math.floor(offset / (daySeconds * 365)) + '年前';
+      tip = $t('common.dateOffset.yearsAgo', { value: Math.floor(offset / (daySeconds * 365)) })
     }
     return tip;
   },
