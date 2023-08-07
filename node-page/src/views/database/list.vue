@@ -1,14 +1,14 @@
 <template>
   <div class="form">
     <div class="wrap">
-      <h2>Databases</h2>
+      <h2>{{$t('database.databases')}}</h2>
       <section class="tip">
-        The database information will only be stored on your device.
+        {{$t('database.tip')}}
       </section>
       <div class="database-list-wrap">
         <ul class="toolbar">
           <li>
-            <el-button type="primary" @click="$refs.operaDatabaseWindow.open()">Add New Database</el-button>
+            <el-button type="primary" @click="$refs.operaDatabaseWindow.open()">{{$t('database.addNewDatabase')}}</el-button>
           </li>
         </ul>
         <ul v-if="databases.length > 0" class="database-list">
@@ -17,7 +17,6 @@
               :database="db"
               @edit="edit(db)"
               @delete="deleteDatabase(db.id)"
-              @connect="connect(db)"
             />
           </li>
         </ul>

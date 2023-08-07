@@ -1,50 +1,50 @@
 <template>
   <el-dialog
     v-model="visible"
-    title="Create Database"
+    :title="$t('database.createDatabase')"
     custom-class="create-database-dialog"
     append-to-body
     :close-on-click-modal="false"
     :close-on-press-escape="false"
   >
     <el-form ref="form" :model="form">
-      <el-form-item label="Name" required>
+      <el-form-item :label="$t('common.name')" required>
         <el-input v-model="form.name"/>
       </el-form-item>
-      <el-form-item label="Database Type" required>
+      <el-form-item :label="$t('database.databaseType')" required>
         <DatabaseTypeSelect v-model="form.type" :multiple="false"/>
       </el-form-item>
-      <el-form-item label="Host" required>
+      <el-form-item :label="$t('database.host')" required>
         <el-input v-model="form.host"/>
       </el-form-item>
-      <el-form-item label="Port" required>
+      <el-form-item :label="$t('database.port')" required>
         <el-input v-model="form.port"/>
       </el-form-item>
-      <el-form-item label="Schema" required>
+      <el-form-item :label="$t('database.schema')" required>
         <el-input v-model="form.schema"/>
       </el-form-item>
-      <el-form-item label="Username" required>
+      <el-form-item :label="$t('database.username')" required>
         <el-input v-model="form.username"/>
       </el-form-item>
-      <el-form-item label="Password" required>
+      <el-form-item :label="$t('database.password')" required>
         <el-input type="password" v-model="form.password" show-password/>
       </el-form-item>
       <el-form-item v-if="form.type === 'mysql'" label="URL" class="item-url" required>
         <template #label>
           <div>
             <label>URL</label>
-            <a href="javascript:;" @click="testConnect">Test Connection</a>
+            <a href="javascript:;" @click="testConnect">{{$t('database.testConnection')}}</a>
           </div>
         </template>
         <el-input :model-value="url" readonly disabled/>
-        <p v-if="connectResult.connecting">连接中</p>
+        <p v-if="connectResult.connecting">{{$t('database.connecting')}}</p>
         <p v-else-if="!connectResult.withError && connectResult.message != null" class="success">{{connectResult.message}}</p>
         <p v-else-if="connectResult.message != null" class="error">{{connectResult.message}}</p>
       </el-form-item>
     </el-form>
     <div class="opera">
-      <el-button size="large" @click="cancelCreate">Cancel</el-button>
-      <el-button type="primary" size="large" @click="confirmCreate">Create Database</el-button>
+      <el-button size="large" @click="cancelCreate">{{$t('common.cancel')}}</el-button>
+      <el-button type="primary" size="large" @click="confirmCreate">{{$t('database.createDatabase')}}</el-button>
     </div>
   </el-dialog>
 </template>

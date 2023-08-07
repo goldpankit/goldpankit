@@ -5,6 +5,7 @@ export default {
     signUp: 'Sign Up',
     search: 'Search',
     delete: 'Delete',
+    edit: 'Edit',
     private: 'Private',
     public: 'Public',
     readme: 'Readme',
@@ -88,8 +89,22 @@ export default {
   },
   // 数据库
   database: {
-    databases: 'Databases',
-    databaseIntroduce: 'Connect and save your database connection information to help you get the code you want more easily.'
+    databases: 'Database Connections',
+    tip: 'This database connections will only be stored on your device.',
+    databaseIntroduce: 'save your database connection information to help you get the code you want more easily.',
+    databaseType: 'Database Type',
+    host: 'Host',
+    port: 'Port',
+    schema: 'Schema',
+    username: 'Username',
+    password: 'Password',
+    url: 'URL',
+    testConnection: 'Test Connection',
+    connecting: 'Connecting...',
+    createDatabase: 'Create Connection',
+    connectSuccessfully: 'Succeeded',
+    addNewDatabase: 'Add New Connection',
+    queryModels: 'Query Models'
   },
   // 项目
   project: {
@@ -98,6 +113,6 @@ export default {
     createProject: 'Create Project',
     noProjects: 'No Projects',
     createTip: 'The project information will only be saved on your current device.',
-    codespace: 'Code Space',
+    codespace: 'Code Space'
   }
 }

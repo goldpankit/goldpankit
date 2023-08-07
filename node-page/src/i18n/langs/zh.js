@@ -5,6 +5,7 @@ export default {
     signUp: '注册',
     search: '搜索',
     delete: '删除',
+    edit: '编辑',
     private: '私有',
     public: '公开',
     readme: '说明',
@@ -87,8 +88,22 @@ export default {
   },
   // 数据库相关
   database: {
-    databases: '数据库',
-    databaseIntroduce: '保存您的数据库连接信息到您的当前设备上，服务可以更方便的为您安装代码。'
+    databases: '数据库连接',
+    tip: '数据库连接信息仅会保存在您的当前设备上。',
+    databaseIntroduce: '保存您的数据库连接信息到您的当前设备上，服务可以更方便的为您安装代码。',
+    databaseType: '数据库类型',
+    host: 'Host',
+    port: '端口',
+    schema: '库',
+    username: '用户名',
+    password: '密码',
+    url: 'URL',
+    testConnection: '测试连接',
+    connecting: '连接中...',
+    createDatabase: '创建连接',
+    connectSuccessfully: '连接成功',
+    addNewDatabase: '添加连接',
+    queryModels: '查询模型'
   },
   // 项目相关
   project: {
