@@ -1,7 +1,7 @@
 <template>
   <AppLayout class="none-layout">
     <header>
-      <div class="logo-wrap" @click="$router.push({ name: 'PublicSpaces' })">
+      <div class="logo-wrap" @click="$router.push({ name: 'Index' })">
         <h1>Gold Pan Kit</h1>
         <div class="decoration">
           <em></em>

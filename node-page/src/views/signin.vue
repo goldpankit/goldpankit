@@ -1,6 +1,7 @@
 <template>
   <div class="signup">
     <div class="wrap">
+      <img src="/images/icon.svg" alt="">
       <h2>{{$t('common.signIn')}}</h2>
       <el-form ref="form" :model="form" @submit.stop>
         <el-form-item :label="$t('user.username')" prop="username" required>
@@ -68,7 +69,7 @@ export default {
               getLoginInfo()
                 .then(userInfo => {
                   this.setUserInfo(userInfo)
-                  this.$router.push({ name: 'Index' })
+                  this.$router.push({ name: 'Desktop' })
                 })
             })
             .catch(e => {

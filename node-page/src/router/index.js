@@ -21,13 +21,13 @@ const router = createRouter({
       component: DefaultLayout,
       children: [
         {
-          path: '/',
-          name: 'Index',
-          component: () => import('@/views/index.vue')
+          path: '/desktop',
+          name: 'Desktop',
+          component: () => import('@/views/desktop.vue')
         },
         {
-          path: '/guide',
-          name: 'Guide',
+          path: '/',
+          name: 'Index',
           component: () => import('@/views/guide.vue')
         },
         {
