@@ -7,9 +7,9 @@
     @drop="handleDrop"
   >
     <div class="wrap">
-      <p>Drag and drop the table on the left here.</p>
-      <p>OR</p>
-      <p><em @click="confirmCreateVirtualTable">create a virtual table</em></p>
+      <p>{{$t('database.dragTip')}}</p>
+      <p>{{$t('common.or')}}</p>
+      <p><em @click="confirmCreateVirtualTable">{{$t('database.createVirtualTableTip')}}</em></p>
 <!--      <el-table :data="virtualTable.fields">-->
 <!--        <el-table-column prop="name" label="*Name">-->
 <!--          <template #default="{ row }">-->

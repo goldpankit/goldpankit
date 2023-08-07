@@ -15,6 +15,10 @@ export default {
     name: 'Name',
     remark: 'Remark',
     cancel: 'Cancel',
+    confirm: 'Confirm',
+    copy: 'Copy',
+    execute: 'Execute',
+    or: 'OR',
     // 日期差
     dateOffset: {
       aMomentAgo: 'A moment ago',
@@ -104,7 +108,13 @@ export default {
     createDatabase: 'Create Connection',
     connectSuccessfully: 'Succeeded',
     addNewDatabase: 'Add New Connection',
-    queryModels: 'Query Models'
+    queryModels: 'Query Models',
+    createNewModel: 'Create New Model',
+    tables: 'Tables',
+    dragTip: 'You can drag and drop the table on the left here.',
+    createVirtualTableTip: 'create a virtual table',
+    joinLine: 'Join Line',
+    aggregateLine: 'Aggregate Line',
   },
   // 项目
   project: {

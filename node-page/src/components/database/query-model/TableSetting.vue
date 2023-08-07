@@ -1,8 +1,8 @@
 <template>
   <div class="table-setting" :class="{ visible: table != null }">
     <div class="toolbar">
-      <el-button type="primary" class="button-copy" data-clipboard-text="Hello World" @click="copy">Copy</el-button>
-      <el-button type="primary" @click="execute">Execute</el-button>
+      <el-button type="primary" class="button-copy" data-clipboard-text="Hello World" @click="copy">{{$t('common.copy')}}</el-button>
+      <el-button type="primary" @click="execute">{{$t('common.execute')}}</el-button>
     </div>
     <div class="wrap" v-if="table != null">
       <!-- 查询语句 -->

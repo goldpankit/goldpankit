@@ -4,7 +4,7 @@
       <InnerRouterViewWindow ref="routerViewWindow" default="query-models">
         <InnerRouterView name="query-models">
           <div class="header" slot="title">
-            <h4>Query Models</h4>
+            <h4>{{$t('database.queryModels')}}</h4>
             <el-button type="primary" icon="Plus" class="button-icon" @click="createQueryModel"></el-button>
           </div>
           <ul class="model-list">
@@ -22,19 +22,19 @@
             </li>
           </ul>
         </InnerRouterView>
-        <InnerRouterView name="create-model" title="Create New Model">
+        <InnerRouterView name="create-model" :title="$t('database.createNewModel')">
           <div class="create-model-form">
             <el-form ref="createForm" :model="newModel" :rules="rules">
-              <el-form-item label="Model Name" prop="name" required>
+              <el-form-item :label="$t('common.name')" prop="name" required>
                 <el-input v-model="newModel.name"/>
               </el-form-item>
-              <el-form-item label="Comment" prop="comment">
+              <el-form-item :label="$t('common.remark')" prop="comment">
                 <el-input v-model="newModel.comment" type="textarea" :rows="2"/>
               </el-form-item>
             </el-form>
             <div class="opera">
-              <el-button @click="$refs.routerViewWindow.back()">Cancel</el-button>
-              <el-button type="primary" @click="confirmCreate">Confirm</el-button>
+              <el-button @click="$refs.routerViewWindow.back()">{{$t('common.cancel')}}</el-button>
+              <el-button type="primary" @click="confirmCreate">{{$t('common.confirm')}}</el-button>
             </div>
           </div>
         </InnerRouterView>
@@ -58,7 +58,7 @@
     </div>
     <div class="block">
       <div class="header">
-        <h4>Tables</h4>
+        <h4>{{$t('database.tables')}}</h4>
       </div>
       <ul class="table-list">
         <li

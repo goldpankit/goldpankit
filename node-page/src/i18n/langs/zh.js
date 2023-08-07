@@ -15,6 +15,10 @@ export default {
     name: '名称',
     remark: '备注',
     cancel: '取消',
+    confirm: '确认',
+    copy: '复制',
+    execute: '执行',
+    or: '或',
     // 日期差
     dateOffset: {
       aMomentAgo: '刚刚',
@@ -103,7 +107,13 @@ export default {
     createDatabase: '创建连接',
     connectSuccessfully: '连接成功',
     addNewDatabase: '添加连接',
-    queryModels: '查询模型'
+    queryModels: '查询模型',
+    createNewModel: '创建模型',
+    tables: '表',
+    dragTip: '您可以从左侧拖拽表到此区域进行模型设计',
+    createVirtualTableTip: '创建虚拟表',
+    joinLine: 'JOIN关联线',
+    aggregateLine: '聚合关联线',
   },
   // 项目相关
   project: {

@@ -12,11 +12,11 @@
         <ul class="line-types">
           <li :class="{selected: currentModel.lineType === 'join'}" @click="currentModel.lineType = 'join'">
             <em class="join-line"></em>
-            <label>Join Line</label>
+            <label>{{$t('database.joinLine')}}</label>
           </li>
           <li :class="{selected: currentModel.lineType === 'aggregate'}" @click="currentModel.lineType = 'aggregate'">
             <em class="aggregate-line"></em>
-            <label>Aggregate Line</label>
+            <label>{{$t('database.aggregateLine')}}</label>
           </li>
         </ul>
 <!--        <ul class="opera">-->
