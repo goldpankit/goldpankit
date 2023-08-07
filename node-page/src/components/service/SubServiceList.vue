@@ -11,7 +11,7 @@
           {{service.name}}
         </slot>
       </h5>
-      <p class="latest-version">Latest version: v{{service.lastVersion}}</p>
+      <p class="latest-version">{{$t('service.latestVersion')}}: v{{service.lastVersion}}</p>
       <p>{{service.introduce}}</p>
       <!-- 用户信息 -->
       <div class="user-profile">
@@ -19,9 +19,9 @@
         <span>{{service.user.username}}</span>
       </div>
       <div class="price-wrap">
-        <p class="text-info-1 text-mini">Last publish: {{getDateOffsetText(service.lastPublishTime)}}</p>
+        <p class="text-info-1 text-mini">{{$t('service.lastPublish')}}: {{getDateOffsetText(service.lastPublishTime, $t)}}</p>
         <em v-if="service.latestLease != null">
-          {{getRemainingDay(service.latestLease.leaseEndTime)}} days
+          {{getRemainingDay(service.latestLease.leaseEndTime)}} {{$t('common.days')}}
         </em>
         <BeanAmount
           v-else

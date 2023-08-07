@@ -21,6 +21,7 @@ export default {
     or: 'OR',
     introduce: 'Introduce',
     save: 'Save',
+    days: 'days',
     // 日期差
     dateOffset: {
       aMomentAgo: 'A moment ago',
@@ -88,7 +89,17 @@ export default {
     installSuccessfully: 'Install Successfully',
     uninstallSuccessfully: 'Uninstall Successfully',
     noServices: 'No Services',
-    noSubServices: 'No Sub Services'
+    noSubServices: 'No Sub Services',
+    // 租赁类型
+    leaseType: {
+      freeLabel: 'Free',
+      timesAbb: 'Times',
+      timesLabel: 'Charge per ride',
+      monthAbb: 'Month',
+      monthLabel: 'Monthly charge',
+      yearAbb: 'Year',
+      yearLabel: 'Annual charge',
+    }
   },
   // 问题
   issue: {

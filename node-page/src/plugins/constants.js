@@ -1,9 +1,11 @@
 export default {
-  // 服务价格类型
-  SERVICE_LEASE_TYPES: [
-    { code: 'FREE', label: 'Free', abbLabel: '' },
-    { code: 'TIMES', label: 'Charge per ride', abbLabel: 'Times' },
-    { code: 'MONTH', label: 'Monthly charge', abbLabel: 'Month' },
-    { code: 'YEAR', label: 'Annual charge', abbLabel: 'Year' }
-  ]
+  // 服务租赁类型
+  getServiceLeaseTypes($t) {
+    return [
+      { code: 'FREE', label: $t('service.leaseType.freeLabel'), abbLabel: '' },
+      { code: 'TIMES', label: $t('service.leaseType.timesLabel'), abbLabel: $t('service.leaseType.timesAbb') },
+      { code: 'MONTH', label: $t('service.leaseType.monthLabel'), abbLabel: $t('service.leaseType.monthAbb') },
+      { code: 'YEAR', label: $t('service.leaseType.yearLabel'), abbLabel: $t('service.leaseType.yearAbb') }
+    ]
+  }
 }

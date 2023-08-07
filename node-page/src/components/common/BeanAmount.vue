@@ -22,7 +22,7 @@ export default {
   },
   methods: {
     getTypeText () {
-      return this.$const.SERVICE_LEASE_TYPES.find(t => t.code === this.type).abbLabel
+      return this.$const.getServiceLeaseTypes(this.$t).find(t => t.code === this.type).abbLabel
     }
   }
 }

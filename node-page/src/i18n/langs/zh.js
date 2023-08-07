@@ -21,6 +21,7 @@ export default {
     or: '或',
     introduce: '简介',
     save: '保存',
+    days: '天',
     // 日期差
     dateOffset: {
       aMomentAgo: '刚刚',
@@ -88,7 +89,17 @@ export default {
     installSuccessfully: '安装成功',
     uninstallSuccessfully: '卸载完成',
     noServices: '无服务',
-    noSubServices: '无子服务'
+    noSubServices: '无子服务',
+    // 租赁类型
+    leaseType: {
+      freeLabel: '免费',
+      timesAbb: '次',
+      timesLabel: '按次收费',
+      monthAbb: '月',
+      monthLabel: '按月收费',
+      yearAbb: '年',
+      yearLabel: '按年收费',
+    }
   },
   issue: {
     createNewIssue: '创建问题'
