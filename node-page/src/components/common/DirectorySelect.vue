@@ -1,10 +1,10 @@
 <template>
   <div class="directory-select">
     <div class="header">
-      <h4>{{ title }}</h4>
+      <h4>{{ title == null ? $t('component.selectDirectory') : title }}</h4>
       <div class="opera">
         <el-button class="button-icon" icon="Refresh" @click="__fetchFiles"></el-button>
-        <el-button type="primary" icon="Plus" @click="createDirectory">New Folder</el-button>
+        <el-button type="primary" icon="Plus" @click="createDirectory">{{$t('component.createNewFolder')}}</el-button>
       </div>
     </div>
     <ul class="paths">
@@ -52,7 +52,7 @@ export default {
   props: {
     modelValue: {},
     title: {
-      default: 'Select Directory'
+      require: false
     }
   },
   data () {

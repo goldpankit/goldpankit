@@ -35,10 +35,12 @@
                 @back="currentMainService = null"
               />
               <ServiceInstaller
-                v-if="currentMainServiceVersion != null"
+                v-else-if="currentMainServiceVersion != null"
                 :space="space.name"
                 :service="currentMainService.name"
                 :service-type="currentMainService.type"
+                :service-price="currentMainService.price"
+                :service-lease="currentMainService.latestLease"
                 :version="currentMainServiceVersion"
                 :with-breadcrumbs="true"
                 :with-install-button="true"

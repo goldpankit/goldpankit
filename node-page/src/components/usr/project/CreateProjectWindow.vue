@@ -1,29 +1,29 @@
 <template>
   <el-dialog
     v-model="visible"
-    title="Create Project"
+    :title="$t('project.createProject')"
     custom-class="create-project-dialog"
     append-to-body
     :close-on-click-modal="false"
     :close-on-press-escape="false"
   >
     <section class="tip">
-      You are now creating an offline project.
+      {{ $t('project.createTip') }}
     </section>
     <el-form ref="form" :model="form">
-      <el-form-item label="Name" prop="name" required>
+      <el-form-item :label="$t('common.name')" prop="name" required>
         <el-input v-model="form.name"/>
       </el-form-item>
-      <el-form-item label="Code space" prop="codespace" required>
+      <el-form-item :label="$t('project.codespace')" prop="codespace" required>
         <DirectorySelect v-model="form.codespace"/>
       </el-form-item>
-      <el-form-item label="Remark" prop="remark">
-        <el-input type="textarea" :rows="5" v-model="form.remark"/>
+      <el-form-item :label="$t('common.remark')" prop="remark">
+        <el-input type="textarea" :rows="5" v-model="form.remark" maxlength="200"/>
       </el-form-item>
     </el-form>
     <div class="opera">
-      <el-button size="large" @click="cancelCreate">Cancel</el-button>
-      <el-button type="primary" size="large" @click="confirmCreate">Create Project</el-button>
+      <el-button size="large" @click="cancelCreate">{{$t('common.cancel')}}</el-button>
+      <el-button type="primary" size="large" @click="confirmCreate">{{$t('project.createProject')}}</el-button>
     </div>
   </el-dialog>
 </template>

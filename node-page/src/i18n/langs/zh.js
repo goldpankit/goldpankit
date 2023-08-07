@@ -9,6 +9,9 @@ export default {
     prices: '价格',
     issues: '问题',
     none: '无',
+    name: '名称',
+    remark: '备注',
+    cancel: '取消',
     // 日期差
     dateOffset: {
       aMomentAgo: '刚刚',
@@ -18,6 +21,11 @@ export default {
       monthsAgo: '{value}月前',
       yearsAgo: '{value}年前',
     }
+  },
+  // 组件
+  component: {
+    selectDirectory: '选择目录',
+    createNewFolder: '创建目录',
   },
   // 用户
   user: {
@@ -70,6 +78,8 @@ export default {
     project: '项目',
     myProjects: '我的项目',
     createProject: '创建项目',
-    noProjects: '暂无项目'
+    noProjects: '暂无项目',
+    createTip: '项目信息仅存储在您的当前设备上。',
+    codespace: '代码空间',
   }
 }

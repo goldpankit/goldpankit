@@ -9,6 +9,9 @@ export default {
     prices: 'Prices',
     issues: 'Issues',
     none: 'None',
+    name: 'Name',
+    remark: 'Remark',
+    cancel: 'Cancel',
     dateOffset: {
       aMomentAgo: 'A moment ago',
       minutesAgo: '{value} minutes ago',
@@ -17,6 +20,11 @@ export default {
       monthsAgo: '{value} months ago',
       yearsAgo: '{value} years ago',
     }
+  },
+  // 组件
+  component: {
+    selectDirectory: 'Select Directory',
+    createNewFolder: 'Create New Folder',
   },
   // 用户
   user: {
@@ -56,6 +64,7 @@ export default {
     uninstallSuccessfully: 'Uninstall Successfully',
     noServices: 'No Services'
   },
+  // 问题
   issue: {
     createNewIssue: 'Create New Issue'
   },
@@ -69,6 +78,8 @@ export default {
     project: 'Project',
     myProjects: 'My Projects',
     createProject: 'Create Project',
-    noProjects: 'No Projects'
+    noProjects: 'No Projects',
+    createTip: 'The project information will only be saved on your current device.',
+    codespace: 'Code Space',
   }
 }
