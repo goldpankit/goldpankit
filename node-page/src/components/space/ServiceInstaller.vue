@@ -3,17 +3,15 @@
     <div v-if="withBreadcrumbs" class="nav">
       <div class="title">
         <el-button class="button-icon" icon="ArrowLeftBold" @click="$emit('back')"></el-button>
-        <h4>{{service}}{{version == null ? '' : ' · ' + version.toUpperCase()}} · Install</h4>
+        <h4>{{service}}{{version == null ? '' : ' · ' + version.toUpperCase()}} · {{$t('service.install2')}}</h4>
       </div>
     </div>
     <div class="content-wrap">
       <template v-if="withProject || serviceVariables.length > 0">
-        <p class="install-tip">
-          tips: Install the service by filling out the form below and clicking the Install button at the bottom.
-        </p>
+        <p class="install-tip">{{$t('service.withParametersTip')}}</p>
         <div class="form-wrap">
           <el-form>
-            <el-form-item v-if="withProject" label="Project" required>
+            <el-form-item v-if="withProject" :label="$t('project.project')" required>
               <ProjectSelect
                 :model-value="currentProject"
                 :with-block="true"
@@ -51,11 +49,11 @@
         </div>
       </template>
       <div v-else class="parameters-holder">
-        <p>This service does not have any parameters, click the INSTALL button at the bottom to install.</p>
+        <p>{{$t('service.withoutParametersTip')}}</p>
       </div>
       <div v-if="withInstallButton" class="install">
         <el-button type="important" @click="install" :disabled="isWorking.install">
-          {{ isWorking.install ? 'INSTALLING...' : 'INSTALL' }}
+          {{ isWorking.install ? $t('service.installing') : $t('service.install') }}
         </el-button>
       </div>
     </div>
@@ -200,7 +198,7 @@ export default {
         variables: this.__getInstallVariables(this.variables)
       })
         .then(installData => {
-          this.$tip.success('Install Successfully')
+          this.$tip.success(this.$t('service.installSuccessfully'))
           this.setInstallData(installData)
           this.refreshBalance()
           this.$emit('installed')
@@ -247,7 +245,7 @@ export default {
         variables: this.__getInstallVariables(this.variables)
       })
         .then(installData => {
-          this.$tip.success('Uninstall Successfully')
+          this.$tip.success(this.$t('service.uninstallSuccessfully'))
           this.setInstallData(installData)
           this.$emit('uninstalled')
         })

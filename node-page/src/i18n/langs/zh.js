@@ -43,7 +43,19 @@ export default {
     versions: '个版本',
     latestVersion: '最新版本',
     lastPublish: '最后发布于',
-    createNewService: '创建服务'
+    createNewService: '创建服务',
+    subServices: '子服务',
+    structure: '代码结构',
+    withParametersTip: '安装提示: 填写以下信息并点击底部安装按钮即可安装该服务代码到您当前项目代码中。',
+    withoutParametersTip: '当前服务没有参数，点击底部安装按钮即可安装该服务代码到您当前项目代码中。',
+    install: '安装',
+    install2: '安装',
+    installing: '安装中...',
+    reinstall: '重新安装',
+    upgrade: '立即升级',
+    installSuccessfully: '安装成功',
+    uninstallSuccessfully: '卸载完成',
+    noServices: '无服务'
   },
   issue: {
     createNewIssue: '创建问题'
@@ -55,6 +67,7 @@ export default {
   },
   // 项目相关
   project: {
+    project: '项目',
     myProjects: '我的项目',
     createProject: '创建项目',
     noProjects: '暂无项目'

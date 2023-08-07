@@ -16,14 +16,14 @@
     </div>
     <div class="install">
       <el-button type="important" @click="$emit('install', currentVersion)">
-        <h5>INSTALL</h5>
+        <h5>{{$t('service.install')}}</h5>
       </el-button>
     </div>
     <div class="content-wrap">
       <ul class="service-dimensions">
-        <li :class="{ selected: currentDim === 'readme' }" @click="currentDim = 'readme'">Readme</li>
-        <li :class="{ selected: currentDim === 'subServices' }" @click="currentDim = 'subServices'">Sub Services</li>
-        <li :class="{ selected: currentDim === 'structure' }" @click="currentDim = 'structure'">Structure</li>
+        <li :class="{ selected: currentDim === 'readme' }" @click="currentDim = 'readme'">{{ $t('common.readme') }}</li>
+        <li :class="{ selected: currentDim === 'subServices' }" @click="currentDim = 'subServices'">{{ $t('service.subServices') }}</li>
+        <li :class="{ selected: currentDim === 'structure' }" @click="currentDim = 'structure'">{{ $t('service.structure') }}</li>
       </ul>
       <MarkdownEditor v-show="currentDim === 'readme'" v-model="majorVersionDetail.description" :readonly="true"/>
       <SubServiceList v-show="currentDim === 'subServices'" :services="majorVersionDetail.subServices"/>

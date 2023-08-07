@@ -9,7 +9,7 @@
         <el-icon v-else-if="data.type === 'DIRECTORY'"><Folder /></el-icon>
         <span class="filename">{{data.path}}</span>
         <span class="text-info-1 text-mini description">{{data.description}}</span>
-        <span class="text-info-1 text-mini publish-time">{{data.publishTime}}</span>
+        <span class="text-info-1 text-mini publish-time">{{getDateOffsetText(data.publishTime, $t)}}</span>
       </span>
     </template>
   </el-tree>

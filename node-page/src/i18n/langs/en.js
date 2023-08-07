@@ -42,7 +42,19 @@ export default {
     versions: 'versions',
     latestVersion: 'Latest version',
     lastPublish: 'Last publish',
-    createNewService: 'Create New Service'
+    createNewService: 'Create New Service',
+    subServices: 'Sub Services',
+    structure: 'Structure',
+    withParametersTip: 'tips: Install the service by filling out the form below and clicking the Install button at the bottom.',
+    withoutParametersTip: 'This service does not have any parameters, click the INSTALL button at the bottom to install.',
+    install: 'INSTALL',
+    install2: 'Install',
+    installing: 'INSTALLING...',
+    reinstall: 'REINSTALL',
+    upgrade: 'UPGRADE',
+    installSuccessfully: 'Install Successfully',
+    uninstallSuccessfully: 'Uninstall Successfully',
+    noServices: 'No Services'
   },
   issue: {
     createNewIssue: 'Create New Issue'
@@ -54,6 +66,7 @@ export default {
   },
   // 项目
   project: {
+    project: 'Project',
     myProjects: 'My Projects',
     createProject: 'Create Project',
     noProjects: 'No Projects'
