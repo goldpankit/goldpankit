@@ -64,7 +64,10 @@ export default {
             return
           }
           this.loginData.isWorking = true
-          loginByPassword (this.form)
+          loginByPassword ({
+            ...this.form,
+            username: this.form.username.trim()
+          })
             .then(data => {
               return data
             })
