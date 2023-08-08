@@ -1,6 +1,10 @@
 <template>
   <ul class="service-list">
-    <li v-for="service in services" @click.stop="$emit('click', service)">
+    <li
+      v-for="service in services"
+      :key="service.name"
+      @click.stop="$emit('select', service)"
+    >
       <h4>{{service.name}}</h4>
       <p>{{service.introduce}}</p>
       <section class="infos">

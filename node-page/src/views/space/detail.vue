@@ -24,7 +24,7 @@
               <ServiceList
                 v-if="currentMainService == null && mainServices.length > 0"
                 :services="mainServices"
-                @click="currentMainService = $event"
+                @select="currentMainService = $event"
               />
               <Empty v-else-if="currentMainService == null && mainServices.length === 0" :description="$t('service.noServices')"/>
               <MainServiceDetail
