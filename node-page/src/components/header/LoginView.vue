@@ -11,7 +11,7 @@
     </div>
   </template>
   <template v-else>
-    <div class="bean-wrap">
+    <div class="bean-wrap" @click="$router.push({ name: 'TopUpBean' })">
       <img src="/images/bean.png">
       <em>{{userInfo.balance.total}}</em>
     </div>

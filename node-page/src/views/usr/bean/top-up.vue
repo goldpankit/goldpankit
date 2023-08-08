@@ -1,49 +1,52 @@
 <template>
   <div class="recharge">
     <div class="wrap">
-      <h2>Recharge Beans</h2>
+      <h2>{{$t('topUp.title')}}</h2>
       <ul class="prices">
         <li>
           <em>¥10</em>
-          <p>Get 100 beans</p>
+          <p>{{ $t('topUp.getBeansTip', { value: 100 }) }}</p>
         </li>
-        <li class="selected">
+        <li>
           <em>¥50</em>
-          <p>Get 505 beans</p>
+          <p>{{ $t('topUp.getBeansTip', { value: 505 }) }}</p>
         </li>
         <li>
           <em>¥100</em>
-          <p>Get 1015 beans</p>
+          <p>{{ $t('topUp.getBeansTip', { value: 1024 }) }}</p>
         </li>
         <li>
           <em>¥200</em>
-          <p>Get 2035 beans</p>
+          <p>{{ $t('topUp.getBeansTip', { value: 2048 }) }}</p>
         </li>
         <li>
           <em>¥1000</em>
-          <p>Get 10180 beans</p>
+          <p>{{ $t('topUp.getBeansTip', { value: 10240 }) }}</p>
         </li>
         <li>
           <em>¥2000</em>
-          <p>Get 20365 beans</p>
+          <p>{{ $t('topUp.getBeansTip', { value: 20480 }) }}</p>
         </li>
       </ul>
       <div class="pay-methods-wrap">
-        <h2>Pay methods</h2>
-        <ul class="pay-methods">
-          <li>
-            <img src="/images/wechatpay.png" alt="">
-            <span>微信支付</span>
-          </li>
-          <li>
-            <img src="/images/alipay.png" alt="">
-            <span>支付宝支付</span>
-          </li>
-        </ul>
+        <p>{{$t('topUp.payTip')}}</p>
+<!--        <h2>Pay methods</h2>-->
+<!--        <ul class="pay-methods">-->
+<!--          <li>-->
+<!--            <img src="/images/wechatpay.png" alt="">-->
+<!--            <span>微信支付</span>-->
+<!--          </li>-->
+<!--          <li>-->
+<!--            <img src="/images/alipay.png" alt="">-->
+<!--            <span>支付宝支付</span>-->
+<!--          </li>-->
+<!--        </ul>-->
       </div>
       <div class="qrcode-wrap">
-        <div class="qrcode"></div>
-        <p>Scanner by Wechat App</p>
+        <div class="qrcode">
+          <img src="/images/top-up.png">
+        </div>
+        <p>{{$t('topUp.scanTip')}}</p>
       </div>
     </div>
   </div>
@@ -131,6 +134,10 @@ export default {
       width: 145px;
       height: 145px;
       background: #eee;
+      img {
+        width: 100%;
+        height: 100%;
+      }
     }
     p {
       margin-top: 10px;

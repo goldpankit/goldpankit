@@ -53,6 +53,13 @@ export default {
     completed: '开发完成',
     goToServiceSpaces: '前往服务空间'
   },
+  // 充值页
+  topUp: {
+    title: '金豆充值',
+    scanTip: '使用微信扫码',
+    getBeansTip: '获得 {value} 金豆',
+    payTip: '充值功能还未开放，请使用微信扫一扫，添加充值人员微信号。'
+  },
   // 组件
   component: {
     selectDirectory: '选择目录',

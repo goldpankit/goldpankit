@@ -53,6 +53,13 @@ export default {
     completed: 'COMPLETED',
     goToServiceSpaces: 'Go to the service space'
   },
+  // 充值页
+  topUp: {
+    title: 'Top-up Beans',
+    scanTip: 'Scan QR code using WeChat',
+    getBeansTip: 'Get {value} beans',
+    payTip: 'The top-up function is not available yet. Please use WeChat to scan and add the WeChat ID of the top-up personnel.'
+  },
   // 组件
   component: {
     selectDirectory: 'Select Directory',
