@@ -31,7 +31,7 @@
             <!-- 服务列表 -->
             <ServiceList
               :services="space.mainServices"
-              @click="$router.push({
+              @select="$router.push({
                 name: 'SpaceDetail',
                 params: { name: space.name },
                 query: { service: $event.name }
