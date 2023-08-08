@@ -40,6 +40,10 @@ export default {
       sendTip: 'tips: We are sending you a OTP code to {email}. If you do not receive it, you can resend it in 60 seconds.'
     }
   },
+  // 表单
+  form: {
+    isRequired: '{value} is required'
+  },
   // 向导
   guide: {
     kitIntroduce: 'To assist you and your team in efficient project research and development.',

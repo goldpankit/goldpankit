@@ -8,6 +8,11 @@
           <em></em>
         </div>
       </div>
+      <ul class="opera">
+        <li>
+          <I18nLangSelect/>
+        </li>
+      </ul>
     </header>
     <main>
       <router-view/>
@@ -18,10 +23,11 @@
 <script>
 import AppLayout from "./AppLayout.vue";
 import LoginView from "../components/header/LoginView.vue";
+import I18nLangSelect from "../components/common/I18nLangSelect.vue";
 
 export default {
   name: 'NoneLayout',
-  components: { LoginView, AppLayout }
+  components: {I18nLangSelect, LoginView, AppLayout }
 }
 </script>
 

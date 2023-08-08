@@ -40,6 +40,10 @@ export default {
       sendTip: '提示:我们已经发送动态码到您的邮箱 {email}. 如果没有接收到, 你可以在60秒后重发.'
     }
   },
+  // 表单
+  form: {
+    isRequired: '请输入{value}'
+  },
   // 向导
   guide: {
     kitIntroduce: '助力您和您的团队进行高效的项目研发',

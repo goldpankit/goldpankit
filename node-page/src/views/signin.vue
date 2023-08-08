@@ -2,14 +2,14 @@
   <div class="signup">
     <div class="wrap">
       <h2>{{$t('common.signIn')}}</h2>
-      <el-form ref="form" :model="form" @submit.stop>
+      <el-form ref="form" :model="form" :rules="getRules()" @submit.stop>
         <el-form-item :label="$t('user.username')" prop="username" required>
           <el-input v-model="form.username" type="text" size="large"/>
         </el-form-item>
         <el-form-item class="password-item" :label="$t('user.password')" prop="password" required>
           <template #label>
             <label>{{$t('user.password')}}</label>
-            <router-link to="#">{{$t('user.forgotPassword')}}</router-link>
+<!--            <router-link to="#">{{$t('user.forgotPassword')}}</router-link>-->
           </template>
           <el-input v-model="form.password" show-password type="password" size="large" @keypress.enter.native="login"/>
         </el-form-item>
@@ -46,6 +46,16 @@ export default {
   },
   methods: {
     ...mapMutations(['setUserInfo']),
+    getRules () {
+      return {
+        username: [
+          { required: true, message: this.$t('form.isRequired', { value: this.$t('user.username') })}
+        ],
+        password: [
+          { required: true, message: this.$t('form.isRequired', { value: this.$t('user.password') })}
+        ]
+      }
+    },
     // 密码登录
     login () {
       this.$refs.form.validate()
