@@ -18,7 +18,7 @@
         </el-form-item>
         <el-form-item :label="$t('user.otpCode')" prop="otpCode" required class="otp-code">
           <div>
-            <el-input type="text" v-model="form.otpCode" size="large"/>
+            <el-input type="text" v-model="form.otpCode" size="large" maxlength="8"/>
             <el-button
               size="large"
               type="primary"
