@@ -39,7 +39,7 @@
                 :space="space.name"
                 :service="currentMainService.name"
                 :service-type="currentMainService.type"
-                :service-price="currentMainService.price"
+                :service-price="currentMainService.price.price"
                 :service-lease="currentMainService.latestLease"
                 :version="currentMainServiceVersion"
                 :with-breadcrumbs="true"

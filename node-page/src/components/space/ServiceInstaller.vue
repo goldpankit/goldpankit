@@ -204,7 +204,6 @@ export default {
           this.$emit('installed')
         })
         .catch(e => {
-          this.$tip.apiFailed(e)
           this.$emit('error', e)
         })
         .finally(() => {
@@ -368,7 +367,8 @@ export default {
   .content-wrap {
     // padding: 50px;
     .install-tip {
-      margin-bottom: 20px;
+      margin-top: 10px;
+      margin-bottom: 10px;
       font-weight: bold;
     }
     .write-tip {
