@@ -44,6 +44,8 @@ module.exports = {
   LOCAL_CONFIG_FILE: `data.json`,
   // 本地全局配置内容
   LOCAL_CONFIG_FILE_CONTENT: {
+    // 语言
+    lang: 'en',
     // 令牌
     tokens: [],
     // 服务列表

@@ -33,7 +33,7 @@ app.use(cookieParser());
 const publicPath = path.join(__dirname, 'public')
 app.use(express.static(publicPath));
 for (const key in routers) {
-  app.use('/api', routers[key]);
+  app.use('/local-api', routers[key]);
 }
 app.get('*', (req, res) => {
   res.sendFile(path.join(publicPath, 'index.html'));
