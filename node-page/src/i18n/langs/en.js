@@ -94,6 +94,8 @@ export default {
     privateSpaceIntroduce: 'Private space only serves you or your team, you can organize technical staff to create and develop your service space for better and more efficient research and development work.',
     createNewSpace: 'Create New Space',
     createNewSpaceIntroduce: 'Create a new service space and start a new journey of research and development.',
+    workbench: 'Workbench',
+    workbenchIntroduce: 'Workbench is a commonly used interface in project development, where you can install more services for the project after clicking to enter.'
   },
   // 服务
   service: {

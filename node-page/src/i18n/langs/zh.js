@@ -37,7 +37,7 @@ export default {
       send: '发送动态码',
       sending: '发送中...',
       resend: '重发动态码',
-      sendTip: '提示:我们已经发送动态码到您的邮箱 {email}. 如果没有接收到, 你可以在60秒后重发.'
+      sendTip: '提示：我们已经发送动态码到您的邮箱 {email}. 如果没有接收到, 您可以在60秒后重发。'
     }
   },
   // 表单
@@ -94,6 +94,8 @@ export default {
     privateSpaceIntroduce: '点击此处进入您创建的私有的服务空间列表，私有的服务仅有您或您的团队可以使用。',
     createNewSpace: '创建新的空间',
     createNewSpaceIntroduce: '点击此处可创建一个新的空间，您可以自由选择是私有空间或公共空间。',
+    workbench: '工作台',
+    workbenchIntroduce: '工作台是项目开发常用的界面，点击进入后您可以为项目安装更多服务。'
   },
   // 服务
   service: {

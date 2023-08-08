@@ -13,6 +13,7 @@
         <div class="info">
           <h3>{{project.name}}</h3>
           <p>{{project.codespace}}</p>
+          <p>{{project.remark}}</p>
         </div>
         <div class="opera">
           <el-button type="danger" text @click="deleteProject(project)">{{$t('common.delete')}}</el-button>

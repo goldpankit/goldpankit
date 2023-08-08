@@ -15,9 +15,13 @@
           </ul>
         </a>
       </div>
-      <router-link class="module private-space" :to="{ name: 'UserSpaces' }">
-        <h2>{{$t('space.privateSpaces')}}</h2>
-        <p>{{$t('space.privateSpaceIntroduce')}}</p>
+<!--      <router-link class="module private-space" :to="{ name: 'UserSpaces' }">-->
+<!--        <h2>{{$t('space.privateSpaces')}}</h2>-->
+<!--        <p>{{$t('space.privateSpaceIntroduce')}}</p>-->
+<!--      </router-link>-->
+      <router-link class="module workbench" :to="{ name: 'Workbench' }">
+        <h2>{{$t('space.workbench')}}</h2>
+        <p>{{$t('space.workbenchIntroduce')}}</p>
       </router-link>
       <div class="line gap-top">
         <router-link :to="{ name: 'CreateSpace' }" class="module new-space">
@@ -145,8 +149,8 @@ export default {
   .public-space h2 {
     color: var(--primary-color-match-2);
   }
-  // 私有空间
-  .private-space h2 {
+  // 工作台
+  .workbench h2 {
     color: var(--primary-color-match-3);
   }
   // 创建新空间

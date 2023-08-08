@@ -120,7 +120,7 @@ export default {
       })
         .then(() => {
           this.connectResult.withError = false
-          this.connectResult.message = 'Succeeded'
+          this.connectResult.message = this.$t('database.connectSuccessfully')
         })
         .catch(e => {
           this.connectResult.withError = true

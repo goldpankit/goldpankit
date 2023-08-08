@@ -185,16 +185,7 @@ export default {
       if (group != null) {
         group.children.push(newVar)
       } else {
-        if (this.variables.length === 0) {
-          this.variables.push(newVar)
-        } else {
-          const lastVarIndex = this.variables.findLastIndex(v => v.type === 'variable')
-          if (lastVarIndex === -1) {
-            this.variables.unshift(newVar)
-          } else {
-            this.variables.splice(lastVarIndex + 1, 0, newVar)
-          }
-        }
+        this.variables.push(newVar)
       }
       this.saveVariables()
     },
@@ -251,12 +242,6 @@ export default {
         .then(data => {
           this.variables = data.variables.map(variable => {
             return this.__getInitVariable(variable)
-          })
-          this.variables = this.variables.sort((item1, item2) => {
-            if (item1.type === 'variable' && item2.type === 'group') {
-              return -1
-            }
-            return 1
           })
         })
         .catch(e => {
