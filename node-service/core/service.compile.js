@@ -250,13 +250,9 @@ class Kit {
           variables: this.#getSimpleMainServiceVariables(dto.variables)
         }
       } else {
-        const installVariables = {}
-        dto.variables.forEach(v => {
-          installVariables[v.name] = this.#getInstallVariableValue(v)
-        })
         config.services[dto.service] = {
           version: dto.version,
-          variables: installVariables
+          variables: this.#getSimpleMainServiceVariables(dto.variables)
         }
       }
       fs.createFile(userProject.getConfigPath(project.id), fs.toJSONFileString(config), true)
@@ -386,6 +382,10 @@ class Kit {
         // 将项目主服务的变量添加到最前
         const mainServiceVariables = projectConfig.main[mainServiceName].variables.reverse()
         for (const variable of mainServiceVariables) {
+          // group,table和query_model安装存储的变量结构与生成时所需的结构不一样，暂不做支持
+          if (variable.type === 'group' || variable.inputType === 'table' || variable.inputType === 'query_model') {
+            continue
+          }
           variables.unshift(variable)
         }
       }
@@ -397,7 +397,8 @@ class Kit {
         try {
           // 如果类型为数据库，则查询出库信息
           if (item.inputType === 'database') {
-            const database = cache.databases.get(item.value || item.defaultValue)
+            const databaseId = item.value === undefined ?  item.defaultValue : item.value
+            const database = cache.databases.get(databaseId)
             resolve({
               ...item,
               value: database
@@ -406,13 +407,20 @@ class Kit {
           }
           // 输入类型为表，则查询出表信息
           if (item.inputType === 'table') {
+            const tableName = item.value === undefined ? item.defaultValue : item.value
+            if (tableName == null) {
+              resolve({
+                ...item,
+                value: null
+              })
+            }
             mysql.getTable({
               host: database.host,
               port: database.port,
               user: database.username,
               password: database.password,
               database: database.schema
-            }, item.value || item.defaultValue)
+            }, item.value === undefined ? item.defaultValue : item.value)
               .then(value => {
                 // 补充动态字段，children为变量信息
                 if (item.children != null && item.children.length > 0) {
@@ -431,8 +439,19 @@ class Kit {
           }
           // 如果类型为查询模型，则查询出模型信息
           if (item.inputType === 'query_model') {
-            const modelId = item.value || item.defaultValue
-            const model = database.models.find(model => model.id === modelId)
+            const modelId = item.value === undefined ? item.defaultValue : item.value
+            if (modelId == null) {
+              resolve({
+                ...item,
+                value: null
+              })
+              return
+            }
+            const model = database.models.find(m => m.id === modelId)
+            if (model == null) {
+              reject(`Can not found ${item.label} value.`)
+              return
+            }
             // 主表
             const mainTable = model.tables.find(t => t.type === 'MAIN')
             // 子表
@@ -525,7 +544,7 @@ class Kit {
           }
           // 如果输入类型为select，扩展出Settings选项设置变量
           if (item.inputType === 'select') {
-            const value = item.value || item.defaultValue
+            const value = item.value === undefined ? item.defaultValue : item.value
             extVariables.push({
               name: `${item.name}Settings`,
               type: 'ext', // 标记为扩展变量
@@ -541,7 +560,7 @@ class Kit {
           // 其他
           resolve({
             ...item,
-            value: item.value || item.defaultValue
+            value: item.value === undefined ? item.defaultValue : item.value
           })
         } catch (e) {
           reject(e)
@@ -579,7 +598,7 @@ class Kit {
   #paddingFieldVariablesWithResolve (project, database, variable, value, resolve, reject) {
     const groupPromises = []
     for (const group of variable.children) {
-      value[group.name] = group.value || group.defaultValue
+      value[group.name] = group.value === undefined ? group.defaultValue : group.value
       groupPromises.push(Promise.all(this.#getVariables(project, database, group.children, false))
         .then(vars => {
           group.children = vars
