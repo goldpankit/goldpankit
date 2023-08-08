@@ -105,6 +105,9 @@ export default {
       // 填充默认选中的table
       if (this.modelValue != null) {
         this.selected = this.models.find(model => model.id === this.modelValue)
+        if (this.selected == null) {
+          this.handleChange(null)
+        }
       }
     }
   },

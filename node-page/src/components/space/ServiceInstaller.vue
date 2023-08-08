@@ -158,6 +158,7 @@ export default {
           this.variables = JSON.parse(data.variables).map(item => {
             return this.__initVariableValue(item)
           })
+          console.log('this.variables', this.variables)
         })
         .catch(e => {
           this.$tip.apiFailed(e)
@@ -204,6 +205,7 @@ export default {
           this.$emit('installed')
         })
         .catch(e => {
+          this.$tip.apiFailed(e)
           this.$emit('error', e)
         })
         .finally(() => {
@@ -282,7 +284,11 @@ export default {
           const service = this.projectConfig.services[this.service]
           // 从自身服务中获取
           if (service != null) {
-            value = service.variables[variable.name]
+            // 拿到最后一个变量（变量名可重复，后者覆盖前者）
+            const targetVar = service.variables.findLast(v => v.name === variable.name)
+            if (targetVar != null) {
+              value = targetVar.value
+            }
           }
           // 如果没有获取到值，则还可以从主服务中获取
           if (value == null) {
@@ -304,7 +310,9 @@ export default {
           }
         }
       }
-      // 如果值不为空，则进行值处理
+      /**
+       * value不为null时，是从项目配置中读取出来的，此时需要做转换
+       */
       if (value != null) {
         /**
          * 表格和查询模型值处理
@@ -318,6 +326,13 @@ export default {
          * 要初始化值，需要将variable.children（也就是字段变量组）的value值给定为settings下的组值
          */
         if (variable.inputType === 'table' || variable.inputType === 'query_model') {
+          // console.log('variable', variable)
+          // console.log('value', value)
+          // // 字段变量组
+          // for (const group of variable.children) {
+          //   group.value = group.defaultValue
+          // }
+          // variable.value = value
           for (const groupName in value.settings) {
             const targetGroup = variable.children.find(group => group.name === groupName)
             if (targetGroup == null) {
@@ -326,6 +341,7 @@ export default {
             targetGroup.value = value.settings[groupName]
           }
           variable.value = value.value
+          console.log(variable.name, variable.value, value)
           return variable
         }
         if (variable.type === 'group') {
@@ -334,9 +350,35 @@ export default {
           })
           return variable
         }
+        variable.value = value
+        return variable
       }
-      value = value == null ? variable.defaultValue : value
+
+      /**
+       * value为null，读取变量默认值
+       */
+      value = variable.defaultValue
       value = value == null ? getDefaultEmptyValue(variable.inputType) : value
+      /**
+       * 表和模型，每个组都需要给定value值
+       */
+      if (variable.inputType === 'table' || variable.inputType === 'query_model') {
+        // 表和模型的下一级为字段变量组，对于字段变量组需要给定value值
+        for (const group of variable.children) {
+          group.value = group.defaultValue
+        }
+        variable.value = value
+        return variable
+      }
+      /**
+       * 变量组，给子变量的value赋值为默认值
+       */
+      if (variable.type === 'group') {
+        variable.children.forEach(item => {
+          item.value = item.defaultValue
+        })
+        return variable
+      }
       variable.value = value
       return variable
     }

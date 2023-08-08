@@ -46,7 +46,6 @@
                 :with-install-button="true"
                 @back="currentMainServiceVersion = null"
                 @installed="$router.push({name: 'Workbench'})"
-                @error="$tip.apiFailed($event)"
               />
             </template>
             <template v-else-if="currentTab === 'prices'">
