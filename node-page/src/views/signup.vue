@@ -2,7 +2,7 @@
   <div class="signup">
     <div class="wrap">
       <h2>{{ $t('common.signUp') }}</h2>
-      <el-form ref="form" :model="form" :rules="rules" @submit.stop>
+      <el-form ref="form" :model="form" :rules="getRules()" @submit.stop>
         <el-form-item :label="$t('user.username')" prop="username" required>
           <el-input v-model="form.username" type="text" size="large"/>
         </el-form-item>
@@ -61,22 +61,6 @@ export default {
         otpCodeId: null,
         otpCode: ''
       },
-      rules: {
-        username: [
-          { required: true, message: 'Please input Username'}
-        ],
-        password: [
-          { required: true, message: 'Please input password'}
-        ],
-        otpElement: [
-          { required: true, message: 'Please input email'},
-          { validator: (rule, value, callback) => checkEmail(rule, value, callback, 'Please enter the correct email address')},
-        ],
-        otpCode: [
-          { required: true, message: 'Please input OTP code'},
-          { required: true, message: 'Please input OTP code'}
-        ],
-      },
       sendOtpCodeData: {
         isWorking: false,
         timeout: 0,
@@ -88,6 +72,23 @@ export default {
     }
   },
   methods: {
+    getRules () {
+      return {
+        username: [
+          { required: true, message: this.$t('form.isRequired', { value: this.$t('user.username') })}
+        ],
+        password: [
+          { required: true, message: this.$t('form.isRequired', { value: this.$t('user.password') })}
+        ],
+        otpElement: [
+          { required: true, message: this.$t('form.isRequired', { value: this.$t('user.email') })},
+          { validator: (rule, value, callback) => checkEmail(rule, value, callback, this.$t('form.correctEmailTip'))},
+        ],
+        otpCode: [
+          { required: true, message: this.$t('form.isRequired', { value: this.$t('user.otpCode') })},
+        ],
+      }
+    },
     // 注册
     regis () {
       this.$refs.form.validate()

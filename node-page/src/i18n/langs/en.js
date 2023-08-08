@@ -42,7 +42,8 @@ export default {
   },
   // 表单
   form: {
-    isRequired: '{value} is required'
+    isRequired: '{value} is required',
+    correctEmailTip: 'Please enter the correct email address'
   },
   // 向导
   guide: {

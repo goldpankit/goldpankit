@@ -42,7 +42,8 @@ export default {
   },
   // 表单
   form: {
-    isRequired: '请输入{value}'
+    isRequired: '请输入{value}',
+    correctEmailTip: '请输入正确的邮箱地址'
   },
   // 向导
   guide: {
