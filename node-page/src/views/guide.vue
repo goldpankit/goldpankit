@@ -3,8 +3,8 @@
     <div class="banner">
       <div class="wrap">
         <h2>Gold Pan Kit</h2>
-        <p>{{$t('guide.kitIntroduce')}}</p>
-        <p class="description">{{$t('guide.kitDescription')}}</p>
+        <h3>{{$t('guide.kitIntroduce')}}</h3>
+        <p>{{$t('guide.kitDescription')}}</p>
         <div class="opera">
           <el-button @click="$router.push({name: 'SignUp'})" type="important">{{$t('common.signUp')}}</el-button>
           <el-button type="primary" @click="$router.push({name: 'PublicSpaces'})">{{$t('guide.goToServiceSpaces')}}</el-button>
@@ -109,17 +109,19 @@ export default {
     margin-bottom: 20px;
     text-shadow: 0 0 5px #ab5155;
   }
-  p {
-    font-size: var(--font-size-large);
-    letter-spacing: 1px;
+  h3 {
     width: 800px;
+    font-size: 30px;
+    margin-bottom: 15px;
+    text-align: center;
+  }
+  p {
+    width: 600px;
+    font-size: var(--font-size-middle);
+    letter-spacing: 1px;
     text-align: center;
     margin-bottom: 15px;
     line-height: 30px;
-    &.description {
-      width: 600px;
-      font-size: var(--font-size-middle);
-    }
   }
   .emb {
     transform: rotate(45deg);
