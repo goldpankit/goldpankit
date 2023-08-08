@@ -11,8 +11,8 @@
           <ul class="dimensions">
             <li :class="{ selected: currentTab === 'readme' }" @click="currentTab = 'readme'">{{$t('common.readme')}}</li>
             <li :class="{ selected: currentTab === 'services' }" @click="currentTab = 'services'">{{$t('service.services2')}}</li>
-            <li :class="{ selected: currentTab === 'prices' }" @click="currentTab = 'prices'">{{$t('common.prices')}}</li>
-            <li :class="{ selected: currentTab === 'issues' }" @click="currentTab = 'issues'">{{$t('common.issues')}}</li>
+            <li class="disabled" :class="{ selected: currentTab === 'prices' }">{{$t('common.prices')}}</li>
+            <li class="disabled" :class="{ selected: currentTab === 'issues' }">{{$t('common.issues')}}</li>
           </ul>
           <div class="detail">
             <template v-if="currentTab === 'readme'">
@@ -76,6 +76,7 @@
             <el-button
               type="primary"
               size="large"
+              disabled
             >{{$t('issue.createNewIssue')}}</el-button>
           </div>
           <ul>
@@ -232,6 +233,7 @@ export default {
     margin-top: 25px;
     .dimension-wrap {
       flex-grow: 1;
+      overflow: hidden;
       // 空间维度
       .dimensions {
         display: flex;
@@ -247,6 +249,9 @@ export default {
             background-image: linear-gradient(to right, var(--primary-color), var(--primary-color-5));
             color: var(--primary-color-reverse);
             border-radius: 10px 10px 0 0;
+          }
+          &.disabled {
+            color: var(--color-gray-1);
           }
         }
       }

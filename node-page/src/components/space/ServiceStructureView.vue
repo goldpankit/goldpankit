@@ -134,8 +134,10 @@ export default {
       flex-shrink: 0;
       width: 200px;
       word-break: break-all;
+      white-space: initial;
     }
     .publish-time {
+      width: 100px;
       flex-shrink: 0;
       text-align: right;
     }

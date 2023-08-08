@@ -10,7 +10,7 @@
           v-for="version in majorVersions"
           :key="version"
           :class="{ selected: version === currentMajorVersion }"
-          @click="currentMajorVersion = version"
+          @click="changeMajorVersion(version)"
         >v{{version}}</li>
       </ul>
     </div>
@@ -27,7 +27,6 @@
       </ul>
       <MarkdownEditor v-show="currentDim === 'readme'" v-model="majorVersionDetail.description" :readonly="true"/>
       <SubServiceList v-show="currentDim === 'subServices'" :services="majorVersionDetail.subServices"/>
-<!--      <ServiceListView v-show="currentDim === 'subServices'" :services="majorVersionDetail.subServices"/>-->
       <ServiceStructureView v-show="currentDim === 'structure'" :nodes="majorVersionDetail.structure"/>
     </div>
   </div>
@@ -65,17 +64,26 @@ export default {
     ...mapState(['currentProject'])
   },
   methods: {
+    changeMajorVersion (majorVersion) {
+      console.log('version', majorVersion)
+      this.currentMajorVersion = majorVersion
+      this.fetchDetail(majorVersion)
+    },
     // 查询详情
-    fetchDetail () {
+    fetchDetail (majorVersion) {
       fetchMainServiceDetail({
         space: this.space,
-        service: this.service
+        service: this.service,
+        majorVersion
       })
         .then(data => {
           this.majorVersions = data.majorVersions
-          this.currentMajorVersion = this.majorVersions[0]
+          this.currentMajorVersion = majorVersion || this.majorVersions[0]
           this.majorVersionDetail = data.defaultMajorVersion
           this.currentVersion = this.majorVersionDetail.version
+          if (this.majorVersionDetail.description == null && this.majorVersionDetail.description.trim() === '') {
+            this.majorVersionDetail.description = 'No Descriptions'
+          }
         })
         .catch(e => {
           this.$tip.apiFailed(e)

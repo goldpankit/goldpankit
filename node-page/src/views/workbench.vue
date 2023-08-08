@@ -75,6 +75,7 @@
                     type="primary"
                     size="large"
                     icon="Upload"
+                    :disabled="isWorking.install"
                     @click="$refs.installer.install()"
                   >UPGRADE</el-button>
                   <el-button
