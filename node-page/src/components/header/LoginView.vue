@@ -1,8 +1,5 @@
 <template>
-  <el-radio-group class="i18n" v-model="$i18n.locale">
-    <el-radio-button label="en">English</el-radio-button>
-    <el-radio-button label="zh">简体中文</el-radio-button>
-  </el-radio-group>
+  <I18nLangSelect/>
   <template v-if="userInfo == null">
     <el-button @click="$router.push({ name: 'SignIn' })">{{$t('common.signIn')}}</el-button>
     <el-button type="important" @click="$router.push({ name: 'SignUp' })">{{$t('common.signUp')}}</el-button>
@@ -27,9 +24,11 @@
 <script>
 
 import {mapState} from "vuex";
+import I18nLangSelect from "../common/I18nLangSelect.vue";
 
 export default {
   name: "LoginView",
+  components: {I18nLangSelect},
   computed: {
     ...mapState(['userInfo'])
   }

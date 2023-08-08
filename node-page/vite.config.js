@@ -25,7 +25,7 @@ export default ({ mode }) => {
     server: {
       proxy: {
         [localApiPrefix]: {
-          target: 'http://localhost/api',
+          target: 'http://localhost/local-api',
           changeOrigin: true,
           rewrite: (path) => path.replace(new RegExp(`^${localApiPrefix}`), "")
         },
