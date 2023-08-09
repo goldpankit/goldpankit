@@ -76,9 +76,9 @@ const router = createRouter({
           component: () => import('@/views/usr/create-space.vue')
         },
         {
-          path: '/usr/spaces',
-          name: 'UserSpaces',
-          component: () => import('@/views/usr/spaces.vue')
+          path: '/usr/services',
+          name: 'UserServices',
+          component: () => import('@/views/usr/services.vue')
         },
         {
           path: '/usr/service/create',

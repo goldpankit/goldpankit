@@ -1,7 +1,7 @@
 <template>
   <div class="page">
     <div class="wrap">
-      <div class="line gap-bottom">
+      <div class="line">
         <router-link :to="{ name: 'PublicSpaces' }" class="module public-space">
           <h2>{{$t('space.publicSpaces')}}</h2>
           <p>{{$t('space.publicSpaceIntroduce')}}</p>
@@ -15,14 +15,16 @@
           </ul>
         </a>
       </div>
-<!--      <router-link class="module private-space" :to="{ name: 'UserSpaces' }">-->
-<!--        <h2>{{$t('space.privateSpaces')}}</h2>-->
-<!--        <p>{{$t('space.privateSpaceIntroduce')}}</p>-->
-<!--      </router-link>-->
-      <router-link class="module workbench" :to="{ name: 'Workbench' }">
-        <h2>{{$t('space.workbench')}}</h2>
-        <p>{{$t('space.workbenchIntroduce')}}</p>
-      </router-link>
+      <div class="line gap-top">
+        <router-link class="module private-services" :to="{ name: 'UserServices' }">
+          <h2>{{$t('user.leasedAndPrivateServices')}}</h2>
+          <p>{{$t('user.leasedAndPrivateServiceIntroduce')}}</p>
+        </router-link>
+        <router-link class="module workbench" :to="{ name: 'Workbench' }">
+          <h2>{{$t('space.workbench')}}</h2>
+          <p>{{$t('space.workbenchIntroduce')}}</p>
+        </router-link>
+      </div>
       <div class="line gap-top">
         <router-link :to="{ name: 'CreateSpace' }" class="module new-space">
           <h2>{{$t('space.createNewSpace')}}</h2>
@@ -148,6 +150,14 @@ export default {
   // 公共空间
   .public-space h2 {
     color: var(--primary-color-match-2);
+  }
+  // 私有服务
+  .private-services {
+    width: 400px;
+    flex-shrink: 0;
+    h2 {
+      font-size: 35px;
+    }
   }
   // 工作台
   .workbench h2 {

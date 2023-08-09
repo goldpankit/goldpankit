@@ -2,23 +2,24 @@
   <div class="page">
     <div class="wrap">
       <div class="header">
-        <h2>Eva for SpringBoot Services</h2>
-        <div class="opera">
-          <el-button type="primary" @click="$router.push({ name: 'CreateService' })">Create New Service</el-button>
-        </div>
+        <h2>Leased and private services</h2>
       </div>
       <div class="search-wrap">
         <el-input size="large" placeholder="type here and press enter."/>
       </div>
-      <Pagination :pagination="pagination"/>
       <ul class="service-list">
-        <li v-for="i in 10" :key="i">
+        <li v-for="service in services" :key="service.id">
           <div class="info">
-            <h3>支付宝支付</h3>
-            <p>对接支付宝支付</p>
+            <h3>@Ruoyi/{{service.name}}</h3>
+            <p>{{service.introduce}}</p>
+            <p>代码空间: </p>
+            <p>代码仓库: {{service.repository}}</p>
+            <p>最后发布于: </p>
+            <p>作者：</p>
           </div>
           <ul>
-            <li><el-button>View Logic</el-button></li>
+            <li><el-button>Code</el-button></li>
+            <li><el-button text type="danger">Delete</el-button></li>
           </ul>
         </li>
       </ul>
@@ -29,6 +30,7 @@
 
 <script>
 import Pagination from "../../components/common/Pagination.vue";
+import {fetchPage} from "../../api/user.service";
 
 export default {
   components: {Pagination},
@@ -38,8 +40,28 @@ export default {
         page: 1,
         capacity: 10,
         total: 100
-      }
+      },
+      services: []
     }
+  },
+  methods: {
+    // 查询分页
+    fetchPage () {
+      fetchPage({
+        ...this.pagination,
+        model: {}
+      })
+        .then(data => {
+          this.services = data.records
+          this.pagination.total = data.total
+        })
+        .catch(e => {
+          this.$tip.apiFailed(e)
+        })
+    }
+  },
+  created () {
+    this.fetchPage()
   }
 }
 </script>
