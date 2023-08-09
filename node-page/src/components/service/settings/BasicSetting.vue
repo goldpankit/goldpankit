@@ -11,6 +11,9 @@
         <el-form-item label="Supported Databases" prop="supportedDatabases">
           <DatabaseTypeSelect v-model="form.supportedDatabases" @change="saveConfig"/>
         </el-form-item>
+        <el-form-item label="Repository" prop="repository">
+          <el-input v-model="form.repository" @input="saveConfig"/>
+        </el-form-item>
         <el-form-item label="Introduce" prop="introduce" required>
           <el-input type="textarea" :rows="5" v-model="form.introduce" @input="saveConfig"/>
         </el-form-item>
@@ -99,6 +102,7 @@ export default {
         receivable: false,
         compiler: '',
         introduce: '',
+        repository: '',
         supportedDatabases: [],
         tableFieldDefinitions: [],
         builds: [],
@@ -127,7 +131,12 @@ export default {
     },
     // 初始化
     initialize () {
-      initialize(this.form)
+      this.form.codespace = this.newCodespace.value
+      initialize({
+        space: this.space,
+        name: this.service,
+        ...this.form
+      })
         .then(() => {
           this.newCodespace.changing = false
           this.$emit('initialized', this.form)

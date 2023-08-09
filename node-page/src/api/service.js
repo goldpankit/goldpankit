@@ -1,5 +1,9 @@
 import request from "../utils/request";
 
+// 查询本地服务
+export function fetchLocalServices (data) {
+  return request.get('/service/list')
+}
 // 搜索
 export function search (data) {
   return request.post('/service/search', data, {

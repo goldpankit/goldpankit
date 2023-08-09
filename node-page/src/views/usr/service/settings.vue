@@ -128,9 +128,6 @@ export default {
       })
         .then(data => {
           this.service = data
-          if (this.service.local && this.service.local.codespace) {
-            this.fetchConfig(this.service.local.codespace)
-          }
         })
         .then(() => {
           return fetchConfig({
@@ -140,6 +137,7 @@ export default {
         })
         .then(serviceConfig => {
           if (serviceConfig != null) {
+            this.serviceConfig = serviceConfig
             this.service.description = serviceConfig.readme
           }
         })
@@ -148,18 +146,6 @@ export default {
         })
         .finally(() => {
           this.loading = false
-        })
-    },
-    // 获取服务配置
-    fetchConfig (codespace) {
-      fetchConfig({
-        codespace
-      })
-        .then(config => {
-          this.serviceConfig = config
-        })
-        .catch(e => {
-          this.$tip.apiFailed(e)
         })
     },
     // 编译服务

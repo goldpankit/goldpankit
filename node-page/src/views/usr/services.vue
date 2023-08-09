@@ -7,22 +7,27 @@
       <div class="search-wrap">
         <el-input size="large" placeholder="type here and press enter."/>
       </div>
-      <ul class="service-list">
+      <ul v-if="!loading && services.length > 0" class="service-list">
         <li v-for="service in services" :key="service.id">
-          <div class="info">
-            <h3>@Ruoyi/{{service.name}}</h3>
-            <p>{{service.introduce}}</p>
-            <p>代码空间: </p>
-            <p>代码仓库: {{service.repository}}</p>
-            <p>最后发布于: </p>
-            <p>作者：</p>
+          <h3>@{{service.space.name}}/{{service.name}}</h3>
+          <p class="introduce">{{service.introduce}}</p>
+          <p>代码空间: {{service.codespace}}</p>
+          <p>代码仓库: {{service.repository}}</p>
+          <div class="footer-info">
+            <!-- 用户信息 -->
+            <div class="user-profile">
+              <img :src="getAccessUri(service.user.avatar, '/images/avatar/default.png')">
+              <span>{{service.user.username}}</span>
+            </div>
+            <p class="text-info-1 text-mini">最后发布于: {{service.lastPublish == null ? '未发布' : getDateOffsetText(service.lastPublish, $t)}}</p>
           </div>
-          <ul>
-            <li><el-button>Code</el-button></li>
+          <ul class="opera">
+            <li><el-button text @click="editCode(service)">Edit Code</el-button></li>
             <li><el-button text type="danger">Delete</el-button></li>
           </ul>
         </li>
       </ul>
+      <Empty v-else description="No Services"/>
       <Pagination :pagination="pagination"/>
     </div>
   </div>
@@ -31,11 +36,14 @@
 <script>
 import Pagination from "../../components/common/Pagination.vue";
 import {fetchPage} from "../../api/user.service";
+import {fetchLocalServices} from "../../api/service";
+import Empty from "../../components/common/Empty.vue";
 
 export default {
-  components: {Pagination},
+  components: {Empty, Pagination},
   data () {
     return {
+      loading: false,
       pagination: {
         page: 1,
         capacity: 10,
@@ -45,8 +53,22 @@ export default {
     }
   },
   methods: {
+    // 编辑代码
+    editCode (service) {
+      this.$router.push({
+        name: 'ServiceSettings',
+        query: {
+          space: service.space.name,
+          service: service.name
+        }
+      })
+    },
     // 查询分页
     fetchPage () {
+      if (this.loading) {
+        return
+      }
+      this.loading = true
       fetchPage({
         ...this.pagination,
         model: {}
@@ -54,6 +76,27 @@ export default {
         .then(data => {
           this.services = data.records
           this.pagination.total = data.total
+          this.fetchLocalServices()
+        })
+        .catch(e => {
+          this.$tip.apiFailed(e)
+        })
+        .finally(() => {
+          this.loading = false
+        })
+    },
+    // 查询本地服务
+    fetchLocalServices () {
+      fetchLocalServices()
+        .then(localServices => {
+          this.services.forEach(service => {
+            service.codespace = null
+            const localService = localServices.find(s => s.space === service.space.name && s.name === service.name)
+            if (localService != null) {
+              service.repository = localService.repository
+              service.codespace = localService.codespace
+            }
+          })
         })
         .catch(e => {
           this.$tip.apiFailed(e)
@@ -96,22 +139,48 @@ export default {
     & > li {
       background-color: var(--color-light);
       padding: 15px 30px;
-      display: flex;
       border-bottom: 1px solid var(--border-default-color);
+      position: relative;
       &:last-of-type {
         border-bottom: 0;
       }
-      .info {
-        flex-grow: 1;
-        h3 {
-          font-size: var(--font-size-middle);
-          margin-bottom: 10px;
-        }
-        p {
-          font-size: var(--font-size);
+      & > h3 {
+        font-size: var(--font-size-middle);
+        margin-bottom: 10px;
+      }
+      & > p {
+        font-size: var(--font-size-mini);
+        margin-top: 5px;
+      }
+      & > .introduce {
+        margin-bottom: 10px;
+        font-size: var(--font-size);
+      }
+      // 底部信息
+      .footer-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      // 用户信息
+      .user-profile {
+        display: flex;
+        align-items: center;
+        margin-top: 10px;
+        color: var(--font-color);
+        img {
+          width: 30px;
+          height: 30px;
+          border-radius: 50%;
+          object-fit: contain;
+          margin-right: 10px;
         }
       }
-      ul {
+      // 操作
+      .opera {
+        position: absolute;
+        top: 20px;
+        right: 20px;
         flex-shrink: 0;
         display: flex;
         align-items: center;
