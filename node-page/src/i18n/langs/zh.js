@@ -116,6 +116,8 @@ export default {
     installing: '安装中...',
     reinstall: '重新安装',
     upgrade: '立即升级',
+    uninstalling: '卸载中...',
+    uninstall: '卸载',
     installSuccessfully: '安装成功',
     uninstallSuccessfully: '卸载完成',
     noServices: '无服务',

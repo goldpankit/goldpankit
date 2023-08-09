@@ -116,6 +116,8 @@ export default {
     installing: 'INSTALLING...',
     reinstall: 'REINSTALL',
     upgrade: 'UPGRADE',
+    uninstalling: 'UNINSTALLING...',
+    uninstall: 'UNINSTALL',
     installSuccessfully: 'Install Successfully',
     uninstallSuccessfully: 'Uninstall Successfully',
     noServices: 'No Services',

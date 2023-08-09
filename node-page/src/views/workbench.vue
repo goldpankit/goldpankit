@@ -9,7 +9,7 @@
           </div>
           <div class="info">
             <em>{{version}}</em>
-            <p>current version</p>
+            <p>{{ $t('common.currentVersion') }}</p>
           </div>
         </div>
         <div class="content-wrap">
@@ -17,7 +17,7 @@
           <div class="service-wrap">
             <!-- 搜索 -->
             <div class="search-box">
-              <el-input size="large" placeholder="Search"/>
+              <el-input size="large" :placeholder="$t('common.search')"/>
             </div>
             <!-- 服务列表 -->
             <SubServiceList
@@ -39,9 +39,9 @@
               <h3>{{currentService.name}}</h3>
               <div class="main">
                 <ul class="service-dimensions">
-                  <li :class="{selected: currentServiceDimension === 'readme'}" @click="currentServiceDimension = 'readme'">Readme</li>
-                  <li :class="{selected: currentServiceDimension === 'install'}" @click="currentServiceDimension = 'install'">Install</li>
-                  <li :class="{selected: currentServiceDimension === 'issues'}" @click="currentServiceDimension = 'issues'">Issues</li>
+                  <li :class="{selected: currentServiceDimension === 'readme'}" @click="currentServiceDimension = 'readme'">{{$t('common.readme')}}</li>
+                  <li :class="{selected: currentServiceDimension === 'install'}" @click="currentServiceDimension = 'install'">{{$t('service.install2')}}</li>
+                  <li :class="{selected: currentServiceDimension === 'issues'}" @click="currentServiceDimension = 'issues'">{{$t('common.issues')}}</li>
                 </ul>
                 <div class="dimension-content">
                   <div v-show="currentServiceDimension === 'readme'">
@@ -77,7 +77,7 @@
                     icon="Upload"
                     :disabled="isWorking.install"
                     @click="$refs.installer.install()"
-                  >UPGRADE</el-button>
+                  >{{$t('service.upgrade')}}</el-button>
                   <el-button
                     v-else
                     type="primary"
@@ -85,14 +85,14 @@
                     :disabled="isWorking.install"
                     @click="$refs.installer.install()"
                   >
-                    {{ isWorking.install ? 'INSTALLING...' : 'REINSTALL'}}
+                    {{ isWorking.install ? $t('service.installing') : $t('service.reinstall')}}
                   </el-button>
                   <el-button
                     size="large"
                     :disabled="isWorking.uninstall"
                     @click="$refs.installer.uninstall()"
                   >
-                    {{ isWorking.uninstall ? 'UNINSTALLING...' : 'UNINSTALL'}}
+                    {{ isWorking.uninstall ? $t('service.uninstalling') : $t('service.uninstall')}}
                   </el-button>
                 </template>
                 <el-button
@@ -102,7 +102,7 @@
                   :disabled="isWorking.install"
                   @click="$refs.installer.install()"
                 >
-                  {{ isWorking.install ? 'INSTALLING...' : 'INSTALL'}}
+                  {{ isWorking.install ? $t('service.installing') : $t('service.install')}}
                 </el-button>
               </div>
             </template>
