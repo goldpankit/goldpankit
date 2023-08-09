@@ -26,6 +26,10 @@ export default {
     days: 'days',
     currentVersion: 'current version',
     deleteSuccessfully: 'Delete successfully',
+    // 模态框
+    modal: {
+      confirmDelete: 'Confirm Delete',
+    },
     // 日期差
     dateOffset: {
       aMomentAgo: 'A moment ago',
@@ -179,7 +183,8 @@ export default {
     createProject: 'Create Project',
     noProjects: 'No Projects',
     createTip: 'The project information will only be saved on your current device.',
-    codespace: 'Code Space'
+    codespace: 'Code Space',
+    deleteTip: 'Are you sure you want to delete the project named {value}？'
   },
   // 工作台
   workbench: {

@@ -50,7 +50,7 @@ export default {
     },
     // 删除项目
     deleteProject (project) {
-      this.$model.deleteConfirm(`Do you want to delete the project named 「${project.name}」 ?`)
+      this.$model.deleteConfirm(this.$t('project.deleteTip', {value: `「${project.name}」`}), this.$t)
         .then(() => {
           deleteProject(project.id)
             .then(() => {

@@ -8,13 +8,13 @@ export default {
     app.config.globalProperties.$tip = message
     app.config.globalProperties.$model = {
       // 删除确认
-      deleteConfirm (message) {
+      deleteConfirm (message, $t) {
         return ElMessageBox({
-          title: 'Confirm Delete?',
+          title: $t('common.modal.confirmDelete'),
           message: message,
           showCancelButton: true,
-          cancelButtonText: 'Cancel',
-          confirmButtonText: 'Delete',
+          cancelButtonText: $t('common.cancel'),
+          confirmButtonText: $t('common.delete'),
           confirmButtonClass: 'danger-button'
         })
       },
