@@ -21,7 +21,8 @@
             </div>
             <p class="text-info-1 text-mini">最后发布于: {{service.lastPublish == null ? '未发布' : getDateOffsetText(service.lastPublish, $t)}}</p>
           </div>
-          <ul class="opera">
+          <!-- 只有自己的服务才存在操作 -->
+          <ul v-if="userInfo.id === service.user.id" class="opera">
             <li><el-button text @click="openSettings(service)">{{$t('service.serviceSettings')}}</el-button></li>
             <li><el-button text type="danger" @click="deleteService(service)">{{$t('common.delete')}}</el-button></li>
           </ul>
@@ -42,6 +43,7 @@ import Pagination from "../../components/common/Pagination.vue";
 import Empty from "../../components/common/Empty.vue";
 import {deleteService, fetchPage} from "../../api/user.service";
 import {fetchLocalServices} from "../../api/service";
+import {mapState} from "vuex";
 
 export default {
   components: {Empty, Pagination},
@@ -55,6 +57,9 @@ export default {
       },
       services: []
     }
+  },
+  computed: {
+    ...mapState(['userInfo'])
   },
   methods: {
     // 打开服务设置
