@@ -1,6 +1,8 @@
 export default {
   // 通用
   common: {
+    homepage: 'Home Page',
+    publicSpace: 'Public Spaces',
     signIn: 'Sign In',
     signUp: 'Sign Up',
     search: 'Search',
@@ -183,5 +185,12 @@ export default {
     createTip: 'The project information will only be saved on your current device.',
     codespace: 'Code Space',
     deleteTip: 'Are you sure you want to delete the project named {value}？'
+  },
+  // 工作台
+  workbench: {
+    noProjectTip1: 'Unable to initialize project workspace. Please select or create a project first. If you are using it for the first time, you can go to the ',
+    noProjectTip2: 'to learn about the purpose of services and service installation!',
+    noServiceInstalledTip1: 'The current project does not have any installed services. Please switch projects or go to the ',
+    noServiceInstalledTip2: ' to install services for this project!'
   }
 }

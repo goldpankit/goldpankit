@@ -1,6 +1,6 @@
 <template>
-  <div class="page">
-    <div v-if="space != null" class="wrap">
+  <div class="page" v-loading="loading">
+    <div v-if="!loading && project != null && mainService != null" class="wrap">
       <div>
         <div class="header">
           <div class="title">
@@ -114,6 +114,16 @@
         </div>
       </div>
     </div>
+    <div v-else-if="project == null" class="incorrect-wrap">
+      <div class="content">
+        <p>{{$t('workbench.noProjectTip1')}}<router-link :to="{name: 'Index'}">{{$t('common.homepage')}}</router-link>{{$t('workbench.noProjectTip2')}}</p>
+      </div>
+    </div>
+    <div v-else-if="mainService == null" class="incorrect-wrap">
+      <div class="content">
+        <p>{{$t('workbench.noServiceInstalledTip1')}}<router-link :to="{name: 'PublicSpaces'}">{{$t('common.publicSpace')}}</router-link>{{$t('workbench.noServiceInstalledTip2')}}</p>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -127,11 +137,13 @@ import Empty from "../components/common/Empty.vue";
 import IssueListView from "../components/space/IssueListView.vue";
 import BeanAmount from "../components/common/BeanAmount.vue";
 import SubServiceList from "../components/service/SubServiceList.vue";
+import CreateProjectWindow from "../components/usr/project/CreateProjectWindow.vue";
 
 export default {
-  components: {SubServiceList, BeanAmount, IssueListView, Empty, MarkdownEditor, ServiceInstaller},
+  components: {CreateProjectWindow, SubServiceList, BeanAmount, IssueListView, Empty, MarkdownEditor, ServiceInstaller},
   data () {
     return {
+      loading: true,
       isWorking: {
         install: false,
         uninstall: false
@@ -163,12 +175,25 @@ export default {
     ...mapMutations(['setCurrentProject']),
     // 查询项目信息
     fetchProject (withSubServices = false) {
+      console.log('this.currentProject', this.currentProject)
+      this.loading = true
+      if (this.currentProject == null || this.currentProject === '') {
+        this.project = null
+        this.space = null
+        this.loading = false
+        return
+      }
       fetchById(this.currentProject)
         .then(data => {
           this.project = data
           // 获取空间信息
           this.space = this.project.space
           // 获取主服务信息
+          if (this.project.main == null) {
+            console.log('loading false')
+            this.loading = false
+            return
+          }
           let mainName = null
           for (const key in this.project.main) {
             mainName = key
@@ -185,6 +210,9 @@ export default {
         })
         .catch(e => {
           this.$tip.apiFailed(e)
+        })
+        .finally(() => {
+          this.loading = false
         })
     },
     // 查询子服务
@@ -401,6 +429,35 @@ export default {
         color: var(--color-gray);
         margin-top: 20px;
       }
+    }
+  }
+  // 错误提示
+  .incorrect-wrap {
+    display: flex;
+    justify-content: center;
+    padding: 50px 0;
+    .content {
+      width: 550px;
+      padding: 50px;
+      background: var(--color-light);
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    p {
+      font-size: var(--font-size-large);
+      line-height: 35px;
+      a {
+        text-decoration: underline !important;
+        margin: 0 5px;
+      }
+    }
+    .el-button {
+      width: 150px;
+      height: 50px;
+      font-size: 18px;
     }
   }
 }

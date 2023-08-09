@@ -113,7 +113,7 @@ export default {
   },
   watch: {
     tableLength () {
-      this.$emit('change')
+      // this.$emit('change')
       this.render()
     },
     model () {
@@ -384,6 +384,8 @@ export default {
             this.model.tables = []
             this.model.joins = []
             this.model.aggregates = []
+            this.$emit('change')
+            this.render()
             return
           }
           // 删除join关系
@@ -407,6 +409,8 @@ export default {
           })
           // 删除table
           this.model.tables.splice(tableIndex, 1)
+          this.$emit('change')
+          this.render()
         })
         .catch(() => {})
     },
