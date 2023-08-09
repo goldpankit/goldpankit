@@ -126,7 +126,6 @@ module.exports = {
   publish(dto) {
     // 获取服务文件
     const serviceConfig = this.getServiceConfig({ space: dto.space, service: dto.service })
-    console.log('serviceConfig', serviceConfig.repository)
     let fileStoragePath = serviceConfig.codespace
     // 如果存在翻译器，自动翻译，且服务代码空间指定为翻译代码空间
     if (serviceConfig.translator.settings.length > 0) {
