@@ -44,6 +44,7 @@ export default {
   // 表单
   form: {
     isRequired: '请输入{value}',
+    isIncorrect: '{field}不正确',
     correctEmailTip: '请输入正确的邮箱地址'
   },
   // 向导
@@ -124,6 +125,8 @@ export default {
     repository: '代码仓库',
     unPublish: '暂未发布',
     confirmDeleteTip: '确认删除该服务吗？',
+    versionNumber: '版本号',
+    versionDescription: '版本描述',
     // 租赁类型
     leaseType: {
       freeLabel: '免费',

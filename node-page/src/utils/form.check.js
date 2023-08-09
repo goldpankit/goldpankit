@@ -20,4 +20,13 @@ export function checkEmail (rule, value, callback, message) {
   callback()
 }
 
+// 验证版本号
+export function checkVersionNumber (rule, value, callback, message) {
+  if (!/^(?!0)(\d+)\.(\d+)\.(\d+)/.test(value)) {
+    callback(new Error(message))
+    return
+  }
+  callback()
+}
+
 export function checkVariable () {}
