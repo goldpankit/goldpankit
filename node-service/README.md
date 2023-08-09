@@ -1,4 +1,5 @@
-## 运行服务
-依次运行以下命令
-- npm link（只需要执行一次）
-- kit
+- version: Eva v3.0.0
+- document: http://eva.adjustrd.com
+- GITEE: https://gitee.com/coderd-repos/eva
+- GITHUB: https://github.com/coderd-repos/eva
+- CODERD: http://coderd.adjustrd.com/template/308/default
