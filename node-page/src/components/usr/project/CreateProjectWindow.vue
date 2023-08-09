@@ -10,8 +10,8 @@
     <section class="tip">
       {{ $t('project.createTip') }}
     </section>
-    <el-form ref="form" :model="form">
-      <el-form-item :label="$t('common.name')" prop="name" required>
+    <el-form ref="form" :model="form" :rules="getRules()">
+      <el-form-item :label="$t('project.name')" prop="name" required>
         <el-input v-model="form.name"/>
       </el-form-item>
       <el-form-item :label="$t('project.codespace')" prop="codespace" required>
@@ -52,15 +52,28 @@ export default {
         this.$refs.form.resetFields()
       })
     },
+    getRules () {
+      return {
+        name: [
+          { required: true, message: this.$t('form.isRequired', { value: this.$t('project.name') })},
+        ]
+      }
+    },
     // 确认创建
     confirmCreate () {
-      create(this.form)
-        .then(data => {
-          this.visible = false
-          this.$emit('success', data)
-        })
-        .catch(e => {
-          this.$tip.apiFailed(e)
+      this.$refs.form.validate()
+        .then(() => {
+          create({
+            ...this.form,
+            name: this.form.name.trim()
+          })
+            .then(data => {
+              this.visible = false
+              this.$emit('success', data)
+            })
+            .catch(e => {
+              this.$tip.apiFailed(e)
+            })
         })
     },
     // 取消创建

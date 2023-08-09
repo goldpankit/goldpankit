@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 const request = require('./request.axios')
 const cache = require('../core/utils/cache')
+const log = require('../core/utils/log')
 
 class Request {
   #url;
@@ -81,12 +82,13 @@ class Request {
   }
 
   #buildError(e) {
-    console.log('e', e)
+    const message = typeof e === 'string' ? e : e.message
+    log.error(message)
     return {
       code: 500,
       success: false,
       data: null,
-      message: typeof e === 'string' ? e : e.message
+      message
     }
   }
 }

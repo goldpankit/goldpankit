@@ -47,6 +47,14 @@ export default {
       search()
         .then(data => {
           this.list = data
+          // 清空不存在的项目选择s
+          if (this.modelValue != null) {
+            const targetProject = this.list.find(p => p.id === this.modelValue)
+            if (targetProject == null) {
+              this.$emit('update:modelValue', null)
+              this.$emit('change', null)
+            }
+          }
         })
         .catch(e => {
           this.$tip.apiFailed(e)

@@ -8,11 +8,13 @@
     :close-on-press-escape="false"
     :close-on-click-modal="false"
   >
-    <el-form :model="form">
-      <el-form-item label="Version" required>
-        <el-input v-model="form.version" @input="saveConfig"/>
+    <el-form ref="form" :model="form" :rules="getRules()">
+      <el-form-item :label="$t('service.versionNumber')" prop="version" required>
+        <el-input v-model="form.version" @input="saveConfig">
+          <template #prefix>v</template>
+        </el-input>
       </el-form-item>
-      <el-form-item label="Description" required>
+      <el-form-item :label="$t('service.versionDescription')" prop="publishDescription" required>
         <el-input type="textarea" :rows="5" v-model="form.publishDescription" />
       </el-form-item>
     </el-form>
@@ -30,6 +32,7 @@
 <script>
 import {fetchConfig, saveConfig} from "../../api/service";
 import {publish} from "../../api/service.version";
+import {checkVersionNumber} from "../../utils/form.check";
 
 export default {
   name: "PublishWindow",
@@ -52,6 +55,17 @@ export default {
       this.visible = true
       this.fetchConfig()
     },
+    getRules () {
+      return {
+        version: [
+          { required: true, message: this.$t('form.isRequired', { value: this.$t('service.versionNumber') })},
+          { validator: checkVersionNumber, message: this.$t('form.isIncorrect', { field: this.$t('service.versionNumber') }) }
+        ],
+        publishDescription: [
+          { required: true, message: this.$t('form.isRequired', { value: this.$t('service.versionDescription') })}
+        ]
+      }
+    },
     // 获取版本配置
     fetchConfig () {
       fetchConfig({
@@ -67,14 +81,18 @@ export default {
     },
     // 保存配置
     saveConfig () {
-      saveConfig({
-        space: this.space,
-        service: this.service,
-        version: this.form.version
-      })
-        .catch(e => {
-          this.$tip.apiFailed(e)
+      this.$refs.form.validate()
+        .then(() => {
+          saveConfig({
+            space: this.space,
+            service: this.service,
+            version: this.form.version
+          })
+            .catch(e => {
+              this.$tip.apiFailed(e)
+            })
         })
+        .catch(() => {})
     },
     // 发布
     publish () {

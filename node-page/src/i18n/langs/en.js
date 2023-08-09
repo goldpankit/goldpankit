@@ -44,6 +44,7 @@ export default {
   // 表单
   form: {
     isRequired: '{value} is required',
+    isIncorrect: '{field} is incorrect',
     correctEmailTip: 'Please enter the correct email address'
   },
   // 向导
@@ -126,6 +127,8 @@ export default {
     repository: 'Repository',
     unPublish: 'not yet released',
     confirmDeleteTip: 'Confirm deletion of this service?',
+    versionNumber: 'Version dumber',
+    versionDescription: 'Version description',
     // 租赁类型
     leaseType: {
       freeLabel: 'Free',
@@ -168,6 +171,7 @@ export default {
   },
   // 项目
   project: {
+    name: 'Project name',
     project: 'Project',
     myProjects: 'My Projects',
     createProject: 'Create Project',
