@@ -59,4 +59,9 @@ html {
       outline: none;
     }
   }
+  .el-table {
+    .el-scrollbar__bar {
+      display: block !important;
+    }
+  }
 }
