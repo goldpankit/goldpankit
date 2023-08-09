@@ -7,7 +7,31 @@ const serviceApi = require("./api/service");
 const serviceTranslator = require('./service.translator')
 const serviceConf = require('./service.config')
 const serviceFile = require('./service.file')
+const userServiceApi = require('./api/user.service')
 module.exports = {
+  /**
+   * 删除服务
+   * dto = {
+   *   space: 空间名称,
+   *   service: 服务名称
+   * }
+   * @param dto
+   */
+  deleteService (dto) {
+    return new Promise((resolve, reject) => {
+      userServiceApi.deleteService({
+        spaceName: dto.space,
+        serviceName: dto.service
+      })
+        .then(() => {
+          cache.services.remove(dto.space, dto.service)
+          resolve()
+        })
+        .catch(e => {
+          reject(e)
+        })
+    })
+  },
   // 获取所有本地服务
   getLocalServices () {
     return cache.services.getAll()
