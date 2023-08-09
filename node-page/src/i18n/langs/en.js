@@ -118,6 +118,7 @@ export default {
     uninstallSuccessfully: 'Uninstall Successfully',
     noServices: 'No Services',
     noSubServices: 'No Sub Services',
+    serviceSettings: 'Settings',
     // 租赁类型
     leaseType: {
       freeLabel: 'Free',

@@ -118,6 +118,7 @@ export default {
     uninstallSuccessfully: '卸载完成',
     noServices: '无服务',
     noSubServices: '无子服务',
+    serviceSettings: '服务设置',
     // 租赁类型
     leaseType: {
       freeLabel: '免费',

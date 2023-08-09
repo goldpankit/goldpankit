@@ -22,8 +22,8 @@
             <p class="text-info-1 text-mini">最后发布于: {{service.lastPublish == null ? '未发布' : getDateOffsetText(service.lastPublish, $t)}}</p>
           </div>
           <ul class="opera">
-            <li><el-button text @click="editCode(service)">Edit Code</el-button></li>
-            <li><el-button text type="danger" @click="deleteService(service)">Delete</el-button></li>
+            <li><el-button text @click="openSettings(service)">{{$t('service.serviceSettings')}}</el-button></li>
+            <li><el-button text type="danger" @click="deleteService(service)">{{$t('common.delete')}}</el-button></li>
           </ul>
         </li>
       </ul>
@@ -57,8 +57,8 @@ export default {
     }
   },
   methods: {
-    // 编辑代码
-    editCode (service) {
+    // 打开服务设置
+    openSettings (service) {
       this.$router.push({
         name: 'ServiceSettings',
         query: {
