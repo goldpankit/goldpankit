@@ -13,3 +13,8 @@ export function create (data) {
     baseURL: import.meta.env.VITE_REMOTE_API_PREFIX
   })
 }
+
+// 删除服务
+export function deleteService (data) {
+  return request.post('/usr/service/delete', data)
+}

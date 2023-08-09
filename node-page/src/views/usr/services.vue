@@ -4,9 +4,9 @@
       <div class="header">
         <h2>Leased and private services</h2>
       </div>
-      <div class="search-wrap">
-        <el-input size="large" placeholder="type here and press enter."/>
-      </div>
+<!--      <div class="search-wrap">-->
+<!--        <el-input size="large" placeholder="type here and press enter."/>-->
+<!--      </div>-->
       <ul v-if="!loading && services.length > 0" class="service-list">
         <li v-for="service in services" :key="service.id">
           <h3>@{{service.space.name}}/{{service.name}}</h3>
@@ -23,7 +23,7 @@
           </div>
           <ul class="opera">
             <li><el-button text @click="editCode(service)">Edit Code</el-button></li>
-            <li><el-button text type="danger">Delete</el-button></li>
+            <li><el-button text type="danger" @click="deleteService(service)">Delete</el-button></li>
           </ul>
         </li>
       </ul>
@@ -39,9 +39,9 @@
 
 <script>
 import Pagination from "../../components/common/Pagination.vue";
-import {fetchPage} from "../../api/user.service";
-import {fetchLocalServices} from "../../api/service";
 import Empty from "../../components/common/Empty.vue";
+import {deleteService, fetchPage} from "../../api/user.service";
+import {fetchLocalServices} from "../../api/service";
 
 export default {
   components: {Empty, Pagination},
@@ -67,6 +67,27 @@ export default {
         }
       })
     },
+    // 删除服务
+    deleteService (service) {
+      this.$model.deleteConfirm('确认删除该服务吗？')
+        .then(() => {
+          deleteService({
+            space: service.space.name,
+            service: service.name
+          })
+            .then(() => {
+              if (this.services.length === 1) {
+                this.pagination.page -= 1
+                this.fetchPage()
+              }
+              this.$tip.success('删除成功')
+            })
+            .catch(e => {
+              this.$tip.apiFailed(e)
+            })
+        })
+        .catch(() => {})
+    },
     handleCurrentChange (page) {
       console.log('page', page)
       this.pagination.page = page
@@ -82,6 +103,9 @@ export default {
         return
       }
       this.loading = true
+      if (this.pagination.page < 1) {
+        this.pagination.page = 1
+      }
       fetchPage({
         ...this.pagination,
         model: {}
