@@ -11,7 +11,7 @@
         :key="item.id"
         :label="item.name"
       />
-      <template v-if="withPrefix" #prefix>Database:</template>
+      <template v-if="withPrefix" #prefix>Data Source:</template>
     </el-select>
     <el-button v-if="withCreateButton" class="button-icon" type="primary" icon="Plus" @click="$refs.createDatabaseWindow.open()"></el-button>
     <CreateDatabaseWindow ref="createDatabaseWindow" @success="handleCreateSuccess"/>
@@ -24,7 +24,7 @@ import CreateDatabaseWindow from "./CreateDatabaseWindow.vue";
 import {mapMutations} from "vuex";
 
 export default {
-  name: "DatabaseSelect",
+  name: "DataSourceSelect",
   components: {CreateDatabaseWindow},
   props: {
     modelValue: {},

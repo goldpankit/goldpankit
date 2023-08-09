@@ -37,7 +37,6 @@ import I18nInput from "../../../components/common/I18nInput.vue";
 import SpaceSelect from "../../../components/space/SpaceSelect.vue";
 import CompilerSelect from "../../../components/common/CompilerSelect.vue";
 import ServiceTypeSelect from "../../../components/service/ServiceTypeSelect.vue";
-import DatabaseSelect from "../../../components/database/DatabaseSelect.vue";
 import VersionSelect from "../../../components/common/VersionSelect.vue";
 import MainServiceSelect from "../../../components/service/MainServiceSelect.vue";
 import { create } from "../../../api/user.service";
@@ -45,7 +44,7 @@ import { create } from "../../../api/user.service";
 export default {
   components: {
     MainServiceSelect,
-    VersionSelect, DatabaseSelect, ServiceTypeSelect, CompilerSelect, SpaceSelect, I18nInput},
+    VersionSelect, ServiceTypeSelect, CompilerSelect, SpaceSelect, I18nInput},
   data () {
     return {
       space: null,

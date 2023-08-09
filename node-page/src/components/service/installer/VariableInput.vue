@@ -34,8 +34,8 @@
       :options="variable.options"
       @change="$emit('change', $event)"
     />
-    <DatabaseSelect
-      v-else-if="variable.inputType === 'database'"
+    <DataSourceSelect
+      v-else-if="variable.inputType === 'datasource'"
       v-model="variable[valueKey]"
       :with-prefix="false"
       :with-block="true"
@@ -64,7 +64,7 @@ import InstallRadio from "./Radio.vue";
 import InstallCheckbox from "./Checkbox.vue";
 import TableSelect from "../../common/TableSelect.vue";
 import QueryModelSelect from "../../common/QueryModelSelect.vue";
-import DatabaseSelect from "../../database/DatabaseSelect.vue";
+import DataSourceSelect from "../../database/DataSourceSelect.vue";
 import InstallSelect from "./Select.vue";
 import InstallNumberInput from "./NumberInput.vue";
 
@@ -72,7 +72,7 @@ export default {
   name: "VariableInput",
   components: {
     InstallNumberInput,
-    InstallSelect, DatabaseSelect, QueryModelSelect, TableSelect, InstallCheckbox, InstallRadio, InstallInput},
+    InstallSelect, DataSourceSelect, QueryModelSelect, TableSelect, InstallCheckbox, InstallRadio, InstallInput},
   props: {
     // 当前变量
     variable: {

@@ -83,7 +83,7 @@
       v-if="variable.inputType !== 'number_input' &&
         variable.inputType !== 'table' &&
         variable.inputType !== 'query_model' &&
-        variable.inputType !== 'database' &&
+        variable.inputType !== 'datasource' &&
         rootVariable.inputType !== 'query_model' &&
         rootVariable.inputType !== 'table'
       "
@@ -238,7 +238,7 @@ export default {
         this.variable.defaultValue = ''
       }
       // 如果调整为database，query_model或table，值全部改为null
-      else if (this.variable.inputType === 'database' || this.variable.inputType === 'table' || this.variable.inputType === 'query_model') {
+      else if (this.variable.inputType === 'datasource' || this.variable.inputType === 'table' || this.variable.inputType === 'query_model') {
         this.variable.defaultValue = null
       }
       // 其他值调整为字符串

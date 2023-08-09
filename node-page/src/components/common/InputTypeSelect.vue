@@ -7,7 +7,7 @@
     <el-option value="checkbox" label="Checkbox"/>
     <el-option value="radio" label="Radio"/>
     <template v-if="!withGroup">
-      <el-option value="database" label="Database"/>
+      <el-option value="datasource" label="Data Source"/>
       <el-option value="table" label="Table"/>
       <el-option value="query_model" label="Query Model"/>
     </template>

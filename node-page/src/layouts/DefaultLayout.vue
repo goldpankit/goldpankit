@@ -22,14 +22,13 @@
 
 <script>
 import { mapState} from 'vuex'
-import DatabaseSelect from "../components/database/DatabaseSelect.vue";
 import ProjectSelect from "../components/usr/project/ProjectSelect.vue";
 import AppLayout from "./AppLayout.vue";
 import LoginView from "../components/header/LoginView.vue";
 
 export default {
   name: 'DefaultLayout',
-  components: {LoginView, AppLayout, ProjectSelect, DatabaseSelect },
+  components: {LoginView, AppLayout, ProjectSelect },
   computed: {
     ...mapState(['userInfo'])
   }

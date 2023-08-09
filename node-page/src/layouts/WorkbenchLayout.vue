@@ -13,7 +13,7 @@
           <ProjectSelect :model-value="currentProject" @change="setCurrentProject"/>
         </li>
         <li>
-          <DatabaseSelect :model-value="currentDatabase" @change="setCurrentDatabase"/>
+          <DataSourceSelect :model-value="currentDatabase" @change="setCurrentDatabase"/>
         </li>
         <li>
           <LoginView/>
@@ -28,14 +28,14 @@
 
 <script>
 import {mapMutations, mapState} from 'vuex'
-import DatabaseSelect from "../components/database/DatabaseSelect.vue";
+import DataSourceSelect from "../components/database/DataSourceSelect.vue";
 import ProjectSelect from "../components/usr/project/ProjectSelect.vue";
 import AppLayout from "./AppLayout.vue";
 import LoginView from "../components/header/LoginView.vue";
 
 export default {
   name: 'WorkbenchLayout',
-  components: {LoginView, AppLayout, ProjectSelect, DatabaseSelect },
+  components: {LoginView, AppLayout, ProjectSelect, DataSourceSelect },
   computed: {
     ...mapState(['currentProject', 'currentDatabase', 'userInfo'])
   },
