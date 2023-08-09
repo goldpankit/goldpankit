@@ -1,4 +1,6 @@
 import axios from 'axios'
+import {trim} from "./util";
+
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_LOCAL_API_PREFIX,
   timeout: 600000,
@@ -9,7 +11,15 @@ const axiosInstance = axios.create({
 
 // 添加请求拦截器
 axiosInstance.interceptors.request.use(function (config) {
-  // 在发送请求之前做些什么
+  // 参数去空格
+  if (config.trim === true) {
+    if (config.data != null) {
+      config.data = trim(config.data)
+    }
+    if (config.params != null) {
+      config.params = trim(config.params)
+    }
+  }
   return config
 }, function (error) {
   // 对请求错误做些什么

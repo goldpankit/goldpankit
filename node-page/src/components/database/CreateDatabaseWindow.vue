@@ -7,29 +7,29 @@
     :close-on-click-modal="false"
     :close-on-press-escape="false"
   >
-    <el-form ref="form" :model="form">
-      <el-form-item :label="$t('common.name')" required>
+    <el-form ref="form" :model="form" :rules="getRules()">
+      <el-form-item :label="$t('common.name')" prop="name" required>
         <el-input v-model="form.name"/>
       </el-form-item>
-      <el-form-item :label="$t('database.databaseType')" required>
+      <el-form-item :label="$t('database.databaseType')" prop="type" required>
         <DatabaseTypeSelect v-model="form.type" :multiple="false"/>
       </el-form-item>
-      <el-form-item :label="$t('database.host')" required>
+      <el-form-item :label="$t('database.host')" prop="host" required>
         <el-input v-model="form.host"/>
       </el-form-item>
-      <el-form-item :label="$t('database.port')" required>
+      <el-form-item :label="$t('database.port')" prop="port" required>
         <el-input v-model="form.port"/>
       </el-form-item>
-      <el-form-item :label="$t('database.schema')" required>
+      <el-form-item :label="$t('database.schema')" prop="schema" required>
         <el-input v-model="form.schema"/>
       </el-form-item>
-      <el-form-item :label="$t('database.username')" required>
+      <el-form-item :label="$t('database.username')" prop="username" required>
         <el-input v-model="form.username"/>
       </el-form-item>
-      <el-form-item :label="$t('database.password')" required>
+      <el-form-item :label="$t('database.password')" prop="password" required>
         <el-input type="password" v-model="form.password" show-password/>
       </el-form-item>
-      <el-form-item v-if="form.type === 'mysql'" label="URL" class="item-url" required>
+      <el-form-item v-if="form.type === 'mysql'" label="URL" class="item-url">
         <template #label>
           <div>
             <label>URL</label>
@@ -53,6 +53,7 @@
 import DatabaseTypeSelect from "./DatabaseTypeSelect.vue";
 import {testConnect} from "../../api/database.util";
 import {create} from "../../api/database";
+import {trim} from "../../utils/util";
 
 export default {
   name: "CreateDatabaseWindow",
@@ -60,6 +61,7 @@ export default {
   data () {
     return {
       visible: false,
+      isWorking: false,
       form: {
         name: '',
         type: 'mysql',
@@ -89,16 +91,39 @@ export default {
         this.$refs.form.resetFields()
       })
     },
+    getRules () {
+      return {
+        name: [
+          { required: true, message: this.$t('form.isRequired', { value: this.$t('common.name') })},
+        ]
+      }
+    },
     // 确认创建
     confirmCreate () {
-      create(this.form)
-        .then(data => {
-          this.visible = false
-          this.$emit('success', data)
+      this.$refs.form.validate()
+        .then(() => {
+          if (this.isWorking) {
+            return
+          }
+          this.isWorking = true
+          // 密码不去空
+          const password = this.form.password
+          const form = trim(this.form)
+          form.password = password
+          // 执行创建
+          create(form)
+            .then(data => {
+              this.visible = false
+              this.$emit('success', data)
+            })
+            .catch(e => {
+              this.$tip.apiFailed(e)
+            })
+            .finally(() => {
+              this.isWorking = false
+            })
         })
-        .catch(e => {
-          this.$tip.apiFailed(e)
-        })
+        .catch(() => {})
     },
     // 取消创建
     cancelCreate () {
@@ -111,12 +136,16 @@ export default {
       }
       this.connectResult.connecting = true
       this.connectResult.withError = false
+      // 密码不去空
+      const password = this.form.password
+      const form = trim(this.form)
+      form.password = password
       testConnect({
-        host: this.form.host,
-        port: this.form.port,
-        user: this.form.username,
-        password: this.form.password,
-        database: this.form.schema
+        host: form.host,
+        port: form.port,
+        user: form.username,
+        password: form.password,
+        database: form.schema
       })
         .then(() => {
           this.connectResult.withError = false

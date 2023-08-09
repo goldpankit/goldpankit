@@ -38,6 +38,7 @@ export default {
   data () {
     return {
       visible: false,
+      isWorking: false,
       form: {
         name: '',
         codespace: '',
@@ -63,6 +64,10 @@ export default {
     confirmCreate () {
       this.$refs.form.validate()
         .then(() => {
+          if (this.isWorking) {
+            return
+          }
+          this.isWorking = true
           create({
             ...this.form,
             name: this.form.name.trim()
@@ -73,6 +78,9 @@ export default {
             })
             .catch(e => {
               this.$tip.apiFailed(e)
+            })
+            .finally(() => {
+              this.isWorking = false
             })
         })
     },
