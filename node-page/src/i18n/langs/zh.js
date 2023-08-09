@@ -157,7 +157,7 @@ export default {
     url: 'URL',
     testConnection: '测试连接',
     connecting: '连接中...',
-    createDatabase: '创建数据源',
+    createDatabase: '添加数据源',
     connectSuccessfully: '连接成功',
     addNewDatabase: '添加数据源',
     queryModels: '查询模型',
