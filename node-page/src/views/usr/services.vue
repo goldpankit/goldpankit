@@ -28,7 +28,11 @@
         </li>
       </ul>
       <Empty v-else description="No Services"/>
-      <Pagination :pagination="pagination"/>
+      <Pagination
+        :pagination="pagination"
+        @current-change="handleCurrentChange"
+        @size-change="handleSizeChange"
+      />
     </div>
   </div>
 </template>
@@ -62,6 +66,15 @@ export default {
           service: service.name
         }
       })
+    },
+    handleCurrentChange (page) {
+      console.log('page', page)
+      this.pagination.page = page
+      this.fetchPage()
+    },
+    handleSizeChange (capacity) {
+      this.pagination.capacity = capacity
+      this.fetchPage()
     },
     // 查询分页
     fetchPage () {
