@@ -118,10 +118,52 @@ export default {
       // 初始化线条点
       const points = []
       if (this.start.y !== this.end.y) {
-        points.push(this.start.x + ((this.end.x - this.start.x) / 2))
-        points.push(this.start.y)
-        points.push(this.start.x + ((this.end.x - this.start.x) / 2))
-        points.push(this.end.y)
+        // 开始位置在左侧
+        if (this.end.x - this.start.x > 0) {
+          // 附近
+          if (this.end.x - this.start.x < 50) {
+            this.start.x -= 200
+            points.push(this.start.x - 50)
+            points.push(this.start.y)
+            points.push(this.start.x - 50)
+            points.push(this.end.y)
+          }
+          // 无限远
+          else {
+            points.push(this.start.x + ((this.end.x - this.start.x) / 2))
+            points.push(this.start.y)
+            points.push(this.start.x + ((this.end.x - this.start.x) / 2))
+            points.push(this.end.y)
+          }
+        }
+        // 开始位置在右侧
+        else {
+          // 重叠
+          if (Math.abs(this.end.x - this.start.x) < 200) {
+            this.start.x -= 200
+            points.push(this.start.x - 50)
+            points.push(this.start.y)
+            points.push(this.start.x - 50)
+            points.push(this.end.y)
+          }
+          // 刚好穿过50像素
+          else if (Math.abs(this.end.x - this.start.x) < 450) {
+            this.end.x += 200
+            points.push(this.start.x + 50)
+            points.push(this.start.y)
+            points.push(this.start.x + 50)
+            points.push(this.end.y)
+          }
+          // 无限远
+          else {
+            this.start.x -= 200
+            this.end.x += 200
+            points.push(this.start.x - (Math.abs(this.end.x - this.start.x) / 2))
+            points.push(this.start.y)
+            points.push(this.start.x - (Math.abs(this.end.x - this.start.x) / 2))
+            points.push(this.end.y)
+          }
+        }
       }
       this.lineConfig.points = [
         this.start.x, this.start.y,
