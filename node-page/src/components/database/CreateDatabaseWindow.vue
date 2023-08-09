@@ -95,6 +95,24 @@ export default {
       return {
         name: [
           { required: true, message: this.$t('form.isRequired', { value: this.$t('common.name') })},
+        ],
+        type: [
+          { required: true, message: this.$t('form.isRequired', { value: this.$t('database.databaseType') })},
+        ],
+        host: [
+          { required: true, message: this.$t('form.isRequired', { value: this.$t('database.host') })},
+        ],
+        port: [
+          { required: true, message: this.$t('form.isRequired', { value: this.$t('database.port') })},
+        ],
+        schema: [
+          { required: true, message: this.$t('form.isRequired', { value: this.$t('database.schema') })},
+        ],
+        username: [
+          { required: true, message: this.$t('form.isRequired', { value: this.$t('database.username') })},
+        ],
+        password: [
+          { required: true, message: this.$t('form.isRequired', { value: this.$t('database.password') })},
         ]
       }
     },
