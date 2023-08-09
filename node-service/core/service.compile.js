@@ -395,8 +395,8 @@ class Kit {
     return variables.map(item => {
       return new Promise((resolve, reject) => {
         try {
-          // 如果类型为数据库，则查询出库信息
-          if (item.inputType === 'database') {
+          // 如果类型为数据源，则查询出库信息
+          if (item.inputType === 'datasource') {
             const databaseId = item.value === undefined ?  item.defaultValue : item.value
             const database = cache.databases.get(databaseId)
             resolve({
