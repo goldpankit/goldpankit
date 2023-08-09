@@ -164,31 +164,6 @@ export default {
             points.push(this.end.y)
           }
         }
-        // if (this.end.x - this.start.x > 50) {
-        //   points.push(this.start.x + ((this.end.x - this.start.x) / 2))
-        //   points.push(this.start.y)
-        //   points.push(this.start.x + ((this.end.x - this.start.x) / 2))
-        //   points.push(this.end.y)
-        // } else if (this.end.x - this.start.x >= -600){
-        //   this.end.x += 200
-        //   points.push(this.start.x + 50)
-        //   points.push(this.start.y)
-        //   points.push(this.start.x + 50)
-        //   points.push(this.end.y)
-        // } else if (this.end.x - this.start.x >= -200){
-        //   this.start.x -= 200
-        //   this.end.x += 200
-        //   points.push(this.start.x - 50)
-        //   points.push(this.start.y)
-        //   points.push(this.start.x - 50)
-        //   points.push(this.end.y)
-        // } else {
-        //   this.start.x -= 200
-        //   points.push(this.start.x - 50)
-        //   points.push(this.start.y)
-        //   points.push(this.start.x - 50)
-        //   points.push(this.end.y)
-        // }
       }
       this.lineConfig.points = [
         this.start.x, this.start.y,
