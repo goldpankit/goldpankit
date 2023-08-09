@@ -24,6 +24,10 @@ export default {
     days: '天',
     currentVersion: '当前版本',
     deleteSuccessfully: '删除成功',
+    // 模态框
+    modal: {
+      confirmDelete: '确认删除',
+    },
     // 日期差
     dateOffset: {
       aMomentAgo: '刚刚',
@@ -177,5 +181,6 @@ export default {
     noProjects: '暂无项目',
     createTip: '项目信息仅存储在您的当前设备上。',
     codespace: '代码空间',
+    deleteTip: '您确定要删除名为{value}的项目吗？'
   }
 }
