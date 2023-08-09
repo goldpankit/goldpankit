@@ -51,8 +51,9 @@ module.exports = {
     // 服务列表
     services: [
       // {
-      //   "space": "eva",
-      //   "name": "单表接口",
+      //   "space": "eva", // 空间名称
+      //   "name": "单表接口", // 服务名称
+      //   "repository": "", // 仓库地址
       //   "codespace": "/Users/caesar/adjustrd/goldpankit/spaces/eva/eva-server-table-crud"
       // },
     ],

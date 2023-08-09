@@ -8,6 +8,10 @@ const serviceTranslator = require('./service.translator')
 const serviceConf = require('./service.config')
 const serviceFile = require('./service.file')
 module.exports = {
+  // 获取所有本地服务
+  getLocalServices () {
+    return cache.services.getAll()
+  },
   // 初始化
   initialize(extConfig) {
     // 获取配置文件路径
@@ -18,17 +22,20 @@ module.exports = {
     const configPath = this.__getConfigPath(codespace)
     // 合并配置
     object.merge(extConfig, config)
-    // 合并当前服务配置
+    // 如果目标目录本身是一个服务，则直接用原来服务的配置信息，调整名称即可
     if (fs.exists(configPath)) {
       const currentConfig = fs.readJSONFile(configPath)
-      object.merge(currentConfig, config, ['variables', 'translator', 'settings'])
+      object.merge(currentConfig, config)
     }
+    // 保留服务名称
+    config.name = extConfig.name
     // 初始化服务文件
     fs.createFile(configPath, fs.toJSONFileString(config), true)
     // 添加本地服务记录
     cache.services.save({
       space: extConfig.space,
-      name: config.name,
+      name: extConfig.name,
+      repository: extConfig.repository == null ? '' : extConfig.repository,
       codespace: extConfig.codespace
     })
   },
@@ -67,6 +74,14 @@ module.exports = {
     // 写入配置文件
     const configPath = this.__getConfigPath(serviceConfig.codespace)
     fs.rewrite(configPath, fs.toJSONFileString(newConfig))
+    // 保存服务repository
+    if (dto.repository !== undefined) {
+      cache.services.save({
+        space: dto.space,
+        name: dto.service,
+        repository: dto.repository
+      })
+    }
   },
   // 获取服务文件树
   getFileTree(space, service) {
@@ -111,6 +126,7 @@ module.exports = {
   publish(dto) {
     // 获取服务文件
     const serviceConfig = this.getServiceConfig({ space: dto.space, service: dto.service })
+    console.log('serviceConfig', serviceConfig.repository)
     let fileStoragePath = serviceConfig.codespace
     // 如果存在翻译器，自动翻译，且服务代码空间指定为翻译代码空间
     if (serviceConfig.translator.settings.length > 0) {
@@ -143,6 +159,7 @@ module.exports = {
       prices: serviceConfig.prices,
       compiler: serviceConfig.compiler,
       supportedDatabases: serviceConfig.supportedDatabases.join(','),
+      repository: serviceConfig.repository,
       builds: JSON.stringify(serviceConfig.builds),
       unbuilds: JSON.stringify(serviceConfig.unbuilds),
       variables: JSON.stringify(serviceConfig.variables),

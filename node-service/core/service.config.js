@@ -9,7 +9,10 @@ module.exports = {
       if (service == null) {
         return null
       }
-      return this.__getServiceConfig(service.codespace)
+      return {
+        ...this.__getServiceConfig(service.codespace),
+        repository: service.repository
+      }
     }
     if (dto.codespace != null) {
       return this.__getServiceConfig(dto.codespace)
