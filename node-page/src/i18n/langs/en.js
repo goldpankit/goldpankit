@@ -23,6 +23,7 @@ export default {
     save: 'Save',
     days: 'days',
     currentVersion: 'current version',
+    deleteSuccessfully: 'Delete successfully',
     // 日期差
     dateOffset: {
       aMomentAgo: 'A moment ago',
@@ -119,6 +120,10 @@ export default {
     noServices: 'No Services',
     noSubServices: 'No Sub Services',
     serviceSettings: 'Settings',
+    codespace: 'Code space',
+    repository: 'Repository',
+    unPublish: 'not yet released',
+    confirmDeleteTip: 'Confirm deletion of this service?',
     // 租赁类型
     leaseType: {
       freeLabel: 'Free',

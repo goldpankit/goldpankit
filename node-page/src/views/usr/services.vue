@@ -11,15 +11,17 @@
         <li v-for="service in services" :key="service.id">
           <h3>@{{service.space.name}}/{{service.name}}</h3>
           <p class="introduce">{{service.introduce}}</p>
-          <p>代码空间: {{service.codespace}}</p>
-          <p>代码仓库: {{service.repository}}</p>
+          <p>{{$t('service.codespace')}}: {{service.codespace}}</p>
+          <p>{{$t('service.repository')}}: {{service.repository}}</p>
           <div class="footer-info">
             <!-- 用户信息 -->
             <div class="user-profile">
               <img :src="getAccessUri(service.user.avatar, '/images/avatar/default.png')">
               <span>{{service.user.username}}</span>
             </div>
-            <p class="text-info-1 text-mini">最后发布于: {{service.lastPublish == null ? '未发布' : getDateOffsetText(service.lastPublish, $t)}}</p>
+            <p class="text-info-1 text-mini">
+              {{$t('service.lastPublish')}}: {{service.lastPublish == null ? $t('service.unPublish') : getDateOffsetText(service.lastPublish, $t)}}
+            </p>
           </div>
           <!-- 只有自己的服务才存在操作 -->
           <ul v-if="userInfo.id === service.user.id" class="opera">
@@ -74,7 +76,7 @@ export default {
     },
     // 删除服务
     deleteService (service) {
-      this.$model.deleteConfirm('确认删除该服务吗？')
+      this.$model.deleteConfirm(this.$t('service.confirmDeleteTip'))
         .then(() => {
           deleteService({
             space: service.space.name,
@@ -85,7 +87,7 @@ export default {
                 this.pagination.page -= 1
                 this.fetchPage()
               }
-              this.$tip.success('删除成功')
+              this.$tip.success(this.$t('common.deleteSuccessfully'))
             })
             .catch(e => {
               this.$tip.apiFailed(e)
@@ -155,6 +157,7 @@ export default {
 .page {
   height: 100%;
   overflow-y: auto;
+  padding-bottom: 30px;
   .wrap {
     width: var(--page-width);
     margin: 0 auto;
