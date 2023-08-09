@@ -169,6 +169,7 @@ export default {
   },
   // 项目
   project: {
+    name: 'Project name',
     project: 'Project',
     myProjects: 'My Projects',
     createProject: 'Create Project',

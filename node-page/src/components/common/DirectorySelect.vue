@@ -20,7 +20,7 @@
         <li
           v-for="(file,index) in files"
           :key="file.path"
-          :class="{ 'is-file': file.type === 'file' }"
+          :class="{ 'is-file': file.type === 'FILE' }"
           @click="fetchSubFiles(file)"
         >
           <template v-if="file.__creatable">
@@ -53,6 +53,10 @@ export default {
     modelValue: {},
     title: {
       require: false
+    },
+    // 选择类型
+    type: {
+      default: 'DIR'
     }
   },
   data () {
@@ -105,10 +109,11 @@ export default {
     },
     // 查看子目录
     fetchSubFiles (file) {
+      console.log('file', file)
       if (file.__creatable) {
         return
       }
-      if (file.type === 'file') {
+      if (file.type === 'FILE') {
         return
       }
       this.paths.push(file.path)

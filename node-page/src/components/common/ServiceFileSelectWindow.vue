@@ -21,7 +21,7 @@
         <li
           v-for="file in files"
           :key="file.path"
-          :class="{ 'is-file': file.type === 'file', selected: selectedFilepath === file.path }"
+          :class="{ 'is-file': file.type === 'FILE', selected: selectedFilepath === file.path }"
           @click="openOrSelectFile(file)"
         >
           <el-icon>
@@ -196,11 +196,7 @@ export default {
         display: flex;
         align-items: center;
         &.is-file {
-          color: var(--color-gray-1);
           cursor: default;
-          &:hover {
-            color: var(--color-gray-1);
-          }
         }
         &.selected {
           background: var(--primary-color-match-2);

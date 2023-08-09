@@ -168,6 +168,7 @@ export default {
   },
   // 项目相关
   project: {
+    name: '项目名称',
     project: '项目',
     myProjects: '我的项目',
     createProject: '创建项目',
