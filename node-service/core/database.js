@@ -7,9 +7,14 @@ module.exports = {
   },
   // 创建
   create (database) {
+    const databases = cache.databases.getAll()
+    const existsDatabase = databases.find(db => db.name === database.name)
+    if (existsDatabase != null) {
+      return Promise.reject('数据源名称已存在')
+    }
     database.id = utils.generateId()
     cache.databases.save(database)
-    return database.id
+    return Promise.resolve(database.id)
   },
   // 保存
   updateById (config) {
