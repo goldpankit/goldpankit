@@ -5,6 +5,12 @@ const Const = require("./constants/constants");
 module.exports = {
   // 创建
   create (project) {
+    const projects = cache.projects.getAll()
+    const existsProject = projects.find(p => p.name === project.name)
+    if (existsProject != null) {
+      throw new Error('项目已存在')
+    }
+    // 保存项目
     project.id = utils.generateId()
     cache.projects.save(project)
     return project.id
