@@ -37,7 +37,7 @@ module.exports = {
   },
   // 保存模型
   update (databaseId, newModel) {
-    const database = cache.databases.get(databaseId)
+    const database = cache.datasources.get(databaseId)
     if (database == null) {
       throw new Error(`Can not found database by id ${databaseId}`)
     }
