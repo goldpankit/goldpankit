@@ -23,6 +23,7 @@ export default {
     save: '保存',
     days: '天',
     currentVersion: '当前版本',
+    deleteSuccessfully: '删除成功',
     // 日期差
     dateOffset: {
       aMomentAgo: '刚刚',
@@ -118,6 +119,11 @@ export default {
     uninstallSuccessfully: '卸载完成',
     noServices: '无服务',
     noSubServices: '无子服务',
+    serviceSettings: '服务设置',
+    codespace: '本地位置',
+    repository: '代码仓库',
+    unPublish: '暂未发布',
+    confirmDeleteTip: '确认删除该服务吗？',
     // 租赁类型
     leaseType: {
       freeLabel: '免费',

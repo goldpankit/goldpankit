@@ -4,26 +4,29 @@
       <div class="header">
         <h2>Leased and private services</h2>
       </div>
-      <div class="search-wrap">
-        <el-input size="large" placeholder="type here and press enter."/>
-      </div>
+<!--      <div class="search-wrap">-->
+<!--        <el-input size="large" placeholder="type here and press enter."/>-->
+<!--      </div>-->
       <ul v-if="!loading && services.length > 0" class="service-list">
         <li v-for="service in services" :key="service.id">
           <h3>@{{service.space.name}}/{{service.name}}</h3>
           <p class="introduce">{{service.introduce}}</p>
-          <p>代码空间: {{service.codespace}}</p>
-          <p>代码仓库: {{service.repository}}</p>
+          <p>{{$t('service.codespace')}}: {{service.codespace}}</p>
+          <p>{{$t('service.repository')}}: {{service.repository}}</p>
           <div class="footer-info">
             <!-- 用户信息 -->
             <div class="user-profile">
               <img :src="getAccessUri(service.user.avatar, '/images/avatar/default.png')">
               <span>{{service.user.username}}</span>
             </div>
-            <p class="text-info-1 text-mini">最后发布于: {{service.lastPublish == null ? '未发布' : getDateOffsetText(service.lastPublish, $t)}}</p>
+            <p class="text-info-1 text-mini">
+              {{$t('service.lastPublish')}}: {{service.lastPublish == null ? $t('service.unPublish') : getDateOffsetText(service.lastPublish, $t)}}
+            </p>
           </div>
-          <ul class="opera">
-            <li><el-button text @click="editCode(service)">Edit Code</el-button></li>
-            <li><el-button text type="danger">Delete</el-button></li>
+          <!-- 只有自己的服务才存在操作 -->
+          <ul v-if="userInfo.id === service.user.id" class="opera">
+            <li><el-button text @click="openSettings(service)">{{$t('service.serviceSettings')}}</el-button></li>
+            <li><el-button text type="danger" @click="deleteService(service)">{{$t('common.delete')}}</el-button></li>
           </ul>
         </li>
       </ul>
@@ -39,9 +42,10 @@
 
 <script>
 import Pagination from "../../components/common/Pagination.vue";
-import {fetchPage} from "../../api/user.service";
-import {fetchLocalServices} from "../../api/service";
 import Empty from "../../components/common/Empty.vue";
+import {deleteService, fetchPage} from "../../api/user.service";
+import {fetchLocalServices} from "../../api/service";
+import {mapState} from "vuex";
 
 export default {
   components: {Empty, Pagination},
@@ -56,9 +60,12 @@ export default {
       services: []
     }
   },
+  computed: {
+    ...mapState(['userInfo'])
+  },
   methods: {
-    // 编辑代码
-    editCode (service) {
+    // 打开服务设置
+    openSettings (service) {
       this.$router.push({
         name: 'ServiceSettings',
         query: {
@@ -66,6 +73,27 @@ export default {
           service: service.name
         }
       })
+    },
+    // 删除服务
+    deleteService (service) {
+      this.$model.deleteConfirm(this.$t('service.confirmDeleteTip'))
+        .then(() => {
+          deleteService({
+            space: service.space.name,
+            service: service.name
+          })
+            .then(() => {
+              if (this.services.length === 1) {
+                this.pagination.page -= 1
+                this.fetchPage()
+              }
+              this.$tip.success(this.$t('common.deleteSuccessfully'))
+            })
+            .catch(e => {
+              this.$tip.apiFailed(e)
+            })
+        })
+        .catch(() => {})
     },
     handleCurrentChange (page) {
       console.log('page', page)
@@ -82,6 +110,9 @@ export default {
         return
       }
       this.loading = true
+      if (this.pagination.page < 1) {
+        this.pagination.page = 1
+      }
       fetchPage({
         ...this.pagination,
         model: {}
@@ -126,6 +157,7 @@ export default {
 .page {
   height: 100%;
   overflow-y: auto;
+  padding-bottom: 30px;
   .wrap {
     width: var(--page-width);
     margin: 0 auto;
