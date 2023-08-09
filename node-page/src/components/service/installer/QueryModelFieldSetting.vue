@@ -18,6 +18,9 @@
       :label="variable.label"
       :min-width="getColumnMinWidth(variable)"
     >
+      <template #header>
+        <em v-if="variable.required" class="required">*</em>{{variable.name}}
+      </template>
       <template #default="{ row }">
         <TableFieldVariableInput
           :variable="variable"
@@ -85,5 +88,12 @@ h5 {
   color: var(--el-text-color-regular);
   font-weight: normal;
   margin-top: 20px;
+}
+.el-table {
+  :deep(.required) {
+    color: var(--el-color-danger);
+    margin-right: 2px;
+    font-style: normal;
+  }
 }
 </style>

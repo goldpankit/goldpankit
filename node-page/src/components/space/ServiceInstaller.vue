@@ -24,6 +24,7 @@
                 v-if="!variable.hidden"
                 :key="variable.name"
                 :label="variable.label"
+                :required="variable.required"
               >
                 <template #label>
                   <template v-if="variable.type === 'variable'">{{variable.label}}</template>
@@ -39,7 +40,7 @@
                 <!-- 服务变量组 -->
                 <ul v-else-if="variable.type === 'group'" class="group-vars">
                   <li v-for="v of variable.children" :key="`${variable.name}_${v.name}`">
-                    <label class="text-info-1 text-mini">{{v.label}}</label>
+                    <label class="text-info-1 text-mini"><em v-if="v.required">*</em>{{v.label}}</label>
                     <VariableInput :variable="v"/>
                   </li>
                 </ul>
@@ -432,6 +433,11 @@ export default {
       }
       .group-vars {
         width: 100%;
+        em {
+          color: var(--el-color-danger);
+          margin-right: 2px;
+          font-style: normal;
+        }
       }
       :deep(.el-input__inner) {
         color: var(--color-value);
