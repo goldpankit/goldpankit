@@ -1,0 +1,1 @@
+import{y as a}from"./index-57c80a9e.js";function t(e){return a.post("/usr/space/create",e,{baseURL:"/remote-api"})}function r(e){return a.get(`/space/${e}`,{baseURL:"/remote-api"})}function c(e){return a.post("/space/search",e,{baseURL:"/remote-api"})}export{t as c,r as f,c as s};
