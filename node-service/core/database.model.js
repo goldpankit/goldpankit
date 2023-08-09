@@ -3,7 +3,7 @@ const utils = require('./utils/index')
 module.exports = {
   // 删除模型
   delete (databaseId, modelId) {
-    const database = cache.databases.get(databaseId)
+    const database = cache.datasources.get(databaseId)
     if (database == null) {
       throw new Error(`Can not found database by id ${databaseId}`)
     }
@@ -13,12 +13,12 @@ module.exports = {
         throw new Error(`Can not found model by id ${modelId}`)
       }
       database.models.splice(index, 1)
-      cache.databases.save(database)
+      cache.datasources.save(database)
     }
   },
   // 保存模型
   create (databaseId, newModel) {
-    const database = cache.databases.get(databaseId)
+    const database = cache.datasources.get(databaseId)
     if (database == null) {
       throw new Error(`Can not found database by id ${databaseId}`)
     }
@@ -32,7 +32,7 @@ module.exports = {
     }
     newModel.id = utils.generateId()
     database.models.push(newModel)
-    cache.databases.save(database)
+    cache.datasources.save(database)
     return newModel.id
   },
   // 保存模型
@@ -49,6 +49,6 @@ module.exports = {
       throw new Error(`Can not found model by id ${newModel.id}`)
     }
     Object.assign(model, newModel)
-    cache.databases.save(database)
+    cache.datasources.save(database)
   }
 }

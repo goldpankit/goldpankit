@@ -27,7 +27,7 @@ request
 request
   .post('/db/mysql/exec')
   .data(req => {
-    const database = cache.databases.get(req.body.database)
+    const database = cache.datasources.get(req.body.database)
     const sql = mysql.format(req.body.sql)
     return mysql.exec({
       host: database.host,

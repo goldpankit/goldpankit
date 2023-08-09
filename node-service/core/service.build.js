@@ -7,7 +7,7 @@ module.exports = {
   build (dto) {
     const builds = dto.builds
     const project = cache.projects.get(dto.projectId)
-    const database = cache.databases.get(dto.databaseId)
+    const database = cache.datasources.get(dto.databaseId)
     return new Promise((resolve, reject) => {
       if (builds == null || builds.length === 0) {
         resolve()

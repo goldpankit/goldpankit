@@ -182,7 +182,7 @@ class Kit {
           serviceTranslator.translate({space: dto.space, service: dto.service})
         }
         // 获取数据库信息
-        const database = cache.databases.get(dto.database)
+        const database = cache.datasources.get(dto.database)
         // 组装变量
         const variables = this.#getVariables(project, database, dto.variables)
         Promise.all(variables)
@@ -233,7 +233,7 @@ class Kit {
         return Promise.reject('Please select a project.')
       }
       // 获取数据库信息
-      const database = cache.databases.get(dto.database)
+      const database = cache.datasources.get(dto.database)
       // 在安装前先把变量信息记录在项目配置文件中，防止安装失败后需重填信息
       // 获取配置格式
       const config = JSON.parse(JSON.stringify(Const.PROJECT_CONFIG_FILE_CONTENT))
@@ -398,7 +398,7 @@ class Kit {
           // 如果类型为数据源，则查询出库信息
           if (item.inputType === 'datasource') {
             const databaseId = item.value === undefined ?  item.defaultValue : item.value
-            const database = cache.databases.get(databaseId)
+            const database = cache.datasources.get(databaseId)
             resolve({
               ...item,
               value: database

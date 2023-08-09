@@ -185,5 +185,5 @@ module.exports = {
   tokens: new ArrayCache('tokens', ['value']),
   services: new ArrayCache('services', ['space', 'name']),
   projects: new ArrayCache('projects', 'id'),
-  databases: new ArrayCache('databases', 'id'),
+  datasources: new ArrayCache('datasources', 'id'),
 }

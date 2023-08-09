@@ -59,8 +59,8 @@ module.exports = {
     ],
     // 项目列表
     projects: [],
-    // 数据库列表
-    databases: []
+    // 数据源列表
+    datasources: []
   },
   // 项目配置文件
   PROJECT_CONFIG_FILE: `${PROJECT_NAME}.json`,
