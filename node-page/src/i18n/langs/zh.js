@@ -1,6 +1,8 @@
 export default {
   // 通用
   common: {
+    homepage: '首页',
+    publicSpace: '公共空间',
     signIn: '登录',
     signUp: '注册',
     search: '搜索',
@@ -177,5 +179,12 @@ export default {
     noProjects: '暂无项目',
     createTip: '项目信息仅存储在您的当前设备上。',
     codespace: '代码空间',
+  },
+  // 工作台
+  workbench: {
+    noProjectTip1: '无法初始化项目工作台，请先选择或创建一个项目，如果您是第一次使用，可前往',
+    noProjectTip2: '了解服务和服务安装的用途！',
+    noServiceInstalledTip1: '当前项目没有安装服务，请切换项目或前往',
+    noServiceInstalledTip2: '为此项目安装服务！'
   }
 }
