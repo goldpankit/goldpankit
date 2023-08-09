@@ -87,7 +87,7 @@ export default {
       search({
         ...this.pagination,
         model: {
-          keyword: this.keyword
+          keyword: this.keyword.trim()
         }
       })
         .then(data => {
