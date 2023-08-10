@@ -1,4 +1,7 @@
-## 运行服务
-依次运行以下命令
-- npm link（只需要执行一次）
-- kit
+## Let's get started
+Just run the following command
+```bash
+npm install goldpankit -g
+kit
+``` 
+You will see a brand new development kit that helps you quickly build frameworks and develop features through service spaces.

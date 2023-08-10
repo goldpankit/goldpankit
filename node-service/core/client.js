@@ -18,7 +18,7 @@ module.exports = {
           // 执行升级命令
           log.tip('Start automatic upgrade')
           const upgradeCommand = `npm uninstall goldpankit -g\nnpm install goldpankit@${latestVersion.versionNo} -g --registry https://registry.npmjs.org`
-          node.exec(process.cwd(), )
+          node.exec(process.cwd(), upgradeCommand)
             .then(() => {
               log.tip(`The automatic upgrade is complete. The latest version is ${latestVersion.versionNo}. If the upgrade was not successful, please manually execute the command '${upgradeCommand}'.`)
               resolve(true)
