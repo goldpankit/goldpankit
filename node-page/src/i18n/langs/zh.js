@@ -25,6 +25,7 @@ export default {
     save: '保存',
     days: '天',
     currentVersion: '当前版本',
+    saveSuccessfully: '保存成功',
     deleteSuccessfully: '删除成功',
     // 模态框
     modal: {

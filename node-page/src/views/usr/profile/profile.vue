@@ -51,6 +51,7 @@ export default {
       saveProfile(this.copyUserInfo)
         .then(()  => {
           this.setUserInfo(this.copyUserInfo)
+          this.$tip.success(this.$t('common.saveSuccessfully'))
         })
         .catch(e => {
           this.$tip.apiFailed(e)

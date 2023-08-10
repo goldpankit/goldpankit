@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // 禁用 DeprecationWarning
 process.noDeprecation = true
-
+const env = require('./env').getConfig()
 const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
@@ -13,29 +13,34 @@ const client = require('./core/client')
 const { createProxyMiddleware } = require('http-proxy-middleware');
 
 const app = express();
-// app.use((req, res, next) => {
-//   res.header('Access-Control-Allow-Credentials', 'true');
-//   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-//   next();
-// })
-// app.use(logger('dev'));
 // 开启远程接口代理
-app.use('/remote-api', createProxyMiddleware({
-  target: 'http://112.74.58.58',  // 目标服务器的地址
-  // target: 'http://localhost:10088',  // 目标服务器的地址
-  changeOrigin: true,  // 修改请求头中的origin为目标服务器地址
+const logLevel = env.env === 'develop' ? 'info' : 'silent'
+app.use(env.remoteApiPrefix, createProxyMiddleware({
+  target: env.remoteApi,
+  changeOrigin: true,
+  logLevel,
   pathRewrite: {
-    '^/remote-api': '',  // 将路径前缀/remote-api替换为空
-  },
+    [`^${env.remoteApiPrefix}`]: '',
+  }
 }));
+// 开发环境开启日志
+if (env.env === 'develop') {
+  app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Credentials', 'true');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+    next();
+  })
+  app.use(logger('dev'));
+}
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 const publicPath = path.join(__dirname, 'public')
 app.use(express.static(publicPath));
 for (const key in routers) {
-  app.use('/local-api', routers[key]);
+  app.use(env.localApiPrefix, routers[key]);
 }
+// 处理刷新
 app.get('*', (req, res) => {
   res.sendFile(path.join(publicPath, 'index.html'));
 });
@@ -45,10 +50,10 @@ app.use(function(req, res, next) {
   res.send('404')
 });
 
-// error handler
+// 错误处理
 app.use(function(err, req, res, next) {
   res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+  res.locals.error = err;
   res.status(err.status || 500);
   res.send('error');
 });
@@ -56,6 +61,7 @@ app.use(function(err, req, res, next) {
 // 自动升级
 client.autoUpgrade()
   .then(upgraded => {
+    // 如果升级了，用户需重新运行kit命令
     if (upgraded) {
       return
     }

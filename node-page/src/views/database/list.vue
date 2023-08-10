@@ -68,7 +68,7 @@ export default {
     },
     // 删除数据库
     deleteDatabase (id) {
-      this.$model.deleteConfirm(`Do you want to delete the database?`)
+      this.deleteConfirm(`Do you want to delete the database?`)
         .then(() => {
           deleteById (id)
             .then(() => {

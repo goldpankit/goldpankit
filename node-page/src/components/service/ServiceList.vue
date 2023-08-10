@@ -12,7 +12,7 @@
         <p>{{$t('service.latestVersion')}}: {{service.lastVersion}}</p>
       </section>
       <div class="price-wrap">
-        <p class="text-info-1 text-mini">{{$t('service.lastPublish')}}: {{getDateOffsetText(service.lastPublish, $t)}}</p>
+        <p class="text-info-1 text-mini">{{$t('service.lastPublish')}}: {{getDateOffsetText(service.lastPublish)}}</p>
         <BeanAmount :price="service.price.price" :type="service.price.leaseType"/>
       </div>
     </li>

@@ -159,11 +159,13 @@ router.beforeEach((to, from, next) => {
       store.dispatch('logout')
       // 跳转到登录页
       next({
-        name: 'SignIn'
+        name: 'SignIn',
+        query: {
+          redirect_uri: to.path
+        }
       })
     })
-    .catch(e => {
-      console.log('e', e)
+    .catch(() => {
       next({
         name: 'SignIn'
       })
