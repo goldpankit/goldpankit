@@ -30,6 +30,10 @@ export default {
     // 模态框
     modal: {
       confirmDelete: 'Confirm Delete',
+      confirmInstall: 'Confirm Install?',
+      confirmUninstall: 'Confirm Uninstall?',
+      installServiceTip: 'Installing this service will deduct {price} gold beans from your account. Are you sure you want to proceed with the installation?',
+      uninstallServiceTip: 'Are you sure you want to uninstall this service？'
     },
     // 日期差
     dateOffset: {
@@ -127,6 +131,7 @@ export default {
     uninstall: 'UNINSTALL',
     installSuccessfully: 'Install Successfully',
     uninstallSuccessfully: 'Uninstall Successfully',
+    payInstall: 'PAY AND INSTALL',
     noServices: 'No Services',
     noSubServices: 'No Sub Services',
     serviceSettings: 'Settings',
