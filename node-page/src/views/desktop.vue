@@ -129,6 +129,9 @@ export default {
     flex-shrink: 0;
     h2 {
       color: #555;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis
     }
     ul {
       display: flex;
