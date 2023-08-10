@@ -60,8 +60,8 @@
                     :version="currentService.lastVersion"
                     :with-project="false"
                     :project-config="project"
-                    @installed="fetchProject()"
-                    @uninstalled="fetchProject()"
+                    @installed="refreshProject()"
+                    @uninstalled="refreshProject()"
                   />
                   <div class="issue-wrap">
                     <IssueListView v-show="currentServiceDimension === 'issues'"/>
@@ -175,7 +175,6 @@ export default {
     ...mapMutations(['setCurrentProject']),
     // 查询项目信息
     fetchProject (withSubServices = false) {
-      console.log('this.currentProject', this.currentProject)
       this.loading = true
       if (this.currentProject == null || this.currentProject === '') {
         this.project = null
@@ -183,6 +182,10 @@ export default {
         this.loading = false
         return
       }
+      this.refreshProject(withSubServices)
+    },
+    // 刷新项目信息
+    refreshProject (withSubServices = false) {
       fetchById(this.currentProject)
         .then(data => {
           this.project = data
@@ -190,7 +193,6 @@ export default {
           this.space = this.project.space
           // 获取主服务信息
           if (this.project.main == null) {
-            console.log('loading false')
             this.loading = false
             return
           }

@@ -157,7 +157,7 @@ export default {
 
 <style scoped lang="scss">
 .build-notice {
-  width: 500px;
+  width: 450px;
   position: fixed;
   right: 20px;
   bottom: 20px;

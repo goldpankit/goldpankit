@@ -200,17 +200,16 @@ export default {
         variables: this.__getInstallVariables(this.variables)
       })
         .then(installData => {
+          this.isWorking.install = false
           this.$tip.success(this.$t('service.installSuccessfully'))
           this.setInstallData(installData)
           this.refreshBalance()
           this.$emit('installed')
         })
         .catch(e => {
+          this.isWorking.install = false
           this.$tip.apiFailed(e)
           this.$emit('error', e)
-        })
-        .finally(() => {
-          this.isWorking.install = false
         })
     },
     // 卸载服务
