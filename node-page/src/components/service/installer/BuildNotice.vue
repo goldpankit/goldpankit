@@ -6,6 +6,14 @@
           <h3>{{build.name}}</h3>
           <el-button type="text" size="small" @click="viewScript(build)">View Script</el-button>
         </div>
+        <div v-if="build.type === 'MySQL'" class="target-datasource">
+          <DataSourceSelect
+            :model-value="installData.dataSourceId"
+            :prefix="'Target Data Source'"
+            :with-block="true"
+            @change="changeDataSource"
+          />
+        </div>
         <div class="opera">
           <el-button @click="ignore(build)">Ignore</el-button>
           <el-button type="primary" :disabled="build.__executing" @click="execute(build)">Execute</el-button>
@@ -22,6 +30,13 @@
       :title="dialogData.build.name"
       append-to-body
     >
+      <DataSourceSelect
+        v-if="dialogData.build.type === 'MySQL'"
+        :model-value="installData.dataSourceId"
+        :prefix="'Target Data Source'"
+        :with-block="true"
+        @change="changeDataSource"
+      />
       <el-input type="textarea" :model-value="dialogData.build.content"></el-input>
       <div class="opera">
         <el-button @click="ignore(dialogData.build)">Ignore</el-button>
@@ -33,10 +48,12 @@
 
 <script>
 import {build} from "../../../api/service.compile";
-import {mapState} from "vuex";
+import {mapMutations, mapState} from "vuex";
+import DataSourceSelect from "../../database/DataSourceSelect.vue";
 
 export default {
   name: "BuildNotice",
+  components: {DataSourceSelect},
   data () {
     return {
       executing: false,
@@ -65,6 +82,13 @@ export default {
     }
   },
   methods: {
+    ...mapMutations(['setInstallData']),
+    // 修改数据源
+    changeDataSource (dataSourceId) {
+      this.setInstallData({
+        dataSourceId: dataSourceId
+      })
+    },
     // 显示脚本
     viewScript (build) {
       this.dialogData.visible = true
@@ -74,9 +98,11 @@ export default {
     ignore (build) {
       const index = this.builds.findIndex(b => b === build)
       if (index === -1) {
+        this.dialogData.visible = false
         return
       }
       this.installData.builds.splice(index, 1)
+      this.dialogData.visible = false
     },
     // 忽略所有
     ignoreAll () {
@@ -84,6 +110,13 @@ export default {
     },
     // 执行构建
     execute (item) {
+      // 数据库构建，但没选中数据库
+      console.log('this.item', item)
+      console.log('this.installData', this.installData)
+      if (item.type === 'MySQL' && (this.installData.dataSourceId == null || this.installData.dataSourceId === '')) {
+        this.$tip.warning(this.$t('service.noneDataSourceTip'))
+        return
+      }
       if (item.__executing) {
         return
       }
@@ -95,7 +128,7 @@ export default {
       })
         .then(() => {
           this.installData.builds.splice(index, 1)
-          this.$tip.success(`${item.name} build successfully`)
+          this.$tip.success(`「${item.name}」${this.$t('service.buildCompleted')}`)
         })
         .catch(e => {
           this.$tip.apiFailed(e)
@@ -124,6 +157,7 @@ export default {
 
 <style scoped lang="scss">
 .build-notice {
+  width: 500px;
   position: fixed;
   right: 20px;
   bottom: 20px;
@@ -149,6 +183,9 @@ export default {
         margin-left: 50px;
       }
     }
+    .target-datasource {
+      margin-top: 10px;
+    }
     .opera {
       margin-top: 10px;
       display: flex;
@@ -167,6 +204,12 @@ export default {
 </style>
 <style lang="scss">
 .view-script-dialog {
+  .el-dialog__body {
+    padding-top: 10px;
+  }
+  .data-source-select {
+    margin-bottom: 10px;
+  }
   .el-textarea {
     border: 0;
   }

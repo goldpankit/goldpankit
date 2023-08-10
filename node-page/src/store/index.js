@@ -48,7 +48,11 @@ export default new Vuex.Store({
       window.localStorage.setItem('CURRENT_DATABASE', database)
     },
     setInstallData (state, value) {
-      state.installData = value
+      if (state.installData == null) {
+        state.installData = value
+        return
+      }
+      Object.assign(state.installData, value)
     }
   },
   actions: {

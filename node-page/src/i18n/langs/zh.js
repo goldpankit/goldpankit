@@ -136,6 +136,8 @@ export default {
     confirmDeleteTip: '确认删除该服务吗？',
     versionNumber: '版本号',
     versionDescription: '版本描述',
+    noneDataSourceTip: '请先选择数据源',
+    buildCompleted: '构建执行完成',
     // 租赁类型
     leaseType: {
       freeLabel: '免费',

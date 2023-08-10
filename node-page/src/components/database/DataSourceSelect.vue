@@ -1,5 +1,5 @@
 <template>
-  <div class="database-select" :class="{ 'with-block': withBlock }">
+  <div class="data-source-select" :class="{ 'with-block': withBlock }">
     <el-select
       :model-value="modelValue"
       @update:modelValue="handleChange"
@@ -11,7 +11,10 @@
         :key="item.id"
         :label="item.name"
       />
-      <template v-if="withPrefix" #prefix>Data Source:</template>
+      <template v-if="withPrefix" #prefix>
+        <template v-if="prefix == null">Data Source</template>
+        <template v-else>{{prefix}}</template>:
+      </template>
     </el-select>
     <el-button v-if="withCreateButton" class="button-icon" type="primary" icon="Plus" @click="$refs.createDatabaseWindow.open()"></el-button>
     <CreateDatabaseWindow ref="createDatabaseWindow" @success="handleCreateSuccess"/>
@@ -31,6 +34,9 @@ export default {
     withPrefix: {
       default: true
     },
+    prefix: {
+      default: null
+    },
     withCreateButton: {
       default: true
     },
@@ -49,6 +55,13 @@ export default {
       search ()
         .then(data => {
           this.list = data
+          // 触发handleChange，自动全局选中数据库
+          const selectedDatabase = this.list.find(db => db.id === this.modelValue)
+          if (selectedDatabase == null) {
+            this.handleChange(null)
+          } else {
+            this.handleChange(selectedDatabase.id)
+          }
         })
         .catch(e => {
           this.$tip.apiFailed(e)
@@ -74,7 +87,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.database-select {
+.data-source-select {
   display: flex;
   border: 1px solid var(--border-default-color);
   border-radius: 5px;

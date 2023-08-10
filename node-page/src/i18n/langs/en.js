@@ -136,6 +136,8 @@ export default {
     confirmDeleteTip: 'Confirm deletion of this service?',
     versionNumber: 'Version dumber',
     versionDescription: 'Version description',
+    noneDataSourceTip: 'Please select a data source first',
+    buildCompleted: ' build completed',
     // 租赁类型
     leaseType: {
       freeLabel: 'Free',
