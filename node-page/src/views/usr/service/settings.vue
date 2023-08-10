@@ -18,12 +18,17 @@
       <div class="main">
         <template v-if="initialized">
           <ul class="tabs">
-            <li :class="{ selected: currentTab === 'basic' }" @click="currentTab = 'basic'">Basic</li>
+            <li :class="{ selected: currentTab === 'space' }" @click="currentTab = 'space'">Space</li>
+            <li :class="{ selected: currentTab === 'basic' }" @click="currentTab = 'basic'">Service</li>
             <li :class="{ selected: currentTab === 'readme' }" @click="currentTab = 'readme'">Readme</li>
             <li :class="{ selected: currentTab === 'variables' }" @click="currentTab = 'variables'">Variables</li>
             <li :class="{ selected: currentTab === 'files' }" @click="currentTab = 'files'">Files</li>
           </ul>
           <div class="tab-content">
+            <SpaceSettings
+              v-show="currentTab === 'space'"
+              :space="route.space"
+            />
             <BasicSetting
               v-show="currentTab === 'basic'"
               :space="route.space"
@@ -73,11 +78,13 @@ import BasicSetting from "../../../components/service/settings/BasicSetting.vue"
 import PublishWindow from "../../../components/service/PublishWindow.vue";
 import Variables from "../../../components/service/settings/Variables/Variables.vue";
 import MarkdownEditor from "../../../components/common/MarkdownEditor.vue";
+import SpaceSettings from "../../../components/service/settings/SpaceSettings.vue";
 import {fetchConfig, fetchProfile, saveConfig} from "../../../api/service";
 import {cleanCompile, compile} from "../../../api/service.compile";
 
 export default {
   components: {
+    SpaceSettings,
     MarkdownEditor,
     Variables,
     PublishWindow, BasicSetting, InitializeView, DirectorySelect, SettingFiles},
