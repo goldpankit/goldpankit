@@ -82,7 +82,7 @@
           <ul>
             <li>
               <label>{{$t('space.homePage')}}</label>
-              <a v-if="space.homePage != null && space.homePage !== ''" href="#">{{space.homePage}}</a>
+              <a v-if="space.homepage != null && space.homepage !== ''" :href="space.homepage" target="_blank">{{space.homepage}}</a>
               <p v-else>{{$t('common.none')}}</p>
             </li>
             <li>
