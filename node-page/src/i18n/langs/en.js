@@ -144,7 +144,8 @@ export default {
       monthLabel: 'Monthly charge',
       yearAbb: 'Year',
       yearLabel: 'Annual charge',
-    }
+    },
+    PrivateServicesTitle: 'Leased and private services'
   },
   // 问题
   issue: {

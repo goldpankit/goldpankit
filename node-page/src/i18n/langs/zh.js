@@ -144,7 +144,8 @@ export default {
       monthLabel: '按月收费',
       yearAbb: '年',
       yearLabel: '按年收费',
-    }
+    },
+    PrivateServicesTitle: '租赁和私人服务'
   },
   issue: {
     createNewIssue: '创建问题'
