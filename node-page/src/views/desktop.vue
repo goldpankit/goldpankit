@@ -128,6 +128,7 @@ export default {
     width: 255px;
     flex-shrink: 0;
     h2 {
+      font-size: 35px;
       color: #555;
       white-space: nowrap;
       overflow: hidden;

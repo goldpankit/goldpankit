@@ -7,7 +7,7 @@
 <!--      <div class="search-wrap">-->
 <!--        <el-input size="large" placeholder="type here and press enter."/>-->
 <!--      </div>-->
-      <ul v-if="!loading && services.length > 0" class="service-list">
+      <ul v-loading="loading" v-if="services.length > 0" class="service-list">
         <li v-for="service in services" :key="service.id">
           <h3>@{{service.space.name}}/{{service.name}}</h3>
           <p class="introduce">{{service.introduce}}</p>
@@ -25,7 +25,7 @@
           </div>
           <!-- 只有自己的服务才存在操作 -->
           <ul v-if="userInfo.id === service.user.id" class="opera">
-            <li><el-button text @click="openSettings(service)">{{$t('service.serviceSettings')}}</el-button></li>
+            <li><el-button @click="openSettings(service)">{{$t('service.serviceSettings')}}</el-button></li>
             <li><el-button text type="danger" @click="deleteService(service)">{{$t('common.delete')}}</el-button></li>
           </ul>
         </li>
@@ -183,7 +183,7 @@ export default {
   ul.service-list {
     & > li {
       background-color: var(--color-light);
-      padding: 15px 30px;
+      padding: 25px 30px;
       border-bottom: 1px solid var(--border-default-color);
       position: relative;
       &:last-of-type {
@@ -192,6 +192,7 @@ export default {
       & > h3 {
         font-size: var(--font-size-middle);
         margin-bottom: 15px;
+        padding-right: 200px;
       }
       & > p {
         font-size: var(--font-size-mini);
@@ -224,12 +225,20 @@ export default {
       // 操作
       .opera {
         position: absolute;
-        top: 10px;
+        top: 15px;
         right: 20px;
         flex-shrink: 0;
         display: flex;
         align-items: center;
         margin-left: 30px;
+        .el-button {
+          margin-right: 10px;
+        }
+        li:last-of-type {
+          .el-button {
+            margin-right: 0;
+          }
+        }
       }
     }
   }
