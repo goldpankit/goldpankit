@@ -107,8 +107,8 @@
               </div>
             </template>
             <div v-else class="setting-holder">
-              <h4>Sub Service Settings</h4>
-              <p>You can open Settings by clicking on sub services on the left.</p>
+              <h4>{{ $t('workbench.SubServiceSettings') }}</h4>
+              <p>{{ $t('workbench.SubServiceSettingsTip') }}</p>
             </div>
           </div>
         </div>

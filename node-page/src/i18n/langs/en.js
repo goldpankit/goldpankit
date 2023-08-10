@@ -192,6 +192,8 @@ export default {
     noProjectTip1: 'Unable to initialize project workspace. Please select or create a project first. If you are using it for the first time, you can go to the ',
     noProjectTip2: 'to learn about the purpose of services and service installation!',
     noServiceInstalledTip1: 'The current project does not have any installed services. Please switch projects or go to the ',
-    noServiceInstalledTip2: ' to install services for this project!'
+    noServiceInstalledTip2: ' to install services for this project!',
+    SubServiceSettings: 'Sub Service Settings',
+    SubServiceSettingsTip: 'You can open Settings by clicking on sub services on the left.'
   }
 }
