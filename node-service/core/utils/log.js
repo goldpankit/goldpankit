@@ -25,7 +25,7 @@ module.exports = {
   error (e) {
     // 字符串
     if (typeof e === 'string') {
-      console.log(this.__prefix(), colors('red', 'ERROR: ' + e) )
+      console.log(this.__prefix(), colors('red', 'ERR: ' + e) )
       return
     }
     // 异常对象

@@ -39,7 +39,7 @@ class Kit {
               // 返回构建信息
               const result = {
                 projectId: project.id,
-                databaseId: database.id,
+                dataSourceId: database == null ? null : database.id,
                 builds
               }
               resolve(result)
@@ -77,7 +77,7 @@ class Kit {
               // 返回构建信息
               const result = {
                 projectId: project.id,
-                databaseId: database.id,
+                dataSourceId: database == null ? null : database.id,
                 builds
               }
               resolve(result)
@@ -107,7 +107,7 @@ class Kit {
                 // 返回构建信息
                 const result = {
                   projectId: data.project.id,
-                  databaseId: data.database.id,
+                  dataSourceId: data.database == null ? null : data.database.id,
                   builds
                 }
                 resolve(result)
@@ -140,7 +140,7 @@ class Kit {
               // 返回构建信息
               const result = {
                 projectId: data.project.id,
-                databaseId: data.database.id,
+                dataSourceId: data.database == null ? null : data.database.id,
                 builds
               }
               resolve(result)

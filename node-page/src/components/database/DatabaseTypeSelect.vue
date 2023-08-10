@@ -1,5 +1,5 @@
 <template>
-  <el-select class="database-select" :multiple="multiple">
+  <el-select class="data-source-type-select" :multiple="multiple">
     <el-option value="mysql" label="MySQL"/>
 <!--    <el-option value="oracle" label="Oracle"/>-->
   </el-select>
@@ -17,7 +17,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.database-select {
+.data-source-type-select {
   width: 100%;
 }
 </style>

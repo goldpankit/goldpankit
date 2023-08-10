@@ -141,6 +141,7 @@ export default {
     confirmDeleteTip: 'Confirm deletion of this service?',
     versionNumber: 'Version dumber',
     versionDescription: 'Version description',
+    noneDataSourceTip: 'Please select a data source first',
     // 租赁类型
     leaseType: {
       freeLabel: 'Free',
@@ -150,6 +151,16 @@ export default {
       monthLabel: 'Monthly charge',
       yearAbb: 'Year',
       yearLabel: 'Annual charge',
+    },
+    // 构建
+    build: {
+      completed: ' build completed',
+      ignore: 'Ignore',
+      ignoreAll: 'Ignore All',
+      execute: 'Run',
+      executeAll: 'Run all scripts',
+      viewScript: 'View Script',
+      targetDataSource: 'Target Data Source'
     }
   },
   // 问题

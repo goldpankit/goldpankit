@@ -4,17 +4,25 @@
       <li v-for="(build,index) in builds" :key="build.name">
         <div class="title">
           <h3>{{build.name}}</h3>
-          <el-button type="text" size="small" @click="viewScript(build)">View Script</el-button>
+          <el-button type="text" size="small" @click="viewScript(build)">{{$t('service.build.viewScript')}}</el-button>
+        </div>
+        <div v-if="build.type === 'MySQL'" class="target-datasource">
+          <DataSourceSelect
+            :model-value="installData.dataSourceId"
+            :prefix="$t('service.build.targetDataSource')"
+            :with-block="true"
+            @change="changeDataSource"
+          />
         </div>
         <div class="opera">
-          <el-button @click="ignore(build)">Ignore</el-button>
-          <el-button type="primary" :disabled="build.__executing" @click="execute(build)">Execute</el-button>
+          <el-button @click="ignore(build)">{{$t('service.build.ignore')}}</el-button>
+          <el-button type="primary" :disabled="build.__executing" @click="execute(build)">{{$t('service.build.execute')}}</el-button>
         </div>
       </li>
     </ul>
     <div v-if="builds.length > 1" class="opera">
-      <el-button @click="ignoreAll">Ignore all</el-button>
-      <el-button type="primary" :disabled="anyExecuting" @click="executeAll">Execute all</el-button>
+      <el-button @click="ignoreAll">{{$t('service.build.ignoreAll')}}</el-button>
+      <el-button type="primary" :disabled="anyExecuting" @click="executeAll">{{$t('service.build.executeAll')}}</el-button>
     </div>
     <el-dialog
       custom-class="view-script-dialog"
@@ -22,10 +30,17 @@
       :title="dialogData.build.name"
       append-to-body
     >
+      <DataSourceSelect
+        v-if="dialogData.build.type === 'MySQL'"
+        :model-value="installData.dataSourceId"
+        :prefix="$t('service.build.targetDataSource')"
+        :with-block="true"
+        @change="changeDataSource"
+      />
       <el-input type="textarea" :model-value="dialogData.build.content"></el-input>
       <div class="opera">
-        <el-button @click="ignore(dialogData.build)">Ignore</el-button>
-        <el-button type="primary" :disabled="dialogData.build.__executing" @click="execute(dialogData.build)">Execute</el-button>
+        <el-button @click="ignore(dialogData.build)">{{$t('service.build.ignore')}}</el-button>
+        <el-button type="primary" :disabled="dialogData.build.__executing" @click="execute(dialogData.build)">{{$t('service.build.execute')}}</el-button>
       </div>
     </el-dialog>
   </div>
@@ -33,10 +48,12 @@
 
 <script>
 import {build} from "../../../api/service.compile";
-import {mapState} from "vuex";
+import {mapMutations, mapState} from "vuex";
+import DataSourceSelect from "../../database/DataSourceSelect.vue";
 
 export default {
   name: "BuildNotice",
+  components: {DataSourceSelect},
   data () {
     return {
       executing: false,
@@ -65,6 +82,13 @@ export default {
     }
   },
   methods: {
+    ...mapMutations(['setInstallData']),
+    // 修改数据源
+    changeDataSource (dataSourceId) {
+      this.setInstallData({
+        dataSourceId: dataSourceId
+      })
+    },
     // 显示脚本
     viewScript (build) {
       this.dialogData.visible = true
@@ -74,9 +98,11 @@ export default {
     ignore (build) {
       const index = this.builds.findIndex(b => b === build)
       if (index === -1) {
+        this.dialogData.visible = false
         return
       }
       this.installData.builds.splice(index, 1)
+      this.dialogData.visible = false
     },
     // 忽略所有
     ignoreAll () {
@@ -84,6 +110,13 @@ export default {
     },
     // 执行构建
     execute (item) {
+      // 数据库构建，但没选中数据库
+      console.log('this.item', item)
+      console.log('this.installData', this.installData)
+      if (item.type === 'MySQL' && (this.installData.dataSourceId == null || this.installData.dataSourceId === '')) {
+        this.$tip.warning(this.$t('service.noneDataSourceTip'))
+        return
+      }
       if (item.__executing) {
         return
       }
@@ -95,7 +128,7 @@ export default {
       })
         .then(() => {
           this.installData.builds.splice(index, 1)
-          this.$tip.success(`${item.name} build successfully`)
+          this.$tip.success(`「${item.name}」${this.$t('service.build.completed')}`)
         })
         .catch(e => {
           this.$tip.apiFailed(e)
@@ -124,6 +157,7 @@ export default {
 
 <style scoped lang="scss">
 .build-notice {
+  width: 450px;
   position: fixed;
   right: 20px;
   bottom: 20px;
@@ -149,6 +183,9 @@ export default {
         margin-left: 50px;
       }
     }
+    .target-datasource {
+      margin-top: 10px;
+    }
     .opera {
       margin-top: 10px;
       display: flex;
@@ -167,6 +204,12 @@ export default {
 </style>
 <style lang="scss">
 .view-script-dialog {
+  .el-dialog__body {
+    padding-top: 10px;
+  }
+  .data-source-select {
+    margin-bottom: 10px;
+  }
   .el-textarea {
     border: 0;
   }
