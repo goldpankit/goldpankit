@@ -375,7 +375,7 @@ export default {
       const table = this.model.tables[tableIndex]
       let promise = Promise.resolve()
       if (table.type === 'MAIN' && this.model.tables.length > 1) {
-        promise = this.$model.deleteConfirm(`Deleting the main table will delete all the schedules and associations. Are you sure to delete it?`)
+        promise = this.deleteConfirm(`Deleting the main table will delete all the schedules and associations. Are you sure to delete it?`)
       }
       promise
         .then(() => {

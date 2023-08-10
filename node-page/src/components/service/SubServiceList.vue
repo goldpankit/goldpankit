@@ -19,7 +19,7 @@
         <span>{{service.user.username}}</span>
       </div>
       <div class="price-wrap">
-        <p class="text-info-1 text-mini">{{$t('service.lastPublish')}}: {{getDateOffsetText(service.lastPublishTime, $t)}}</p>
+        <p class="text-info-1 text-mini">{{$t('service.lastPublish')}}: {{getDateOffsetText(service.lastPublishTime)}}</p>
         <em v-if="service.latestLease != null">
           {{getRemainingDay(service.latestLease.leaseEndTime)}} {{$t('common.days')}}
         </em>

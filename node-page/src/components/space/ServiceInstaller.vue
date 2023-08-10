@@ -178,7 +178,7 @@ export default {
         return
       }
       // 超过服务金额伐值时做提醒
-      this.$model.installConfirm(this.servicePrice)
+      this.installConfirm(this.servicePrice)
         .then(() => {
           this.__install()
         })
@@ -226,7 +226,7 @@ export default {
         return
       }
       // 超过服务金额伐值时做提醒
-      this.$model.uninstallConfirm()
+      this.uninstallConfirm()
         .then(() => {
           this.__uninstall()
         })

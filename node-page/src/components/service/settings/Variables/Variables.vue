@@ -260,7 +260,7 @@ export default {
     // 删除变量
     deleteVariable () {
       const type = this.currentVariable.type === 'variable' ? 'variable' : 'variable group'
-      this.$model.deleteConfirm(`Do you want to delete the ${type} named 「${this.currentVariable.name}」?`)
+      this.deleteConfirm(`Do you want to delete the ${type} named 「${this.currentVariable.name}」?`)
         .then(() => {
           /**
            * 删除字段变量

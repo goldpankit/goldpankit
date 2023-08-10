@@ -1,12 +1,45 @@
 import dayjs from 'dayjs'
+import { ElMessageBox } from 'element-plus'
 export default {
+  // 删除确认
+  deleteConfirm (message) {
+    const $t = this.$t
+    return ElMessageBox({
+      title: $t('common.modal.confirmDelete'),
+      message: message,
+      showCancelButton: true,
+      cancelButtonText: $t('common.cancel'),
+      confirmButtonText: $t('common.delete'),
+      confirmButtonClass: 'danger-button'
+    })
+  },
+  // 确认安装
+  installConfirm (price) {
+    return ElMessageBox({
+      title: 'Confirm Install?',
+      message: `Installing this service will deduct ${price} gold beans from your account. Are you sure you want to proceed with the installation?`,
+      showCancelButton: true,
+      cancelButtonText: 'Cancel',
+      confirmButtonText: 'PAY AND INSTALL'
+    })
+  },
+  // 确认卸载
+  uninstallConfirm () {
+    return ElMessageBox({
+      title: 'Confirm Uninstall?',
+      message: 'Are you sure you want to uninstall this service?',
+      showCancelButton: true,
+      cancelButtonText: 'Cancel',
+      confirmButtonText: 'INSTALL'
+    })
+  },
   /**
    * 获取时间差文本
    * @param dateText 时间字符串
-   * @param $t 国际化文案获取函数
    * @returns {*}
    */
-  getDateOffsetText(dateText, $t) {
+  getDateOffsetText(dateText) {
+    const $t = this.$t
     const timestamp = dayjs(dateText)
     const now = new Date().getTime()
     let offset = now - timestamp

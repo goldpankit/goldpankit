@@ -193,7 +193,7 @@ export default {
     },
     // 删除模型
     deleteModel (model) {
-      this.$model.deleteConfirm(`Do you want to delete the query model named 「${model.name}」`)
+      this.deleteConfirm(`Do you want to delete the query model named 「${model.name}」`)
         .then(() => {
           deleteModel({
             database: this.currentDatabase,

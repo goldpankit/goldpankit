@@ -20,7 +20,7 @@
               <span>{{service.user.username}}</span>
             </div>
             <p class="text-info-1 text-mini">
-              {{$t('service.lastPublish')}}: {{service.lastPublish == null ? $t('service.unPublish') : getDateOffsetText(service.lastPublish, $t)}}
+              {{$t('service.lastPublish')}}: {{service.lastPublish == null ? $t('service.unPublish') : getDateOffsetText(service.lastPublish)}}
             </p>
           </div>
           <!-- 只有自己的服务才存在操作 -->
@@ -76,7 +76,7 @@ export default {
     },
     // 删除服务
     deleteService (service) {
-      this.$model.deleteConfirm(this.$t('service.confirmDeleteTip'))
+      this.deleteConfirm(this.$t('service.confirmDeleteTip'))
         .then(() => {
           deleteService({
             space: service.space.name,
