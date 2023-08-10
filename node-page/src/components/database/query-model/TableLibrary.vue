@@ -40,7 +40,7 @@
         </InnerRouterView>
         <InnerRouterView name="update-model" title="Update Model">
           <div class="create-model-form">
-            <el-form ref="editForm" :model="editModel">
+            <el-form ref="editForm" :model="editModel" :rules="getRules()">
               <el-form-item label="Model Name" prop="name" required>
                 <el-input v-model="editModel.name"/>
               </el-form-item>
@@ -111,7 +111,7 @@ export default {
       return {
         name: [
           { required: true, message: this.$t('form.isRequired', { value: this.$t('database.modelName') }) },
-          { validator: (rule, value, callback) => checkTableName(rule, value, callback, this.$t('database.modelNameIncorrectlyFormatted')) },
+          { validator: (rule, value, callback) => checkTableName(rule, value, callback, this.$t('form.isIncorrect', { field: this.$t('database.modelNameIncorrectly') })) },
         ]
       }
     },

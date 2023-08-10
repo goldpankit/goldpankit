@@ -175,7 +175,7 @@ export default {
     joinLine: 'Join Line',
     aggregateLine: 'Aggregate Line',
     modelName: 'model name',
-    modelNameIncorrectlyFormatted: 'Model name is incorrectly formatted'
+    modelNameIncorrectly: 'Model name incorrectly'
   },
   // 项目
   project: {
