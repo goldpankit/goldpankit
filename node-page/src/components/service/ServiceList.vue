@@ -62,6 +62,11 @@ export default {
     }
     & > p {
       font-size: var(--font-size);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      -webkit-line-clamp: 3;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
     }
     .infos {
       display: flex;
