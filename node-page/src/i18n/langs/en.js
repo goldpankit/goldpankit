@@ -25,6 +25,7 @@ export default {
     save: 'Save',
     days: 'days',
     currentVersion: 'current version',
+    saveSuccessfully: 'Save successfully',
     deleteSuccessfully: 'Delete successfully',
     // 模态框
     modal: {
