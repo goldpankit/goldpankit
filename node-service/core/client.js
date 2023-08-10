@@ -12,15 +12,16 @@ module.exports = {
         .then(latestVersion => {
           // 版本号相同（已是最新），不做处理
           if (pkg.version === latestVersion.versionNo) {
-            resolve()
+            resolve(false)
             return
           }
           // 执行升级命令
           log.tip('Start automatic upgrade')
-          node.exec(process.cwd(), `npm uninstall goldpankit -g\nnpm install goldpankit -g`)
+          const upgradeCommand = `npm uninstall goldpankit -g\nnpm install goldpankit@${latestVersion.versionNo} -g --registry https://registry.npmjs.org`
+          node.exec(process.cwd(), upgradeCommand)
             .then(() => {
-              log.tip('The automatic upgrade is complete. The latest version is v2.0.0. If the upgrade was not successful, please manually execute the command \'npm uninstall goldpankit -g && npm install goldpankit -g\'.')
-              resolve()
+              log.tip(`The automatic upgrade is complete. The latest version is ${latestVersion.versionNo}. If the upgrade was not successful, please manually execute the command '${upgradeCommand}'.`)
+              resolve(true)
             })
             .catch(e => {
               log.error('Automatic upgrade failed.')

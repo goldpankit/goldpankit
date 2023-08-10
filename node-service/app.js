@@ -21,7 +21,8 @@ const app = express();
 // app.use(logger('dev'));
 // 开启远程接口代理
 app.use('/remote-api', createProxyMiddleware({
-  target: 'http://localhost:10088',  // 目标服务器的地址
+  target: 'http://112.74.58.58',  // 目标服务器的地址
+  // target: 'http://localhost:10088',  // 目标服务器的地址
   changeOrigin: true,  // 修改请求头中的origin为目标服务器地址
   pathRewrite: {
     '^/remote-api': '',  // 将路径前缀/remote-api替换为空
@@ -54,7 +55,10 @@ app.use(function(err, req, res, next) {
 
 // 自动升级
 client.autoUpgrade()
-  .then(() => {
+  .then(upgraded => {
+    if (upgraded) {
+      return
+    }
     // 升级完成后，找到可用的端口号，默认80
     autoopen.findAvailablePort(80, (port) => {
       // 开启应用监听
