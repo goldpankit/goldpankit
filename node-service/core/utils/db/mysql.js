@@ -57,7 +57,6 @@ class MySQL {
   }
   // 执行SQL
   exec (config, sql) {
-    console.log('执行SQL', sql)
     return this.connect(config)
       .then(conn => {
         return new Promise((resolve, reject) => {
