@@ -174,6 +174,8 @@ export default {
     createVirtualTableTip: 'create a virtual table',
     joinLine: 'Join Line',
     aggregateLine: 'Aggregate Line',
+    modelName: 'model name',
+    modelNameIncorrectlyFormatted: 'Model name is incorrectly formatted'
   },
   // 项目
   project: {

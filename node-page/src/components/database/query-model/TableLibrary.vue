@@ -24,7 +24,7 @@
         </InnerRouterView>
         <InnerRouterView name="create-model" :title="$t('database.createNewModel')">
           <div class="create-model-form">
-            <el-form ref="createForm" :model="newModel" :rules="rules">
+            <el-form ref="createForm" :model="newModel" :rules="getRules()">
               <el-form-item :label="$t('common.name')" prop="name" required>
                 <el-input v-model="newModel.name"/>
               </el-form-item>
@@ -40,7 +40,7 @@
         </InnerRouterView>
         <InnerRouterView name="update-model" title="Update Model">
           <div class="create-model-form">
-            <el-form ref="editForm" :model="editModel" :rules="rules">
+            <el-form ref="editForm" :model="editModel">
               <el-form-item label="Model Name" prop="name" required>
                 <el-input v-model="editModel.name"/>
               </el-form-item>
@@ -100,12 +100,6 @@ export default {
         id: null,
         name: '',
         comment: ''
-      },
-      rules: {
-        name: [
-          { required: true, message: 'Please input model name' },
-          { validator: (rule, value, callback) => checkTableName(rule, value, callback, 'Model name is incorrectly formatted') },
-        ]
       }
     }
   },
@@ -113,6 +107,14 @@ export default {
     ...mapState(['currentDatabase'])
   },
   methods: {
+    getRules () {
+      return {
+        name: [
+          { required: true, message: this.$t('form.isRequired', { value: this.$t('database.modelName') }) },
+          { validator: (rule, value, callback) => checkTableName(rule, value, callback, this.$t('database.modelNameIncorrectlyFormatted')) },
+        ]
+      }
+    },
     checkTableName,
     // 开始拖动表放置在设计器中
     handleDragStart (e) {
