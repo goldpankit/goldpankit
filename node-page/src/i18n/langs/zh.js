@@ -174,7 +174,7 @@ export default {
     joinLine: 'JOIN关联线',
     aggregateLine: '聚合关联线',
     modelName: '模型名称',
-    modelNameIncorrectlyFormatted: '模型名称格式不正确'
+    modelNameIncorrectly: '模型名称格式'
   },
   // 项目相关
   project: {

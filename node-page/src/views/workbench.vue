@@ -41,7 +41,7 @@
                 <ul class="service-dimensions">
                   <li :class="{selected: currentServiceDimension === 'readme'}" @click="currentServiceDimension = 'readme'">{{$t('common.readme')}}</li>
                   <li :class="{selected: currentServiceDimension === 'install'}" @click="currentServiceDimension = 'install'">{{$t('service.install2')}}</li>
-                  <li :class="{selected: currentServiceDimension === 'issues'}" @click="currentServiceDimension = 'issues'">{{$t('common.issues')}}</li>
+                  <li class="disabled" :class="{selected: currentServiceDimension === 'issues'}">{{$t('common.issues')}}</li>
                 </ul>
                 <div class="dimension-content">
                   <div v-show="currentServiceDimension === 'readme'">
@@ -387,6 +387,9 @@ export default {
             }
             &:hover {
               color: var(--font-color);
+            }
+            &.disabled:hover,&.disabled {
+              color: var(--color-gray-1);
             }
           }
         }
