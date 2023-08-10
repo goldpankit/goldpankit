@@ -1,6 +1,6 @@
 ## Let's get started
 Just run the following command
-```bash
+```shell
 npm install goldpankit -g
 kit
 ``` 

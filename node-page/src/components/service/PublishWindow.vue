@@ -21,7 +21,7 @@
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="visible = false">Cancel</el-button>
-        <el-button type="primary" @click="publish">
+        <el-button type="primary" :disabled="isWorking" @click="publish">
           Confirm
         </el-button>
       </span>
