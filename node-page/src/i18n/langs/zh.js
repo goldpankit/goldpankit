@@ -173,8 +173,7 @@ export default {
     createVirtualTableTip: '创建虚拟表',
     joinLine: 'JOIN关联线',
     aggregateLine: '聚合关联线',
-    modelName: '模型名称',
-    modelNameIncorrectly: '模型名称格式'
+    modelName: '模型名称'
   },
   // 项目相关
   project: {
