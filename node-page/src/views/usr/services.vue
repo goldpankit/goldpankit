@@ -2,7 +2,7 @@
   <div class="page">
     <div class="wrap">
       <div class="header">
-        <h2>{{ $t('service.PrivateServicesTitle') }}</h2>
+        <h2>{{ $t('user.leasedAndPrivateServices') }}</h2>
       </div>
 <!--      <div class="search-wrap">-->
 <!--        <el-input size="large" placeholder="type here and press enter."/>-->
@@ -191,7 +191,7 @@ export default {
       }
       & > h3 {
         font-size: var(--font-size-middle);
-        margin-bottom: 10px;
+        margin-bottom: 15px;
       }
       & > p {
         font-size: var(--font-size-mini);
@@ -224,7 +224,7 @@ export default {
       // 操作
       .opera {
         position: absolute;
-        top: 20px;
+        top: 10px;
         right: 20px;
         flex-shrink: 0;
         display: flex;

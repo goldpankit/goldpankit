@@ -144,8 +144,7 @@ export default {
       monthLabel: 'Monthly charge',
       yearAbb: 'Year',
       yearLabel: 'Annual charge',
-    },
-    PrivateServicesTitle: 'Leased and private services'
+    }
   },
   // 问题
   issue: {
@@ -194,7 +193,7 @@ export default {
     noProjectTip2: 'to learn about the purpose of services and service installation!',
     noServiceInstalledTip1: 'The current project does not have any installed services. Please switch projects or go to the ',
     noServiceInstalledTip2: ' to install services for this project!',
-    SubServiceSettings: 'Sub Service Settings',
-    SubServiceSettingsTip: 'You can open Settings by clicking on sub services on the left.'
+    subServiceSettings: 'Sub Service Settings',
+    subServiceSettingsTip: 'You can open Settings by clicking on sub services on the left.'
   }
 }

@@ -144,8 +144,7 @@ export default {
       monthLabel: '按月收费',
       yearAbb: '年',
       yearLabel: '按年收费',
-    },
-    PrivateServicesTitle: '租赁和私人服务'
+    }
   },
   issue: {
     createNewIssue: '创建问题'
@@ -193,7 +192,7 @@ export default {
     noProjectTip2: '了解服务和服务安装的用途！',
     noServiceInstalledTip1: '当前项目没有安装服务，请切换项目或前往',
     noServiceInstalledTip2: '为此项目安装服务！',
-    SubServiceSettings: '子服务设置',
-    SubServiceSettingsTip: '您可以通过点击左侧的子服务来打开设置。'
+    subServiceSettings: '子服务设置',
+    subServiceSettingsTip: '您可以通过点击左侧的子服务来打开设置。'
   }
 }

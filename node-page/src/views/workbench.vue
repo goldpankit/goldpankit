@@ -107,8 +107,8 @@
               </div>
             </template>
             <div v-else class="setting-holder">
-              <h4>{{ $t('workbench.SubServiceSettings') }}</h4>
-              <p>{{ $t('workbench.SubServiceSettingsTip') }}</p>
+              <h4>{{ $t('workbench.subServiceSettings') }}</h4>
+              <p>{{ $t('workbench.subServiceSettingsTip') }}</p>
             </div>
           </div>
         </div>
