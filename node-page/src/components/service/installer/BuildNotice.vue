@@ -4,25 +4,25 @@
       <li v-for="(build,index) in builds" :key="build.name">
         <div class="title">
           <h3>{{build.name}}</h3>
-          <el-button type="text" size="small" @click="viewScript(build)">View Script</el-button>
+          <el-button type="text" size="small" @click="viewScript(build)">{{$t('service.build.viewScript')}}</el-button>
         </div>
         <div v-if="build.type === 'MySQL'" class="target-datasource">
           <DataSourceSelect
             :model-value="installData.dataSourceId"
-            :prefix="'Target Data Source'"
+            :prefix="$t('service.build.targetDataSource')"
             :with-block="true"
             @change="changeDataSource"
           />
         </div>
         <div class="opera">
-          <el-button @click="ignore(build)">Ignore</el-button>
-          <el-button type="primary" :disabled="build.__executing" @click="execute(build)">Execute</el-button>
+          <el-button @click="ignore(build)">{{$t('service.build.ignore')}}</el-button>
+          <el-button type="primary" :disabled="build.__executing" @click="execute(build)">{{$t('service.build.execute')}}</el-button>
         </div>
       </li>
     </ul>
     <div v-if="builds.length > 1" class="opera">
-      <el-button @click="ignoreAll">Ignore all</el-button>
-      <el-button type="primary" :disabled="anyExecuting" @click="executeAll">Execute all</el-button>
+      <el-button @click="ignoreAll">{{$t('service.build.ignoreAll')}}</el-button>
+      <el-button type="primary" :disabled="anyExecuting" @click="executeAll">{{$t('service.build.executeAll')}}</el-button>
     </div>
     <el-dialog
       custom-class="view-script-dialog"
@@ -33,14 +33,14 @@
       <DataSourceSelect
         v-if="dialogData.build.type === 'MySQL'"
         :model-value="installData.dataSourceId"
-        :prefix="'Target Data Source'"
+        :prefix="$t('service.build.targetDataSource')"
         :with-block="true"
         @change="changeDataSource"
       />
       <el-input type="textarea" :model-value="dialogData.build.content"></el-input>
       <div class="opera">
-        <el-button @click="ignore(dialogData.build)">Ignore</el-button>
-        <el-button type="primary" :disabled="dialogData.build.__executing" @click="execute(dialogData.build)">Execute</el-button>
+        <el-button @click="ignore(dialogData.build)">{{$t('service.build.ignore')}}</el-button>
+        <el-button type="primary" :disabled="dialogData.build.__executing" @click="execute(dialogData.build)">{{$t('service.build.execute')}}</el-button>
       </div>
     </el-dialog>
   </div>
@@ -128,7 +128,7 @@ export default {
       })
         .then(() => {
           this.installData.builds.splice(index, 1)
-          this.$tip.success(`「${item.name}」${this.$t('service.buildCompleted')}`)
+          this.$tip.success(`「${item.name}」${this.$t('service.build.completed')}`)
         })
         .catch(e => {
           this.$tip.apiFailed(e)

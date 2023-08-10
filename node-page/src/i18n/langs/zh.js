@@ -137,7 +137,6 @@ export default {
     versionNumber: '版本号',
     versionDescription: '版本描述',
     noneDataSourceTip: '请先选择数据源',
-    buildCompleted: '构建执行完成',
     // 租赁类型
     leaseType: {
       freeLabel: '免费',
@@ -147,6 +146,16 @@ export default {
       monthLabel: '按月收费',
       yearAbb: '年',
       yearLabel: '按年收费',
+    },
+    // 构建
+    build: {
+      completed: '构建执行完成',
+      ignore: '忽略',
+      ignoreAll: '忽略所有',
+      execute: '执行',
+      executeAll: '全部执行',
+      viewScript: '查看执行脚本',
+      targetDataSource: '目标数据源'
     }
   },
   issue: {
