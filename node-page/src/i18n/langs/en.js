@@ -144,7 +144,8 @@ export default {
       monthLabel: 'Monthly charge',
       yearAbb: 'Year',
       yearLabel: 'Annual charge',
-    }
+    },
+    PrivateServicesTitle: 'Leased and private services'
   },
   // 问题
   issue: {
@@ -174,8 +175,7 @@ export default {
     createVirtualTableTip: 'create a virtual table',
     joinLine: 'Join Line',
     aggregateLine: 'Aggregate Line',
-    modelName: 'model name',
-    modelNameIncorrectly: 'Model name incorrectly'
+    modelName: 'model name'
   },
   // 项目
   project: {
@@ -193,6 +193,8 @@ export default {
     noProjectTip1: 'Unable to initialize project workspace. Please select or create a project first. If you are using it for the first time, you can go to the ',
     noProjectTip2: 'to learn about the purpose of services and service installation!',
     noServiceInstalledTip1: 'The current project does not have any installed services. Please switch projects or go to the ',
-    noServiceInstalledTip2: ' to install services for this project!'
+    noServiceInstalledTip2: ' to install services for this project!',
+    SubServiceSettings: 'Sub Service Settings',
+    SubServiceSettingsTip: 'You can open Settings by clicking on sub services on the left.'
   }
 }

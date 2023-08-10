@@ -111,7 +111,7 @@ export default {
       return {
         name: [
           { required: true, message: this.$t('form.isRequired', { value: this.$t('database.modelName') }) },
-          { validator: (rule, value, callback) => checkTableName(rule, value, callback, this.$t('form.isIncorrect', { field: this.$t('database.modelNameIncorrectly') })) },
+          { validator: (rule, value, callback) => checkTableName(rule, value, callback, this.$t('form.isIncorrect', { field: this.$t('database.modelName') })) },
         ]
       }
     },

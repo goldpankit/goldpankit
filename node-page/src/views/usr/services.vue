@@ -2,7 +2,7 @@
   <div class="page">
     <div class="wrap">
       <div class="header">
-        <h2>Leased and private services</h2>
+        <h2>{{ $t('service.PrivateServicesTitle') }}</h2>
       </div>
 <!--      <div class="search-wrap">-->
 <!--        <el-input size="large" placeholder="type here and press enter."/>-->
@@ -30,7 +30,7 @@
           </ul>
         </li>
       </ul>
-      <Empty v-else description="No Services"/>
+      <Empty v-else :description="$t('service.noServices')"/>
       <Pagination
         :pagination="pagination"
         @current-change="handleCurrentChange"
