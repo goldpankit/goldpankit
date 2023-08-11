@@ -11,9 +11,9 @@ export default {
   split (path){
     const os = this.getOS()
     if (os === 'windows') {
-      return path.split('\\')
+      return path.split('\\').filter(p => p !== '')
     }
-    return path.split('/')
+    return path.split('/').filter(p => p !== '')
   },
   // 获取操作系统
   getOS () {

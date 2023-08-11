@@ -119,6 +119,7 @@ export default {
     },
     // 获取项目名称
     __getProjectName () {
+      console.log('this.serviceConfig.codespace', this.serviceConfig.codespace)
       return path.split(this.serviceConfig.codespace).pop()
     },
     // 获取全路径
