@@ -32,7 +32,7 @@ export default {
       confirmDelete: '确认删除',
       confirmInstall: '确认安装?',
       confirmUninstall: '确认卸载?',
-      installServiceTip: '安装此服务将从您的账户中扣除{price}金豆币。您确定要继续安装吗？',
+      installServiceTip: '安装此服务将从您的账户中扣除 {price} 金豆。您确定要安装吗？',
       uninstallServiceTip: '您确定要卸载这个服务吗？'
     },
     // 日期差
@@ -131,7 +131,7 @@ export default {
     uninstall: '卸载',
     installSuccessfully: '安装成功',
     uninstallSuccessfully: '卸载完成',
-    payInstall: '付费并安装',
+    payInstall: '支付并安装',
     noServices: '无服务',
     noSubServices: '无子服务',
     serviceSettings: '服务设置',
@@ -210,6 +210,6 @@ export default {
     noServiceInstalledTip1: '当前项目没有安装服务，请切换项目或前往',
     noServiceInstalledTip2: '为此项目安装服务！',
     subServiceSettings: '子服务设置',
-    subServiceSettingsTip: '您可以通过点击左侧的子服务来打开设置。'
+    subServiceSettingsTip: '点击左侧的子服务打开设置并安装。'
   }
 }
