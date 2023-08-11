@@ -15,22 +15,24 @@ export default {
   },
   // 确认安装
   installConfirm (price) {
+    const $t = this.$t
     return ElMessageBox({
-      title: 'Confirm Install?',
-      message: `Installing this service will deduct ${price} gold beans from your account. Are you sure you want to proceed with the installation?`,
+      title: $t('common.modal.confirmInstall'),
+      message: $t('common.modal.installServiceTip', { price: price }),
       showCancelButton: true,
-      cancelButtonText: 'Cancel',
-      confirmButtonText: 'PAY AND INSTALL'
+      cancelButtonText: $t('common.cancel'),
+      confirmButtonText: $t('service.payInstall')
     })
   },
   // 确认卸载
   uninstallConfirm () {
+    const $t = this.$t
     return ElMessageBox({
-      title: 'Confirm Uninstall?',
-      message: 'Are you sure you want to uninstall this service?',
+      title: $t('common.modal.confirmUninstall'),
+      message: $t('common.modal.uninstallServiceTip'),
       showCancelButton: true,
-      cancelButtonText: 'Cancel',
-      confirmButtonText: 'INSTALL'
+      cancelButtonText: $t('common.cancel'),
+      confirmButtonText: $t('service.uninstall')
     })
   },
   /**

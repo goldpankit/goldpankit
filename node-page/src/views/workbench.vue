@@ -236,7 +236,9 @@ export default {
     },
     // 选择服务
     selectService (service) {
-      this.currentService = service
+      if (this.subServices.length > 0) {
+        this.currentService = service
+      }
     },
     // 是否可升级
     hasNewVersion (service) {

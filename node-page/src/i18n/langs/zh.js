@@ -30,6 +30,10 @@ export default {
     // 模态框
     modal: {
       confirmDelete: '确认删除',
+      confirmInstall: '确认安装?',
+      confirmUninstall: '确认卸载?',
+      installServiceTip: '安装此服务将从您的账户中扣除{price}金豆币。您确定要继续安装吗？',
+      uninstallServiceTip: '您确定要卸载这个服务吗？'
     },
     // 日期差
     dateOffset: {
@@ -127,6 +131,7 @@ export default {
     uninstall: '卸载',
     installSuccessfully: '安装成功',
     uninstallSuccessfully: '卸载完成',
+    payInstall: '付费并安装',
     noServices: '无服务',
     noSubServices: '无子服务',
     serviceSettings: '服务设置',

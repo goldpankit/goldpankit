@@ -62,4 +62,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
+* {
+  z-index: 0;
+}
 </style>
