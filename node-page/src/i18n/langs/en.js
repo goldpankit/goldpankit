@@ -55,6 +55,7 @@ export default {
   // 表单
   form: {
     isRequired: '{value} is required',
+    isSelectRequired: '{value} is required',
     isIncorrect: '{field} is incorrect',
     correctEmailTip: 'Please enter the correct email address'
   },

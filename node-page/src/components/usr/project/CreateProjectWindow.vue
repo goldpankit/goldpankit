@@ -58,7 +58,10 @@ export default {
       return {
         name: [
           { required: true, message: this.$t('form.isRequired', { value: this.$t('project.name') })},
-        ]
+        ],
+        codespace: [
+          { required: true, message: this.$t('form.isSelectRequired', { value: this.$t('project.codespace') })},
+        ],
       }
     },
     // 确认创建

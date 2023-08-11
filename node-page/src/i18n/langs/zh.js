@@ -55,6 +55,7 @@ export default {
   // 表单
   form: {
     isRequired: '请输入{value}',
+    isSelectRequired: '请选择{value}',
     isIncorrect: '{field}不正确',
     correctEmailTip: '请输入正确的邮箱地址'
   },
