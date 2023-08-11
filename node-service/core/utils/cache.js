@@ -1,5 +1,6 @@
 const Const = require('../constants/constants')
 const fs = require("./fs");
+const path = require('path')
 const CACHE = {}
 
 class Cache {
@@ -53,8 +54,9 @@ class Cache {
   }
   // 获取配置目录
   getConfigDirectory () {
-    const home = process.env.HOME
-    return `${home}/${Const.LOCAL_CONFIG_DIRECTORY}`
+    // HOME为linux系统用户目录，USERPROFILE为windows系统用户目录
+    const home = process.env.HOME||process.env.USERPROFILE
+    return path.join(home, Const.LOCAL_CONFIG_DIRECTORY)
   }
   // 获取配置文件路径
   getConfigFile () {
