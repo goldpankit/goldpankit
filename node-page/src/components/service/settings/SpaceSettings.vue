@@ -78,7 +78,6 @@ export default {
       this.loading = true
       fetchProfileByName(this.space)
         .then(data => {
-          console.log('data', data)
           for (const key in this.form) {
             this.form[key] = data[key]
           }

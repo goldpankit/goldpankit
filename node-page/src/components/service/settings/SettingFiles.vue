@@ -130,7 +130,6 @@ export default {
           variables: this.currentNode.variables.filter(v => v.name.trim().length > 0)
         })
           .then(() => {
-            console.log('保存成功')
           })
           .catch(e => {
             this.$tip.apiFailed(e)

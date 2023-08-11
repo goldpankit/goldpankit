@@ -65,7 +65,6 @@ export default {
   },
   methods: {
     changeMajorVersion (majorVersion) {
-      console.log('version', majorVersion)
       this.currentMajorVersion = majorVersion
       this.fetchDetail(majorVersion)
     },

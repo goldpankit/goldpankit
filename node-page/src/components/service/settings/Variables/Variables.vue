@@ -223,7 +223,6 @@ export default {
           variables: this.getVariables()
         })
           .then(() => {
-            console.log('变量保存成功')
           })
           .catch(e => {
             this.$tip.apiFailed(e)
@@ -270,7 +269,6 @@ export default {
             (this.currentRootVariable.inputType === 'query_model' ||
               this.currentRootVariable.inputType === 'table')
           ) {
-            console.log('删除字段变量')
             // 将变量从组中移除
             const index = this.currentGroup.children.findIndex(v => v.id === this.currentVariable.id)
             if (index === -1) {
@@ -368,6 +366,10 @@ export default {
       }
       // 无论是可选变量还是输入变量，都增加options，在保存时会根据类型自动过滤该属性
       copyVariable.options = copyVariable.options == null ? [] : copyVariable.options
+      // 无论是否为select，都为每个options增加settings
+      copyVariable.options.forEach(opt => {
+        opt.settings = opt.settings == null ? [] : opt.settings
+      })
       /**
        * select处理
        * select在配置文件中的存储结构为defaultValue: { value: null, settings: {} }，

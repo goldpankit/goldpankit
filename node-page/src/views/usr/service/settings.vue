@@ -120,7 +120,6 @@ export default {
         readme: this.service.description
       })
         .then(() => {
-          console.log('保存成功')
         })
         .catch(e => {
           this.$tip.apiFailed(e)

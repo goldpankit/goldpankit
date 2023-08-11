@@ -45,7 +45,7 @@ export default {
           this.projects = data
         })
         .catch(e => {
-          console.log('e')
+          this.$tip.apiFailed(e)
         })
     },
     // 删除项目
@@ -54,11 +54,10 @@ export default {
         .then(() => {
           deleteProject(project.id)
             .then(() => {
-              console.log('删除成功')
               this.search()
             })
             .catch(e => {
-              console.log('删除失败', e)
+              this.$tip.apiFailed(e)
             })
         })
         .catch(() => {})

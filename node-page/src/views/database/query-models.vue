@@ -111,7 +111,6 @@ export default {
         model: modelSettings
       })
         .then(() => {
-          console.log('保存成功')
         })
         .catch(e => {
           this.$tip.apiFailed(e)

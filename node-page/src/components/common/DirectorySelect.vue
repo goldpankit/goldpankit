@@ -109,7 +109,6 @@ export default {
     },
     // 查看子目录
     fetchSubFiles (file) {
-      console.log('file', file)
       if (file.__creatable) {
         return
       }

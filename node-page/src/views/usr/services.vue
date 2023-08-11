@@ -96,7 +96,6 @@ export default {
         .catch(() => {})
     },
     handleCurrentChange (page) {
-      console.log('page', page)
       this.pagination.page = page
       this.fetchPage()
     },

@@ -67,7 +67,6 @@ export default {
       this.logoutData.isWorking = true
       this.logout()
         .then(() => {
-          console.log('退出成功')
         })
         .catch(e => {
           this.$tip.apiFailed(e)

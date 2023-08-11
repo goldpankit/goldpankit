@@ -43,7 +43,6 @@ export default {
     create () {
       create(this.form)
         .then(data => {
-          console.log('data', data)
         })
         .catch(e => {
           this.$tip.apiFailed(e)

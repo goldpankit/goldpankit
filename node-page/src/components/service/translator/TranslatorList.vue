@@ -157,7 +157,6 @@ export default {
         service: this.service
       })
         .then(() => {
-          console.log('翻译完成')
         })
         .catch(e => {
           this.$tip.apiFailed(e)

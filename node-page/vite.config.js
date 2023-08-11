@@ -10,6 +10,9 @@ export default ({ mode }) => {
   const localApiPrefix = loadEnv(mode, process.cwd()).VITE_LOCAL_API_PREFIX
   const remoteApiPrefix = loadEnv(mode, process.cwd()).VITE_REMOTE_API_PREFIX
   return defineConfig({
+    build: {
+      outDir: '../node-service/public'
+    },
     plugins: [
       vue(),
       vueJsx(),

@@ -159,7 +159,6 @@ export default {
           this.variables = JSON.parse(data.variables).map(item => {
             return this.__initVariableValue(item)
           })
-          console.log('this.variables', this.variables)
         })
         .catch(e => {
           this.$tip.apiFailed(e)

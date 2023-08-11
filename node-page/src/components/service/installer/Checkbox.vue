@@ -68,6 +68,16 @@ export default {
           selectedValues.push(value)
         }
       }
+      /**
+       * 因为每次处理选中的值都是一个新的数组，所以modelValue会被监听到变化，而监听到变化后又会触发
+       * 过滤，所以此处要判断过滤后的值是否和modelValue是一致的，如果是一致的，则不再触发更新
+       */
+      if (selectedValues === this.modelValue) {
+        return
+      }
+      if (selectedValues != null && this.modelValue != null && selectedValues.join(',') === this.modelValue.join(',')) {
+        return
+      }
       this.$emit('update:modelValue', selectedValues)
       this.$emit('change', selectedValues)
     }

@@ -111,8 +111,6 @@ export default {
     // 执行构建
     execute (item) {
       // 数据库构建，但没选中数据库
-      console.log('this.item', item)
-      console.log('this.installData', this.installData)
       if (item.type === 'MySQL' && (this.installData.dataSourceId == null || this.installData.dataSourceId === '')) {
         this.$tip.warning(this.$t('service.noneDataSourceTip'))
         return
