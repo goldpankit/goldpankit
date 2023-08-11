@@ -33,7 +33,8 @@
           <template v-else>
             <el-icon>
               <Folder v-if="file.type === 'DIRECTORY'"/>
-              <Document v-else/>
+              <Document v-else-if="file.type === 'FILE'"/>
+              <QuestionFilled v-else/>
             </el-icon>
             <p>{{ file.path }}</p>
           </template>
@@ -46,6 +47,7 @@
 <script>
 import {fetchFiles, fetchRuntimeRoot, createDirectory} from "../../api/local.file";
 import {sortFiles} from "../../utils/file";
+import path from "../../utils/path"
 
 export default {
   name: "DirectorySelect",
@@ -102,30 +104,36 @@ export default {
       if (index === this.paths.length - 1) {
         return
       }
-      this.paths = this.paths.splice(0, index + 1)
-      this.__fetchFiles()
-      this.$emit('update:modelValue', this.__getAbsolutePath())
-      this.$emit('change', this.__getAbsolutePath())
+      const paths = this.paths.slice(0, index + 1)
+      this.__fetchFiles(paths, () => {
+        this.paths.splice(index + 1)
+        this.$emit('update:modelValue', this.__getAbsolutePath())
+        this.$emit('change', this.__getAbsolutePath())
+      })
     },
     // 查看子目录
     fetchSubFiles (file) {
       if (file.__creatable) {
         return
       }
-      if (file.type === 'FILE') {
+      if (file.type !== 'DIRECTORY') {
         return
       }
-      this.paths.push(file.path)
-      this.__fetchFiles()
-      this.$emit('update:modelValue', this.__getAbsolutePath())
-      this.$emit('change', this.__getAbsolutePath())
+      const paths = JSON.parse(JSON.stringify(this.paths))
+      paths.push(file.path)
+      this.__fetchFiles(paths, () => {
+        this.paths.push(file.path)
+        this.$emit('update:modelValue', this.__getAbsolutePath(paths))
+        this.$emit('change', this.__getAbsolutePath(paths))
+      })
     },
     // 获取文件列表
-    __fetchFiles () {
-      fetchFiles(this.__getAbsolutePath())
+    __fetchFiles (paths, callback) {
+      fetchFiles(this.__getAbsolutePath(paths))
         .then(data => {
           this.files = data
           sortFiles(this.files)
+          callback && callback()
         })
         .catch(e => {
           this.$tip.apiFailed(e)
@@ -135,7 +143,7 @@ export default {
     __fetchDefaultPaths () {
       fetchRuntimeRoot()
         .then(data => {
-          this.paths = data.split('/').filter(item => item !== '')
+          this.paths = path.split(data).filter(item => item !== '')
           this.__fetchFiles()
           this.$emit('update:modelValue', this.__getAbsolutePath())
           this.$emit('change', this.__getAbsolutePath())
@@ -145,8 +153,11 @@ export default {
         })
     },
     // 获取绝对路径
-    __getAbsolutePath (path) {
-      return `/${this.paths.join('/')}${path == null ? '' : '/' + path}`
+    __getAbsolutePath (paths) {
+      if (paths == null) {
+        paths = this.paths
+      }
+      return path.join(paths)
     }
   },
   created () {
@@ -154,7 +165,7 @@ export default {
       this.__fetchDefaultPaths()
       return
     }
-    this.paths = this.modelValue.split('/').filter(item => item !== '')
+    this.paths = path.split(this.modelValue).filter(item => item !== '')
     this.$emit('update:modelValue', this.__getAbsolutePath())
     this.$emit('change', this.__getAbsolutePath())
     this.__fetchFiles()
@@ -256,6 +267,9 @@ export default {
         }
         .el-icon {
           margin-right: 10px;
+        }
+        p {
+          line-height: initial;
         }
         // 创建目录
         .new-directory {

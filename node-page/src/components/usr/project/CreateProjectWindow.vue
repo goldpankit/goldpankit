@@ -4,6 +4,7 @@
     :title="$t('project.createProject')"
     custom-class="create-project-dialog"
     append-to-body
+    width="800px"
     :close-on-click-modal="false"
     :close-on-press-escape="false"
   >

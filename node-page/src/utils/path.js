@@ -3,7 +3,7 @@ export default {
   join (paths) {
     const os = this.getOS()
     if (os === 'windows') {
-      return paths.join('\\')
+      return `${paths.join('\\')}\\`
     }
     return `/${paths.join('/')}`
   },
