@@ -13,8 +13,17 @@ const client = require('./core/client')
 const { createProxyMiddleware } = require('http-proxy-middleware');
 
 const app = express();
+// 开启日志
+if (env.debug) {
+  app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Credentials', 'true');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+    next();
+  })
+  app.use(logger('dev'));
+}
 // 开启远程接口代理
-const logLevel = env.env === 'develop' ? 'info' : 'silent'
+const logLevel = env.debug ? 'info' : 'silent'
 app.use(env.remoteApiPrefix, createProxyMiddleware({
   target: env.remoteApi,
   changeOrigin: true,
@@ -23,15 +32,6 @@ app.use(env.remoteApiPrefix, createProxyMiddleware({
     [`^${env.remoteApiPrefix}`]: '',
   }
 }));
-// 开发环境开启日志
-if (env.env === 'develop') {
-  app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Credentials', 'true');
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-    next();
-  })
-  app.use(logger('dev'));
-}
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
