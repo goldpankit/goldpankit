@@ -40,9 +40,9 @@
 </template>
 
 <script>
-
 import {fetchFiles} from "../../api/local.file";
 import {sortFiles} from "../../utils/file";
+import path from "../../utils/path";
 
 export default {
   name: "ServiceFileSelectWindow",
@@ -87,25 +87,31 @@ export default {
       if (index === this.paths.length - 1) {
         return
       }
-      this.paths = this.paths.splice(0, index + 1)
-      this.__fetchFiles()
-      this.selectedFilepath = null
+      const paths = this.paths.slice(0, index + 1)
+      this.__fetchFiles(paths, () => {
+        this.paths.splice(index + 1)
+        this.selectedFilepath = null
+      })
     },
     // 打开目录或选择文件
     openOrSelectFile (file) {
       if (file.type === 'DIRECTORY') {
-        this.paths.push(file.path)
-        this.__fetchFiles()
-        this.selectedFilepath = null
+        const paths = JSON.parse(JSON.stringify(this.paths))
+        paths.push(file.path)
+        this.__fetchFiles(paths, () => {
+          this.paths.push(file.path)
+          this.selectedFilepath = null
+        })
         return
       }
       this.selectedFilepath = file.path
     },
-    __fetchFiles () {
-      fetchFiles(this.__getAbsolutePath())
+    __fetchFiles (paths, callback) {
+      fetchFiles(this.__getAbsolutePath(paths))
         .then(data => {
           this.files = data
           sortFiles(this.files)
+          callback && callback()
         })
         .catch(e => {
           this.$tip.apiFailed(e)
@@ -113,16 +119,17 @@ export default {
     },
     // 获取项目名称
     __getProjectName () {
-      return this.serviceConfig.codespace.split('/').pop()
+      return path.split(this.serviceConfig.codespace).pop()
     },
     // 获取全路径
-    __getAbsolutePath () {
-      let absolutePath = `${this.serviceConfig.codespace}/${this.paths.slice(1).join('/')}`
-      if (this.serviceConfig.translator.settings.length > 0) {
-        absolutePath = `${this.serviceConfig.codespace}/${this.serviceConfig.translator.output}/${this.paths.slice(1).join('/')}`
+    __getAbsolutePath (paths) {
+      if (paths == null) {
+        paths = JSON.parse(JSON.stringify(this.paths))
       }
-      if (absolutePath.endsWith('/')) {
-        return absolutePath.substring(0, absolutePath.length - 1)
+      paths.shift()
+      let absolutePath = path.join([this.serviceConfig.codespace, ...paths])
+      if (this.serviceConfig.translator.settings.length > 0) {
+        absolutePath = path.join([this.serviceConfig.codespace, this.serviceConfig.translator.output, ...paths])
       }
       return absolutePath
     }
