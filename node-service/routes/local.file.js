@@ -1,5 +1,6 @@
 const request = require('../utils/request.define')
 const fs = require('../core/utils/fs')
+const path = require('path')
 
 // 获取运行时根目录
 request
@@ -13,9 +14,15 @@ request
   .get('/local/file/list')
   .data((req) => {
     return fs.getFiles(req.query.target).map(item => {
+      let type = 'UNKNOWN'
+      try {
+        type = fs.isDirectory(path.join(req.query.target, item)) ? 'DIRECTORY' : 'FILE'
+      } catch (e) {
+        console.log('e')
+      }
       return {
         path: item,
-        type: fs.isDirectory(`${req.query.target}/${item}`) ? 'DIRECTORY' : 'FILE'
+        type
       }
     })
   })

@@ -9,6 +9,9 @@ module.exports = {
   },
   // 获取文件列表
   getFiles (dir) {
+    console.log('dir', dir)
+    dir = path.normalize(dir)
+    console.log('normalize dir', dir)
     return fs.readdirSync(dir)
   },
   // 删除代码文件
@@ -87,6 +90,7 @@ module.exports = {
     return filePool
   },
   isDirectory(filepath) {
+    console.log('filepath', filepath)
     return fs.statSync(filepath).isDirectory()
   },
   isFile(filepath) {
