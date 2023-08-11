@@ -58,6 +58,7 @@ module.exports = {
             builds[i].content = contents[i]
           }
           for (const build of builds) {
+            console.log('build', build)
             let content = build.content
             if (build.contentType === 'file') {
               content = fs.readFile(`${project.codespace}${build.content}`).content

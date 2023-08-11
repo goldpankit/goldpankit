@@ -153,13 +153,17 @@ module.exports = {
     let fileStoragePath = serviceConfig.codespace
     // 如果存在翻译器，自动翻译，且服务代码空间指定为翻译代码空间
     if (serviceConfig.translator.settings.length > 0) {
-      fileStoragePath = `${fileStoragePath}/${Const.TRANSLATOR.DEFAULT_OUTPUT_PATH}`
+      fileStoragePath = path.join(fileStoragePath, Const.TRANSLATOR.DEFAULT_OUTPUT_PATH)
       serviceTranslator.translate({ space: dto.space, service: dto.service })
     }
     // 获取文件
     const files = fs.getFilesWithChildren(fileStoragePath, fileStoragePath).map(fullpath => {
       const filetype = fs.isDirectory(fullpath) ? 'DIRECTORY' : 'FILE'
-      const relativePath = fullpath.replace(fileStoragePath + '/', '')
+      let relativePath = fullpath.replace(fileStoragePath, '')
+      if (relativePath.startsWith('/')) {
+        relativePath = relativePath.substring(1)
+      }
+      relativePath = relativePath.replace(/\\/g, '/')
       const fileSetting = this.getFileSetting(serviceConfig.codespace, relativePath)
       const fileInfo = filetype === 'DIRECTORY' ? { encode: null, content: null } : fs.readFile(fullpath)
       return {

@@ -3,15 +3,14 @@ const path = require('path')
 const root = process.cwd()
 const ee = require('./ellipsis-express')
 const Const = require('../constants/constants')
+const ignore = require('ignore')
 module.exports = {
   getRuntimeRoot() {
     return root
   },
   // 获取文件列表
   getFiles (dir) {
-    console.log('dir', dir)
     dir = path.normalize(dir)
-    console.log('normalize dir', dir)
     return fs.readdirSync(dir)
   },
   // 删除代码文件
@@ -53,7 +52,7 @@ module.exports = {
       const relativePath = file.filepath
       // 创建文件
       if (file.filetype !== 'DIRECTORY') {
-        const filepath = `${codespace}/${relativePath}`
+        const filepath = path.join(codespace, relativePath)
         let content = file.content
         // 二进制文件
         if (file.contentEncode === 'base64') {
@@ -74,9 +73,10 @@ module.exports = {
   getFilesWithChildren (absolutePath) {
     let filePool = [];
     const files = fs.readdirSync(absolutePath);
+    const ignoreInstance = ignore().add(Const.IGNORE_DIRS)
     files.forEach(file => {
       // 忽略文件
-      if (Const.IGNORE_DIRS.findIndex(f => file === f || file.startsWith(`${f}/`)) !== -1) {
+      if (ignoreInstance.ignores(file)) {
         return
       }
       // 全路径
@@ -90,7 +90,6 @@ module.exports = {
     return filePool
   },
   isDirectory(filepath) {
-    console.log('filepath', filepath)
     return fs.statSync(filepath).isDirectory()
   },
   isFile(filepath) {
@@ -124,12 +123,7 @@ module.exports = {
     }
   },
   getDirectory(filepath) {
-    if (filepath.indexOf('/') !== -1) {
-      const paths = filepath.split('/')
-      paths.pop()
-      return paths.join('/')
-    }
-    return filepath
+    return path.basename(filepath)
   },
   deleteDirectory(filepath, force = false) {
     if (this.exists(filepath)) {
@@ -144,6 +138,7 @@ module.exports = {
     }
   },
   createFile(filepath, content, force = false) {
+    console.log('写入文件，路径：', filepath)
     if (force) {
       this.deleteFile(filepath)
       // 获取文件所在目录，如果目录不存在，则创建目录
@@ -164,10 +159,7 @@ module.exports = {
     return fs.readdirSync(filepath).length === 0
   },
   getFilename(filepath) {
-    if (filepath.indexOf('/') === -1) {
-      return filepath
-    }
-    return filepath.split('/').pop()
+    return path.basename(filepath)
   },
   /**
    * 获取文件编码，

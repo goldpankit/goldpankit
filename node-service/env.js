@@ -1,7 +1,7 @@
 const config = {
   current: 'develop',
   common: {
-    debug: true,
+    debug: false,
     localApiPrefix: '/local-api',
     remoteApiPrefix: "/remote-api",
   },

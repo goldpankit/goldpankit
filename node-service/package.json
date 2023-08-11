@@ -27,6 +27,7 @@
     "fs": "0.0.1-security",
     "goldpankit": "^1.0.0",
     "http-proxy-middleware": "^2.0.6",
+    "ignore": "^5.2.4",
     "morgan": "^1.10.0",
     "mysql": "^2.18.1",
     "opn": "^6.0.0",

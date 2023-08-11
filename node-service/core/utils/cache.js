@@ -60,7 +60,7 @@ class Cache {
   }
   // 获取配置文件路径
   getConfigFile () {
-    return `${this.getConfigDirectory()}/${Const.LOCAL_CONFIG_FILE}`
+    return path.join(this.getConfigDirectory(), Const.LOCAL_CONFIG_FILE)
   }
 }
 

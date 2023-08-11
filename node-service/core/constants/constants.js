@@ -1,3 +1,4 @@
+const path = require('path')
 const PROJECT_NAME = 'kit'
 module.exports = {
   // 服务配置目录
@@ -41,7 +42,7 @@ module.exports = {
   // 本地全局配置目录
   LOCAL_CONFIG_DIRECTORY: `.${PROJECT_NAME}`,
   // 本地全局配置文件
-  LOCAL_CONFIG_FILE: `data.json`,
+  LOCAL_CONFIG_FILE: 'data.json',
   // 本地全局配置内容
   LOCAL_CONFIG_FILE_CONTENT: {
     // 语言
@@ -84,10 +85,10 @@ module.exports = {
   },
   // 翻译器
   TRANSLATOR: {
-    DEFAULT_OUTPUT_PATH: `.${PROJECT_NAME}/translated`
+    DEFAULT_OUTPUT_PATH: path.join(PROJECT_NAME, 'translated')
   },
   // 监听、推送服务文件时忽略的目录
-  IGNORE_DIRS: ['.DS_Store',`.${PROJECT_NAME}`, '.idea', '.vscode', 'node_modules', '.git', '.github'],
+  IGNORE_DIRS: ['.kit', '.DS_Store',`.${PROJECT_NAME}`, '.idea', '.vscode', 'node_modules', '.git', '.github'],
   // 文件类型映射
   FILE_TYPE_MAP: {
     '.jpeg': 'IMAGE',
