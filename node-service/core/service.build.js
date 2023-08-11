@@ -2,6 +2,8 @@ const mysql = require('./utils/db/mysql')
 const nc = require('./utils/node-command')
 const serviceApi = require("./api/service");
 const fs = require('./utils/fs')
+const log = require('./utils/log')
+const path = require('path')
 const cache = require('./utils/cache')
 module.exports = {
   build (dto) {
@@ -58,10 +60,11 @@ module.exports = {
             builds[i].content = contents[i]
           }
           for (const build of builds) {
-            console.log('build', build)
             let content = build.content
             if (build.contentType === 'file') {
-              content = fs.readFile(`${project.codespace}${build.content}`).content
+              const buildFilePath = path.join(project.codespace, build.content)
+              log.debug(`read build file: ${buildFilePath}`)
+              content = fs.readFile(buildFilePath).content
             }
             buildDetails.push({
               ...build,

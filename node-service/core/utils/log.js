@@ -1,4 +1,5 @@
 const colors = require('colors-console')
+const env = require('../../env').getConfig()
 
 function getTimestamp () {
   const date = new Date();
@@ -11,7 +12,9 @@ module.exports = {
   },
   // DEBUG日志
   debug (message) {
-    console.log(this.__prefix(), colors('grey', message))
+    if (env.debug) {
+      console.log(this.__prefix(), colors('grey', `[DEBUG] ${message}`))
+    }
   },
   // 提示消息
   tip (message) {

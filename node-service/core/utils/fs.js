@@ -4,6 +4,7 @@ const root = process.cwd()
 const ee = require('./ellipsis-express')
 const Const = require('../constants/constants')
 const ignore = require('ignore')
+const log = require('../utils/log')
 module.exports = {
   getRuntimeRoot() {
     return root
@@ -119,11 +120,12 @@ module.exports = {
       this.deleteDirectory(filepath, force)
     }
     if (!this.exists(filepath)) {
+      log.debug(`create directory: ${filepath}`)
       fs.mkdirSync(filepath, {recursive: true})
     }
   },
   getDirectory(filepath) {
-    return path.basename(filepath)
+    return path.dirname(filepath)
   },
   deleteDirectory(filepath, force = false) {
     if (this.exists(filepath)) {
@@ -138,7 +140,7 @@ module.exports = {
     }
   },
   createFile(filepath, content, force = false) {
-    console.log('写入文件，路径：', filepath)
+    log.debug(`write file: ${filepath}`)
     if (force) {
       this.deleteFile(filepath)
       // 获取文件所在目录，如果目录不存在，则创建目录
