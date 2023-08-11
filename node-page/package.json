@@ -13,6 +13,7 @@
     "axios": "^1.4.0",
     "clipboard": "^2.0.11",
     "element-plus": "^2.3.2",
+    "js-cookie": "^3.0.5",
     "konva": "^9.2.0",
     "sortablejs": "^1.15.0",
     "vite-plugin-prismjs": "0.0.8",

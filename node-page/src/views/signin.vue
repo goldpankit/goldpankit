@@ -27,7 +27,7 @@
 </template>
 
 <script>
-
+import cookie from 'js-cookie'
 import {loginByPassword, getLoginInfo} from "../api/user.login";
 import {save} from "../api/user.token";
 import {mapMutations} from "vuex";
@@ -68,40 +68,41 @@ export default {
             ...this.form,
             username: this.form.username.trim()
           })
-            .then(data => {
-              return data
-            })
             .then(token => {
-              document.cookie = `x-kit-token=${token};`
+              cookie.set('x-kit-token', token)
               // 调用接口，将令牌存储在用户设备文件系统中，便于下次自动授权
               return save(token)
             })
             .then(() => {
+              // 获取用户信息
+              return getLoginInfo()
+            })
+            .then(userInfo => {
               // 存储用户信息
-              getLoginInfo()
-                .then(userInfo => {
-                  this.setUserInfo(userInfo)
-                  const redirect_uri = this.$route.query.redirect_uri
-                  if (redirect_uri != null && redirect_uri !== '') {
-                    this.$router.push(redirect_uri)
-                  } else {
-                    const backUri = this.$router.options.history.state.back
-                    /**
-                     * 返回时为null或注册页面，则跳转到用户桌面去。当直接访问登录页面时，返回页为null。
-                     */
-                    if (backUri == null || backUri === '/signup') {
-                      this.$router.push({name: 'Desktop'})
-                    }
-                    // 其他页面直接返回
-                    else {
-                      this.$router.back()
-                    }
-                  }
-                  this.loginData.isWorking = false
-                })
+              this.setUserInfo(userInfo)
+              // 获取重定向地址
+              const redirect_uri = this.$route.query.redirect_uri
+              if (redirect_uri != null && redirect_uri !== '') {
+                this.$router.push(redirect_uri)
+              } else {
+                const backUri = this.$router.options.history.state.back
+                /**
+                 * 返回页面为null或为注册页面，则跳转到用户桌面去。当直接访问登录页面时，返回页为null。
+                 */
+                if (backUri == null || backUri === '/signup') {
+                  this.$router.push({name: 'Desktop'})
+                }
+                // 其他页面直接返回
+                else {
+                  this.$router.back()
+                }
+              }
             })
             .catch(e => {
               this.$tip.apiFailed(e)
+            })
+            .finally(() => {
+              // 标记登录状态为false
               this.loginData.isWorking = false
             })
         })
