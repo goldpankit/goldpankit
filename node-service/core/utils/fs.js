@@ -59,7 +59,6 @@ module.exports = {
     if (service != null) {
       currentInstallService = project.services[service]
       currentInstallVersionIndex = versionPath.findIndex(v => v === currentInstallService.version)
-      log.debug(`currentInstallVersionIndex: ${currentInstallVersionIndex}`)
       if (currentInstallVersionIndex === -1) {
         log.warn(`service version incorrect: ${service}/${currentInstallService.version}`)
       }
@@ -67,9 +66,24 @@ module.exports = {
     let fileCount = 0
     for (const file of files) {
       const relativePath = file.filepath
+      // kit.json为项目配置文件，不允许操作
+      if (relativePath === Const.SERVICE_CONFIG_FILE) {
+        continue
+      }
+      const filepath = path.join(project.codespace, relativePath)
+      // 删除文件或目录
+      if (file.operaType === 'DELETED') {
+        if (this.exists(filepath)) {
+          if (this.isFile(filepath)) {
+            this.deleteFile(filepath)
+          } else {
+            this.deleteDirectory(filepath, true)
+          }
+        }
+        continue
+      }
       // 创建文件
       if (file.filetype !== 'DIRECTORY') {
-        const filepath = path.join(project.codespace, relativePath)
         let content = file.content
         // 二进制文件
         if (file.contentEncode === 'base64') {
@@ -88,7 +102,6 @@ module.exports = {
            * 即：文件版本索引 <= 当前已安装的版本索引，则不做文件写入动作
            */
           if (currentInstallService != null) {
-            log.debug(`${relativePath}: ${file.versionIndex}`)
             if (file.versionIndex === -1) {
               log.warn(`can not found version for file ${relativePath}`)
             }
@@ -109,6 +122,9 @@ module.exports = {
         this.createFile(filepath, content, true)
         fileCount++
       }
+    }
+    if (fileCount > 0) {
+      log.success(`${service}: write ${fileCount} files to ${project.codespace} successfully.`)
     }
     return fileCount
   },
@@ -162,8 +178,8 @@ module.exports = {
       this.deleteDirectory(filepath, force)
     }
     if (!this.exists(filepath)) {
-      log.debug(`create directory: ${filepath}`)
       fs.mkdirSync(filepath, {recursive: true})
+      log.debug(`create directory: ${filepath}`)
     }
   },
   getDirectory(filepath) {
@@ -174,15 +190,16 @@ module.exports = {
       fs.rmdirSync(filepath, {
         recursive: force
       })
+      log.debug(`delete directory: ${filepath}`)
     }
   },
   deleteFile(filepath) {
     if (this.exists(filepath)) {
       fs.unlinkSync(filepath)
+      log.debug(`delete file: ${filepath}`)
     }
   },
   createFile(filepath, content, force = false) {
-    log.debug(`write file: ${filepath}`)
     if (force) {
       this.deleteFile(filepath)
       // 获取文件所在目录，如果目录不存在，则创建目录
@@ -192,6 +209,7 @@ module.exports = {
       }
     }
     fs.writeFileSync(filepath, content)
+    log.debug(`create file: ${filepath}`)
   },
   rewrite (filepath, content) {
     this.createFile(filepath, content, true)
