@@ -9,7 +9,7 @@
               <p>
                 {{space}} · {{mainService.name}} · v{{mainService.version}}
                 <template v-if="latestMainService != null">
-                  · {{$t('service.latestVersion')}}: {{latestMainService.version}}
+                  · {{$t('service.latestVersion')}}: v{{latestMainService.version}}
                 </template>
               </p>
               <el-button
@@ -30,7 +30,7 @@
             </div>
           </div>
           <div class="info">
-            <em>{{majorVersion}}</em>
+            <em>v{{majorVersion}}</em>
             <p>{{ $t('common.currentVersion') }}</p>
           </div>
         </div>
@@ -201,7 +201,7 @@ export default {
       if (this.mainService == null) {
         return '...'
       }
-      return `v${this.mainService.version.substring(0, this.mainService.version.indexOf('.'))}`
+      return `${this.mainService.version.substring(0, this.mainService.version.indexOf('.'))}`
     }
   },
   methods: {
