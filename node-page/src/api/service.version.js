@@ -5,6 +5,13 @@ export function publish (data) {
   return request.post('/service/version/publish', data)
 }
 
+// 获取最新版本信息
+export function fetchLatestVersion (data) {
+  return request.post('/service/version/latest', data, {
+    baseURL: import.meta.env.VITE_REMOTE_API_PREFIX
+  })
+}
+
 // 获取版本信息
 export function fetchVersion (data) {
   return request.post('/service/version', data, {

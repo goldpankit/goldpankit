@@ -5,7 +5,29 @@
         <div class="header">
           <div class="title">
             <h2>{{project.name}}</h2>
-            <p class="service-info">{{space}} · {{mainService.name}} · v{{mainService.version}}</p>
+            <div class="service-info">
+              <p>
+                {{space}} · {{mainService.name}} · v{{mainService.version}}
+                <template v-if="latestMainService != null">
+                  · {{$t('service.latestVersion')}}: {{latestMainService.version}}
+                </template>
+              </p>
+              <el-button
+                v-if="latestMainService != null &&
+                  latestMainService.version !== mainService.version"
+                type="primary"
+                icon="Upload"
+                @click="$router.push({
+                  name: 'SpaceDetail',
+                  params: {
+                    name: space
+                  },
+                  query: {
+                    service: this.mainService.name
+                  }
+                })"
+              >{{$t('service.upgrade')}}</el-button>
+            </div>
           </div>
           <div class="info">
             <em>{{majorVersion}}</em>
@@ -130,7 +152,7 @@
 <script>
 import {mapMutations, mapState} from 'vuex'
 import ServiceInstaller from "../components/space/ServiceInstaller.vue";
-import {fetchSubServices} from "../api/service";
+import {fetchProfile, fetchSubServices} from "../api/service";
 import {fetchById} from "../api/user.project";
 import MarkdownEditor from "../components/common/MarkdownEditor.vue";
 import Empty from "../components/common/Empty.vue";
@@ -138,6 +160,8 @@ import IssueListView from "../components/space/IssueListView.vue";
 import BeanAmount from "../components/common/BeanAmount.vue";
 import SubServiceList from "../components/service/SubServiceList.vue";
 import CreateProjectWindow from "../components/usr/project/CreateProjectWindow.vue";
+import {fetchProfileByName} from "../api/service.space";
+import {fetchLatestVersion} from "../api/service.version";
 
 export default {
   components: {CreateProjectWindow, SubServiceList, BeanAmount, IssueListView, Empty, MarkdownEditor, ServiceInstaller},
@@ -149,6 +173,9 @@ export default {
         uninstall: false
       },
       space: null,
+      // 最新的主服务信息
+      latestMainService: null,
+      // 项目安装的主服务信息
       mainService: null,
       currentService: null,
       subServices: [],
@@ -190,6 +217,23 @@ export default {
       }
       this.refreshProject(withSubServices)
     },
+    // 查询最新的主服务
+    fetchMainService () {
+      if (this.latestMainService != null) {
+        return
+      }
+      fetchLatestVersion({
+        space: this.space,
+        service: this.mainService.name
+      })
+        .then(data => {
+          console.log('data', data)
+          this.latestMainService = data
+        })
+        .catch(e => {
+          this.$tip.apiFailed(e)
+        })
+    },
     // 刷新项目信息
     refreshProject (withSubServices = false) {
       fetchById(this.currentProject)
@@ -211,6 +255,8 @@ export default {
             name: mainName,
             ...this.project.main[mainName]
           }
+          // 查询最新的主服务信息
+          this.fetchMainService()
           // 查询子服务
           if (withSubServices) {
             this.searchSubServices()
@@ -228,7 +274,7 @@ export default {
       fetchSubServices({
         space: this.space,
         service: this.mainService.name,
-        majorVersion: this.mainService.version.split('.')[0]
+        majorVersion: this.majorVersion
       })
         .then(data => {
           this.subServices = data
@@ -300,6 +346,9 @@ export default {
         display: flex;
         align-items: center;
         margin-top: 10px;
+        .el-button {
+          margin-left: 10px;
+        }
       }
     }
     .info {
