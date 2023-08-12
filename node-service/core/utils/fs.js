@@ -15,11 +15,15 @@ module.exports = {
     return fs.readdirSync(dir)
   },
   // 删除代码文件
-  deleteFiles (files, codespace) {
+  deleteFiles (files, project, service) {
     let fileCount = 0
     for (const file of files) {
+      // 排除掉已删除的文件
+      if (file.operaType === 'DELETED') {
+        continue
+      }
       const relativePath = file.filepath
-      const filepath = `${codespace}/${relativePath}`
+      const filepath = path.join(project.codespace, relativePath)
       if (!this.exists(filepath)) {
         continue
       }
@@ -38,11 +42,15 @@ module.exports = {
         fileCount++
         // 删除空目录
         let dirpath = this.getDirectory(filepath)
-        while (this.isEmptyDirectory(dirpath) && codespace !== dirpath) {
+        while (this.isEmptyDirectory(dirpath) && project.codespace !== dirpath) {
           this.deleteDirectory(dirpath)
           dirpath = this.getDirectory(dirpath)
         }
       }
+    }
+    // 删除了文件 && 是卸载服务，则做出提醒
+    if (fileCount > 0 && service != null) {
+      log.success(`${service}: delete ${fileCount} files`)
     }
     return fileCount
   },
@@ -123,7 +131,8 @@ module.exports = {
         fileCount++
       }
     }
-    if (fileCount > 0) {
+    // 安装了文件 && 是安装服务，则给出文件写入提醒
+    if (fileCount > 0 && service != null) {
       log.success(`${service}: write ${fileCount} files to ${project.codespace} successfully.`)
     }
     return fileCount
