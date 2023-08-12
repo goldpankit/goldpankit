@@ -256,28 +256,6 @@ class Kit {
       }
       // 获取数据库信息
       const database = cache.datasources.get(dto.database)
-      // // 在安装前先把变量信息记录在项目配置文件中，防止安装失败后需重填信息
-      // // 获取配置格式
-      // const config = JSON.parse(JSON.stringify(Const.PROJECT_CONFIG_FILE_CONTENT))
-      // // 获取项目配置
-      // const configPath = userProject.getConfigPath(project.id)
-      // let projectConfig = fs.readJSONFile(configPath)
-      // if (projectConfig != null) {
-      //   object.merge(projectConfig, config)
-      // }
-      // if (dto.serviceType === 'MAIN') {
-      //   config.space = dto.space
-      //   config.main[dto.service] = {
-      //     version: dto.version,
-      //     variables: this.#getSimpleMainServiceVariables(dto.variables)
-      //   }
-      // } else {
-      //   config.services[dto.service] = {
-      //     version: dto.version,
-      //     variables: this.#getSimpleMainServiceVariables(dto.variables)
-      //   }
-      // }
-      // fs.createFile(userProject.getConfigPath(project.id), fs.toJSONFileString(config), true)
       // 组装变量
       const variables = this.#getVariables(project, database, dto.variables)
       let serviceVars = null

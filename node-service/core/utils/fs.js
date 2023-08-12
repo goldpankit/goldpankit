@@ -63,12 +63,16 @@ module.exports = {
    */
   writeFiles (files, project, service = null, versionPath = []) {
     let currentInstallService = null
+    // 当前安装的服务版本索引，例如总计版本为[1.0.0, 1.0.1]，当前版本为1.0.1，那么索引为1
     let currentInstallVersionIndex = -1
     if (service != null) {
       currentInstallService = project.services[service]
+      if (currentInstallService == null) {
+        currentInstallService = project.main[service]
+      }
       currentInstallVersionIndex = versionPath.findIndex(v => v === currentInstallService.version)
       if (currentInstallVersionIndex === -1) {
-        log.warn(`service version incorrect: ${service}/${currentInstallService.version}`)
+        log.warn(`service version incorrect: ${service}@${currentInstallService.version}`)
       }
     }
     let fileCount = 0
@@ -106,8 +110,8 @@ module.exports = {
         if (service != null) {
           /**
            * 服务安装过，则存在installService，此时找到当前服务的安装的版本
-           * 并且通过versionPath找到当前版本的发布索引，如果需要被写入的文件的版本索引不在当前版本的索引之后
-           * 即：文件版本索引 <= 当前已安装的版本索引，则不做文件写入动作
+           * 如果需要被写入的文件的版本索引不在当前版本的索引之后
+           * 即：文件版本索引 <= 当前已安装的版本索引，则不做文件写入动作，但如果本地没有当前文件，则还是需要做创建动作
            */
           if (currentInstallService != null) {
             if (file.versionIndex === -1) {
@@ -119,6 +123,11 @@ module.exports = {
              * 2. 文件所属版本索引未找到（java服务出错）
              */
             if (currentInstallVersionIndex !== -1 && file.versionIndex !== -1 && file.versionIndex <= currentInstallVersionIndex) {
+              // 如果文件不存在，则创建，否则不做创建
+              if (!this.exists(filepath)) {
+                this.createFile(filepath, content, true)
+                fileCount++
+              }
               continue
             }
           }
