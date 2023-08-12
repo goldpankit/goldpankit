@@ -8,7 +8,7 @@
             <p class="service-info">{{space}} · {{mainService.name}} · v{{mainService.version}}</p>
           </div>
           <div class="info">
-            <em>{{version}}</em>
+            <em>{{majorVersion}}</em>
             <p>{{ $t('common.currentVersion') }}</p>
           </div>
         </div>
@@ -151,7 +151,6 @@ export default {
       space: null,
       mainService: null,
       currentService: null,
-      version: 'v1',
       subServices: [],
       currentServiceDimension: 'readme',
       project: null
@@ -169,6 +168,13 @@ export default {
         return false
       }
       return this.project.services[this.currentService.name] != null
+    },
+    // 主服务主版本
+    majorVersion () {
+      if (this.mainService == null) {
+        return '...'
+      }
+      return `v${this.mainService.version.substring(0, this.mainService.version.indexOf('.'))}`
     }
   },
   methods: {
