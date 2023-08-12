@@ -22,18 +22,18 @@ module.exports = {
   },
   // 警告
   warn (message) {
-    console.log(this.__prefix(), colors('yellow', 'WARN: ' + message))
+    console.log(this.__prefix(), colors('yellow', '[WARN]'), message)
   },
   // 错误消息
   error (e) {
     // 字符串
     if (typeof e === 'string') {
-      console.log(this.__prefix(), colors('red', 'ERR: ' + e) )
+      console.log(this.__prefix(), colors('red', '[ERR]'), e)
       return
     }
     // 异常对象
     if (e.code == null) {
-      console.log(this.__prefix(), colors('red', e.message), e)
+      console.log(this.__prefix(), colors('red', '[ERR]'), e.message, e)
     }
   },
   // 成功消息

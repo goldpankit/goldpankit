@@ -46,14 +46,30 @@ module.exports = {
     }
     return fileCount
   },
-  // 写入代码文件
-  writeFiles (files, codespace) {
+  /**
+   * 写入代码文件
+   * @param files 需要写入的文件
+   * @param project 写入的项目
+   * @param service 安装的服务，只有安装时才有
+   * @param versionPath 安装的版本路径，如[1.0.0, 1.0.1]
+   */
+  writeFiles (files, project, service = null, versionPath = []) {
+    let currentInstallService = null
+    let currentInstallVersionIndex = -1
+    if (service != null) {
+      currentInstallService = project.services[service]
+      currentInstallVersionIndex = versionPath.findIndex(v => v === currentInstallService.version)
+      log.debug(`currentInstallVersionIndex: ${currentInstallVersionIndex}`)
+      if (currentInstallVersionIndex === -1) {
+        log.warn(`service version incorrect: ${service}/${currentInstallService.version}`)
+      }
+    }
     let fileCount = 0
     for (const file of files) {
       const relativePath = file.filepath
       // 创建文件
       if (file.filetype !== 'DIRECTORY') {
-        const filepath = path.join(codespace, relativePath)
+        const filepath = path.join(project.codespace, relativePath)
         let content = file.content
         // 二进制文件
         if (file.contentEncode === 'base64') {
@@ -64,6 +80,32 @@ module.exports = {
           const fileInfo = this.readFile(filepath)
           content = ee.merge(content, fileInfo.content)
         }
+        // 如果是安装
+        if (service != null) {
+          /**
+           * 服务安装过，则存在installService，此时找到当前服务的安装的版本
+           * 并且通过versionPath找到当前版本的发布索引，如果需要被写入的文件的版本索引不在当前版本的索引之后
+           * 即：文件版本索引 <= 当前已安装的版本索引，则不做文件写入动作
+           */
+          if (currentInstallService != null) {
+            log.debug(`${relativePath}: ${file.versionIndex}`)
+            if (file.versionIndex === -1) {
+              log.warn(`can not found version for file ${relativePath}`)
+            }
+            /**
+             * 两次-1的判断用于处理极端数据错误的情况
+             * 1. 当前安装的版本不属于服务的版本（例如用户手动修改了版本号）
+             * 2. 文件所属版本索引未找到（java服务出错）
+             */
+            if (currentInstallVersionIndex !== -1 && file.versionIndex !== -1 && file.versionIndex <= currentInstallVersionIndex) {
+              continue
+            }
+          }
+          this.createFile(filepath, content, true)
+          fileCount++
+          continue
+        }
+        // versionPath.findIndex(v => v === project)
         this.createFile(filepath, content, true)
         fileCount++
       }

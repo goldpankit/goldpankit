@@ -29,9 +29,31 @@ class Kit {
     return new Promise((resolve, reject) => {
       dto.operaType = 'INSTALL'
       this.#install(dto)
-        .then(({ data, project, database, variables}) => {
+        .then(({ data, project, service, database, variables}) => {
           // 写入文件
-          fs.writeFiles(data.files, project.codespace)
+          fs.writeFiles(data.files, project, service, data.versionPath)
+          // 写入配置
+          // 获取配置格式
+          const config = JSON.parse(JSON.stringify(Const.PROJECT_CONFIG_FILE_CONTENT))
+          // 获取项目配置
+          const configPath = userProject.getConfigPath(project.id)
+          let projectConfig = fs.readJSONFile(configPath)
+          if (projectConfig != null) {
+            object.merge(projectConfig, config)
+          }
+          if (dto.serviceType === 'MAIN') {
+            config.space = dto.space
+            config.main[dto.service] = {
+              version: dto.version,
+              variables: this.#getSimpleMainServiceVariables(dto.variables)
+            }
+          } else {
+            config.services[dto.service] = {
+              version: dto.version,
+              variables: this.#getSimpleMainServiceVariables(dto.variables)
+            }
+          }
+          fs.createFile(userProject.getConfigPath(project.id), fs.toJSONFileString(config), true)
           // 获取构建详情并返回
           const builds = data.version.builds == null || data.version.builds === '' ? [] : JSON.parse(data.version.builds)
           serviceBuild.getBuildDetails(project, builds, data.version.compiler, variables)
@@ -100,7 +122,7 @@ class Kit {
         .then(data => {
           try {
             // 写入文件
-            fs.writeFiles(data.files, data.project.codespace)
+            fs.writeFiles(data.files, data.project)
             // 获取构建详情并返回
             serviceBuild.getBuildDetails(data.project, data.serviceConfig.builds, data.serviceConfig.compiler, data.variables)
               .then(builds => {
@@ -170,7 +192,7 @@ class Kit {
     return new Promise((resolve, reject) => {
       try {
         // 获取项目信息
-        const project = cache.projects.get(dto.projectId)
+        const project = userProject.findDetailById(dto.projectId)
         if (project == null) {
           reject(new Error('Please select a project.'))
           return
@@ -228,34 +250,34 @@ class Kit {
   #install (dto) {
     try {
       const projectId = dto.projectId
-      const project = cache.projects.get(projectId)
+      const project = userProject.findDetailById(projectId)
       if (project == null) {
         return Promise.reject('Please select a project.')
       }
       // 获取数据库信息
       const database = cache.datasources.get(dto.database)
-      // 在安装前先把变量信息记录在项目配置文件中，防止安装失败后需重填信息
-      // 获取配置格式
-      const config = JSON.parse(JSON.stringify(Const.PROJECT_CONFIG_FILE_CONTENT))
-      // 获取项目配置
-      const configPath = userProject.getConfigPath(project.id)
-      let projectConfig = fs.readJSONFile(configPath)
-      if (projectConfig != null) {
-        object.merge(projectConfig, config)
-      }
-      if (dto.serviceType === 'MAIN') {
-        config.space = dto.space
-        config.main[dto.service] = {
-          version: dto.version,
-          variables: this.#getSimpleMainServiceVariables(dto.variables)
-        }
-      } else {
-        config.services[dto.service] = {
-          version: dto.version,
-          variables: this.#getSimpleMainServiceVariables(dto.variables)
-        }
-      }
-      fs.createFile(userProject.getConfigPath(project.id), fs.toJSONFileString(config), true)
+      // // 在安装前先把变量信息记录在项目配置文件中，防止安装失败后需重填信息
+      // // 获取配置格式
+      // const config = JSON.parse(JSON.stringify(Const.PROJECT_CONFIG_FILE_CONTENT))
+      // // 获取项目配置
+      // const configPath = userProject.getConfigPath(project.id)
+      // let projectConfig = fs.readJSONFile(configPath)
+      // if (projectConfig != null) {
+      //   object.merge(projectConfig, config)
+      // }
+      // if (dto.serviceType === 'MAIN') {
+      //   config.space = dto.space
+      //   config.main[dto.service] = {
+      //     version: dto.version,
+      //     variables: this.#getSimpleMainServiceVariables(dto.variables)
+      //   }
+      // } else {
+      //   config.services[dto.service] = {
+      //     version: dto.version,
+      //     variables: this.#getSimpleMainServiceVariables(dto.variables)
+      //   }
+      // }
+      // fs.createFile(userProject.getConfigPath(project.id), fs.toJSONFileString(config), true)
       // 组装变量
       const variables = this.#getVariables(project, database, dto.variables)
       let serviceVars = null
@@ -274,6 +296,7 @@ class Kit {
         .then(data => {
           return Promise.resolve({
             data,
+            service: dto.service,
             project,
             database,
             variables: serviceVars

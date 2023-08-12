@@ -32,6 +32,9 @@ module.exports = {
   findDetailById (id) {
     // 获取项目配置
     const projectConfig = cache.projects.get(id)
+    if (projectConfig == null) {
+      return
+    }
     // 获取项目安装配置
     const projectInstallConfig = fs.readJSONFile(this.__getConfigPath(projectConfig.codespace))
     return {
