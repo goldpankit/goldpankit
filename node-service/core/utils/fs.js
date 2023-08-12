@@ -66,13 +66,15 @@ module.exports = {
     // 当前安装的服务版本索引，例如总计版本为[1.0.0, 1.0.1]，当前版本为1.0.1，那么索引为1
     let currentInstallVersionIndex = -1
     if (service != null) {
-      currentInstallService = project.services[service]
+      currentInstallService = project.services == null ? null : project.services[service]
       if (currentInstallService == null) {
-        currentInstallService = project.main[service]
+        currentInstallService = project.main == null ? null : project.main[service]
       }
-      currentInstallVersionIndex = versionPath.findIndex(v => v === currentInstallService.version)
-      if (currentInstallVersionIndex === -1) {
-        log.warn(`service version incorrect: ${service}@${currentInstallService.version}`)
+      if (currentInstallService != null) {
+        currentInstallVersionIndex = versionPath.findIndex(v => v === currentInstallService.version)
+        if (currentInstallVersionIndex === -1) {
+          log.warn(`service version incorrect: ${service}@${currentInstallService.version}`)
+        }
       }
     }
     let fileCount = 0
