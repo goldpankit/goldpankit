@@ -85,7 +85,7 @@ module.exports = {
   },
   // 翻译器
   TRANSLATOR: {
-    DEFAULT_OUTPUT_PATH: path.join(PROJECT_NAME, 'translated')
+    DEFAULT_OUTPUT_PATH: path.join(`.${PROJECT_NAME}`, 'translated')
   },
   // 监听、推送服务文件时忽略的目录
   IGNORE_DIRS: ['.kit', '.DS_Store',`.${PROJECT_NAME}`, '.idea', '.vscode', 'node_modules', '.git', '.github'],

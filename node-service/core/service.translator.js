@@ -1,7 +1,7 @@
 const serviceConf = require('./service.config')
 const serviceFile = require('./service.file')
 const fs = require("./utils/fs");
-const cache = require("./utils/cache");
+const path = require('path')
 
 class Translator {
     constructor() {
@@ -22,7 +22,7 @@ class Translator {
             return
         }
         const translators = serviceConfig.translator.settings
-        const targetDirectory = `${serviceConfig.codespace}/${serviceConfig.translator.output}`
+        const targetDirectory = path.join(serviceConfig.codespace, serviceConfig.translator.output)
         const files = fs.getFilesWithChildren(serviceConfig.codespace)
         // 删除已翻译目录
         fs.deleteDirectory(targetDirectory, true)
@@ -34,7 +34,10 @@ class Translator {
             }
             const fileInfo = fs.readFile(absolutePath)
             // 服务空间相对路径
-            const relativePath = absolutePath.replace(serviceConfig.codespace + '/', '')
+            let relativePath = absolutePath.replace(serviceConfig.codespace, '')
+            if (relativePath.startsWith('/')) {
+                relativePath = relativePath.substring(1)
+            }
             // 翻译路径
             // 服务空间相对路径为xxx-vue的翻译空间相对路径可能为${path}-vue，此处需要获取翻译空间相对路径，
             // 获取配置信息时需要根据翻译相对路径来获取，因为在进行服务文件配置时，配置的是翻译后的文件路径
@@ -63,7 +66,7 @@ class Translator {
                 translatedContent = Buffer.from(translateContentFile.content, 'base64')
             }
             // 写入翻译文件
-            fs.createFile(`${targetDirectory}/${translatedFilepath}`, translatedContent, true)
+            fs.createFile(path.join(targetDirectory, translatedFilepath), translatedContent, true)
             // 翻译配置路径（用户可能先定义变量再执行翻译，此时需要将配置的path修改为翻译后的path）
             // TODO
         }

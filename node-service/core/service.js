@@ -113,7 +113,11 @@ module.exports = {
     // 获取文件真实存放的路径
     let fileStoragePath = serviceConfig.codespace
     if (serviceConfig.translator.settings.length > 0) {
-      fileStoragePath = `${fileStoragePath}/${Const.TRANSLATOR.DEFAULT_OUTPUT_PATH}`
+      fileStoragePath = path.join(fileStoragePath, serviceConfig.translator.output)
+      if (!fs.exists(fileStoragePath)) {
+        serviceTranslator.translate({ space, service })
+        return this.__getFileTree(fileStoragePath, fileStoragePath, serviceConfig.codespace)
+      }
     }
     return this.__getFileTree(fileStoragePath, fileStoragePath, serviceConfig.codespace)
   },
