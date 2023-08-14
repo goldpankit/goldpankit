@@ -285,7 +285,7 @@ export default {
       }
       em {
         font-style: normal;
-        margin: 0 10px;
+        margin: 0 5px;
         color: var(--color-gray-1);
       }
       &:hover {
