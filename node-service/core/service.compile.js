@@ -350,13 +350,16 @@ class Kit {
     // 获取文件真实存放的路径
     let fileStoragePath = serviceConfig.codespace
     if (serviceConfig.translator.settings.length > 0) {
-      fileStoragePath = `${fileStoragePath}/${Const.TRANSLATOR.DEFAULT_OUTPUT_PATH}`
+      fileStoragePath = path.join(fileStoragePath, serviceConfig.translator.output)
     }
     const fullpaths = fs.getFilesWithChildren(fileStoragePath)
     const configs = []
     for (const fullpath of fullpaths) {
       // 获取文件配置
-      const relativePath = fullpath.replace(fileStoragePath + '/', '')
+      let relativePath = fullpath.replace(fileStoragePath, '')
+      if (relativePath.startsWith('/')) {
+        relativePath = relativePath.substring(1)
+      }
       // 获取问及爱你配置，需使用service配置中的codespace
       const fileSettings = service.getFileSetting(serviceConfig.codespace, relativePath)
       // 构建文件对象

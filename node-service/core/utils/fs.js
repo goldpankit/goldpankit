@@ -62,6 +62,7 @@ module.exports = {
    * @param versionPath 安装的版本路径，如[1.0.0, 1.0.1]
    */
   writeFiles (files, project, service = null, versionPath = []) {
+    log.debug(`preparing to process ${files.length} files.`)
     let currentInstallService = null
     // 当前安装的服务版本索引，例如总计版本为[1.0.0, 1.0.1]，当前版本为1.0.1，那么索引为1
     let currentInstallVersionIndex = -1
