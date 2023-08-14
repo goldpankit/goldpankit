@@ -4,6 +4,7 @@ const config = {
     debug: true,
     localApiPrefix: '/local-api',
     remoteApiPrefix: "/remote-api",
+    limitFiles: 1000
   },
   develop: {
     remoteApi: "http://192.168.124.5:10088"

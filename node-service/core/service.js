@@ -8,6 +8,7 @@ const serviceTranslator = require('./service.translator')
 const serviceConf = require('./service.config')
 const serviceFile = require('./service.file')
 const userServiceApi = require('./api/user.service')
+const env = require('../env').getConfig()
 module.exports = {
   /**
    * 删除服务
@@ -161,7 +162,12 @@ module.exports = {
       serviceTranslator.translate({ space: dto.space, service: dto.service })
     }
     // 获取文件
-    const files = fs.getFilesWithChildren(fileStoragePath, fileStoragePath).map(fullpath => {
+    let files = fs.getFilesWithChildren(fileStoragePath, fileStoragePath)
+    // 验证文件数量
+    if (files.length > env.limitFiles) {
+      return Promise.reject(`The number of files exceeds the limit of ${env.limitFiles}.`)
+    }
+    files = files.map(fullpath => {
       const filetype = fs.isDirectory(fullpath) ? 'DIRECTORY' : 'FILE'
       let relativePath = fullpath.replace(fileStoragePath, '')
       if (relativePath.startsWith('/')) {

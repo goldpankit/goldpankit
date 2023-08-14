@@ -9,6 +9,7 @@ const object = require("./utils/object");
 const serviceBuild = require("./service.build");
 const mysql = require("./utils/db/mysql");
 const serviceTranslator = require('./service.translator')
+const env = require('../env').getConfig()
 
 class Kit {
   constructor() {
@@ -191,6 +192,11 @@ class Kit {
   #compile(dto) {
     return new Promise((resolve, reject) => {
       try {
+        // 获取文件列表
+        const files = this.#getFileConfigList(dto.space, dto.service)
+        if (files.length > env.limitFiles) {
+          return reject(`The number of files exceeds the limit of ${env.limitFiles}.`)
+        }
         // 获取项目信息
         const project = userProject.findDetailById(dto.projectId)
         if (project == null) {
@@ -212,7 +218,7 @@ class Kit {
             serviceApi.compile({
               defaultCompiler: serviceConfig.compiler,
               variables: vars,
-              files: this.#getFileConfigList(dto.space, dto.service)
+              files
             })
               .then(data => {
                 resolve({
