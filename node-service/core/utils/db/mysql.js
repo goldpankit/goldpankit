@@ -135,7 +135,6 @@ class MySQL {
             })
         })
         .catch(e => {
-          console.log('e', e)
           reject(e)
         })
     })

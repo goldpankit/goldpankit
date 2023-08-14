@@ -18,7 +18,6 @@ request
       try {
         type = fs.isDirectory(path.join(req.query.target, item)) ? 'DIRECTORY' : 'FILE'
       } catch (e) {
-        console.log('e')
       }
       return {
         path: item,
