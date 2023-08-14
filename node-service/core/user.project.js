@@ -6,9 +6,9 @@ module.exports = {
   // 创建
   create (project) {
     const projects = cache.projects.getAll()
-    const existsProject = projects.find(p => p.name === project.name)
+    const existsProject = projects.find(p => p.name.toLowerCase() === project.name.toLowerCase())
     if (existsProject != null) {
-      return Promise.reject('项目已存在')
+      return Promise.reject(`project named ${project.name} already exists.`)
     }
     // 保存项目
     project.id = utils.generateId()
