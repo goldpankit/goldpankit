@@ -16,7 +16,7 @@
         <el-input v-model="form.name"/>
       </el-form-item>
       <el-form-item :label="$t('project.codespace')" prop="codespace" required>
-        <DirectorySelect v-model="form.codespace"/>
+        <DirectorySelect v-if="visible" v-model="form.codespace"/>
       </el-form-item>
       <el-form-item :label="$t('common.remark')" prop="remark">
         <el-input type="textarea" :rows="5" v-model="form.remark" maxlength="200"/>

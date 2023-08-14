@@ -92,12 +92,6 @@ export default {
     }
   },
   watch: {
-    modelValue () {
-      if (this.modelValue == null || this.modelValue === '') {
-        this.__fetchDefaultPaths()
-        return
-      }
-    },
     selectedFilepath () {
       if (this.selectedFilepath == null) {
         this.$emit('update:modelValue', '')
@@ -189,10 +183,10 @@ export default {
       if (file.type !== 'DIRECTORY') {
         return
       }
-      this.selectedFilepath = null
       const paths = JSON.parse(JSON.stringify(this.paths))
       paths.push(file.path)
       this.__fetchFiles(paths, () => {
+        this.selectedFilepath = null
         this.paths.push(file.path)
       })
     },

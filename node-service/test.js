@@ -1,5 +1,0 @@
-const fs = require('./core/utils/fs')
-const fs2 = require('fs')
-const os = require('os')
-console.log(os)
-// console.log(fs2.readdirSync('C:\\Users\\w\\demo'))
