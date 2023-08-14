@@ -33,8 +33,8 @@ export default ({ mode }) => {
           rewrite: (path) => path.replace(new RegExp(`^${localApiPrefix}`), "")
         },
         [remoteApiPrefix]: {
-          // target: 'http://192.168.124.5:10088',
-          target: 'http://112.74.58.58',
+          target: 'http://192.168.124.5:10088',
+          // target: 'http://112.74.58.58',
           changeOrigin: true,
           rewrite: (path) => path.replace(new RegExp(`^${remoteApiPrefix}`), "")
         },
