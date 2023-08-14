@@ -27,6 +27,7 @@ export default {
     currentVersion: 'current version',
     saveSuccessfully: 'Save successfully',
     deleteSuccessfully: 'Delete successfully',
+    refresh: 'Refresh',
     // 模态框
     modal: {
       confirmDelete: 'Confirm Delete',
@@ -83,6 +84,7 @@ export default {
   component: {
     selectDirectory: 'Select Directory',
     createNewFolder: 'Create New Folder',
+    dirExistsTip: 'Directory already exists',
   },
   // 用户
   user: {

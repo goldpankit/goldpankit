@@ -27,6 +27,7 @@ export default {
     currentVersion: '当前版本',
     saveSuccessfully: '保存成功',
     deleteSuccessfully: '删除成功',
+    refresh: '刷新',
     // 模态框
     modal: {
       confirmDelete: '确认删除',
@@ -83,6 +84,7 @@ export default {
   component: {
     selectDirectory: '选择目录',
     createNewFolder: '创建目录',
+    dirExistsTip: '目录已存在'
   },
   // 用户
   user: {

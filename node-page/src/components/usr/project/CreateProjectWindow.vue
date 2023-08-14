@@ -128,6 +128,11 @@ export default {
     }
     & > .el-form {
       padding: 0 30px;
+      .codespace-item {
+        .el-form-item__error {
+          margin-top: 5px;
+        }
+      }
     }
   }
 }

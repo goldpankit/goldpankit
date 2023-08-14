@@ -3,31 +3,44 @@
     <div class="header">
       <h4>{{ title == null ? $t('component.selectDirectory') : title }}</h4>
       <div class="opera">
-        <el-button class="button-icon" icon="Refresh" @click="__fetchFiles"></el-button>
-        <el-button type="primary" icon="Plus" @click="createDirectory">{{$t('component.createNewFolder')}}</el-button>
+        <el-button icon="Refresh" @click="__fetchFiles(paths)">{{$t('common.refresh')}}</el-button>
+        <el-button icon="Plus" @click="createDirectory">{{$t('component.createNewFolder')}}</el-button>
       </div>
     </div>
     <ul class="paths">
       <li
         v-for="(path,index) in paths"
         :key="path"
-        :class="{ current: index === paths.length - 1 }"
         @click="changePath(index)"
-      >{{ path }}</li>
+      >
+        <span>{{ path }}</span>
+        <em v-if="index < paths.length - 1">{{separator}}</em>
+      </li>
     </ul>
     <div class="files">
       <ul>
         <li
           v-for="(file,index) in files"
-          :key="file.path"
-          :class="{ 'is-file': file.type === 'FILE' }"
-          @click="fetchSubFiles(file)"
+          :key="file.id"
+          :class="{ 'is-file': file.type !== 'DIRECTORY', selected: selectedFilepath === file.path }"
+          @click="select(file)"
+          @dblclick="fetchSubFiles(file)"
         >
-          <template v-if="file.__creatable">
-            <div class="new-directory">
-              <el-input v-model="file.path" placeholder="unknown directory"/>
-              <el-button type="primary" class="button-icon" icon="Select" :disabled="file.__working_create" @click="confirmCreateDirectory(file)"></el-button>
-              <el-button icon="Close" class="button-icon" @click="cancelCreateDirectory(index)"></el-button>
+          <template v-if="file.__creating">
+            <div class="new-directory" @click.stop>
+              <div class="wrap">
+                <el-input
+                  :ref="`input_${file.id}`"
+                  v-model="file.path"
+                  placeholder="unknown directory"
+                  @input="checkFilename(file)"
+                />
+                <el-button type="primary" class="button-icon" icon="Select" :disabled="!file.__creatable || file.__working_create" @click="confirmCreateDirectory(file)"></el-button>
+                <el-button icon="Close" class="button-icon" @click="cancelCreateDirectory(index)"></el-button>
+              </div>
+              <p v-if="!file.__creatable">
+                {{file.__check_message}}
+              </p>
             </div>
           </template>
           <template v-else>
@@ -45,9 +58,10 @@
 </template>
 
 <script>
+import path from "../../utils/path"
 import {fetchFiles, fetchRuntimeRoot, createDirectory} from "../../api/local.file";
 import {sortFiles} from "../../utils/file";
-import path from "../../utils/path"
+import { generateId } from '../../utils/generator'
 
 export default {
   name: "DirectorySelect",
@@ -63,18 +77,73 @@ export default {
   },
   data () {
     return {
+      isWindows: path.getOS() === 'windows',
       paths: [],
-      files: []
+      files: [],
+      selectedFilepath: null
+    }
+  },
+  computed: {
+    separator () {
+      if (this.isWindows) {
+        return '\\'
+      }
+      return '/'
+    }
+  },
+  watch: {
+    modelValue () {
+      if (this.modelValue == null || this.modelValue === '') {
+        this.__fetchDefaultPaths()
+        return
+      }
+    },
+    selectedFilepath () {
+      if (this.selectedFilepath == null) {
+        this.$emit('update:modelValue', '')
+        this.$emit('change', '')
+      }
     }
   },
   methods: {
+    // 选择目录
+    select (file) {
+      if (file.__creating || file.type !== 'DIRECTORY') {
+        return
+      }
+      this.selectedFilepath = file.path
+      const paths = JSON.parse(JSON.stringify(this.paths))
+      paths.push(this.selectedFilepath)
+      this.$emit('update:modelValue', this.__getAbsolutePath(paths))
+      this.$emit('change', this.__getAbsolutePath(paths))
+    },
+    // 检查目录名称
+    checkFilename (file) {
+      if (this.files.filter(f => f.path === file.path).length > 1) {
+        file.__check_message = this.$t('component.dirExistsTip')
+        file.__creatable = false
+        return
+      }
+      file.__check_message = ''
+      file.__creatable = true
+    },
     // 添加目录
     createDirectory () {
+      const fileId = `file_${generateId()}`
       this.files.push({
+        id: fileId,
         path: '',
         type: 'DIRECTORY',
-        __creatable: true,
-        __working_create: false
+        __creatable: false,
+        __working_create: false,
+        __creating: true,
+        __check_message: ''
+      })
+      sortFiles(this.files)
+      this.$nextTick(() => {
+        this.$refs[`input_${fileId}`] &&
+          this.$refs[`input_${fileId}`][0] &&
+            this.$refs[`input_${fileId}`][0].focus()
       })
     },
     // 确认添加
@@ -83,9 +152,11 @@ export default {
         return
       }
       file.__working_create = true
-      createDirectory(this.__getAbsolutePath(file.path))
+      const paths = JSON.parse(JSON.stringify(this.paths))
+      paths.push(file.path)
+      createDirectory(this.__getAbsolutePath(paths))
         .then(() => {
-          file.__creatable = false
+          file.__creating = false
           sortFiles(this.files)
         })
         .catch(e => {
@@ -104,34 +175,37 @@ export default {
       if (index === this.paths.length - 1) {
         return
       }
+      this.selectedFilepath = null
       const paths = this.paths.slice(0, index + 1)
       this.__fetchFiles(paths, () => {
         this.paths.splice(index + 1)
-        this.$emit('update:modelValue', this.__getAbsolutePath())
-        this.$emit('change', this.__getAbsolutePath())
       })
     },
     // 查看子目录
     fetchSubFiles (file) {
-      if (file.__creatable) {
+      if (file.__creating) {
         return
       }
       if (file.type !== 'DIRECTORY') {
         return
       }
+      this.selectedFilepath = null
       const paths = JSON.parse(JSON.stringify(this.paths))
       paths.push(file.path)
       this.__fetchFiles(paths, () => {
         this.paths.push(file.path)
-        this.$emit('update:modelValue', this.__getAbsolutePath(paths))
-        this.$emit('change', this.__getAbsolutePath(paths))
       })
     },
     // 获取文件列表
     __fetchFiles (paths, callback) {
       fetchFiles(this.__getAbsolutePath(paths))
         .then(data => {
-          this.files = data
+          this.files = data.map(f => {
+            return {
+              ...f,
+              id: `file_${generateId()}`
+            }
+          })
           sortFiles(this.files)
           callback && callback()
         })
@@ -145,8 +219,6 @@ export default {
         .then(data => {
           this.paths = path.split(data).filter(item => item !== '')
           this.__fetchFiles()
-          this.$emit('update:modelValue', this.__getAbsolutePath())
-          this.$emit('change', this.__getAbsolutePath())
         })
         .catch(e => {
           this.$tip.apiFailed(e)
@@ -166,8 +238,6 @@ export default {
       return
     }
     this.paths = path.split(this.modelValue).filter(item => item !== '')
-    this.$emit('update:modelValue', this.__getAbsolutePath())
-    this.$emit('change', this.__getAbsolutePath())
     this.__fetchFiles()
   }
 }
@@ -203,32 +273,24 @@ export default {
     padding: 10px 0 5px 0;
     border-bottom: 1px solid var(--border-default-color);
     li {
-      background: var(--background-color);
-      padding: 5px 8px;
       position: relative;
-      cursor: pointer;
-      margin-right: 15px;
       margin-bottom: 5px;
-      border-radius: 5px;
-      transition: all ease .15s;
       line-height: 20px;
-      &.current {
-        font-weight: bold;
-        color: var(--primary-color-match-2);
-        cursor: default;
+      span {
+        background: var(--background-color);
+        padding: 5px 8px;
+        border-radius: 5px;
+        transition: all ease .15s;
+        cursor: pointer;
+      }
+      em {
+        font-style: normal;
+        margin: 0 10px;
+        color: var(--color-gray-1);
       }
       &:hover {
-        color: var(--primary-color-match-2);
-      }
-      &::after {
-        content: '/';
-        position: absolute;
-        right: -11px;
-        color: var(--font-color);
-      }
-      &:last-of-type {
-        &::after {
-          content: '';
+        span {
+          color: var(--primary-color-match-2);
         }
       }
     }
@@ -245,8 +307,7 @@ export default {
       flex-wrap: wrap;
       li {
         width: 50%;
-        padding: 0 10px;
-        height: 40px;
+        padding: 5px 10px;
         line-height: 40px;
         border-bottom: 1px dashed var(--border-default-color);
         cursor: pointer;
@@ -257,6 +318,15 @@ export default {
           cursor: default;
           &:hover {
             color: var(--color-gray-1);
+          }
+        }
+        &.selected {
+          background: var(--primary-color-match-2);
+          color: var(--color-light);
+          border-bottom: 0;
+          &:hover {
+            background: var(--primary-color-match-2);
+            color: var(--color-light);
           }
         }
         &:last-of-type {
@@ -270,17 +340,24 @@ export default {
         }
         p {
           line-height: initial;
+          word-break: break-all;
         }
         // 创建目录
         .new-directory {
           width: 100%;
-          display: flex;
-          .el-input {
-            flex-grow: 1;
+          .wrap {
+            display: flex;
+            .el-input {
+              flex-grow: 1;
+            }
+            .el-button {
+              flex-shrink: 0;
+              margin-left: 10px;
+            }
           }
-          .el-button {
-            flex-shrink: 0;
-            margin-left: 10px;
+          & > p {
+            color: var(--color-danger);
+            font-size: var(--font-size-mini);
           }
         }
       }
