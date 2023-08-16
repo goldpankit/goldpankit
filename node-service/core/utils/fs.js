@@ -77,7 +77,19 @@ module.exports = {
       if (relativePath === Const.SERVICE_CONFIG_FILE) {
         continue
       }
+      // 获取写入文件路径
       const filepath = path.join(project.codespace, relativePath)
+      // 获取写入的内容
+      let content = file.content
+      // - 二进制文件
+      if (file.contentEncode === 'base64') {
+        content = Buffer.from(content, 'base64')
+      }
+      // - 如果内容为省略号表达式，则将合并后的内容写入新文件
+      else if (ee.isEllipsis(content)) {
+        const fileInfo = this.readFile(filepath)
+        content = ee.merge(content, fileInfo.content)
+      }
       // 如果为已删除文件，且本地存在该文件，加入删除队列
       if (file.operaType === 'DELETED') {
         if (this.exists(filepath)) {
@@ -89,7 +101,7 @@ module.exports = {
         continue
       }
       // 如果文件内容为空，且本地存在该文件，加入删除队列
-      if (content.trim() === '') {
+      if (content.trim != null && content.trim() === '') {
         if (this.exists(filepath)) {
           const fileInfo = this.readFile(filepath)
           file.localContentEncode = fileInfo.encode
@@ -99,17 +111,6 @@ module.exports = {
           diffFiles.push(file)
         }
         continue
-      }
-      // 创建文件
-      let content = file.content
-      // 二进制文件
-      if (file.contentEncode === 'base64') {
-        content = Buffer.from(content, 'base64')
-      }
-      // 如果内容为省略号表达式，则将合并后的内容写入新文件
-      else if (ee.isEllipsis(content)) {
-        const fileInfo = this.readFile(filepath)
-        content = ee.merge(content, fileInfo.content)
       }
       // 如果文件不存在，则创建
       if (!this.exists(filepath)) {

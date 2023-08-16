@@ -67,7 +67,7 @@ class Kit {
               }
               resolve({
                 diff: {
-                  projectId: data.project.id,
+                  projectId: project.id,
                   diffFiles
                 },
                 build: result
@@ -78,6 +78,7 @@ class Kit {
             })
         })
         .catch(e => {
+          console.log(e)
           reject(e)
         })
     })

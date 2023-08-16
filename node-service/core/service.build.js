@@ -63,8 +63,11 @@ module.exports = {
             let content = build.content
             if (build.contentType === 'file') {
               const buildFilePath = path.join(project.codespace, build.content)
-              log.debug(`read build file: ${buildFilePath}`)
-              content = fs.readFile(buildFilePath).content
+              if (fs.exists(buildFilePath)) {
+                content = fs.readFile(buildFilePath).content
+              } else {
+                content = ''
+              }
             }
             if (content.trim() !== '') {
               buildDetails.push({

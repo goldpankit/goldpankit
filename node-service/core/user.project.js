@@ -1,7 +1,8 @@
 const cache = require('./utils/cache')
 const utils = require('./utils/index')
 const fs = require('./utils/fs')
-const Const = require("./constants/constants");
+const Const = require("./constants/constants")
+const path = require('path')
 module.exports = {
   // 创建
   create (project) {
@@ -57,6 +58,6 @@ module.exports = {
   },
   // 获取配置文件
   __getConfigPath (codespace) {
-    return `${codespace}/${Const.PROJECT_CONFIG_FILE}`
+    return path.join(codespace, Const.PROJECT_CONFIG_FILE)
   }
 }
