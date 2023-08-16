@@ -86,7 +86,10 @@ export default {
     // 修改数据源
     changeDataSource (dataSourceId) {
       this.setInstallData({
-        dataSourceId: dataSourceId
+        build: {
+          ...this.installData.build,
+          dataSourceId: dataSourceId
+        }
       })
     },
     // 显示脚本

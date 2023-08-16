@@ -20,3 +20,7 @@ export function compile (data) {
 export function cleanCompile (data) {
   return request.post('/service/compile/clean', data)
 }
+// 合并代码
+export function merge (data) {
+  return request.post('/service/files/merge', data)
+}

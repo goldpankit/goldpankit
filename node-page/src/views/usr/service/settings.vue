@@ -167,8 +167,8 @@ export default {
         variables: this.$refs.variables.getVariables()
       })
         .then((installData) => {
-          this.$tip.success('Compile successfully.')
           this.setInstallData(installData)
+          this.$tip.success('Compile successfully.')
         })
         .catch(e => {
           this.$tip.apiFailed(e)
