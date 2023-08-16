@@ -34,7 +34,10 @@ export default {
       confirmInstall: '确认安装?',
       confirmUninstall: '确认卸载?',
       installServiceTip: '安装此服务将从您的账户中扣除 {price} 金豆。您确定要安装吗？',
-      uninstallServiceTip: '您确定要卸载这个服务吗？'
+      uninstallServiceTip: '您确定要卸载这个服务吗？',
+      overwriteFileTitle: '文件覆盖确认',
+      overwriteFileTip: '确认覆盖{fileNames}等{fileCount}个文件吗？',
+      overwriteAllTip: '确认覆盖所有文件吗？',
     },
     // 日期差
     dateOffset: {
@@ -145,6 +148,13 @@ export default {
     versionNumber: '版本号',
     versionDescription: '版本描述',
     noneDataSourceTip: '请先选择数据源',
+    mergeFileTitle: '文件合并',
+    ignoreAll: '忽略所有',
+    ignore: '忽略',
+    overwrite: '覆盖',
+    overwriteAll: '覆盖所有',
+    localContent: '本地内容',
+    overwriteContent: '覆盖写入的内容',
     // 租赁类型
     leaseType: {
       freeLabel: '免费',

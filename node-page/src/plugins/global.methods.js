@@ -5,8 +5,8 @@ export default {
   overwriteConfirm (files) {
     const $t = this.$t
     return ElMessageBox({
-      title: '文件覆盖确认',
-      message: '确认覆盖这些文件吗？',
+      title: $t('common.modal.overwriteFileTitle'),
+      message: $t('common.modal.overwriteFileTip', { fileNames: files[0].label, fileCount: files.length }),
       showCancelButton: true,
       cancelButtonText: $t('common.cancel'),
       confirmButtonText: $t('common.confirm')
@@ -16,8 +16,8 @@ export default {
   overwriteAllConfirm () {
     const $t = this.$t
     return ElMessageBox({
-      title: '文件覆盖确认',
-      message: '确认覆盖所有文件吗？',
+      title: $t('common.modal.overwriteFileTitle'),
+      message: $t('common.modal.overwriteAllTip'),
       showCancelButton: true,
       cancelButtonText: $t('common.cancel'),
       confirmButtonText: $t('common.confirm')

@@ -1,7 +1,7 @@
 <template>
   <el-dialog
     custom-class="merge-window"
-    title="文件差异处理"
+    :title="$t('service.mergeFileTitle')"
     v-model="visible"
     fullscreen
     append-to-body
@@ -32,20 +32,22 @@
       </div>
       <div v-if="currentFile != null" class="content-preview">
         <div class="local-content">
+          <label>{{$t('service.localContent')}}</label>
           <textarea :value="localContent" readonly/>
         </div>
         <div class="new-content">
-          <textarea :value="newContent" readonly/>
+          <label>{{$t('service.overwriteContent')}}</label>
+          <textarea v-model="currentFile.content"/>
         </div>
       </div>
     </div>
     <div class="opera">
       <div class="danger-opera">
-        <el-button size="large" @click="ignoreAllFiles">忽略所有</el-button>
-        <el-button size="large" type="primary" @click="overwriteAll">覆盖所有</el-button>
+        <el-button size="large" @click="ignoreAllFiles">{{$t('service.ignoreAll')}}</el-button>
+        <el-button size="large" type="primary" @click="overwriteAll">{{$t('service.overwriteAll')}}</el-button>
       </div>
-      <el-button size="large" @click="ignoreFiles">忽略</el-button>
-      <el-button size="large" type="primary" @click="overwrite">覆盖</el-button>
+      <el-button size="large" @click="ignoreFiles">{{$t('service.ignore')}}</el-button>
+      <el-button size="large" type="primary" @click="overwrite">{{$t('service.overwrite')}}</el-button>
     </div>
   </el-dialog>
 </template>
@@ -333,14 +335,22 @@ export default {
       display: flex;
       & > div {
         width: 50%;
+        height: 100%;
         flex-shrink: 0;
         box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
         &:last-of-type {
           border-left: 2px solid #eee;
         }
+        label {
+          flex-shrink: 0;
+          padding: 5px 10px;
+          font-weight: bold;
+        }
         textarea {
+          flex-grow: 1;
           width: 100%;
-          height: 100%;
           resize: none;
           border: 1px solid #eee;
           outline: none !important;

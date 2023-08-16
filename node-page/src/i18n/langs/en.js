@@ -34,7 +34,10 @@ export default {
       confirmInstall: 'Confirm Install?',
       confirmUninstall: 'Confirm Uninstall?',
       installServiceTip: 'Installing this service will deduct {price} gold beans from your account. Are you sure you want to proceed with the installation?',
-      uninstallServiceTip: 'Are you sure you want to uninstall this service？'
+      uninstallServiceTip: 'Are you sure you want to uninstall this service？',
+      overwriteFileTitle: 'Confirm file overwrite',
+      overwriteFileTip: 'Are you sure you want to overwrite the content of {fileCount} files including {fileNames}?',
+      overwriteAllTip: 'Confirm to overwrite the content of all files?',
     },
     // 日期差
     dateOffset: {
@@ -145,6 +148,13 @@ export default {
     versionNumber: 'Version dumber',
     versionDescription: 'Version description',
     noneDataSourceTip: 'Please select a data source first',
+    mergeFileTitle: 'Merge Files',
+    ignoreAll: 'Ignore All',
+    ignore: 'Ignore',
+    overwrite: 'Overwrite',
+    overwriteAll: 'Overwrite All',
+    localContent: 'Local Content',
+    overwriteContent: 'Overwrite Content',
     // 租赁类型
     leaseType: {
       freeLabel: 'Free',
