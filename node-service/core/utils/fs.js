@@ -88,6 +88,18 @@ module.exports = {
         }
         continue
       }
+      // 如果文件内容为空，且本地存在该文件，加入删除队列
+      if (content.trim() === '') {
+        if (this.exists(filepath)) {
+          const fileInfo = this.readFile(filepath)
+          file.localContentEncode = fileInfo.encode
+          file.localContent = fileInfo.content
+          // 文件操作类型调整为删除
+          file.operaType = 'DELETED'
+          diffFiles.push(file)
+        }
+        continue
+      }
       // 创建文件
       let content = file.content
       // 二进制文件
