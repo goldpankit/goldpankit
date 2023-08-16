@@ -62,7 +62,7 @@ module.exports = {
    * @param versionPath 安装的版本路径，如[1.0.0, 1.0.1]
    */
   writeFiles (files, project, service = null, versionPath = []) {
-    log.debug(`preparing to process ${files.length} files.`)
+    log.debug(`${project.name}: preparing to process ${files.length} files.`)
     const diffFiles = []
     let fileCount = 0
     for (const file of files) {
@@ -80,6 +80,9 @@ module.exports = {
       // 如果为已删除文件，且本地存在该文件，加入删除队列
       if (file.operaType === 'DELETED') {
         if (this.exists(filepath)) {
+          const fileInfo = this.readFile(filepath)
+          file.localContentEncode = fileInfo.encode
+          file.localContent = fileInfo.content
           diffFiles.push(file)
         }
         continue
@@ -100,9 +103,14 @@ module.exports = {
         this.createFile(filepath, content, true)
         fileCount++
       }
-      // 如果文件存在，则加入差异文件队列
+      // 如果文件存在且内容不一致，则加入差异文件队列
       else {
-        diffFiles.push(file)
+        const fileInfo = this.readFile(filepath)
+        file.localContentEncode = fileInfo.encode
+        file.localContent = fileInfo.content
+        if (file.localContent !== file.content) {
+          diffFiles.push(file)
+        }
       }
     }
     // 给出文件写入提醒

@@ -66,10 +66,12 @@ module.exports = {
               log.debug(`read build file: ${buildFilePath}`)
               content = fs.readFile(buildFilePath).content
             }
-            buildDetails.push({
-              ...build,
-              content
-            })
+            if (content.trim() !== '') {
+              buildDetails.push({
+                ...build,
+                content
+              })
+            }
           }
           resolve(buildDetails)
         })
