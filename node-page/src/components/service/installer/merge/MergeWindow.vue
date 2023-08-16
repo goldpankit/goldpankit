@@ -17,12 +17,12 @@
           node-key="filepath"
           empty-text="No Files"
           :highlight-current="true"
-          :check-on-click-node="true"
+          :expand-on-click-node="false"
           @node-click="selectFile"
           @check="handleCheck"
         >
           <template #default="{ node, data }">
-        <span class="node-label">
+        <span class="node-label" :class="{file: data.type === 'FILE', [data.operaType]: true}">
           <el-icon v-if="data.type === 'FILE'"><Document /></el-icon>
           <el-icon v-else-if="data.type === 'DIRECTORY'"><Folder /></el-icon>
           <span class="filename">{{data.label}}</span>
@@ -40,10 +40,12 @@
       </div>
     </div>
     <div class="opera">
-      <el-button @click="ignoreAllFiles">忽略所有</el-button>
-      <el-button type="primary" @click="overwriteAll">覆盖所有</el-button>
-      <el-button @click="ignoreFiles" :disabled="selectedFiles.length === 0">忽略</el-button>
-      <el-button type="primary" :disabled="selectedFiles.length === 0" @click="overwrite">覆盖</el-button>
+      <div class="danger-opera">
+        <el-button size="large" @click="ignoreAllFiles">忽略所有</el-button>
+        <el-button size="large" type="primary" @click="overwriteAll">覆盖所有</el-button>
+      </div>
+      <el-button size="large" @click="ignoreFiles">忽略</el-button>
+      <el-button size="large" type="primary" @click="overwrite">覆盖</el-button>
     </div>
   </el-dialog>
 </template>
@@ -67,13 +69,13 @@ export default {
   computed: {
     ...mapState(['installData']),
     projectId () {
-      if (this.installData == null) {
+      if (this.installData == null || this.installData.diff == null) {
         return []
       }
       return this.installData.diff.projectId
     },
     diffFiles () {
-      if (this.installData == null) {
+      if (this.installData == null || this.installData.diff == null) {
         return []
       }
       return this.installData.diff.diffFiles
@@ -105,6 +107,10 @@ export default {
     // 选择文件
     selectFile (data) {
       if (data.type === 'DIRECTORY') {
+        this.$refs.tree.setCurrentKey(null)
+        if (this.currentFile != null) {
+          this.$refs.tree.setCurrentKey(this.currentFile.filepath)
+        }
         return
       }
       this.currentFile = data
@@ -115,37 +121,63 @@ export default {
     },
     // 覆盖
     overwrite () {
-      if (this.selectedFiles.length === 0) {
+      let targetFiles = this.selectedFiles
+      // 覆盖当前已选文件（单选覆盖）
+      if (targetFiles.length === 0 || (targetFiles.length === 1 && targetFiles[0] === this.currentFile)) {
+        targetFiles = [this.currentFile]
+        merge({
+          projectId: this.projectId,
+          diffFiles: targetFiles
+        })
+          .then(() => {
+            this.ignoreFiles(this.selectedFiles)
+          })
+          .catch(e => {
+            this.$tip.apiFailed(e)
+          })
         return
       }
-      merge({
-        projectId: this.projectId,
-        diffFiles: this.selectedFiles
-      })
+      // 覆盖当前选择的文件（多选覆盖）
+      this.overwriteConfirm(targetFiles)
         .then(() => {
-          this.ignoreFiles(this.selectedFiles)
+          merge({
+            projectId: this.projectId,
+            diffFiles: targetFiles
+          })
+            .then(() => {
+              this.ignoreFiles(this.selectedFiles)
+            })
+            .catch(e => {
+              this.$tip.apiFailed(e)
+            })
         })
-        .catch(e => {
-          this.$tip.apiFailed(e)
-        })
+        .catch(() => {})
     },
     // 覆盖所有
     overwriteAll () {
-      merge({
-        projectId: this.projectId,
-        diffFiles: this.diffFiles
-      })
+      this.overwriteAllConfirm()
         .then(() => {
-          this.ignoreAllFiles()
+          merge({
+            projectId: this.projectId,
+            diffFiles: this.diffFiles
+          })
+            .then(() => {
+              this.ignoreAllFiles()
+            })
+            .catch(e => {
+              this.$tip.apiFailed(e)
+            })
         })
-        .catch(e => {
-          this.$tip.apiFailed(e)
-        })
+        .catch(() => {})
     },
     // 忽略
     ignoreFiles () {
+      let targetFiles = this.selectedFiles
+      if (targetFiles.length === 0) {
+        targetFiles = [this.currentFile]
+      }
       this.installData.diff.diffFiles = this.installData.diff.diffFiles.filter(f => {
-        return this.selectedFiles.find(selectedFile => selectedFile.filepath === f.filepath) == null
+        return targetFiles.find(selectedFile => selectedFile.filepath === f.filepath) == null
       })
       this.__handleDiffChange()
       this.selectedFiles = []
@@ -198,34 +230,26 @@ export default {
             this.$refs.tree.setCurrentKey(children[0].filepath)
           })
         }
-        this.__ns(this.files)
       }
+      this.__ns(this.files)
     },
     // 浓缩目录
-    __ns (nodes, parentNode) {
-      if (nodes == null) {
-        return
-      }
-      if (parentNode != null) {
-        if (nodes.length === 1 && nodes[0].children != null) {
-          parentNode.label = path.join([parentNode.label, nodes[0].label])
-          if (parentNode.label.endsWith('\\')) {
-            parentNode.label = parentNode.label.substring(0, parentNode.label.length - 1)
-          }
-          parentNode.children = nodes[0].children
-          this.__ns(parentNode.children, parentNode)
-        }
-        return
-      }
+    __ns (nodes) {
       for (const node of nodes) {
-        if (node.children && node.children.length === 1 && node.children[0].children != null) {
-          node.label = path.join([node.label, node.children[0].label])
-          if (node.label.endsWith('\\')) {
-            node.label = node.label.substring(0, node.label.length - 1)
-          }
-          node.children = node.children[0].children
-          this.__ns(node.children, node)
+        console.log('node', node)
+        this.__nsNode(node)
+      }
+    },
+    __nsNode (node) {
+      if (node.children && node.children.length === 1 && node.children[0].children != null) {
+        let newPath = path.join([node.label, node.children[0].label])
+        if (newPath.endsWith('\\')) {
+          newPath = newPath.substring(0, newPath.length - 1)
         }
+        node.filepath = newPath
+        node.label = newPath
+        node.children = node.children[0].children
+        this.__nsNode(node)
       }
     }
   }
@@ -237,6 +261,9 @@ export default {
   min-width: 1000px;
   display: flex;
   flex-direction: column;
+  width: 98% !important;
+  height: 98% !important;
+  top: 1%;
   .el-dialog__body {
     padding: 0;
     flex-grow: 1;
@@ -245,11 +272,17 @@ export default {
     flex-direction: column;
   }
   .opera {
-    height: 50px;
+    height: 60px;
     flex-shrink: 0;
     display: flex;
     justify-content: center;
     align-items: center;
+    position: relative;
+    .danger-opera {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+    }
   }
   .merge-wrap {
     flex-grow: 1;
@@ -267,9 +300,16 @@ export default {
         .node-label {
           display: flex;
           align-items: center;
+          &.file {
+            color: var(--primary-color-match-2);
+          }
           .el-icon {
             font-size: 16px;
             margin-right: 3px;
+          }
+          &.DELETED {
+            text-decoration: line-through;
+            color: var(--color-gray);
           }
         }
         // 节点
@@ -294,7 +334,6 @@ export default {
       & > div {
         width: 50%;
         flex-shrink: 0;
-        padding: 10px;
         box-sizing: border-box;
         &:last-of-type {
           border-left: 2px solid #eee;

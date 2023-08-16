@@ -1,6 +1,28 @@
 import dayjs from 'dayjs'
 import { ElMessageBox } from 'element-plus'
 export default {
+  // 覆盖确认
+  overwriteConfirm (files) {
+    const $t = this.$t
+    return ElMessageBox({
+      title: '文件覆盖确认',
+      message: '确认覆盖这些文件吗？',
+      showCancelButton: true,
+      cancelButtonText: $t('common.cancel'),
+      confirmButtonText: $t('common.confirm')
+    })
+  },
+  // 覆盖确认
+  overwriteAllConfirm () {
+    const $t = this.$t
+    return ElMessageBox({
+      title: '文件覆盖确认',
+      message: '确认覆盖所有文件吗？',
+      showCancelButton: true,
+      cancelButtonText: $t('common.cancel'),
+      confirmButtonText: $t('common.confirm')
+    })
+  },
   // 删除确认
   deleteConfirm (message) {
     const $t = this.$t
