@@ -16,6 +16,7 @@ module.exports = {
   },
   // 删除代码文件
   deleteFiles (files, project, service) {
+    log.debug(`${project.name}: preparing to delete ${files.length} files`)
     let fileCount = 0
     for (const file of files) {
       // 排除掉已删除的文件

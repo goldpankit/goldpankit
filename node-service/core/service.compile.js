@@ -32,7 +32,7 @@ class Kit {
       this.#install(dto)
         .then(({ data, project, service, database, variables}) => {
           // 写入文件
-          fs.writeFiles(data.files, project, service, data.versionPath)
+          const diffFiles = fs.writeFiles(data.files, project, service, data.versionPath)
           // 写入配置
           // 获取配置格式
           const config = JSON.parse(JSON.stringify(Const.PROJECT_CONFIG_FILE_CONTENT))
@@ -65,7 +65,13 @@ class Kit {
                 dataSourceId: database == null ? null : database.id,
                 builds
               }
-              resolve(result)
+              resolve({
+                diff: {
+                  projectId: data.project.id,
+                  diffFiles
+                },
+                build: result
+              })
             })
             .catch(e => {
               reject(e)
@@ -82,6 +88,16 @@ class Kit {
   uninstall (dto) {
     return new Promise((resolve, reject) => {
       dto.operaType = 'UNINSTALL'
+      // 获取项目配置
+      const project = userProject.findDetailById(dto.projectId)
+      const configPath = userProject.getConfigPath(project.id)
+      const projectConfig = fs.readJSONFile(configPath)
+      const installedService = projectConfig.services[dto.service]
+      if (installedService == null || installedService.version == null) {
+        reject('can not uninstall service: ${dto.service} for version: null')
+        return
+      }
+      dto.version = installedService.version
       this.#install(dto)
         .then(({ data, project, database, variables}) => {
           // 获取构建详情并返回
@@ -90,9 +106,6 @@ class Kit {
             .then(builds => {
               // 删除文件
               fs.deleteFiles(data.files, project.codespace)
-              // 获取项目配置
-              const configPath = userProject.getConfigPath(project.id)
-              let projectConfig = fs.readJSONFile(configPath)
               // 删除项目配置中服务的配置
               delete projectConfig.services[dto.service]
               // 重新写入项目配置文件中
@@ -103,7 +116,9 @@ class Kit {
                 dataSourceId: database == null ? null : database.id,
                 builds
               }
-              resolve(result)
+              resolve({
+                build: result
+              })
             })
             .catch(e => {
               reject(e)
@@ -165,14 +180,16 @@ class Kit {
           serviceBuild.getBuildDetails(data.project, data.serviceConfig.unbuilds, data.serviceConfig.compiler, data.variables)
             .then(builds => {
               // 删除文件
-              fs.deleteFiles(data.files, data.project.codespace)
+              fs.deleteFiles(data.files, data.project)
               // 返回构建信息
               const result = {
                 projectId: data.project.id,
                 dataSourceId: data.database == null ? null : data.database.id,
                 builds
               }
-              resolve(result)
+              resolve({
+                build: result
+              })
             })
             .catch(e => {
               reject(e)
