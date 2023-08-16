@@ -58,6 +58,7 @@
         </el-button>
       </div>
     </div>
+    <MergeWindow/>
   </div>
 </template>
 
@@ -74,10 +75,12 @@ import ProjectSelect from "../usr/project/ProjectSelect.vue";
 import {install, uninstall} from "../../api/service.compile";
 import {fetchVersion} from "../../api/service.version";
 import {getDefaultEmptyValue} from "../../utils/variable";
+import MergeWindow from "../service/installer/merge/MergeWindow.vue";
 
 export default {
   name: "ServiceInstaller",
   components: {
+    MergeWindow,
     ProjectSelect,
     DirectorySelect,
     FieldSetting, MySqlFieldSelect, VariableInput, InstallRadio, InstallInput, InstallCheckbox},

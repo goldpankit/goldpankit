@@ -8,7 +8,7 @@
         </div>
         <div v-if="build.type === 'MySQL'" class="target-datasource">
           <DataSourceSelect
-            :model-value="installData.dataSourceId"
+            :model-value="installData.build.dataSourceId"
             :prefix="$t('service.build.targetDataSource')"
             :with-block="true"
             @change="changeDataSource"
@@ -32,7 +32,7 @@
     >
       <DataSourceSelect
         v-if="dialogData.build.type === 'MySQL'"
-        :model-value="installData.dataSourceId"
+        :model-value="installData.build.dataSourceId"
         :prefix="$t('service.build.targetDataSource')"
         :with-block="true"
         @change="changeDataSource"
@@ -72,7 +72,7 @@ export default {
       if (this.installData == null) {
         return []
       }
-      return this.installData.builds
+      return this.installData.build.builds
     },
     buildsLength () {
       return this.builds.length
@@ -101,17 +101,17 @@ export default {
         this.dialogData.visible = false
         return
       }
-      this.installData.builds.splice(index, 1)
+      this.installData.build.builds.splice(index, 1)
       this.dialogData.visible = false
     },
     // 忽略所有
     ignoreAll () {
-      this.installData.builds.splice(0, this.builds.length)
+      this.installData.build.builds.splice(0, this.builds.length)
     },
     // 执行构建
     execute (item) {
       // 数据库构建，但没选中数据库
-      if (item.type === 'MySQL' && (this.installData.dataSourceId == null || this.installData.dataSourceId === '')) {
+      if (item.type === 'MySQL' && (this.installData.build.dataSourceId == null || this.installData.build.dataSourceId === '')) {
         this.$tip.warning(this.$t('service.noneDataSourceTip'))
         return
       }
@@ -121,11 +121,11 @@ export default {
       item.__executing = true
       const index = this.builds.find(b => b === item)
       build({
-        ...this.installData,
+        ...this.installData.build,
         builds: [item]
       })
         .then(() => {
-          this.installData.builds.splice(index, 1)
+          this.installData.build.builds.splice(index, 1)
           this.$tip.success(`「${item.name}」${this.$t('service.build.completed')}`)
         })
         .catch(e => {
@@ -138,11 +138,11 @@ export default {
     // 执行构建
     executeAll () {
       build({
-        ...this.installData,
+        ...this.installData.build,
         builds: this.builds
       })
         .then(() => {
-          this.installData.builds.splice(0, this.builds.length)
+          this.installData.build.builds.splice(0, this.builds.length)
           this.$tip.success(`Build successfully`)
         })
         .catch(e => {

@@ -9,10 +9,7 @@ export default {
   },
   // 分割
   split (path){
-    const os = this.getOS()
-    if (os === 'windows') {
-      return path.split('\\').filter(p => p !== '')
-    }
+    path = path.replace(/\\/g, '/')
     return path.split('/').filter(p => p !== '')
   },
   // 获取操作系统
