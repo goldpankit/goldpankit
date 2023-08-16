@@ -379,10 +379,7 @@ class Kit {
     const configs = []
     for (const fullpath of fullpaths) {
       // 获取文件配置
-      let relativePath = fullpath.replace(fileStoragePath, '')
-      if (relativePath.startsWith('/')) {
-        relativePath = relativePath.substring(1)
-      }
+      const relativePath = fs.getRelativePath(fullpath, fileStoragePath)
       // 获取问及爱你配置，需使用service配置中的codespace
       const fileSettings = service.getFileSetting(serviceConfig.codespace, relativePath)
       // 构建文件对象

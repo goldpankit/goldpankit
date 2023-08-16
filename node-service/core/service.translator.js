@@ -34,10 +34,7 @@ class Translator {
             }
             const fileInfo = fs.readFile(absolutePath)
             // 服务空间相对路径
-            let relativePath = absolutePath.replace(serviceConfig.codespace, '')
-            if (relativePath.startsWith('/')) {
-                relativePath = relativePath.substring(1)
-            }
+            let relativePath = fs.getRelativePath(absolutePath, serviceConfig.codespace)
             // 翻译路径
             // 服务空间相对路径为xxx-vue的翻译空间相对路径可能为${path}-vue，此处需要获取翻译空间相对路径，
             // 获取配置信息时需要根据翻译相对路径来获取，因为在进行服务文件配置时，配置的是翻译后的文件路径

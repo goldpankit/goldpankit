@@ -62,8 +62,8 @@ module.exports = {
     if (setting.compiler == null || setting.compiler === '') {
       // 先按照路径的层级进行倒序排列，然后依次startsWith，找出最近的上级节点
       config.settings.sort((item1, item2) => {
-        const item1Level = item1.path.split('/').length
-        const item2Level = item2.path.split('/').length
+        const item1Level = fs.toLinuxPath(item1.path).split('/').length
+        const item2Level = fs.toLinuxPath(item2.path).split('/').length
         return item2Level - item1Level
       })
       for (const item of config.settings) {

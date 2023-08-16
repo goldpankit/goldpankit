@@ -9,6 +9,7 @@ const serviceConf = require('./service.config')
 const serviceFile = require('./service.file')
 const userServiceApi = require('./api/user.service')
 const env = require('../env').getConfig()
+const ignore = require('ignore')
 module.exports = {
   /**
    * 删除服务
@@ -124,6 +125,7 @@ module.exports = {
   },
   // 保存服务文件
   saveFileSetting (fileSettings) {
+    console.log('fileSettings', fileSettings)
     const serviceConfig = cache.services.get(fileSettings.space, fileSettings.service)
     const configPath = this.__getConfigPath(serviceConfig.codespace)
     const config = fs.readJSONFile(configPath)
@@ -169,11 +171,7 @@ module.exports = {
     }
     files = files.map(fullpath => {
       const filetype = fs.isDirectory(fullpath) ? 'DIRECTORY' : 'FILE'
-      let relativePath = fullpath.replace(fileStoragePath, '')
-      if (relativePath.startsWith('/')) {
-        relativePath = relativePath.substring(1)
-      }
-      relativePath = relativePath.replace(/\\/g, '/')
+      const relativePath = fs.getRelativePath(fullpath, fileStoragePath)
       const fileSetting = this.getFileSetting(serviceConfig.codespace, relativePath)
       const fileInfo = filetype === 'DIRECTORY' ? { encode: null, content: null } : fs.readFile(fullpath)
       return {
@@ -224,14 +222,15 @@ module.exports = {
   __getFileTree (directoryPath, fileStoragePath, codespace) {
     let filePool = []
     const files = fs.getFiles(directoryPath)
+    const ignoreInstance = ignore().add(Const.IGNORE_DIRS)
     files.forEach(file => {
-      const fullpath = path.join(directoryPath, file)
       // 忽略文件
-      if (Const.IGNORE_DIRS.findIndex(f => file === f || file.startsWith(`${f}/`)) !== -1) {
+      if (ignoreInstance.ignores(file)) {
         return
       }
+      const fullpath = path.join(directoryPath, file)
       // 获取文件配置
-      const relativePath = fullpath.replace(fileStoragePath + '/', '')
+      const relativePath = fs.getRelativePath(fullpath, fileStoragePath)
       const fileSettings = this.getFileSetting(codespace, relativePath)
       // 构建文件对象
       const isDirectory = fs.isDirectory(fullpath)

@@ -1,6 +1,7 @@
 const Const = require('./constants/constants')
 const cache = require('./utils/cache')
 const fs = require('./utils/fs')
+const path = require('path')
 module.exports = {
   // 获取服务配置信息
   getServiceConfig(dto) {
@@ -21,7 +22,7 @@ module.exports = {
   },
   // 获取文件配置目录
   __getConfigPath (codespace) {
-    return `${codespace}/${Const.SERVICE_CONFIG_DIRECTORY}/${Const.SERVICE_CONFIG_FILE}`
+    return path.join(codespace, Const.SERVICE_CONFIG_DIRECTORY, Const.SERVICE_CONFIG_FILE)
   },
   // 获取服务配置
   __getServiceConfig (codespace) {

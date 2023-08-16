@@ -226,5 +226,17 @@ module.exports = {
   },
   toJSONFileString (json) {
     return JSON.stringify(json, null, 2)
+  },
+  // 获取相对路径
+  getRelativePath(path, parentPath) {
+    let relativePath = this.toLinuxPath(path).replace(this.toLinuxPath(parentPath), '')
+    if (relativePath.startsWith('/')) {
+      relativePath = relativePath.substring(1)
+    }
+    return relativePath
+  },
+  // 转换为linux路径风格
+  toLinuxPath (path) {
+    return path.replace(/\\/g, '/')
   }
 }
