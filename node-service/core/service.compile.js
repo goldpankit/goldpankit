@@ -134,7 +134,10 @@ class Kit {
                   builds
                 }
                 resolve({
-                  diffFiles,
+                  diff: {
+                    projectId: data.project.id,
+                    diffFiles
+                  },
                   build: result
                 })
               })

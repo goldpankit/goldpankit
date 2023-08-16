@@ -2,7 +2,50 @@ const Const = require('./constants/constants')
 const fs = require('./utils/fs')
 const object = require("./utils/object");
 const serviceConf = require('./service.config')
+const log = require('./utils/log')
+const userProject = require('./user.project')
+const path = require('path')
 module.exports = {
+  /**
+   * 写入差异文件
+   * @param dto 参数
+   * {
+   *   projectId: null,
+   *   diffFiles: []
+   * }
+   */
+  writeDiffFiles (dto) {
+    const projectId = dto.projectId
+    const diffFiles = dto.diffFiles
+    const project = userProject.findConfigById(projectId)
+    log.debug(`${project.name}: preparing to process ${diffFiles.length} diff files.`)
+    let mergeCount = 0
+    let deletedCount = 0
+    for (const file of diffFiles) {
+      // 目录，不做处理
+      if (file.filetype === 'DIRECTORY') {
+        continue
+      }
+      // 获取相对路径
+      const relativePath = file.filepath
+      // kit.json为项目配置文件，不允许操作
+      if (relativePath === Const.SERVICE_CONFIG_FILE) {
+        continue
+      }
+      const filepath = path.join(project.codespace, relativePath)
+      // 如果为已删除文件，则删除文件
+      if (file.operaType === 'DELETED') {
+        fs.deleteFile(filepath)
+        deletedCount++
+        continue
+      }
+      // 创建文件
+      fs.createFile(filepath, file.content, true)
+      mergeCount++
+    }
+    // 给出文件写入提醒
+    log.success(`diff: merge ${mergeCount} files, deleted ${deletedCount} files.`)
+  },
   // 获取文件设置
   getFileSetting (codespace, fileRelativePath) {
     const configPath = serviceConf.__getConfigPath(codespace)
