@@ -123,7 +123,7 @@ class Kit {
         .then(data => {
           try {
             // 写入文件
-            fs.writeFiles(data.files, data.project)
+            const diffFiles = fs.writeFiles(data.files, data.project)
             // 获取构建详情并返回
             serviceBuild.getBuildDetails(data.project, data.serviceConfig.builds, data.serviceConfig.compiler, data.variables)
               .then(builds => {
@@ -133,7 +133,10 @@ class Kit {
                   dataSourceId: data.database == null ? null : data.database.id,
                   builds
                 }
-                resolve(result)
+                resolve({
+                  diffFiles,
+                  build: result
+                })
               })
               .catch(e => {
                 reject(e)

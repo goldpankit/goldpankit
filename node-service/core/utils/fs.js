@@ -63,91 +63,53 @@ module.exports = {
    */
   writeFiles (files, project, service = null, versionPath = []) {
     log.debug(`preparing to process ${files.length} files.`)
-    let currentInstallService = null
-    // 当前安装的服务版本索引，例如总计版本为[1.0.0, 1.0.1]，当前版本为1.0.1，那么索引为1
-    let currentInstallVersionIndex = -1
-    if (service != null) {
-      currentInstallService = project.services == null ? null : project.services[service]
-      if (currentInstallService == null) {
-        currentInstallService = project.main == null ? null : project.main[service]
-      }
-      if (currentInstallService != null) {
-        currentInstallVersionIndex = versionPath.findIndex(v => v === currentInstallService.version)
-        if (currentInstallVersionIndex === -1) {
-          log.warn(`service version incorrect: ${service}@${currentInstallService.version}`)
-        }
-      }
-    }
+    const diffFiles = []
     let fileCount = 0
     for (const file of files) {
+      // 目录，不做处理
+      if (file.filetype === 'DIRECTORY') {
+        continue
+      }
+      // 获取相对路径
       const relativePath = file.filepath
       // kit.json为项目配置文件，不允许操作
       if (relativePath === Const.SERVICE_CONFIG_FILE) {
         continue
       }
       const filepath = path.join(project.codespace, relativePath)
-      // 删除文件或目录
+      // 如果为已删除文件，且本地存在该文件，加入删除队列
       if (file.operaType === 'DELETED') {
         if (this.exists(filepath)) {
-          if (this.isFile(filepath)) {
-            this.deleteFile(filepath)
-          } else {
-            this.deleteDirectory(filepath, true)
-          }
+          diffFiles.push(file)
         }
         continue
       }
       // 创建文件
-      if (file.filetype !== 'DIRECTORY') {
-        let content = file.content
-        // 二进制文件
-        if (file.contentEncode === 'base64') {
-          content = Buffer.from(content, 'base64')
-        }
-        // 如果内容为省略号表达式，则将合并后的内容写入新文件
-        else if (ee.isEllipsis(content)) {
-          const fileInfo = this.readFile(filepath)
-          content = ee.merge(content, fileInfo.content)
-        }
-        // 如果是安装
-        if (service != null) {
-          /**
-           * 服务安装过，则存在installService，此时找到当前服务的安装的版本
-           * 如果需要被写入的文件的版本索引不在当前版本的索引之后
-           * 即：文件版本索引 <= 当前已安装的版本索引，则不做文件写入动作，但如果本地没有当前文件，则还是需要做创建动作
-           */
-          if (currentInstallService != null) {
-            if (file.versionIndex === -1) {
-              log.warn(`can not found version for file ${relativePath}`)
-            }
-            /**
-             * 两次-1的判断用于处理极端数据错误的情况
-             * 1. 当前安装的版本不属于服务的版本（例如用户手动修改了版本号）
-             * 2. 文件所属版本索引未找到（java服务出错）
-             */
-            if (currentInstallVersionIndex !== -1 && file.versionIndex !== -1 && file.versionIndex <= currentInstallVersionIndex) {
-              // 如果文件不存在，则创建，否则不做创建
-              if (!this.exists(filepath)) {
-                this.createFile(filepath, content, true)
-                fileCount++
-              }
-              continue
-            }
-          }
-          this.createFile(filepath, content, true)
-          fileCount++
-          continue
-        }
-        // versionPath.findIndex(v => v === project)
+      let content = file.content
+      // 二进制文件
+      if (file.contentEncode === 'base64') {
+        content = Buffer.from(content, 'base64')
+      }
+      // 如果内容为省略号表达式，则将合并后的内容写入新文件
+      else if (ee.isEllipsis(content)) {
+        const fileInfo = this.readFile(filepath)
+        content = ee.merge(content, fileInfo.content)
+      }
+      // 如果文件不存在，则创建
+      if (!this.exists(filepath)) {
         this.createFile(filepath, content, true)
         fileCount++
       }
+      // 如果文件存在，则加入差异文件队列
+      else {
+        diffFiles.push(file)
+      }
     }
-    // 安装了文件 && 是安装服务，则给出文件写入提醒
+    // 给出文件写入提醒
     if (fileCount > 0 && service != null) {
       log.success(`${service}: write ${fileCount} files to ${project.codespace} successfully.`)
     }
-    return fileCount
+    return diffFiles
   },
   // 获取文件和子文件
   getFilesWithChildren (absolutePath) {

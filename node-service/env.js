@@ -1,5 +1,5 @@
 const config = {
-  current: 'develop',
+  current: 'production',
   common: {
     debug: true,
     localApiPrefix: '/local-api',
@@ -7,7 +7,7 @@ const config = {
     limitFiles: 1000
   },
   develop: {
-    remoteApi: "http://192.168.124.5:10088"
+    remoteApi: "http://localhost:10088"
   },
   production: {
     remoteApi: "http://112.74.58.58"
