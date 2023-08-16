@@ -128,6 +128,7 @@ export default {
         builds: [item]
       })
         .then(() => {
+          this.dialogData.visible = false
           this.installData.build.builds.splice(index, 1)
           this.$tip.success(`「${item.name}」${this.$t('service.build.completed')}`)
         })
@@ -145,6 +146,7 @@ export default {
         builds: this.builds
       })
         .then(() => {
+          this.dialogData.visible = false
           this.installData.build.builds.splice(0, this.builds.length)
           this.$tip.success(`Build successfully`)
         })
@@ -167,6 +169,7 @@ export default {
   overflow-y: auto;
   transform: translateX(2000px);
   transition: all ease .15s;
+  z-index: 99;
   &.visible {
     transform: translateX(0);
   }

@@ -145,7 +145,7 @@ export default {
     repository: 'Repository',
     unPublish: 'not yet released',
     confirmDeleteTip: 'Confirm deletion of this service?',
-    versionNumber: 'Version dumber',
+    versionNumber: 'Version number',
     versionDescription: 'Version description',
     noneDataSourceTip: 'Please select a data source first',
     mergeFileTitle: 'Merge Files',
