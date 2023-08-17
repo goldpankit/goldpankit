@@ -90,7 +90,6 @@ module.exports = {
         const fileInfo = this.readFile(filepath)
         // 先反向合并，去掉原来添加的内容，获得文件原始内容
         const revertMergeContent = ee.revertMerge(content, fileInfo.content)
-        console.log('revertMergeContent', revertMergeContent)
         // 在原始内容上进行合并，防止多次安装出现反复增加行的情况
         content = ee.merge(content, revertMergeContent)
       }
