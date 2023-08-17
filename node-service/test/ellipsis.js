@@ -8,10 +8,24 @@ class DiffLine {
     operaType;
     // 目标行索引
     lineIndex;
-    constructor(lineIndex, content, operaType) {
+    constructor(lineIndex, content) {
         this.lineIndex = lineIndex
         this.content = content
-        this.operaType = operaType
+        this.operaType = this.#getDiffLineOperaType(content)
+    }
+
+    /**
+     * 获取差异行操作类型
+     * @param diffLineString 差异行内容
+     */
+    #getDiffLineOperaType (diffLineString) {
+        if (diffLineString.startsWith('+')) {
+            return 'INSERT'
+        }
+        if (diffLineString.startsWith('-')) {
+            return 'DELETE'
+        }
+        return 'UNKNOWN'
     }
 }
 
@@ -21,8 +35,16 @@ class DiffLine {
 class DiffGroup {
     // 差异行，最后的差异行在最顶部
     diffLines;
+    // 定位行
+    positionLines;
     // 表达式行
     expressLines;
+
+    constructor(diffLines, positionLines, expressLines, ) {
+        this.expressLines = expressLines
+        this.positionLines = positionLines
+        this.diffLines = diffLines
+    }
 }
 
 /**
@@ -93,16 +115,41 @@ class EllipsisExpress {
                     return null
                 }
                 positionLines.push({
-                    line,
+                    content: line,
                     index
                 })
             }
         }
-        // 构建差异行
-        for (const line of expressLines) {
-
+        // 构建差异行，分成三种情况
+        const diffLines = []
+        const firstDiffLine = this.#getFirstDiffLineString(expressLines)
+        let positionDirection = this.#getPositionLinesDirection(firstDiffLine, positionLines, expressLines)
+        const diffLineStrings = this.#getDiffLineStrings(expressLines)
+        // - 定位行全都在最顶部
+        if (positionDirection === 'top') {
+            // 获取第一行定位行的索引
+            const firstPositionLine = positionLines[0]
+            for (let i = 0; i < diffLineStrings.length; i++) {
+                diffLines.push(new DiffLine(
+                    firstPositionLine.index - i - 1,
+                    diffLineStrings[i]
+                ))
+            }
         }
-        return positionLines
+        // - 定位行全都在最底部
+        else if (positionDirection === 'bottom') {
+            // 获取第一行定位行的索引
+            const lastPositionLine = positionLines[positionLines.length - 1]
+            for (let i = 0; i < diffLineStrings.length; i++) {
+                diffLines.push(new DiffLine(
+                    lastPositionLine.index + i + 1,
+                    diffLineStrings[i]
+                ))
+            }
+        }
+        // - 定位航一部分在顶部一部分在底部
+        // TODO
+        return new DiffGroup(diffLines, positionLines, expressLines)
     }
 
     /**
@@ -119,6 +166,46 @@ class EllipsisExpress {
             }
         }
         return -1
+    }
+
+    /**
+     * 获取表达式中第一行差异行内容
+     * @param expressLines 表达式行数组
+     * @returns {*}
+     */
+    #getFirstDiffLineString (expressLines) {
+        return expressLines.find(line => line.startsWith('+') || line.startsWith('-'))
+    }
+
+    /**
+     * 获取表达式行中所有的差异行内容
+     * @param expressLines
+     * @returns {*}
+     */
+    #getDiffLineStrings (expressLines) {
+        return expressLines.filter(line => line.startsWith('+') || line.startsWith('-'))
+    }
+
+    /**
+     * 获取定位行相对差异行内容的方向
+     * @param diffLineString 差异行内容
+     * @param positionLines 定位行数组
+     * @param expressLines 表达式行数组
+     */
+    #getPositionLinesDirection (diffLineString, positionLines, expressLines) {
+        const diffLineIndex = expressLines.findIndex(line => line.trim() === diffLineString.trim())
+        const firstPositionLineIndex = expressLines.findIndex(line => line.trim() === positionLines[0].content.trim())
+        const lastPositionLineIndex = expressLines.findIndex(line => line.trim() === positionLines[positionLines.length - 1].content.trim())
+        // - 定位行全都在最顶部
+        if (diffLineIndex < firstPositionLineIndex) {
+            return 'top'
+        }
+        // - 定位行全都在最底部
+        if (diffLineIndex > lastPositionLineIndex) {
+            return 'bottom'
+        }
+        // - 定位航一部分在顶部一部分在底部
+        return 'center'
     }
 
 }
