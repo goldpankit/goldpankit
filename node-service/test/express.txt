@@ -15,7 +15,8 @@ import ResetPwdWindow from '@/components/system/user/ResetPwdWindow'
 +import DepartmentSelect from '@/components/system/department/DepartmentSelect'
 ...
 name: 'SystemUser',
-  extends: BaseTable,
++1
+-  extends: BaseTable,
 -  components: { ResetPwdWindow, RoleConfigWindow, OperaUserWindow, TableLayout, Pagination },
 +  components: { DepartmentSelect, ResetPwdWindow, RoleConfigWindow, OperaUserWindow, TableLayout, Pagination },
 ...

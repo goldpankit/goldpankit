@@ -108,9 +108,11 @@ import DepartmentSelect from '@/components/system/department/DepartmentSelect'
 
 export default {
   name: 'SystemUser',
+1
   extends: BaseTable,
-  components: { DepartmentSelect, ResetPwdWindow, RoleConfigWindow, OperaUserWindow, TableLayout, Pagination },
+  components: { ResetPwdWindow, RoleConfigWindow, OperaUserWindow, TableLayout, Pagination },
   data () {
+  components: { DepartmentSelect, ResetPwdWindow, RoleConfigWindow, OperaUserWindow, TableLayout, Pagination },
     return {
       // 搜索
       searchForm: {

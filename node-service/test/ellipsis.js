@@ -69,17 +69,17 @@ class EllipsisExpress {
             return express
         }
         for (const diffGroup of diffGroups) {
-            // 添加
-            const insertDiffLines = diffGroup.diffLines.filter(line => line.operaType === OPERA_TYPE.INSERT)
-            for (const diffLine of insertDiffLines) {
-                contentLines.splice(diffLine.lineIndex, 0, diffLine.content.substring(1))
-            }
-            // 删除
-            const deleteDiffLines = diffGroup.diffLines.filter(line => line.operaType === OPERA_TYPE.DELETE)
-            for (let i = 0; i < deleteDiffLines.length; i++) {
-                const diffLine = deleteDiffLines[i]
-                if (this.#eq(diffLine.content.substring(1), contentLines[diffLine.lineIndex])) {
-                    contentLines.splice(diffLine.lineIndex, 1)
+            for (const diffLine of diffGroup.diffLines) {
+                // 新增
+                if (diffLine.operaType === OPERA_TYPE.INSERT) {
+                    contentLines.splice(diffLine.lineIndex, 0, diffLine.content.substring(1))
+                    continue
+                }
+                // 删除
+                if (diffLine.operaType === OPERA_TYPE.DELETE) {
+                    if (this.#eq(diffLine.content.substring(1), contentLines[diffLine.lineIndex])) {
+                        contentLines.splice(diffLine.lineIndex, 1)
+                    }
                 }
             }
         }
