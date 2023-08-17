@@ -85,9 +85,10 @@ class Request {
     const message = typeof e === 'string' ? e : e.message
     log.error(message)
     return {
-      code: 500,
+      code: e.code || 500,
       success: false,
       data: null,
+      errorData: e.errorData,
       message
     }
   }

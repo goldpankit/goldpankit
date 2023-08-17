@@ -439,7 +439,7 @@ class Kit {
           // 输入类型为表，则查询出表信息
           if (item.inputType === 'table') {
             const tableName = item.value === undefined ? item.defaultValue : item.value
-            if (tableName == null) {
+            if (tableName == null || tableName === '') {
               resolve({
                 ...item,
                 value: null
@@ -471,7 +471,7 @@ class Kit {
           // 如果类型为查询模型，则查询出模型信息
           if (item.inputType === 'query_model') {
             const modelId = item.value === undefined ? item.defaultValue : item.value
-            if (modelId == null) {
+            if (modelId == null || modelId === '') {
               resolve({
                 ...item,
                 value: null
