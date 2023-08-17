@@ -155,6 +155,8 @@ export default {
     overwriteAll: 'Overwrite All',
     localContent: 'Local Content',
     overwriteContent: 'Overwrite Content',
+    serviceCodeErrorTitle: 'Service Code Error',
+    serviceCodeErrorTip: 'If this window appears, it means that the service code is unable to execute correctly. The following is the error stack information for the service code execution.',
     // 租赁类型
     leaseType: {
       freeLabel: 'Free',

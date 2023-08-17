@@ -66,6 +66,8 @@
     </div>
     <!-- 发布窗口 -->
     <PublishWindow ref="publishWindow"/>
+    <!-- 服务代码错误窗口 -->
+    <ServiceCodeErrorWindow ref="serviceCodeErrorWindow"/>
   </div>
 </template>
 
@@ -79,11 +81,13 @@ import PublishWindow from "../../../components/service/PublishWindow.vue";
 import Variables from "../../../components/service/settings/Variables/Variables.vue";
 import MarkdownEditor from "../../../components/common/MarkdownEditor.vue";
 import SpaceSettings from "../../../components/service/settings/SpaceSettings.vue";
+import ServiceCodeErrorWindow from "../../../components/service/ServiceCodeErrorWindow.vue";
 import {fetchConfig, fetchProfile, saveConfig} from "../../../api/service";
 import {cleanCompile, compile} from "../../../api/service.compile";
 
 export default {
   components: {
+    ServiceCodeErrorWindow,
     SpaceSettings,
     MarkdownEditor,
     Variables,
@@ -171,6 +175,10 @@ export default {
           this.$tip.success('Compile successfully.')
         })
         .catch(e => {
+          if (e.code === 6000) {
+            this.$refs.serviceCodeErrorWindow.open(e.errorData)
+            return
+          }
           this.$tip.apiFailed(e)
         })
         .finally(() => {
@@ -194,6 +202,10 @@ export default {
           this.setInstallData(installData)
         })
         .catch(e => {
+          if (e.code === 6000) {
+            this.$refs.serviceCodeErrorWindow.open(e.errorData)
+            return
+          }
           this.$tip.apiFailed(e)
         })
         .finally(() => {

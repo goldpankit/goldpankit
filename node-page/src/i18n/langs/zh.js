@@ -155,6 +155,8 @@ export default {
     overwriteAll: '覆盖所有',
     localContent: '本地内容',
     overwriteContent: '覆盖写入的内容',
+    serviceCodeErrorTitle: '服务代码错误',
+    serviceCodeErrorTip: '出现该窗口，说明服务的代码无法正确执行，以下是服务代码执行的错误栈信息。',
     // 租赁类型
     leaseType: {
       freeLabel: '免费',

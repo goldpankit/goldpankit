@@ -58,7 +58,10 @@
         </el-button>
       </div>
     </div>
+    <!-- 文件合并窗口 -->
     <MergeWindow/>
+    <!-- 代码出错提示窗口 -->
+    <ServiceCodeErrorWindow ref="serviceCodeErrorWindow"/>
   </div>
 </template>
 
@@ -76,10 +79,12 @@ import {install, uninstall} from "../../api/service.compile";
 import {fetchVersion} from "../../api/service.version";
 import {getDefaultEmptyValue} from "../../utils/variable";
 import MergeWindow from "../service/installer/merge/MergeWindow.vue";
+import ServiceCodeErrorWindow from "../service/ServiceCodeErrorWindow.vue";
 
 export default {
   name: "ServiceInstaller",
   components: {
+    ServiceCodeErrorWindow,
     MergeWindow,
     ProjectSelect,
     DirectorySelect,
@@ -202,16 +207,20 @@ export default {
         variables: this.__getInstallVariables(this.variables)
       })
         .then(installData => {
-          this.isWorking.install = false
           this.$tip.success(this.$t('service.installSuccessfully'))
           this.setInstallData(installData)
           this.refreshBalance()
           this.$emit('installed')
         })
         .catch(e => {
-          this.isWorking.install = false
+          if (e.code === 6000) {
+            this.$refs.serviceCodeErrorWindow.open(e.errorData)
+            return
+          }
           this.$tip.apiFailed(e)
-          this.$emit('error', e)
+        })
+        .finally(() => {
+          this.isWorking.install = false
         })
     },
     // 卸载服务
@@ -253,8 +262,11 @@ export default {
           this.$emit('uninstalled')
         })
         .catch(e => {
+          if (e.code === 6000) {
+            this.$refs.serviceCodeErrorWindow.open(e.errorData)
+            return
+          }
           this.$tip.apiFailed(e)
-          this.$emit('error', e)
         })
         .finally(() => {
           this.isWorking.uninstall = false
