@@ -1,3 +1,8 @@
+// 操作类型
+const OPERA_TYPE = {
+    DELETE: 'DELETE',
+    INSERT: 'INSERT'
+}
 /**
  * 差异行，表示新增或删除的行对象
  */
@@ -20,12 +25,12 @@ class DiffLine {
      */
     #getDiffLineOperaType (diffLineString) {
         if (diffLineString.startsWith('+')) {
-            return 'INSERT'
+            return OPERA_TYPE.INSERT
         }
         if (diffLineString.startsWith('-')) {
-            return 'DELETE'
+            return OPERA_TYPE.DELETE
         }
-        return 'UNKNOWN'
+        return null
     }
 }
 
@@ -57,15 +62,36 @@ class EllipsisExpress {
      * @param content 目标内容
      */
     merge (express, content) {
-        const diffGroups = this.getDiffGroups(express, content)
+        const contentLines = this.#getLines(content)
+        const diffGroups = this.getDiffGroups(express, contentLines)
+        // 存在解析失败的组
+        if (diffGroups.findIndex(group => group.error) !== -1) {
+            return express
+        }
+        for (const diffGroup of diffGroups) {
+            // 添加
+            const insertDiffLines = diffGroup.diffLines.filter(line => line.operaType === OPERA_TYPE.INSERT)
+            for (const diffLine of insertDiffLines) {
+                contentLines.splice(diffLine.lineIndex, 0, diffLine.content.substring(1))
+            }
+            // 删除
+            const deleteDiffLines = diffGroup.diffLines.filter(line => line.operaType === OPERA_TYPE.DELETE)
+            for (const diffLine of deleteDiffLines) {
+                console.log('删除行', diffLine.content.substring(1), contentLines[diffLine.lineIndex])
+                if (this.#eq(diffLine.content.substring(1), contentLines[diffLine.lineIndex])) {
+                    contentLines.splice(diffLine.lineIndex, 1)
+                }
+            }
+        }
+        return contentLines.join('\r\n')
     }
 
     /**
      * 获取差异组
      */
-    getDiffGroups (express, content) {
+    getDiffGroups (express, contentLines) {
         // 去掉首尾
-        const totalExpressLines = express.split('\r\n')
+        const totalExpressLines = this.#getLines(express)
         totalExpressLines.pop()
         totalExpressLines.shift()
         /**
@@ -89,19 +115,19 @@ class EllipsisExpress {
         if (expressLines.length > 0) {
             expressLinesGroup.push(expressLines)
         }
+        const diffGroups = []
         for (const expressGroup of expressLinesGroup) {
-            console.log(this.getDiffGroup(expressGroup, content))
+            diffGroups.unshift(this.getDiffGroup(expressGroup, contentLines))
         }
-        return expressLinesGroup
+        return diffGroups
     }
 
     /**
      * 为表达式组获取差异组对象
      * @param expressLines 表达式行数组
-     * @param content 内容
+     * @param contentLines 内容行数组
      */
-    getDiffGroup (expressLines, content) {
-        const contentLines = content.split('\r\n')
+    getDiffGroup (expressLines, contentLines) {
         // 找到定位行
         const positionLines = []
         for (const line of expressLines) {
@@ -120,9 +146,15 @@ class EllipsisExpress {
                 })
             }
         }
+        if (positionLines.length === 0) {
+            return { error: true, message: 'no position lines' }
+        }
         // 构建差异行，分成三种情况
         const diffLines = []
         const firstDiffLine = this.#getFirstDiffLineString(expressLines)
+        if (firstDiffLine == null) {
+            return { error: true, message: 'no diff lines' }
+        }
         let positionDirection = this.#getPositionLinesDirection(firstDiffLine, positionLines, expressLines)
         const diffLineStrings = this.#getDiffLineStrings(expressLines)
         // - 定位行全都在最顶部
@@ -130,7 +162,7 @@ class EllipsisExpress {
             // 获取第一行定位行的索引
             const firstPositionLine = positionLines[0]
             for (let i = 0; i < diffLineStrings.length; i++) {
-                diffLines.push(new DiffLine(
+                diffLines.unshift(new DiffLine(
                     firstPositionLine.index - i - 1,
                     diffLineStrings[i]
                 ))
@@ -153,7 +185,7 @@ class EllipsisExpress {
     }
 
     /**
-     * 获取行索引
+     * 获取行在内容中的索引
      * @param targetLine 目标行内容
      * @param contentLines 目标内容行数组
      * @param searchStartIndex 开始搜索位置
@@ -161,7 +193,7 @@ class EllipsisExpress {
      */
     #getLineIndex(targetLine, contentLines, searchStartIndex = 0) {
         for (let i = searchStartIndex; i < contentLines.length; i++) {
-            if (contentLines[i] != null && targetLine.trim() === contentLines[i].trim()) {
+            if (this.#eq(targetLine, contentLines[i])) {
                 return i
             }
         }
@@ -193,9 +225,9 @@ class EllipsisExpress {
      * @param expressLines 表达式行数组
      */
     #getPositionLinesDirection (diffLineString, positionLines, expressLines) {
-        const diffLineIndex = expressLines.findIndex(line => line.trim() === diffLineString.trim())
-        const firstPositionLineIndex = expressLines.findIndex(line => line.trim() === positionLines[0].content.trim())
-        const lastPositionLineIndex = expressLines.findIndex(line => line.trim() === positionLines[positionLines.length - 1].content.trim())
+        const diffLineIndex = expressLines.findIndex(line => this.#eq(line, diffLineString))
+        const firstPositionLineIndex = expressLines.findIndex(line => this.#eq(line, positionLines[0].content))
+        const lastPositionLineIndex = expressLines.findIndex(line => this.#eq(line, positionLines[positionLines.length - 1].content))
         // - 定位行全都在最顶部
         if (diffLineIndex < firstPositionLineIndex) {
             return 'top'
@@ -206,6 +238,25 @@ class EllipsisExpress {
         }
         // - 定位航一部分在顶部一部分在底部
         return 'center'
+    }
+
+    /**
+     * 获取行
+     * @param string
+     * @returns {*}
+     */
+    #getLines (string) {
+        return string.split('\r\n')
+    }
+
+    /**
+     * 比较行
+     * @param line1 行1
+     * @param line2 行2
+     * @param config 比较配置，从...后面获取
+     */
+    #eq (line1, line2, config) {
+        return line1 != null && line2 != null && line1.trim() === line2.trim()
     }
 
 }
