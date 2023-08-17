@@ -15,6 +15,10 @@ class EllipsisExpress {
     if (targetContent == null) {
       return ''
     }
+    if (!this.isEllipsis(express)) {
+      return targetContent
+    }
+    targetContent = this.#normalizeContent(targetContent)
     const diffGroups = this.#parse(express)
     // console.log('diffGroups', JSON.stringify(diffGroups, null, 2))
     const contentLines = targetContent.split('\n')
@@ -38,8 +42,8 @@ class EllipsisExpress {
           const group = diff.diffGroups[i]
           // 处理删除行
           const deletedLines = group
-            .filter(line => line.trimStart().startsWith('-'))
-            .map(line => line.trimStart().substring(1))
+            .filter(line => line.startsWith('-'))
+            .map(line => line.substring(1))
           if (deletedLines.length > 0) {
             // 循环需要删除的行，一一进行删除
             for (const line of deletedLines) {
@@ -69,7 +73,6 @@ class EllipsisExpress {
           )
         }
         prefixInsertIndexList = originInsertIndexList
-        // console.log('prefixInsertIndexList赋值', prefixInsertIndexList)
       }
     }
     return contentLines.join('\n')
@@ -79,15 +82,18 @@ class EllipsisExpress {
    * 反向合并
    */
   revertMerge (express, targetContent) {
+    if (!this.isEllipsis(express)) {
+      return targetContent
+    }
     const contentLines = express.split('\n')
     const revertContentLines = []
     for (const line of contentLines) {
-      if (line.startsWith('+')) {
-        revertContentLines.push(`-${line.substring(1)}`)
+      if (line.trimStart().startsWith('+')) {
+        revertContentLines.push(line.replace(/\+/, '-'))
         continue
       }
-      if (line.startsWith('-')) {
-        revertContentLines.push(`+${line.substring(1)}`)
+      if (line.trimStart().startsWith('-')) {
+        revertContentLines.push(line.replace(/-/, '+'))
         continue
       }
       revertContentLines.push(line)
@@ -102,6 +108,74 @@ class EllipsisExpress {
     const startIndex = content.indexOf('/...\n')
     const endIndex = content.indexOf('\n.../')
     return startIndex !== -1 && endIndex !== -1 && endIndex > startIndex
+  }
+
+  /**
+   * 标准化表达式
+   * @param express
+   */
+  #normalizeExpress (express) {
+    const expressLines = express.split('\n')
+    let lines = []
+    for (const line of expressLines) {
+      // 把”+“移至最前
+      if (line.trimStart().startsWith('+')) {
+        lines.push(`+${line.replace(/\+/, '')}`)
+        continue
+      }
+      // 把”-“移至最前
+      if (line.trimStart().startsWith('-')) {
+        lines.push(`-${line.replace(/-/, '')}`)
+        continue
+      }
+      // 把"..."移至最前
+      if (line.trimStart().startsWith('...')) {
+        lines.push(`...${line.replace(/\.\.\./, '').trim()}`)
+        continue
+      }
+      // 把带空格的空行都替换成无空格空行
+      if (line.trim() === '') {
+        lines.push('')
+        continue
+      }
+      lines.push(line)
+    }
+    // 合并多余的"..."
+    const normalized = []
+    for (let i = 0; i < lines.length; i++) {
+      if (lines[i] == null) {
+        break
+      }
+      if (!lines[i].startsWith('...')) {
+        normalized.push(lines[i])
+        continue
+      }
+      if (lines[i] === lines[i + 1]) {
+        normalized.push(lines[i])
+        i++
+        continue
+      }
+      normalized.push(lines[i])
+    }
+    return normalized.join('\n')
+  }
+
+  /**
+   * 标准化内容
+   * @param content
+   */
+  #normalizeContent (content) {
+    const contentLines = content.split('\n')
+    let normalized = []
+    for (const line of contentLines) {
+      // 把带空格的空行都替换成无空格空行
+      if (line.trim() === '') {
+        normalized.push('')
+        continue
+      }
+      normalized.push(line)
+    }
+    return normalized.join('\n')
   }
 
   /**
@@ -156,6 +230,7 @@ class EllipsisExpress {
    */
   #parse (express) {
     const diffGroups = []
+    express = this.#normalizeExpress(express)
     const expresses = express.split('/...').filter(content => content.trim().endsWith('.../'))
     for (let express of expresses) {
       express = express.substring(0, express.indexOf('.../'))

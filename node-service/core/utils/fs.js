@@ -85,11 +85,16 @@ module.exports = {
       if (file.contentEncode === 'base64') {
         content = Buffer.from(content, 'base64')
       }
-      // - 如果内容为省略号表达式，则将合并后的内容写入新文件
-      else if (ee.isEllipsis(content)) {
+      // - 省略号表达式
+      else if (ee.isEllipsis(content) && this.exists(filepath)) {
         const fileInfo = this.readFile(filepath)
-        content = ee.merge(content, fileInfo.content)
+        // 先反向合并，去掉原来添加的内容，获得文件原始内容
+        const revertMergeContent = ee.revertMerge(content, fileInfo.content)
+        console.log('revertMergeContent', revertMergeContent)
+        // 在原始内容上进行合并，防止多次安装出现反复增加行的情况
+        content = ee.merge(content, revertMergeContent)
       }
+      file.content = content
       // 如果为已删除文件，且本地存在该文件，加入删除队列
       if (file.operaType === 'DELETED') {
         if (this.exists(filepath)) {
