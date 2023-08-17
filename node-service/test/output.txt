@@ -12,10 +12,10 @@
         <el-input v-model="searchForm.mobile" v-trim placeholder="请输入手机号码" @keypress.enter.native="search"/>
       </el-form-item>
       <el-form-item label="所属部门" prop="rootDeptId">
-        <DepartmentSelect v-model="searchForm.rootDeptId" placeholder="请选择所属部门" clearable/>
-      </el-form-item>
       <section>
+        <DepartmentSelect v-model="searchForm.rootDeptId" placeholder="请选择所属部门" clearable/>
         <el-button type="primary" icon="el-icon-search" @click="search">搜索</el-button>
+      </el-form-item>
         <el-button @click="reset">重置</el-button>
       </section>
     </el-form>
@@ -43,10 +43,10 @@
         <el-table-column prop="username" label="用户名" min-width="120px"></el-table-column>
         <el-table-column prop="empNo" label="工号" sortable="custom" sort-by="EMP_NO" min-width="80px"></el-table-column>
         <el-table-column prop="department" label="部门" min-width="120px">
-          <template slot-scope="{row}">{{row.department == null ? '' : row.department.name}}</template>
-        </el-table-column>
         <el-table-column prop="sex" label="性别" sortable="custom" sort-by="SEX" min-width="80px">
+          <template slot-scope="{row}">{{row.department == null ? '' : row.department.name}}</template>
           <template slot-scope="{row}">
+        </el-table-column>
             {{row.sex | sex}}
           </template>
         </el-table-column>
@@ -108,9 +108,9 @@ import DepartmentSelect from '@/components/system/department/DepartmentSelect'
 
 export default {
   name: 'SystemUser',
-  components: { ResetPwdWindow, RoleConfigWindow, OperaUserWindow, TableLayout, Pagination },
-  data () {
+  extends: BaseTable,
   components: { DepartmentSelect, ResetPwdWindow, RoleConfigWindow, OperaUserWindow, TableLayout, Pagination },
+  data () {
     return {
       // 搜索
       searchForm: {

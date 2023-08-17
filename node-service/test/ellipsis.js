@@ -76,8 +76,8 @@ class EllipsisExpress {
             }
             // 删除
             const deleteDiffLines = diffGroup.diffLines.filter(line => line.operaType === OPERA_TYPE.DELETE)
-            for (const diffLine of deleteDiffLines) {
-                console.log('删除行', diffLine.content.substring(1), contentLines[diffLine.lineIndex])
+            for (let i = 0; i < deleteDiffLines.length; i++) {
+                const diffLine = deleteDiffLines[i]
                 if (this.#eq(diffLine.content.substring(1), contentLines[diffLine.lineIndex])) {
                     contentLines.splice(diffLine.lineIndex, 1)
                 }
@@ -173,7 +173,7 @@ class EllipsisExpress {
             // 获取第一行定位行的索引
             const lastPositionLine = positionLines[positionLines.length - 1]
             for (let i = 0; i < diffLineStrings.length; i++) {
-                diffLines.push(new DiffLine(
+                diffLines.unshift(new DiffLine(
                     lastPositionLine.index + i + 1,
                     diffLineStrings[i]
                 ))
