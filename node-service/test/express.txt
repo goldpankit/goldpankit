@@ -14,11 +14,13 @@
 import ResetPwdWindow from '@/components/system/user/ResetPwdWindow'
 +import DepartmentSelect from '@/components/system/department/DepartmentSelect'
 ...
-name: 'SystemUser',
-+1
++  components: { DepartmentSelect, ResetPwdWindow, RoleConfigWindow, OperaUserWindow, TableLayout, Pagination },
++  new line 1
++  new line 2
+- name: 'SystemUser',
 -  extends: BaseTable,
 -  components: { ResetPwdWindow, RoleConfigWindow, OperaUserWindow, TableLayout, Pagination },
-+  components: { DepartmentSelect, ResetPwdWindow, RoleConfigWindow, OperaUserWindow, TableLayout, Pagination },
+data () {
 ...
         realname: '', // 姓名
 +        rootDeptId: null, // 部门ID
