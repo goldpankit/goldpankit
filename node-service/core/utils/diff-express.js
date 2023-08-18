@@ -73,21 +73,21 @@ class DiffExpress {
    * @param content 目标内容
    */
   merge (express, content) {
+    const normalizedExpress = this.#normalizeExpress(express)
     // 如果内容为空，视为合并失败，返回表达式本身
     if (content == null || content === '') {
-      return express
+      return normalizedExpress
     }
     // 如果不是正确的表达式，视为不应合并，返回内容本身
-    if (!this.isDiffEllipsis(express)) {
+    if (!this.isDiffEllipsis(normalizedExpress)) {
       return content
     }
-    const normalizedExpress = this.#normalizeExpress(express)
     const normalizedContent = this.#normalizeContent(content)
     const contentLines = this.#getLines(normalizedContent)
     const diffGroups = this.getDiffGroups(normalizedExpress, contentLines)
     // 存在解析失败的组
     if (diffGroups.findIndex(group => group.error) !== -1) {
-      return express
+      return normalizedExpress
     }
     for (const diffGroup of diffGroups) {
       for (const diffLine of diffGroup.diffLines) {
@@ -100,6 +100,8 @@ class DiffExpress {
         if (diffLine.operaType === OPERA_TYPE.DELETE) {
           if (this.#eq(diffLine.content.substring(1), contentLines[diffLine.lineIndex])) {
             contentLines.splice(diffLine.lineIndex, 1)
+          } else {
+            return normalizedExpress
           }
         }
       }
