@@ -32,7 +32,8 @@ app.use(env.remoteApiPrefix, createProxyMiddleware({
     [`^${env.remoteApiPrefix}`]: '',
   }
 }));
-app.use(express.json());
+// 设置请求参数大小
+app.use(express.json({limit: '100mb'}));
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 const publicPath = path.join(__dirname, 'public')
