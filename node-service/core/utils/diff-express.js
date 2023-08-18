@@ -64,9 +64,9 @@ class DiffGroup {
 }
 
 /**
- * 省略号表达式
+ * 差异表达式
  */
-class EllipsisExpress {
+class DiffExpress {
   /**
    * 合并
    * @param express 表达式
@@ -78,7 +78,7 @@ class EllipsisExpress {
       return express
     }
     // 如果不是正确的表达式，视为不应合并，返回内容本身
-    if (!this.isEllipsis(express)) {
+    if (!this.isDiffEllipsis(express)) {
       return content
     }
     const normalizedExpress = this.#normalizeExpress(express)
@@ -173,29 +173,10 @@ class EllipsisExpress {
    */
   getDiffGroup (expressLines, contentLines) {
     // 找到定位行
-    const positionLines = []
-    for (let i = 0; i < expressLines.length; i++) {
-      const line = expressLines[i]
-      if (!line.startsWith('+') && !line.startsWith('-')) {
-        let searchStartIndex = 0
-        if (positionLines.length > 0) {
-          searchStartIndex = positionLines[positionLines.length - 1].index
-        }
-        const index = this.#getLineIndex(line, contentLines, searchStartIndex)
-        if (index === -1) {
-          return { error: true, message: `can not found position line: ${line}` }
-        }
-        positionLines.push({
-          content: line,
-          index,
-          expressIndex: i
-        })
-      }
-    }
+    const positionLines = this.#getPositionLines(expressLines, contentLines)
     if (positionLines.length === 0) {
       return { error: true, message: 'no position lines' }
     }
-    // 构建差异行，分成三种情况
     const diffLines = []
     const firstDiffLineString = this.#getFirstDiffLineString(expressLines)
     if (firstDiffLineString == null) {
@@ -263,7 +244,7 @@ class EllipsisExpress {
        * 最后一条定位行 = 定位行记录中从后往前找，第一条 定位行在表达式中的索引 < 首行差异行的索引的定位行
        */
       let lastPositionLine = positionLines[positionLines.length - 1]
-      const firstDiffLineIndex = expressLines.find(line => line === firstDiffLineString)
+      const firstDiffLineIndex = expressLines.findIndex(line => line === firstDiffLineString)
       let lastPositionIndex = positionLines.length - 1
       while (lastPositionIndex >= 0) {
         lastPositionLine = positionLines[lastPositionIndex]
@@ -272,6 +253,8 @@ class EllipsisExpress {
         }
         lastPositionIndex--
       }
+      console.log('firstDiffLineIndex', firstDiffLineIndex)
+      console.log('最后定位行', lastPositionLine)
       let deleteIndex = 1
       // 添加新增行记录
       for (let i = 0; i < diffLineStrings.length; i++) {
@@ -315,6 +298,38 @@ class EllipsisExpress {
       }
     }
     return -1
+  }
+
+  /**
+   * 找到定位行
+   * @param expressLines 表达式行数组
+   * @param contentLines 内容行数组
+   * @param searchStartIndex 搜索开始索引
+   */
+  #getPositionLines (expressLines, contentLines, searchStartIndex = 0) {
+    let positionLines = []
+    for (let i = 0; i < expressLines.length; i++) {
+      const line = expressLines[i]
+      if (!line.startsWith('+') && !line.startsWith('-')) {
+        if (positionLines.length > 0) {
+          searchStartIndex = positionLines[positionLines.length - 1].index
+        }
+        const index = this.#getLineIndex(line, contentLines, searchStartIndex)
+        if (index === -1) {
+          return []
+        }
+        // 不是连续的，重新查找
+        if (searchStartIndex !== 0 && (index - 1) !== searchStartIndex) {
+          return this.#getPositionLines(expressLines, contentLines, searchStartIndex + 1)
+        }
+        positionLines.push({
+          content: line,
+          index,
+          expressIndex: i
+        })
+      }
+    }
+    return positionLines
   }
 
   /**
@@ -376,7 +391,13 @@ class EllipsisExpress {
    * @returns {*}
    */
   #getLines (string) {
-    return string.split('\r\n')
+    const lines = string.split('\n')
+    lines.forEach((line, index) => {
+      if (line.endsWith('\r')) {
+        lines[index] = line.substring(0, line.length - 1)
+      }
+    })
+    return lines
   }
 
   /**
@@ -385,7 +406,7 @@ class EllipsisExpress {
    * @returns {*}
    */
   #linesToText (lines) {
-    return lines.join('\r\n')
+    return lines.join('\n')
   }
 
   /**
@@ -466,13 +487,13 @@ class EllipsisExpress {
   }
 
   /**
-   * 判断是否为省略号表达式
+   * 判断是否为差异表达式
    */
-  isEllipsis (express) {
+  isDiffEllipsis (express) {
     const normalizedExpress = this.#normalizeExpress(express)
     return normalizedExpress.startsWith('/...') && normalizedExpress.endsWith('.../')
   }
 
 }
 
-module.exports = new EllipsisExpress()
+module.exports = new DiffExpress()

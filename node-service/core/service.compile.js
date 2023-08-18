@@ -106,7 +106,7 @@ class Kit {
           serviceBuild.getBuildDetails(project, unbuilds, data.version.compiler, variables)
             .then(builds => {
               // 删除文件
-              fs.deleteFiles(data.files, project.codespace)
+              fs.deleteFiles(data.files, project)
               // 删除项目配置中服务的配置
               delete projectConfig.services[dto.service]
               // 重新写入项目配置文件中
@@ -126,6 +126,7 @@ class Kit {
             })
         })
         .catch(e => {
+          console.log(e)
           reject(e)
         })
     })

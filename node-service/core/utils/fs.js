@@ -1,7 +1,7 @@
 const fs = require('fs')
 const path = require('path')
 const root = process.cwd()
-const ee = require('./ellipsis-express')
+const diffExp = require('./diff-express')
 const Const = require('../constants/constants')
 const ignore = require('ignore')
 const log = require('../utils/log')
@@ -24,6 +24,7 @@ module.exports = {
         continue
       }
       const relativePath = file.filepath
+      console.log('project.codespace', project.codespace)
       const filepath = path.join(project.codespace, relativePath)
       if (!this.exists(filepath)) {
         continue
@@ -32,9 +33,9 @@ module.exports = {
       if (file.filetype !== 'DIRECTORY') {
         let content = file.content
         // 如果内容为省略号表达式，则对原始内容进行反向合并后写入文件
-        if (ee.isEllipsis(content)) {
+        if (diffExp.isDiffEllipsis(content)) {
           const originContent = this.readFile(filepath).content
-          content = ee.revertMerge(content, originContent)
+          content = diffExp.revertMerge(content, originContent)
           this.createFile(filepath, content, true)
           fileCount++
           continue
@@ -86,12 +87,12 @@ module.exports = {
         content = Buffer.from(content, 'base64')
       }
       // - 省略号表达式
-      else if (ee.isEllipsis(content) && this.exists(filepath)) {
+      else if (diffExp.isDiffEllipsis(content) && this.exists(filepath)) {
         const fileInfo = this.readFile(filepath)
         // 先反向合并，去掉原来添加的内容，获得文件原始内容
-        const revertMergeContent = ee.revertMerge(content, fileInfo.content)
+        const revertMergeContent = diffExp.revertMerge(content, fileInfo.content)
         // 在原始内容上进行合并，防止多次安装出现反复增加行的情况
-        content = ee.merge(content, revertMergeContent)
+        content = diffExp.merge(content, revertMergeContent)
       }
       file.content = content
       // 如果为已删除文件，且本地存在该文件，加入删除队列
