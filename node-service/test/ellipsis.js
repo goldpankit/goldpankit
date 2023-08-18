@@ -1,13 +1,15 @@
 // 差异行操作类型
 const OPERA_TYPE = {
-  DELETE: 'DELETE',
-  INSERT: 'INSERT'
+  DELETE: 'DELETE', // 删除行
+  INSERT: 'INSERT', // 新增行
+  INCORRECT: 'INCORRECT' // 不正确的差异行
 }
 // 差异行方向
 const DIRECTION = {
   TOP: 'TOP', // 差异行全在定位行顶部
   BOTTOM: 'BOTTOM', // 差异行全在定位行底部
-  CENTER: 'CENTER' // 差异行在定位行中间
+  CENTER: 'CENTER', // 差异行在定位行中间
+  INCORRECT: 'INCORRECT' // 不正确的表达式
 }
 /**
  * 差异行，表示新增或删除的行对象
@@ -36,7 +38,7 @@ class DiffLine {
     if (diffLineString.startsWith('-')) {
       return OPERA_TYPE.DELETE
     }
-    return null
+    return OPERA_TYPE.INCORRECT
   }
 }
 
@@ -50,9 +52,12 @@ class DiffGroup {
   positionLines;
   // 表达式行
   expressLines;
+  // 差异行相对定位行的方向
+  direction;
 
-  constructor(diffLines, positionLines, expressLines, ) {
+  constructor(diffLines, direction, positionLines, expressLines) {
     this.expressLines = expressLines
+    this.direction = direction
     this.positionLines = positionLines
     this.diffLines = diffLines
   }
@@ -70,6 +75,7 @@ class EllipsisExpress {
   merge (express, content) {
     const contentLines = this.#getLines(content)
     const diffGroups = this.getDiffGroups(express, contentLines)
+    console.log(JSON.stringify(diffGroups, null, 2))
     // 存在解析失败的组
     if (diffGroups.findIndex(group => group.error) !== -1) {
       return express
@@ -136,7 +142,8 @@ class EllipsisExpress {
   getDiffGroup (expressLines, contentLines) {
     // 找到定位行
     const positionLines = []
-    for (const line of expressLines) {
+    for (let i = 0; i < expressLines.length; i++) {
+      const line = expressLines[i]
       if (!line.startsWith('+') && !line.startsWith('-')) {
         let searchStartIndex = 0
         if (positionLines.length > 0) {
@@ -144,11 +151,12 @@ class EllipsisExpress {
         }
         const index = this.#getLineIndex(line, contentLines, searchStartIndex)
         if (index === -1) {
-          return null
+          return { error: true, message: `can not found position line: ${line}` }
         }
         positionLines.push({
           content: line,
-          index
+          index,
+          expressIndex: i
         })
       }
     }
@@ -157,41 +165,82 @@ class EllipsisExpress {
     }
     // 构建差异行，分成三种情况
     const diffLines = []
-    const firstDiffLine = this.#getFirstDiffLineString(expressLines)
-    if (firstDiffLine == null) {
+    const firstDiffLineString = this.#getFirstDiffLineString(expressLines)
+    if (firstDiffLineString == null) {
       return { error: true, message: 'no diff lines' }
     }
-    let positionDirection = this.#getPositionLinesDirection(firstDiffLine, positionLines, expressLines)
+    let positionDirection = this.#getPositionLinesDirection(firstDiffLineString, positionLines, expressLines)
     const diffLineStrings = this.#getDiffLineStrings(expressLines)
-    // - 差异行全都在最顶部
+    /**
+     * 差异行全都在最顶部的处理逻辑
+     * + aaaa
+     * + bbbb
+     * - cccc
+     * - dddd
+     * + eeee
+     * 0000000
+     * 其中0表示定位行，abe为新增行，cd为删除行，先处理删除后处理新增，可以得到：
+     * 删除行索引 = 第一条定位行 - 删除索引（c为1，d为2）
+     * 新增行索引 = 第一条定位行
+     */
     if (positionDirection === DIRECTION.TOP) {
       // 获取第一行定位行的索引
       const firstPositionLine = positionLines[0]
+      let deleteCount = 0
+      // 添加新增行记录
       for (let i = 0; i < diffLineStrings.length; i++) {
-        diffLines.unshift(new DiffLine(
-          firstPositionLine.index - i - 1,
-          diffLineStrings[i]
-        ))
+        const line = diffLineStrings[i]
+        const operaType = this.#getDiffLineOperaType(line)
+        if (operaType === OPERA_TYPE.INSERT) {
+          diffLines.push(new DiffLine(
+            firstPositionLine.index,
+            line
+          ))
+        }
+      }
+      // 添加删除行记录
+      const deleteTotal = this.#countDeleteLines(expressLines)
+      for (let i = 0; i < diffLineStrings.length; i++) {
+        const line = diffLineStrings[i]
+        const operaType = this.#getDiffLineOperaType(line)
+        if (operaType === OPERA_TYPE.DELETE) {
+          diffLines.push(new DiffLine(
+            firstPositionLine.index - deleteTotal + deleteCount,
+            line
+          ))
+          deleteCount++
+        }
       }
     }
-    // - 差异行全都在最底部
-    else if (positionDirection === DIRECTION.BOTTOM) {
-      // 获取第一行定位行的索引
-      const lastPositionLine = positionLines[positionLines.length - 1]
-      let deleteIndex = 1
+    /**
+     * 差异行全都在最底部的处理逻辑
+     * 000000
+     * - aaa
+     * - bbbb
+     * + ccccc
+     * - ddddd
+     * + eeeee
+     * 其中0为定位行，先处理abd的删除，再处理ce的增加，那么可以得到
+     * 新增行索引 = 最后一条定位行索引 + 1（因为是先插入e，再插入c，所以e和c的索引是一致的）
+     * 删除行索引 = 最后一条定位行索引 + 删除索引
+     */
+    else if (positionDirection === DIRECTION.BOTTOM || positionDirection === DIRECTION.CENTER) {
       /**
-       * 先将所有新增记录添加到差异行数组中，然后将所有删除记录添加到差异行数组中，
-       * 最后差异行数组进行反序，这样使得每次处理时都是先处理删除的行再做添加。举个例子
-       * 000000
-       * - aaa
-       * - bbbb
-       * + ccccc
-       * - ddddd
-       * + eeeee
-       * 其中0为定位行，先处理abd的删除，再处理ce的增加，那么
-       * 新增行的索引 = 最后一条定位行 + 1（因为是先插入e，再插入c，所以e和c的索引是一致的）
-       * 删除行的索引 = 最后一条定位行 + 删除索引
+       * 获取最后一行定位行的索引
+       * 因为存在差异行上下都存在定位行的情况，所以可得
+       * 最后一条定位行 = 定位行记录中从后往前找，第一条 定位行在表达式中的索引 < 首行差异行的索引的定位行
        */
+      let lastPositionLine = positionLines[positionLines.length - 1]
+      const firstDiffLineIndex = expressLines.find(line => line === firstDiffLineString)
+      let lastPositionIndex = positionLines.length - 1
+      while (lastPositionIndex >= 0) {
+        lastPositionLine = positionLines[lastPositionIndex]
+        if (lastPositionLine.expressIndex < firstDiffLineIndex) {
+          break
+        }
+        lastPositionIndex--
+      }
+      let deleteIndex = 1
       // 添加新增行记录
       for (let i = 0; i < diffLineStrings.length; i++) {
         const line = diffLineStrings[i]
@@ -216,10 +265,8 @@ class EllipsisExpress {
         }
       }
     }
-    // - 定位航一部分在顶部一部分在底部
-    // TODO
     diffLines.reverse()
-    return new DiffGroup(diffLines, positionLines, expressLines)
+    return new DiffGroup(diffLines, positionDirection, positionLines, expressLines)
   }
 
   /**
@@ -257,6 +304,15 @@ class EllipsisExpress {
   }
 
   /**
+   * 统计表达式行中删除行的数量
+   * @param expressLines
+   * @returns {*}
+   */
+  #countDeleteLines (expressLines) {
+    return expressLines.filter(line => line.startsWith('-')).length
+  }
+
+  /**
    * 获取定位行相对差异行内容的方向
    * @param diffLineString 差异行内容
    * @param positionLines 定位行数组
@@ -275,7 +331,11 @@ class EllipsisExpress {
       return DIRECTION.BOTTOM
     }
     // - 定位航一部分在顶部一部分在底部
-    return DIRECTION.CENTER
+    if (diffLineIndex < lastPositionLineIndex && diffLineIndex > firstPositionLineIndex) {
+      return DIRECTION.CENTER
+    }
+    // - 表达式不正确
+    return DIRECTION.INCORRECT
   }
 
   /**
@@ -308,7 +368,7 @@ class EllipsisExpress {
     if (diffLineString.startsWith('-')) {
       return OPERA_TYPE.DELETE
     }
-    return null
+    return OPERA_TYPE.INCORRECT
   }
 
 }
