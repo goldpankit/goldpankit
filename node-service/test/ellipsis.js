@@ -73,9 +73,18 @@ class EllipsisExpress {
    * @param content 目标内容
    */
   merge (express, content) {
-    const contentLines = this.#getLines(content)
-    const diffGroups = this.getDiffGroups(express, contentLines)
-    console.log(JSON.stringify(diffGroups, null, 2))
+    // 如果内容为空，视为合并失败，返回表达式本身
+    if (content == null || content === '') {
+      return express
+    }
+    // 如果不是正确的表达式，视为不应合并，返回内容本身
+    if (!this.isEllipsis(express)) {
+      return content
+    }
+    const normalizedExpress = this.#normalizeExpress(express)
+    const normalizedContent = this.#normalizeContent(content)
+    const contentLines = this.#getLines(normalizedContent)
+    const diffGroups = this.getDiffGroups(normalizedExpress, contentLines)
     // 存在解析失败的组
     if (diffGroups.findIndex(group => group.error) !== -1) {
       return express
@@ -95,7 +104,30 @@ class EllipsisExpress {
         }
       }
     }
-    return contentLines.join('\r\n')
+    return this.#linesToText(contentLines)
+  }
+
+  /**
+   * 反向合并，原来删除的变成新增，新增的变成删除
+   * @param express 表达式
+   * @param content 内容
+   */
+  revertMerge (express, content) {
+    const expressLines = this.#getLines(express)
+    expressLines.forEach((line, index) => {
+      const trimStartedLine = line.trimStart()
+      // 新增行表达式，将+调整为-
+      if (trimStartedLine.startsWith('+')) {
+        expressLines[index] = line.replace(/\+/, '-')
+        return
+      }
+      // 删除行表达式，将+调整为-
+      if (trimStartedLine.startsWith('-')) {
+        expressLines[index] = line.replace(/-/, '+')
+        return
+      }
+    })
+    return this.merge(this.#linesToText(expressLines), content)
   }
 
   /**
@@ -128,8 +160,8 @@ class EllipsisExpress {
       expressLinesGroup.push(expressLines)
     }
     const diffGroups = []
-    for (const expressGroup of expressLinesGroup) {
-      diffGroups.unshift(this.getDiffGroup(expressGroup, contentLines))
+    for (const lines of expressLinesGroup) {
+      diffGroups.unshift(this.getDiffGroup(lines, contentLines))
     }
     return diffGroups
   }
@@ -348,6 +380,15 @@ class EllipsisExpress {
   }
 
   /**
+   * 将行数组转为文本
+   * @param lines 行数组
+   * @returns {*}
+   */
+  #linesToText (lines) {
+    return lines.join('\r\n')
+  }
+
+  /**
    * 比较行
    * @param line1 行1
    * @param line2 行2
@@ -355,6 +396,59 @@ class EllipsisExpress {
    */
   #eq (line1, line2, config) {
     return line1 != null && line2 != null && line1.trim() === line2.trim()
+  }
+
+  /**
+   * 规范化表达式
+   * @param express
+   */
+  #normalizeExpress (express) {
+    const expressLines = this.#getLines(express)
+    expressLines.forEach((line, index) => {
+      const trimStartedLine = line.trimStart()
+      // “开始”或“结束”表达式，去掉前后方的空格
+      if (trimStartedLine.startsWith('/...') || trimStartedLine.startsWith('.../')) {
+        expressLines[index] = line.trim()
+        return
+      }
+      // 新增行表达式，将+提取到最前方
+      if (trimStartedLine.startsWith('+')) {
+        expressLines[index] = `+${line.replace(/\+/, '')}`
+        return
+      }
+      // 删除行表达式，将-提取到最前方
+      if (trimStartedLine.startsWith('-')) {
+        expressLines[index] = `-${line.replace(/-/, '')}`
+        return
+      }
+      // 分割表达式，去掉前后方的空格
+      if (trimStartedLine.startsWith('...')) {
+        expressLines[index] = line.trim()
+        return
+      }
+      // 空行，去掉前后方空格
+      if (line.trim() === '') {
+        expressLines[index] = line.trim()
+        return
+      }
+    })
+    return this.#linesToText(expressLines).trim()
+  }
+
+  /**
+   * 规范化内容
+   * @param content
+   */
+  #normalizeContent (content) {
+    const contentLines = this.#getLines(content)
+    contentLines.forEach((line, index) => {
+      // 空行，去掉前后方空格
+      if (line.trim() === '') {
+        contentLines[index] = line.trim()
+        return
+      }
+    })
+    return this.#linesToText(contentLines)
   }
 
   /**
@@ -369,6 +463,14 @@ class EllipsisExpress {
       return OPERA_TYPE.DELETE
     }
     return OPERA_TYPE.INCORRECT
+  }
+
+  /**
+   * 判断是否为省略号表达式
+   */
+  isEllipsis (express) {
+    const normalizedExpress = this.#normalizeExpress(express)
+    return normalizedExpress.startsWith('/...') && normalizedExpress.endsWith('.../')
   }
 
 }
