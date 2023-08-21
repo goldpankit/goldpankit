@@ -24,7 +24,6 @@ module.exports = {
         continue
       }
       const relativePath = file.filepath
-      console.log('project.codespace', project.codespace)
       const filepath = path.join(project.codespace, relativePath)
       if (!this.exists(filepath)) {
         continue
@@ -98,7 +97,7 @@ module.exports = {
         }
         // 反向合并后失败，此时可能是用户调整了定位部分内容，根据当前内容进一步合并
         else {
-          content = diffExp.merge(content, fileInfo.content)
+          content = `[AUTOMERGE]\nThe following is the logic for merging the code, \nbut we are currently unable to merge according to this logic. \nPlease manually perform the merge.\n\n${content}\n\n\n${fileInfo.content}`
         }
       }
       file.content = content
