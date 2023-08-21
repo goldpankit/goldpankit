@@ -38,12 +38,12 @@ module.exports = {
           content = diffExp.revertMerge(content, fileInfo.content)
           // 如果反向合并失败，则将差异表达式写入本地内容顶部
           if (diffExp.isDiffEllipsis(content)) {
-            content = `[AUTOMERGE]\nThe following is the logic for merging the code, \nbut we are currently unable to merge according to this logic. \nPlease manually perform the merge.\n\n${content}\n\n\n${fileInfo.content}`
+            content = `[AUTOMERGE]\nThe following is the logic for merging the code, \nbut we are currently unable to merge according to this logic. \nPlease manually perform the merge.\n\n${content}\n\n${fileInfo.content}`
           }
           // 加入差异队列
           file.content = content
           file.localContent = fileInfo.content
-          file.localContentEncode = fileInfo.encode
+          file.contentEncode = fileInfo.encode
           diffFiles.push(file)
           continue
         }
@@ -87,28 +87,30 @@ module.exports = {
       }
       // 获取写入文件路径
       const filepath = path.join(project.codespace, relativePath)
-      // 获取写入的内容
       let content = file.content
-      // - 二进制文件
+      // 二进制文件，直接覆盖写入
       if (file.contentEncode === 'base64') {
         content = Buffer.from(content, 'base64')
+        this.createFile(filepath, content, true)
+        fileCount++
+        continue
       }
-      // - 差异表达式
-      else if (diffExp.isDiffEllipsis(content) && this.exists(filepath)) {
+      // 差异表达式，合并内容
+      if (diffExp.isDiffEllipsis(content) && this.exists(filepath)) {
         const fileInfo = this.readFile(filepath)
         // 合并
         content = diffExp.merge(content, fileInfo.content)
         // 合并失败
         if (diffExp.isDiffEllipsis(content)) {
-          content = `[AUTOMERGE]\nThe following is the logic for merging the code, \nbut we are currently unable to merge according to this logic. \nPlease manually perform the merge.\n\n${content}\n\n\n${fileInfo.content}`
+          content = `[AUTOMERGE]\nThe following is the logic for merging the code, \nbut we are currently unable to merge according to this logic. \nPlease manually perform the merge.\n\n${content}\n\n${fileInfo.content}`
         }
       }
+      // 修改文件内容
       file.content = content
       // 如果为已删除文件，且本地存在该文件，加入删除队列
       if (file.operaType === 'DELETED') {
         if (this.exists(filepath)) {
           const fileInfo = this.readFile(filepath)
-          file.localContentEncode = fileInfo.encode
           file.localContent = fileInfo.content
           diffFiles.push(file)
         }
@@ -118,7 +120,6 @@ module.exports = {
       if (content.trim != null && content.trim() === '') {
         if (this.exists(filepath)) {
           const fileInfo = this.readFile(filepath)
-          file.localContentEncode = fileInfo.encode
           file.localContent = fileInfo.content
           // 文件操作类型调整为删除
           file.operaType = 'DELETED'
@@ -134,9 +135,9 @@ module.exports = {
       // 如果文件存在且内容不一致，则加入差异文件队列
       else {
         const fileInfo = this.readFile(filepath)
-        file.localContentEncode = fileInfo.encode
         file.localContent = fileInfo.content
         if (file.localContent !== file.content) {
+          console.log(filepath, fileInfo.content)
           diffFiles.push(file)
         }
       }
