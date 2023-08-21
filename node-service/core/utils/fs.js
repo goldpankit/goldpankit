@@ -86,13 +86,20 @@ module.exports = {
       if (file.contentEncode === 'base64') {
         content = Buffer.from(content, 'base64')
       }
-      // - 省略号表达式
+      // - 差异表达式
       else if (diffExp.isDiffEllipsis(content) && this.exists(filepath)) {
         const fileInfo = this.readFile(filepath)
         // 先反向合并，去掉原来添加的内容，获得文件原始内容
         const revertMergeContent = diffExp.revertMerge(content, fileInfo.content)
-        // 在原始内容上进行合并，防止多次安装出现反复增加行的情况
-        content = diffExp.merge(content, revertMergeContent)
+        // 只有在反向合并成功时才做重新合并动作
+        if (!diffExp.isDiffEllipsis(revertMergeContent)) {
+          // 在原始内容上进行合并，防止多次安装出现反复增加行的情况
+          content = diffExp.merge(content, revertMergeContent)
+        }
+        // 反向合并后失败，此时可能是用户调整了定位部分内容，根据当前内容进一步合并
+        else {
+          content = diffExp.merge(content, fileInfo.content)
+        }
       }
       file.content = content
       // 如果为已删除文件，且本地存在该文件，加入删除队列
