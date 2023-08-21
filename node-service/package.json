@@ -1,13 +1,15 @@
 {
   "name": "goldpankit",
-  "version": "1.0.16",
+  "version": "1.0.17",
   "description": "",
   "main": "app.js",
   "keywords": [
     "goldpankit",
     "kit",
     "code generate",
-    "build framework"
+    "build framework",
+    "cli",
+    "cli platform"
   ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
