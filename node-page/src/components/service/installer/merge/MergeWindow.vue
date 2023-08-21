@@ -31,7 +31,7 @@
         </el-tree>
       </div>
       <div v-if="currentFile != null" class="content-preview">
-        <MergeText :original-text="localContent" v-model:new-text="currentFile.content"/>
+        <MergeText v-if="visible" :original-text="localContent" v-model:new-text="currentFile.content"/>
       </div>
     </div>
     <div class="opera">

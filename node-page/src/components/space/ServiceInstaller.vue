@@ -58,8 +58,6 @@
         </el-button>
       </div>
     </div>
-    <!-- 文件合并窗口 -->
-    <MergeWindow/>
     <!-- 代码出错提示窗口 -->
     <ServiceCodeErrorWindow ref="serviceCodeErrorWindow"/>
   </div>
