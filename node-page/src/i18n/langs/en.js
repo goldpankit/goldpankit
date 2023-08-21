@@ -153,8 +153,7 @@ export default {
     ignore: 'Ignore',
     overwrite: 'Overwrite',
     overwriteAll: 'Overwrite All',
-    localContent: 'Local Content',
-    overwriteContent: 'Overwrite Content',
+    mergeTip: 'Tips: The left side is the content of the local file, and the right side is the latest content that will be overwritten.',
     serviceCodeErrorTitle: 'Service Code Error',
     serviceCodeErrorTip: 'If this window appears, it means that the service code is unable to execute correctly. The following is the error stack information for the service code execution.',
     // 租赁类型

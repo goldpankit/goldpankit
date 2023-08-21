@@ -15,6 +15,7 @@
     "element-plus": "^2.3.2",
     "js-cookie": "^3.0.5",
     "konva": "^9.2.0",
+    "monaco-editor": "^0.41.0",
     "sortablejs": "^1.15.0",
     "vite-plugin-prismjs": "0.0.8",
     "vue": "^3.2.47",

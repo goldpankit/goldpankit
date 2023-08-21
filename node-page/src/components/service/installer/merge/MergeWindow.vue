@@ -31,14 +31,7 @@
         </el-tree>
       </div>
       <div v-if="currentFile != null" class="content-preview">
-        <div class="local-content">
-          <label>{{$t('service.localContent')}}</label>
-          <textarea :value="localContent" readonly/>
-        </div>
-        <div class="new-content">
-          <label>{{$t('service.overwriteContent')}}</label>
-          <textarea v-model="currentFile.content"/>
-        </div>
+        <MergeText :original-text="localContent" v-model:new-text="currentFile.content"/>
       </div>
     </div>
     <div class="opera">
@@ -57,9 +50,10 @@ import {mapState} from 'vuex'
 import {merge} from '@/api/service.compile.js'
 import path from '@/utils/path'
 import MarkdownEditor from "../../../common/MarkdownEditor.vue";
+import MergeText from "./MergeText.vue";
 export default {
   name: "MergeWindow",
-  components: {MarkdownEditor},
+  components: {MergeText, MarkdownEditor},
   data () {
     return {
       visible: false,
@@ -333,31 +327,31 @@ export default {
       flex-grow: 1;
       overflow: hidden;
       display: flex;
-      & > div {
-        width: 50%;
-        height: 100%;
-        flex-shrink: 0;
-        box-sizing: border-box;
-        display: flex;
-        flex-direction: column;
-        &:last-of-type {
-          border-left: 2px solid #eee;
-        }
-        label {
-          flex-shrink: 0;
-          padding: 5px 10px;
-          font-weight: bold;
-        }
-        textarea {
-          flex-grow: 1;
-          width: 100%;
-          resize: none;
-          border: 1px solid #eee;
-          outline: none !important;
-          padding: 10px;
-          box-sizing: border-box;
-        }
-      }
+      /*& > div {*/
+      /*  width: 50%;*/
+      /*  height: 100%;*/
+      /*  flex-shrink: 0;*/
+      /*  box-sizing: border-box;*/
+      /*  display: flex;*/
+      /*  flex-direction: column;*/
+      /*  &:last-of-type {*/
+      /*    border-left: 2px solid #eee;*/
+      /*  }*/
+      /*  label {*/
+      /*    flex-shrink: 0;*/
+      /*    padding: 5px 10px;*/
+      /*    font-weight: bold;*/
+      /*  }*/
+      /*  textarea {*/
+      /*    flex-grow: 1;*/
+      /*    width: 100%;*/
+      /*    resize: none;*/
+      /*    border: 1px solid #eee;*/
+      /*    outline: none !important;*/
+      /*    padding: 10px;*/
+      /*    box-sizing: border-box;*/
+      /*  }*/
+      /*}*/
     }
   }
 }
