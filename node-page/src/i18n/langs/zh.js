@@ -151,9 +151,9 @@ export default {
     mergeFileTitle: '文件合并',
     ignoreAll: '忽略所有',
     ignore: '忽略',
-    overwrite: '覆盖',
-    overwriteAll: '覆盖所有',
-    mergeTip: '提示：左侧为本地内容，右侧为当前文件即将覆盖写入的内容',
+    overwrite: '确认合并',
+    overwriteAll: '合并所有',
+    mergeTip: '提示：左侧为本地文件的内容，右侧为合并好后即将覆盖写入文件的新内容',
     serviceCodeErrorTitle: '服务代码错误',
     serviceCodeErrorTip: '出现该窗口，说明服务的代码无法正确执行，以下是服务代码执行的错误栈信息。',
     // 租赁类型

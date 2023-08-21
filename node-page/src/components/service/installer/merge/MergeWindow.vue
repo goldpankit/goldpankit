@@ -22,16 +22,19 @@
           @check="handleCheck"
         >
           <template #default="{ node, data }">
-        <span class="node-label" :class="{file: data.type === 'FILE', [data.operaType]: true}">
-          <el-icon v-if="data.type === 'FILE'"><Document /></el-icon>
-          <el-icon v-else-if="data.type === 'DIRECTORY'"><Folder /></el-icon>
-          <span class="filename">{{data.label}}</span>
-        </span>
+            <span class="node-label" :class="{file: data.type === 'FILE', [data.operaType]: true}">
+              <el-icon v-if="data.type === 'FILE'"><Document /></el-icon>
+              <el-icon v-else-if="data.type === 'DIRECTORY'"><Folder /></el-icon>
+              <span class="filename">{{data.label}}</span>
+            </span>
           </template>
         </el-tree>
       </div>
-      <div v-if="currentFile != null" class="content-preview">
-        <MergeText v-if="visible" :original-text="localContent" v-model:new-text="currentFile.content"/>
+      <div v-if="currentFile != null && currentFile.contentEncode === 'utf-8'" class="content-preview">
+        <MergeText :original-text="localContent" v-model:new-text="currentFile.content"/>
+      </div>
+      <div v-else class="file-change-tip">
+        <p>该文件发生了变化，但不支持预览该文件的内容差异。</p>
       </div>
     </div>
     <div class="opera">
@@ -232,7 +235,6 @@ export default {
     // 浓缩目录
     __ns (nodes) {
       for (const node of nodes) {
-        console.log('node', node)
         this.__nsNode(node)
       }
     },
@@ -260,6 +262,10 @@ export default {
   width: 98% !important;
   height: 98% !important;
   top: 1%;
+  .el-dialog__header {
+    background: var(--background-color);
+    margin-right: 0;
+  }
   .el-dialog__body {
     padding: 0;
     flex-grow: 1;
@@ -274,6 +280,7 @@ export default {
     justify-content: center;
     align-items: center;
     position: relative;
+    background: var(--background-color);
     .danger-opera {
       position: absolute;
       top: 10px;
@@ -288,11 +295,10 @@ export default {
       flex-shrink: 0;
       width: 350px;
       overflow-x: auto;
-      background: var(--background-color);
-      padding: 10px;
+      padding: 10px 0;
       box-sizing: border-box;
+      border-right: 5px solid var(--background-color);
       .el-tree {
-        background: var(--background-color);
         .node-label {
           display: flex;
           align-items: center;
@@ -323,35 +329,19 @@ export default {
         /*}*/
       }
     }
+    // 内容预览
     .content-preview {
       flex-grow: 1;
       overflow: hidden;
       display: flex;
-      /*& > div {*/
-      /*  width: 50%;*/
-      /*  height: 100%;*/
-      /*  flex-shrink: 0;*/
-      /*  box-sizing: border-box;*/
-      /*  display: flex;*/
-      /*  flex-direction: column;*/
-      /*  &:last-of-type {*/
-      /*    border-left: 2px solid #eee;*/
-      /*  }*/
-      /*  label {*/
-      /*    flex-shrink: 0;*/
-      /*    padding: 5px 10px;*/
-      /*    font-weight: bold;*/
-      /*  }*/
-      /*  textarea {*/
-      /*    flex-grow: 1;*/
-      /*    width: 100%;*/
-      /*    resize: none;*/
-      /*    border: 1px solid #eee;*/
-      /*    outline: none !important;*/
-      /*    padding: 10px;*/
-      /*    box-sizing: border-box;*/
-      /*  }*/
-      /*}*/
+    }
+    // 文件变更提醒
+    .file-change-tip {
+      flex-grow: 1;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
   }
 }
