@@ -106,7 +106,7 @@ class Kit {
           serviceBuild.getBuildDetails(project, unbuilds, data.version.compiler, variables)
             .then(builds => {
               // 删除文件
-              fs.deleteFiles(data.files, project)
+              const diffFiles = fs.deleteFiles(data.files, project)
               // 删除项目配置中服务的配置
               delete projectConfig.services[dto.service]
               // 重新写入项目配置文件中
@@ -118,6 +118,10 @@ class Kit {
                 builds
               }
               resolve({
+                diff: {
+                  projectId: project.id,
+                  diffFiles
+                },
                 build: result
               })
             })
@@ -182,7 +186,7 @@ class Kit {
           serviceBuild.getBuildDetails(data.project, data.serviceConfig.unbuilds, data.serviceConfig.compiler, data.variables)
             .then(builds => {
               // 删除文件
-              fs.deleteFiles(data.files, data.project)
+              const diffFiles = fs.deleteFiles(data.files, data.project)
               // 返回构建信息
               const result = {
                 projectId: data.project.id,
@@ -190,6 +194,10 @@ class Kit {
                 builds
               }
               resolve({
+                diff: {
+                  projectId: data.project.id,
+                  diffFiles
+                },
                 build: result
               })
             })

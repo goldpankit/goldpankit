@@ -110,11 +110,20 @@ class DiffExpress {
   }
 
   /**
-   * 反向合并，原来删除的变成新增，新增的变成删除
+   * 反向合并
    * @param express 表达式
    * @param content 内容
    */
   revertMerge (express, content) {
+    return this.merge(this.getRevertExpress(express), content)
+  }
+
+  /**
+   * 获取反向合并表达式，原来删除变成新增，新增变成删除
+   * @param express
+   * @returns {*}
+   */
+  getRevertExpress (express) {
     const expressLines = this.#getLines(express)
     expressLines.forEach((line, index) => {
       const trimStartedLine = line.trimStart()
@@ -129,7 +138,7 @@ class DiffExpress {
         return
       }
     })
-    return this.merge(this.#linesToText(expressLines), content)
+    return this.#linesToText(expressLines)
   }
 
   /**
@@ -255,8 +264,6 @@ class DiffExpress {
         }
         lastPositionIndex--
       }
-      console.log('firstDiffLineIndex', firstDiffLineIndex)
-      console.log('最后定位行', lastPositionLine)
       let deleteIndex = 1
       // 添加新增行记录
       for (let i = 0; i < diffLineStrings.length; i++) {

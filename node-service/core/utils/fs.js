@@ -18,6 +18,7 @@ module.exports = {
   deleteFiles (files, project, service) {
     log.debug(`${project.name}: preparing to delete ${files.length} files`)
     let fileCount = 0
+    const diffFiles = []
     for (const file of files) {
       // 排除掉已删除的文件
       if (file.operaType === 'DELETED') {
@@ -31,12 +32,19 @@ module.exports = {
       // 删除文件
       if (file.filetype !== 'DIRECTORY') {
         let content = file.content
-        // 如果内容为省略号表达式，则对原始内容进行反向合并后写入文件
+        // 如果内容为省略号表达式
         if (diffExp.isDiffEllipsis(content)) {
-          const originContent = this.readFile(filepath).content
-          content = diffExp.revertMerge(content, originContent)
-          this.createFile(filepath, content, true)
-          fileCount++
+          const fileInfo = this.readFile(filepath)
+          content = diffExp.revertMerge(content, fileInfo.content)
+          // 如果反向合并失败，则将差异表达式写入本地内容顶部
+          if (diffExp.isDiffEllipsis(content)) {
+            content = `[AUTOMERGE]\nThe following is the logic for merging the code, \nbut we are currently unable to merge according to this logic. \nPlease manually perform the merge.\n\n${content}\n\n\n${fileInfo.content}`
+          }
+          // 加入差异队列
+          file.content = content
+          file.localContent = fileInfo.content
+          file.localContentEncode = fileInfo.encode
+          diffFiles.push(file)
           continue
         }
         this.deleteFile(filepath)
@@ -53,7 +61,7 @@ module.exports = {
     if (fileCount > 0 && service != null) {
       log.success(`${service}: delete ${fileCount} files`)
     }
-    return fileCount
+    return diffFiles
   },
   /**
    * 写入代码文件
@@ -88,15 +96,10 @@ module.exports = {
       // - 差异表达式
       else if (diffExp.isDiffEllipsis(content) && this.exists(filepath)) {
         const fileInfo = this.readFile(filepath)
-        // 先反向合并，去掉原来添加的内容，获得文件原始内容
-        const revertMergeContent = diffExp.revertMerge(content, fileInfo.content)
-        // 只有在反向合并成功时才做重新合并动作
-        if (!diffExp.isDiffEllipsis(revertMergeContent)) {
-          // 在原始内容上进行合并，防止多次安装出现反复增加行的情况
-          content = diffExp.merge(content, revertMergeContent)
-        }
-        // 反向合并后失败，此时可能是用户调整了定位部分内容，根据当前内容进一步合并
-        else {
+        // 合并
+        content = diffExp.merge(content, fileInfo.content)
+        // 合并失败
+        if (diffExp.isDiffEllipsis(content)) {
           content = `[AUTOMERGE]\nThe following is the logic for merging the code, \nbut we are currently unable to merge according to this logic. \nPlease manually perform the merge.\n\n${content}\n\n\n${fileInfo.content}`
         }
       }
