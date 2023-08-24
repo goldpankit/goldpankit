@@ -243,6 +243,8 @@ export default {
         let newPath = path.join([node.label, node.children[0].label])
         if (newPath.endsWith('\\')) {
           newPath = newPath.substring(0, newPath.length - 1)
+        } else if (newPath.startsWith('/')) {
+          newPath = newPath.substring(1)
         }
         node.filepath = newPath
         node.label = newPath
