@@ -134,14 +134,14 @@ export default {
     }
     :deep(.vuepress-markdown-body) {
       padding: 30px 15px;
-      font-size: 15px;
+      font-size: 16px;
       font-weight: normal;
       h2 {
         font-size: 18px;
         &::before {
           display: inline-block;
           content: '';
-          height: 18px;
+          height: 20px;
           box-sizing: border-box;
           border: 9px solid transparent;
           border-left-color: var(--primary-color-match-2);
@@ -151,10 +151,10 @@ export default {
         }
       }
       h3 {
-        font-size: 16px;
+        font-size: 18px;
       }
       h4 {
-        font-size: 14px;
+        font-size: 16px;
       }
       a {
         color: #42b883 !important;
