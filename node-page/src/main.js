@@ -19,6 +19,7 @@ import createMermaidPlugin from '@kangc/v-md-editor/lib/plugins/mermaid/cdn';
 import createEmojiPlugin from '@kangc/v-md-editor/lib/plugins/emoji/index';
 import createTodoListPlugin from '@kangc/v-md-editor/lib/plugins/todo-list/index';
 import createAlignPlugin from '@kangc/v-md-editor/lib/plugins/align';
+import Prism from 'prismjs'
 import theme from '@kangc/v-md-editor/lib/theme/vuepress.js'
 import '@kangc/v-md-editor/lib/theme/style/vuepress.css'
 import '@kangc/v-md-editor/lib/plugins/highlight-lines/highlight-lines.css';
@@ -27,11 +28,11 @@ import '@kangc/v-md-editor/lib/plugins/emoji/emoji.css';
 import '@kangc/v-md-editor/lib/plugins/todo-list/todo-list.css';
 import plugins from "./plugins";
 import directives from "./directives";
-import Prism from 'prismjs'
-
+// md支持所有语言
 VueMarkdownEditor.use(theme, {
   Prism,
 })
+// md支持各项插件
 VueMarkdownEditor.use(createHighlightLinesPlugin());
 VueMarkdownEditor.use(createLineNumbertPlugin());
 VueMarkdownEditor.use(createMermaidPlugin());
