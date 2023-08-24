@@ -94,34 +94,36 @@ class DiffExpress {
     const normalizedContent = this.#normalizeContent(content)
     const contentLines = this.#getLines(normalizedContent)
     const diffGroups = this.getDiffGroups(normalizedExpress, contentLines)
-    // 存在解析失败的组
+    // 解析失败的组
     const errorGroups = []
+    // 解析组
     for (const diffGroup of diffGroups) {
       if (diffGroup.error) {
         errorGroups.push(diffGroup)
         continue
       }
-      for (const diffLine of diffGroup.diffLines) {
-        // 新增
-        if (diffLine.operaType === OPERA_TYPE.INSERT) {
-          contentLines.splice(diffLine.lineIndex, 0, diffLine.content.substring(1))
-          continue
+      // 解析组内删除行
+      const deletedLines = diffGroup.diffLines.filter(diffLine => diffLine.operaType === OPERA_TYPE.DELETE)
+      for (const diffLine of deletedLines) {
+        // 匹配到了删除的行
+        if (this.#eq(diffLine.content.substring(1), contentLines[diffLine.lineIndex])) {
+          contentLines.splice(diffLine.lineIndex, 1)
         }
-        // 删除
-        if (diffLine.operaType === OPERA_TYPE.DELETE) {
-          // 匹配到了删除的行
-          if (this.#eq(diffLine.content.substring(1), contentLines[diffLine.lineIndex])) {
-            contentLines.splice(diffLine.lineIndex, 1)
-          }
-          // 未匹配到删除的行，添加到错误组中
-          else {
-            errorGroups.push({
-              ...diffGroup,
-              error: true,
-              message: `can not match diff line '${diffLine.content.substring(1)}'.`
-            })
-            break
-          }
+        // 未匹配到删除的行，添加到错误组中
+        else {
+          errorGroups.push({
+            ...diffGroup,
+            error: true,
+            message: `can not match diff line '${diffLine.content.substring(1)}'.`
+          })
+          break
+        }
+      }
+      // 解析组内新增行
+      const insertLines = diffGroup.diffLines.filter(diffLine => diffLine.operaType === OPERA_TYPE.INSERT)
+      if (!this.#existsLines(insertLines, contentLines)) {
+        for (const diffLine of insertLines) {
+          contentLines.splice(diffLine.lineIndex, 0, diffLine.content.substring(1))
         }
       }
     }
@@ -344,6 +346,19 @@ class DiffExpress {
   }
 
   /**
+   * 判断新行是否已存在
+   * @param newLines 新行
+   * @param contentLines 内容行
+   */
+  #existsLines (newLines, contentLines) {
+    const content = this.#linesToText(contentLines.map(line => line.trim()))
+    // 获取新行的内容（差异行都是从后往前处理的，这里要做一下反转）
+    const copyNewLines = JSON.parse(JSON.stringify(newLines.map(item => item.content.substring(1).trim())))
+    copyNewLines.reverse()
+    return content.indexOf(this.#linesToText(copyNewLines)) !== -1
+  }
+
+  /**
    * 获取行在内容中的索引
    * @param targetLine 目标行内容
    * @param contentLines 目标内容行数组
@@ -436,7 +451,7 @@ class DiffExpress {
     if (diffLineIndex > lastPositionLineIndex) {
       return DIRECTION.BOTTOM
     }
-    // - 定位航一部分在顶部一部分在底部
+    // - 定位行一部分在顶部一部分在底部
     if (diffLineIndex < lastPositionLineIndex && diffLineIndex > firstPositionLineIndex) {
       return DIRECTION.CENTER
     }
@@ -526,7 +541,6 @@ class DiffExpress {
       // 空行，去掉前后方空格
       if (line.trim() === '') {
         expressLines[index] = line.trim()
-        return
       }
     })
     return this.#linesToText(expressLines).trim()
@@ -542,7 +556,6 @@ class DiffExpress {
       // 空行，去掉前后方空格
       if (line.trim() === '') {
         contentLines[index] = line.trim()
-        return
       }
     })
     return this.#linesToText(contentLines)
