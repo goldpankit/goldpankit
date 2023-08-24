@@ -10,6 +10,15 @@
       :placeholder="placeholder"
       @upload-image="handleUploadImage"
       @update:modelValue="$emit('update:modelValue', $event)"
+      @image-click="previewImages"
+    />
+    <el-image-viewer
+      v-if="imagePreview.visible"
+      ref="imageViewer"
+      :url-list="imagePreview.images"
+      :teleported="true"
+      :initial-index="imagePreview.currentIndex"
+      @close="imagePreview.visible = false"
     />
   </div>
 </template>
@@ -37,9 +46,15 @@ export default {
   data () {
     return {
       // toolbar: 'undo redo clear | h bold italic strikethrough quote | ul ol table hr | link image code | save | preview toc sync-scroll fullscreen',
+      imagePreview: {
+        visible: false,
+        currentIndex: 0,
+        images: [],
+      }
     }
   },
   methods: {
+    // 图片上传
     handleUploadImage(event, insertImage, files) {
       for (const file of files) {
         const formData = new FormData()
@@ -55,6 +70,44 @@ export default {
           })
       }
     },
+    // 预览图片
+    previewImages (images, currentIndex) {
+      // 过滤图片，将超链接中的图片去掉
+      const filterImages = []
+      for (let i = 0; i < images.length; i++) {
+        const domImg = this.$el.querySelector(`img[src='${images[i]}']`)
+        if (domImg == null) {
+          continue
+        }
+        if (this.__isLink(domImg)) {
+          continue
+        }
+        filterImages.push(images[i])
+      }
+      // 获取位置
+      const clickedImage = images[currentIndex]
+      const finallyCurrentIndex = filterImages.findIndex(img => img === clickedImage)
+      if (finallyCurrentIndex === -1) {
+        return
+      }
+      this.imagePreview.images = filterImages
+      this.imagePreview.visible = true
+      this.imagePreview.currentIndex = finallyCurrentIndex
+    },
+    // 判断是否为超链接
+    __isLink (dom) {
+      if (dom == null) {
+        return false
+      }
+      let parent = dom.parentNode
+      while (parent != null && parent.tagName != null) {
+        if (parent.tagName.toUpperCase() === 'A') {
+          return true
+        }
+        parent = parent.parentNode
+      }
+      return false
+    }
   }
 }
 </script>

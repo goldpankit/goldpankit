@@ -16,6 +16,7 @@ export default ({ mode }) => {
     plugins: [
       vue(),
       vueJsx(),
+      // 扩展markdown所有语言包
       prismjs({
         languages: 'all',
       })
