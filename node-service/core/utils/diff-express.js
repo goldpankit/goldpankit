@@ -172,6 +172,10 @@ class DiffExpress {
     }
     const diffGroups = []
     for (const lines of expressLinesGroup) {
+      // 过滤掉没有差异行的组（连续的...就会出现没有差异行的组，这里做容错处理）
+      if (lines.length === 0) {
+        continue
+      }
       diffGroups.unshift(this.getDiffGroup(lines, contentLines))
     }
     return diffGroups
