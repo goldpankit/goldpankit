@@ -83,10 +83,11 @@ export default {
             service: service.name
           })
             .then(() => {
+              // 剩下最后一条，page-1
               if (this.services.length === 1) {
                 this.pagination.page -= 1
-                this.fetchPage()
               }
+              this.fetchPage()
               this.$tip.success(this.$t('common.deleteSuccessfully'))
             })
             .catch(e => {
