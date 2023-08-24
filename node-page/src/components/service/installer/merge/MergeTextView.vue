@@ -1,5 +1,5 @@
 <template>
-  <div class="merge-editor" :class="{loading}">
+  <div class="merge-editor-view" :class="{loading}">
     <div class="toolbar">
       <p>{{$t('service.mergeTip')}}</p>
       <div class="merge-editor__opera">
@@ -15,7 +15,7 @@
 import * as monaco from 'monaco-editor'
 let diffEditor,diffNavi,originalModel,modifiedModel
 export default {
-  name: "MergeText",
+  name: "MergeTextView",
   props: {
     // 原始内容
     originalText: {
@@ -58,7 +58,7 @@ export default {
     // 初始化
     init () {
       diffEditor = monaco.editor.createDiffEditor(
-        document.querySelector(".container"),
+        this.$el.querySelector(".container"),
         {
           // 允许拖动左右窗口
           enableSplitViewResizing: true,
@@ -113,7 +113,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.merge-editor {
+.merge-editor-view {
   width: 100%;
   height: 100%;
   display: flex;

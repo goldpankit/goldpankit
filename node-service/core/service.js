@@ -125,7 +125,6 @@ module.exports = {
   },
   // 保存服务文件
   saveFileSetting (fileSettings) {
-    console.log('fileSettings', fileSettings)
     const serviceConfig = cache.services.get(fileSettings.space, fileSettings.service)
     const configPath = this.__getConfigPath(serviceConfig.codespace)
     const config = fs.readJSONFile(configPath)

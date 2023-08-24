@@ -36,6 +36,12 @@ module.exports = {
       // 如果为已删除文件，则删除文件
       if (file.operaType === 'DELETED') {
         fs.deleteFile(filepath)
+        // 删除空目录
+        let dirpath = fs.getDirectory(filepath)
+        while (fs.isEmptyDirectory(dirpath) && project.codespace !== dirpath) {
+          fs.deleteDirectory(dirpath)
+          dirpath = fs.getDirectory(dirpath)
+        }
         deletedCount++
         continue
       }

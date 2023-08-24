@@ -14,10 +14,9 @@ module.exports = {
     dir = path.normalize(dir)
     return fs.readdirSync(dir)
   },
-  // 删除代码文件
+  // 删除代码文件，卸载时调用
   deleteFiles (files, project, service) {
     log.debug(`${project.name}: preparing to delete ${files.length} files`)
-    let fileCount = 0
     const diffFiles = []
     for (const file of files) {
       // 排除掉已删除的文件
@@ -35,31 +34,27 @@ module.exports = {
         // 如果内容为省略号表达式
         if (diffExp.isDiffEllipsis(content)) {
           const fileInfo = this.readFile(filepath)
+          let localFileContent = fileInfo.content
           content = diffExp.revertMerge(content, fileInfo.content)
           // 如果反向合并失败，则将差异表达式写入本地内容顶部
           if (diffExp.isDiffEllipsis(content)) {
-            content = `[AUTOMERGE]\nThe following is the logic for merging the code, \nbut we are currently unable to merge according to this logic. \nPlease manually perform the merge.\n\n${content}\n\n${fileInfo.content}`
+            // 本地文件内容 = 表达式+本地文件内容
+            localFileContent = `[AUTOMERGE]\nThe following is the logic for merging the code, \nbut we are currently unable to merge according to this logic. \nPlease manually perform the merge.\n\n${content}\n\n${fileInfo.content}`
+            // 右侧内容=本地文件内容
+            content = fileInfo.content
           }
           // 加入差异队列
           file.content = content
-          file.localContent = fileInfo.content
+          file.localContent = localFileContent
           file.contentEncode = fileInfo.encode
           diffFiles.push(file)
           continue
         }
-        this.deleteFile(filepath)
-        fileCount++
-        // 删除空目录
-        let dirpath = this.getDirectory(filepath)
-        while (this.isEmptyDirectory(dirpath) && project.codespace !== dirpath) {
-          this.deleteDirectory(dirpath)
-          dirpath = this.getDirectory(dirpath)
-        }
+        // 待删除文件，填充本地内容，加入删除文件队列
+        file.operaType = 'DELETED'
+        file.localContent = this.readFile(filepath).content
+        diffFiles.push(file)
       }
-    }
-    // 删除了文件 && 是卸载服务，则做出提醒
-    if (fileCount > 0 && service != null) {
-      log.success(`${service}: delete ${fileCount} files`)
     }
     return diffFiles
   },
@@ -88,36 +83,23 @@ module.exports = {
       // 获取写入文件路径
       const filepath = path.join(project.codespace, relativePath)
       let content = file.content
-      // 二进制文件，直接覆盖写入
+      // 如果为已删除文件，且本地存在该文件，加入删除队列，此时file.content为null
+      if (file.operaType === 'DELETED') {
+        if (this.exists(filepath)) {
+          file.localContent = this.readFile(filepath).content
+          diffFiles.push(file)
+        }
+        continue
+      }
+      // 如果为二进制文件，直接覆盖写入
       if (file.contentEncode === 'base64') {
         content = Buffer.from(content, 'base64')
         this.createFile(filepath, content, true)
         fileCount++
         continue
       }
-      // 差异表达式，合并内容
-      if (diffExp.isDiffEllipsis(content) && this.exists(filepath)) {
-        const fileInfo = this.readFile(filepath)
-        // 合并
-        content = diffExp.merge(content, fileInfo.content)
-        // 合并失败
-        if (diffExp.isDiffEllipsis(content)) {
-          content = `[AUTOMERGE]\nThe following is the logic for merging the code, \nbut we are currently unable to merge according to this logic. \nPlease manually perform the merge.\n\n${content}\n\n${fileInfo.content}`
-        }
-      }
-      // 修改文件内容
-      file.content = content
-      // 如果为已删除文件，且本地存在该文件，加入删除队列
-      if (file.operaType === 'DELETED') {
-        if (this.exists(filepath)) {
-          const fileInfo = this.readFile(filepath)
-          file.localContent = fileInfo.content
-          diffFiles.push(file)
-        }
-        continue
-      }
       // 如果文件内容为空，且本地存在该文件，加入删除队列
-      if (content.trim != null && content.trim() === '') {
+      if (content.trim() === '') {
         if (this.exists(filepath)) {
           const fileInfo = this.readFile(filepath)
           file.localContent = fileInfo.content
@@ -127,19 +109,31 @@ module.exports = {
         }
         continue
       }
-      // 如果文件不存在，则创建
+      // 如果文件不存在，则直接写入
       if (!this.exists(filepath)) {
         this.createFile(filepath, content, true)
         fileCount++
+        continue
       }
-      // 如果文件存在且内容不一致，则加入差异文件队列
-      else {
-        const fileInfo = this.readFile(filepath)
-        file.localContent = fileInfo.content
-        if (file.localContent !== file.content) {
-          console.log(filepath, fileInfo.content)
-          diffFiles.push(file)
+      // 如果为差异表达式，合并内容
+      const fileInfo = this.readFile(filepath)
+      let localFileContent = fileInfo.content
+      if (diffExp.isDiffEllipsis(content)) {
+        // 合并
+        content = diffExp.merge(content, localFileContent)
+        // 合并失败
+        if (diffExp.isDiffEllipsis(content)) {
+          // 左侧内容=差异表达式+本地内容
+          localFileContent = `[AUTOMERGE]\nThe following is the logic for merging the code, \nbut we are currently unable to merge according to this logic. \nPlease manually perform the merge.\n\n${content}\n\n${localFileContent}`
+          // 右侧内容=本地内容
+          content = fileInfo.content
         }
+      }
+      file.content = content
+      file.localContent = localFileContent
+      // 如果本地内容 != 编译后的内容，则加入差异列表
+      if (file.localContent !== file.content) {
+        diffFiles.push(file)
       }
     }
     // 给出文件写入提醒
