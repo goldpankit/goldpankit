@@ -6,7 +6,7 @@
           <h2>{{$t('space.publicSpaces')}}</h2>
           <p>{{$t('space.publicSpaceIntroduce')}}</p>
         </router-link>
-        <a @click="$router.push({ name: 'UserProfile' })" class="module profile">
+        <a @click="toUserProfile" class="module profile">
           <h2 v-if="userInfo == null">{{$t('user.account')}}</h2>
           <h2 v-else>{{userInfo.username}}</h2>
           <ul v-if="userInfo != null">
@@ -60,6 +60,15 @@ export default {
   },
   methods: {
     ...mapActions(['logout']),
+    // 跳转到个人中心
+    toUserProfile () {
+      if (this.userInfo == null) {
+        this.$router.push({ name: 'SignIn' })
+        return
+      }
+      //this.$router.push({ name: 'UserProfile' })
+    },
+    // 退出登录
     doLogout () {
       if (this.logoutData.isWorking) {
         return
