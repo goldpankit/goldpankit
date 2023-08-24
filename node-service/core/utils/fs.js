@@ -35,13 +35,12 @@ module.exports = {
         if (diffExp.isDiffEllipsis(content)) {
           const fileInfo = this.readFile(filepath)
           let localFileContent = fileInfo.content
-          content = diffExp.revertMerge(content, fileInfo.content)
+          const revertMergeResult = diffExp.revertMerge(content, fileInfo.content)
+          content = revertMergeResult.content
           // 如果反向合并失败，则将差异表达式写入本地内容顶部
-          if (diffExp.isDiffEllipsis(content)) {
+          if (!revertMergeResult.success) {
             // 本地文件内容 = 表达式+本地文件内容
-            localFileContent = `[AUTOMERGE]\nThe following is the logic for merging the code, \nbut we are currently unable to merge according to this logic. \nPlease manually perform the merge.\n\n${content}\n\n${fileInfo.content}`
-            // 右侧内容=本地文件内容
-            content = fileInfo.content
+            localFileContent = `[AUTOMERGE]\nThe following is the logic for merging the code, \nbut we are currently unable to merge according to this logic. \nPlease manually perform the merge.\n\n${revertMergeResult.errorExpress}\n\n${fileInfo.content}`
           }
           // 加入差异队列
           file.content = content
@@ -120,13 +119,12 @@ module.exports = {
       let localFileContent = fileInfo.content
       if (diffExp.isDiffEllipsis(content)) {
         // 合并
-        content = diffExp.merge(content, localFileContent)
+        const mergeResult = diffExp.merge(content, localFileContent)
+        content = mergeResult.content
         // 合并失败
-        if (diffExp.isDiffEllipsis(content)) {
+        if (!mergeResult.success) {
           // 左侧内容=差异表达式+本地内容
-          localFileContent = `[AUTOMERGE]\nThe following is the logic for merging the code, \nbut we are currently unable to merge according to this logic. \nPlease manually perform the merge.\n\n${content}\n\n${localFileContent}`
-          // 右侧内容=本地内容
-          content = fileInfo.content
+          localFileContent = `[AUTOMERGE]\nThe following is the logic for merging the code, \nbut we are currently unable to merge according to this logic. \nPlease manually perform the merge.\n\n${mergeResult.errorExpress}\n\n${localFileContent}`
         }
       }
       file.content = content

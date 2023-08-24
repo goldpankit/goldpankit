@@ -52,11 +52,14 @@ class DiffGroup {
   positionLines;
   // 表达式行
   expressLines;
+  // 表达式配置
+  config;
   // 差异行相对定位行的方向
   direction;
 
-  constructor(diffLines, direction, positionLines, expressLines) {
-    this.expressLines = expressLines
+  constructor(diffLines, direction, positionLines, expressGroup) {
+    this.config = expressGroup.config
+    this.expressLines = expressGroup.lines
     this.direction = direction
     this.positionLines = positionLines
     this.diffLines = diffLines
@@ -69,8 +72,14 @@ class DiffGroup {
 class DiffExpress {
   /**
    * 合并
+   * 按找表达式组一组一组合并，合并失败的组组装起来作为errorExpress（错误的表达式），所以即使失败了，也可能存在自动合并的部分
    * @param express 表达式
    * @param content 目标内容
+   * @return result = {
+   *   success: 是否成功,
+   *   errorExpress: 错误的表达式,
+   *   content: 合并结果
+   * }
    */
   merge (express, content) {
     const normalizedExpress = this.#normalizeExpress(express)
@@ -86,10 +95,12 @@ class DiffExpress {
     const contentLines = this.#getLines(normalizedContent)
     const diffGroups = this.getDiffGroups(normalizedExpress, contentLines)
     // 存在解析失败的组
-    if (diffGroups.findIndex(group => group.error) !== -1) {
-      return normalizedExpress
-    }
+    const errorGroups = []
     for (const diffGroup of diffGroups) {
+      if (diffGroup.error) {
+        errorGroups.push(diffGroup)
+        continue
+      }
       for (const diffLine of diffGroup.diffLines) {
         // 新增
         if (diffLine.operaType === OPERA_TYPE.INSERT) {
@@ -98,15 +109,32 @@ class DiffExpress {
         }
         // 删除
         if (diffLine.operaType === OPERA_TYPE.DELETE) {
+          // 匹配到了删除的行
           if (this.#eq(diffLine.content.substring(1), contentLines[diffLine.lineIndex])) {
             contentLines.splice(diffLine.lineIndex, 1)
-          } else {
-            return normalizedExpress
+          }
+          // 未匹配到删除的行，添加到错误组中
+          else {
+            errorGroups.push({
+              ...diffGroup,
+              error: true,
+              message: `can not match diff line '${diffLine.content.substring(1)}'.`
+            })
+            break
           }
         }
       }
     }
-    return this.#linesToText(contentLines)
+    // 如果存在解析失败的组，则把解析失败的组构建为差异字符串后返回
+    let errorExpress = ''
+    if (errorGroups.length > 0) {
+      errorExpress = this.#toDiffExpress(errorGroups)
+    }
+    return {
+      success: errorExpress === '',
+      errorExpress,
+      content: this.#linesToText(contentLines)
+    }
   }
 
   /**
@@ -145,57 +173,75 @@ class DiffExpress {
    * 获取差异组
    */
   getDiffGroups (express, contentLines) {
-    // 去掉首尾
     const totalExpressLines = this.#getLines(express)
+    // 去掉第一行中的/，让/...变成...
+    totalExpressLines[0] = totalExpressLines[0].substring(1)
+    // 去掉最后的.../
     totalExpressLines.pop()
-    totalExpressLines.shift()
     /**
      * 表达式组，组内为若干个数组，组内的每个数组为表达式行字符串
      * 如：
      * [
-     *     ['aaaaaaa','+bbbbbbb'], // 表示在a后插入b
-     *     ['ccccccc','+ddddddd', 'eeeeeeeee'], // 表示在c和e之间插入d
+     *     {
+     *        config: '{差异配置} 差异注释', // 差异组配置
+     *        lines: ['aaaaaaa','+bbbbbbb'] // 差异行，表示在a后插入b
+     *     },
+     *     ...
      * ]
      */
-    const expressLinesGroup = []
+    const expressGroups = []
     let expressLines = []
     for (const line of totalExpressLines) {
       if (line.startsWith('...')) {
-        expressLinesGroup.push(expressLines)
         expressLines = []
+        expressGroups.push({
+          // 组配置
+          config: line.substring(3).trim(),
+          // 组表达式行
+          lines: expressLines
+        })
         continue
       }
       expressLines.push(line)
     }
-    if (expressLines.length > 0) {
-      expressLinesGroup.push(expressLines)
-    }
     const diffGroups = []
-    for (const lines of expressLinesGroup) {
+    for (const expressGroup of expressGroups) {
       // 过滤掉没有差异行的组（连续的...就会出现没有差异行的组，这里做容错处理）
-      if (lines.length === 0) {
+      if (expressGroup.lines.length === 0) {
         continue
       }
-      diffGroups.unshift(this.getDiffGroup(lines, contentLines))
+      diffGroups.unshift(this.getDiffGroup(expressGroup, contentLines))
     }
     return diffGroups
   }
 
   /**
    * 为表达式组获取差异组对象
-   * @param expressLines 表达式行数组
+   * @param expressGroup 表达式组
    * @param contentLines 内容行数组
    */
-  getDiffGroup (expressLines, contentLines) {
+  getDiffGroup (expressGroup, contentLines) {
+    // 组内差异行数组
+    const expressLines = expressGroup.lines
     // 找到定位行
     const positionLines = this.#getPositionLines(expressLines, contentLines)
     if (positionLines.length === 0) {
-      return { error: true, message: 'no position lines' }
+      return {
+        error: true,
+        message: 'no position lines.',
+        expressLines: expressLines,
+        config: expressGroup.config,
+      }
     }
     const diffLines = []
     const firstDiffLineString = this.#getFirstDiffLineString(expressLines)
     if (firstDiffLineString == null) {
-      return { error: true, message: 'no diff lines' }
+      return {
+        error: true,
+        message: 'no diff lines.',
+        expressLines: expressLines,
+        config: expressGroup.config,
+      }
     }
     let positionDirection = this.#getPositionLinesDirection(firstDiffLineString, positionLines, expressLines)
     const diffLineStrings = this.#getDiffLineStrings(expressLines)
@@ -294,7 +340,7 @@ class DiffExpress {
       }
     }
     diffLines.reverse()
-    return new DiffGroup(diffLines, positionDirection, positionLines, expressLines)
+    return new DiffGroup(diffLines, positionDirection, positionLines, expressGroup)
   }
 
   /**
@@ -420,6 +466,23 @@ class DiffExpress {
    */
   #linesToText (lines) {
     return lines.join('\n')
+  }
+
+  /**
+   * 将组转为差异表达式
+   * @param groups 组
+   */
+  #toDiffExpress(groups) {
+    const expressLines = []
+    for (const group of groups) {
+      expressLines.push(`...${group.config} [ERROR: ${group.message}]`)
+      group.expressLines.forEach(line => {
+        expressLines.push(line)
+      })
+    }
+    expressLines[0] = `/${expressLines[0]}`
+    expressLines.push('.../')
+    return this.#linesToText(expressLines)
   }
 
   /**
