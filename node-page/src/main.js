@@ -13,8 +13,15 @@ import HelpButton from "./components/common/HelpButton.vue"
 import SortableButton from "./components/common/SortableButton.vue";
 import VueMarkdownEditor from '@kangc/v-md-editor'
 import '@kangc/v-md-editor/lib/style/base-editor.css'
+import createHighlightLinesPlugin from '@kangc/v-md-editor/lib/plugins/highlight-lines/index';
+import createLineNumbertPlugin from '@kangc/v-md-editor/lib/plugins/line-number/index';
+import createMermaidPlugin from '@kangc/v-md-editor/lib/plugins/mermaid/cdn';
+import createEmojiPlugin from '@kangc/v-md-editor/lib/plugins/emoji/index';
 import theme from '@kangc/v-md-editor/lib/theme/vuepress.js'
 import '@kangc/v-md-editor/lib/theme/style/vuepress.css'
+import '@kangc/v-md-editor/lib/plugins/highlight-lines/highlight-lines.css';
+import '@kangc/v-md-editor/lib/plugins/mermaid/mermaid.css';
+import '@kangc/v-md-editor/lib/plugins/emoji/emoji.css';
 import plugins from "./plugins";
 import directives from "./directives";
 
@@ -23,6 +30,10 @@ import Prism from 'prismjs'
 VueMarkdownEditor.use(theme, {
   Prism,
 })
+VueMarkdownEditor.use(createHighlightLinesPlugin());
+VueMarkdownEditor.use(createLineNumbertPlugin());
+VueMarkdownEditor.use(createMermaidPlugin());
+VueMarkdownEditor.use(createEmojiPlugin());
 
 const app = createApp(App)
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {

@@ -106,6 +106,14 @@ export default {
         color: #42b883 !important;
         text-decoration: underline;
       }
+      .v-md-mermaid {
+        .node {
+          rect, circle, ellipse, polygon, path {
+            fill: #dbffef !important;
+            stroke: #42b883 !important;
+          }
+        }
+      }
     }
   }
 }
