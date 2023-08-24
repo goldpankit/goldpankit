@@ -17,14 +17,16 @@ import createHighlightLinesPlugin from '@kangc/v-md-editor/lib/plugins/highlight
 import createLineNumbertPlugin from '@kangc/v-md-editor/lib/plugins/line-number/index';
 import createMermaidPlugin from '@kangc/v-md-editor/lib/plugins/mermaid/cdn';
 import createEmojiPlugin from '@kangc/v-md-editor/lib/plugins/emoji/index';
+import createTodoListPlugin from '@kangc/v-md-editor/lib/plugins/todo-list/index';
+import createAlignPlugin from '@kangc/v-md-editor/lib/plugins/align';
 import theme from '@kangc/v-md-editor/lib/theme/vuepress.js'
 import '@kangc/v-md-editor/lib/theme/style/vuepress.css'
 import '@kangc/v-md-editor/lib/plugins/highlight-lines/highlight-lines.css';
 import '@kangc/v-md-editor/lib/plugins/mermaid/mermaid.css';
 import '@kangc/v-md-editor/lib/plugins/emoji/emoji.css';
+import '@kangc/v-md-editor/lib/plugins/todo-list/todo-list.css';
 import plugins from "./plugins";
 import directives from "./directives";
-
 import Prism from 'prismjs'
 
 VueMarkdownEditor.use(theme, {
@@ -34,6 +36,8 @@ VueMarkdownEditor.use(createHighlightLinesPlugin());
 VueMarkdownEditor.use(createLineNumbertPlugin());
 VueMarkdownEditor.use(createMermaidPlugin());
 VueMarkdownEditor.use(createEmojiPlugin());
+VueMarkdownEditor.use(createTodoListPlugin());
+VueMarkdownEditor.use(createAlignPlugin());
 
 const app = createApp(App)
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
