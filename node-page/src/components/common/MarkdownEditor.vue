@@ -80,6 +80,32 @@ export default {
     }
     :deep(.vuepress-markdown-body) {
       padding: 30px 15px;
+      font-size: 15px;
+      font-weight: normal;
+      h2 {
+        font-size: 18px;
+        &::before {
+          display: inline-block;
+          content: '';
+          height: 18px;
+          box-sizing: border-box;
+          border: 9px solid transparent;
+          border-left-color: var(--primary-color-match-2);
+          border-radius: 50%;
+          position: relative;
+          top: 2px;
+        }
+      }
+      h3 {
+        font-size: 16px;
+      }
+      h4 {
+        font-size: 14px;
+      }
+      a {
+        color: #42b883 !important;
+        text-decoration: underline;
+      }
     }
   }
 }
