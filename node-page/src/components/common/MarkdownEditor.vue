@@ -18,6 +18,7 @@
       :url-list="imagePreview.images"
       :teleported="true"
       :initial-index="imagePreview.currentIndex"
+      :hide-on-click-modal="true"
       @close="imagePreview.visible = false"
     />
   </div>
