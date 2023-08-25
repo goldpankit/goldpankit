@@ -1,32 +1,31 @@
 <template>
   <div class="form">
     <div class="wrap">
-      <h2>Create Service</h2>
+      <h2>{{$t('service.createService')}}</h2>
       <section class="tip" v-if="space != null">
-        Create Service for <em>{{space}}</em>.
+        <template v-if="$i18n.locale === 'en'">
+          {{$t('service.createServiceFor')}}<em>{{space}}</em>.
+        </template>
+        <template v-else>
+          {{$t('service.createServiceFor1')}}<em>{{space}}</em>{{$t('service.createServiceFor2')}}。
+        </template>
       </section>
       <el-form ref="form" :model="form" :rules="rules">
-        <el-form-item label="Service Name" prop="name" required>
+        <el-form-item :label="$t('service.serviceName')" prop="name" required>
           <el-input v-model="form.name"/>
         </el-form-item>
-        <el-form-item label="Service Type" prop="type" required>
+        <el-form-item :label="$t('service.serviceType')" prop="type" required>
           <ServiceTypeSelect v-model="form.type"/>
         </el-form-item>
         <!-- 为子服务时需选择跟随服务 -->
         <template v-if="form.type !== 'MAIN'">
-          <el-form-item label="Main Service" prop="mainServiceName" required>
+          <el-form-item :label="$t('service.mainService')" prop="mainServiceName" required>
             <MainServiceSelect v-model="form.mainServiceName" :space="space" />
           </el-form-item>
         </template>
-<!--        <el-form-item label="Repository">-->
-<!--          <el-input v-model="form.repository"/>-->
-<!--        </el-form-item>-->
-<!--        <el-form-item label="Introduce" required>-->
-<!--          <I18nInput type="textarea" v-model="form.introduce"/>-->
-<!--        </el-form-item>-->
       </el-form>
       <div class="opera">
-        <el-button type="primary" size="large" @click="create">Create Service</el-button>
+        <el-button type="primary" size="large" @click="create">{{$t('service.createService')}}</el-button>
       </div>
     </div>
   </div>

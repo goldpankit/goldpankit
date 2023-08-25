@@ -167,6 +167,13 @@ export default {
     mergeUnPreview: '该文件发生了变化，但不支持预览该文件的内容差异。',
     serviceCodeErrorTitle: '服务代码错误',
     serviceCodeErrorTip: '出现该窗口，说明服务的代码无法正确执行，以下是服务代码执行的错误栈信息。',
+    createService: '创建服务',
+    createServiceFor1: '为',
+    createServiceFor2: '空间创建服务',
+    serviceName: '服务名称',
+    serviceType: '服务类型',
+    mainService: '主服务',
+    commonService: '子服务',
     // 租赁类型
     leaseType: {
       freeLabel: '免费',

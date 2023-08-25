@@ -167,6 +167,12 @@ export default {
     mergeUnPreview: 'The content of this file has changed, but previewing the content differences for this file format is not supported.',
     serviceCodeErrorTitle: 'Service Code Error',
     serviceCodeErrorTip: 'If this window appears, it means that the service code is unable to execute correctly. The following is the error stack information for the service code execution.',
+    createService: 'Create Service',
+    createServiceFor: 'Create Service for space ',
+    serviceName: 'Service Name',
+    serviceType: 'Service Type',
+    mainService: 'Main Service',
+    commonService: 'Sub Service',
     // 租赁类型
     leaseType: {
       freeLabel: 'Free',
