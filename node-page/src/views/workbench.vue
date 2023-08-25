@@ -235,7 +235,6 @@ export default {
         service: this.mainService.name
       })
         .then(data => {
-          console.log('data', data)
           this.latestMainService = data
         })
         .catch(e => {

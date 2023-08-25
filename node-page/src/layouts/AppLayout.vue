@@ -1,18 +1,12 @@
 <template>
   <slot></slot>
-  <!-- 执行构建窗口 -->
-  <BuildNotice />
-  <MergeWindow />
 </template>
 
 <script>
 import {mapActions} from "vuex";
-import BuildNotice from "../components/service/installer/BuildNotice.vue";
-import MergeWindow from "../components/service/installer/merge/MergeWindow.vue";
 
 export default {
   name: 'AppLayout',
-  components: {MergeWindow, BuildNotice},
   props: {
     headerVisible: {
       type: Boolean,
@@ -59,7 +53,6 @@ export default {
     }
   }
   main {
-
   }
 }
 </style>

@@ -1,14 +1,19 @@
 <template>
   <RouterView />
   <HelpCenter/>
+  <!-- 文件合并窗口 -->
+  <MergeWindow />
+  <!-- 执行构建窗口 -->
+  <BuildNotice />
 </template>
 
 <script>
 import HelpCenter from "./components/common/HelpCenter.vue";
+import BuildNotice from "./components/service/installer/BuildNotice.vue";
+import MergeWindow from "./components/service/installer/merge/MergeWindow.vue";
 
 export default {
-  components: {HelpCenter}
-
+  components: {MergeWindow, BuildNotice, HelpCenter}
 }
 </script>
 

@@ -4,8 +4,6 @@ export default {
   install(app, options) {
     app.directive('sortable', {
       mounted (el, params, vnode) {
-        console.log('params', params)
-        console.log('vnode', vnode.component)
         const _vue = params.instance
         let datalist = params.value.data
         const tbody = el.querySelector('.el-table__body-wrapper tbody')
