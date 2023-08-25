@@ -157,14 +157,14 @@ export default {
         font-size: 16px;
       }
       a {
-        color: #42b883 !important;
+        color: var(--color-success) !important;
         text-decoration: underline;
       }
       .v-md-mermaid {
         .node {
           rect, circle, ellipse, polygon, path {
-            fill: #dbffef !important;
-            stroke: #42b883 !important;
+            fill: var(--color-success-light) !important;
+            stroke: var(--color-success) !important;
           }
         }
       }

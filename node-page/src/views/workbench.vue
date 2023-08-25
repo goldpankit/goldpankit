@@ -47,11 +47,15 @@
               :custom-class="(service) => {
                 return {selected: currentService != null && currentService.name === service.name}
               }"
+              :installed="service => {
+                return withInstalled(service)
+              }"
               @click="selectService($event)"
             >
               <template #title="{service}">
                 {{service.name}}
                 <el-icon v-if="hasNewVersion(service)"><Upload /></el-icon>
+                <el-icon v-else-if="withInstalled(service)" class="installed-icon"><Check /></el-icon>
               </template>
             </SubServiceList>
           </div>
@@ -206,6 +210,10 @@ export default {
   },
   methods: {
     ...mapMutations(['setCurrentProject']),
+    // 判断是否已安装
+    withInstalled (service) {
+      return this.project.services[service.name] != null
+    },
     // 查询项目信息
     fetchProject (withSubServices = false) {
       this.loading = true
@@ -399,7 +407,20 @@ export default {
       :deep(.sub-service-list) {
         li {
           padding: 15px 30px;
-          h5 .el-icon {
+          h5 {
+            position: relative;
+            padding-right: 30px;
+            .el-icon {
+              position: absolute;
+              top: 0;
+              right: 0;
+              font-size: 20px;
+              font-weight: bold;
+              color: var(--primary-color-match-2);
+            }
+            .installed-icon {
+              color: var(--color-success);
+            }
           }
         }
       }

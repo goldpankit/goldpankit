@@ -3,7 +3,7 @@
     <li
       v-for="service in services"
       :key="service.id"
-      :class="customClass(service)"
+      :class="{...customClass(service), 'service-installed': installed(service)}"
       @click.stop="$emit('click', service)"
     >
       <h5>
@@ -11,7 +11,10 @@
           {{service.name}}
         </slot>
       </h5>
-      <p class="latest-version">{{$t('service.latestVersion')}}: v{{service.lastVersion}}</p>
+      <p class="latest-version">
+        <span>{{$t('service.latestVersion')}}: v{{service.lastVersion}}</span>
+        <span v-if="installed(service)">INSTALLED</span>
+      </p>
       <p>{{service.introduce}}</p>
       <!-- 用户信息 -->
       <div class="user-profile">
@@ -52,6 +55,12 @@ export default {
       default () {
         return () => {}
       }
+    },
+    installed: {
+      type: Function,
+      default () {
+        return () => {}
+      }
     }
   }
 }
@@ -69,6 +78,9 @@ export default {
     &.selected {
       //background: var(--primary-color-match-1);
       color: var(--primary-color-match-2)
+    }
+    &.service-installed {
+      color: var(--color-gray);
     }
     h5 {
       font-size: var(--font-size-middle);
@@ -91,8 +103,15 @@ export default {
       justify-content: space-between;
     }
     .latest-version {
+      margin-top: 10px;
       margin-bottom: 5px;
       color: var(--font-color);
+      display: flex;
+      justify-content: space-between;
+      span:last-of-type {
+        font-weight: bold;
+        color: var(--color-gray);
+      }
     }
     // 用户信息
     .user-profile {
