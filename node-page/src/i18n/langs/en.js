@@ -106,7 +106,7 @@ export default {
   },
   // 空间相关
   space: {
-    homePage: 'Home Page',
+    homePage: 'Homepage',
     searchPlaceholder: 'Search spaces & services',
     searchEmpty: 'Not Found Spaces',
     publicSpaces: 'Public Spaces',
@@ -114,7 +114,15 @@ export default {
     createNewSpace: 'Create New Space',
     createNewSpaceIntroduce: 'Create a new service space and start a new journey of research and development.',
     workbench: 'Workbench',
-    workbenchIntroduce: 'Workbench is a commonly used interface in project development, where you can install more services for the project after clicking to enter.'
+    workbenchIntroduce: 'Workbench is a commonly used interface in project development, where you can install more services for the project after clicking to enter.',
+    createSpace: 'Create Space',
+    spaceName: 'Space Name',
+    introduce: 'Introduce',
+    otherSettings: 'Other settings',
+    isPrivateServiceTip: 'Is a private space',
+    receiveSubServicesTip: 'Receive sub services.',
+    spaceDescriptionLabel: 'Description / Space Readme',
+    spaceDescription: 'space description'
   },
   // 服务
   service: {
@@ -131,6 +139,7 @@ export default {
     install: 'INSTALL',
     install2: 'Install',
     installing: 'INSTALLING...',
+    installed: 'INSTALLED',
     reinstall: 'REINSTALL',
     upgrade: 'UPGRADE',
     uninstalling: 'UNINSTALLING...',

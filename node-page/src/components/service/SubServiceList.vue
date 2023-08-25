@@ -13,7 +13,7 @@
       </h5>
       <p class="latest-version">
         <span>{{$t('service.latestVersion')}}: v{{service.lastVersion}}</span>
-        <span v-if="installed(service)">INSTALLED</span>
+        <span v-if="installed(service)">{{$t('service.installed')}}</span>
       </p>
       <p>{{service.introduce}}</p>
       <!-- 用户信息 -->

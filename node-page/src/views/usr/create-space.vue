@@ -1,39 +1,39 @@
 <template>
   <div class="page">
     <div class="wrap">
-      <h2>Create Space</h2>
+      <h2>{{$t('space.createSpace')}}</h2>
       <div class="form-wrap">
         <el-form ref="form" :model="form" :rules="rules">
           <el-form-item label="Space Name" prop="name" required>
             <template #label>
-              <span>Space Name</span>
+              <span>{{$t('space.spaceName')}}</span>
               <HelpButton code="space-name"/>
             </template>
             <el-input v-model="form.name" maxlength="20"/>
           </el-form-item>
-          <el-form-item label="Homepage" prop="homepage">
+          <el-form-item :label="$t('space.homePage')" prop="homepage">
             <el-input v-model="form.homepage" />
           </el-form-item>
-          <el-form-item label="Introduce" prop="introduce" required>
+          <el-form-item :label="$t('space.introduce')" prop="introduce" required>
             <el-input v-model="form.introduce" type="textarea" :rows="3" maxlength="200"/>
           </el-form-item>
-          <el-form-item label="Other settings" class="item-other-settings">
+          <el-form-item :label="$t('space.otherSettings')" class="item-other-settings">
             <div>
-              <el-checkbox v-model="form.withPrivate" label="Is a private space"/>
+              <el-checkbox v-model="form.withPrivate" :label="$t('space.isPrivateServiceTip')"/>
             </div>
             <div>
-              <el-checkbox v-model="form.subServiceReceivable" label="Receive sub services."/>
+              <el-checkbox v-model="form.subServiceReceivable" :label="$t('space.receiveSubServicesTip')"/>
             </div>
           </el-form-item>
         </el-form>
         <el-form ref="descForm" class="description-form" :model="form">
-          <el-form-item label="Description / Space Readme" prop="description" required>
-            <MarkdownEditor v-model="form.description" placeholder="space description"/>
+          <el-form-item :label="$t('space.spaceDescriptionLabel')" prop="description" required>
+            <MarkdownEditor v-model="form.description" :placeholder="$t('space.spaceDescription')"/>
           </el-form-item>
         </el-form>
       </div>
       <div class="opera">
-        <el-button type="primary" size="large" @click="create">Create Space</el-button>
+        <el-button type="primary" size="large" @click="create">{{$t('space.createSpace')}}</el-button>
       </div>
     </div>
   </div>

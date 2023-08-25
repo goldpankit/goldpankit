@@ -114,7 +114,15 @@ export default {
     createNewSpace: '创建新的空间',
     createNewSpaceIntroduce: '点击此处可创建一个新的空间，您可以自由选择是私有空间或公共空间。',
     workbench: '工作台',
-    workbenchIntroduce: '工作台是项目开发常用的界面，点击进入后您可以为项目安装更多服务。'
+    workbenchIntroduce: '工作台是项目开发常用的界面，点击进入后您可以为项目安装更多服务。',
+    createSpace: '创建服务空间',
+    spaceName: '空间名称',
+    introduce: '简介',
+    otherSettings: '其他设置',
+    isPrivateServiceTip: '这是一个私有空间',
+    receiveSubServicesTip: '允许其他人发布子服务到该空间',
+    spaceDescriptionLabel: '空间描述',
+    spaceDescription: '详细描述空间的内容和提供的服务，会让服务空间更有吸引力'
   },
   // 服务
   service: {
@@ -131,6 +139,7 @@ export default {
     install: '安装',
     install2: '安装',
     installing: '安装中...',
+    installed: '已安装',
     reinstall: '重新安装',
     upgrade: '立即升级',
     uninstalling: '卸载中...',
