@@ -225,7 +225,7 @@ export default {
       // 翻译器
       translator: {
         translator: '翻译器',
-        translatorTip: '提示：翻译器起到对服务代码批量替换的作用，可以快速的将服务代码转换成Freemarker或者其他编译器语言的代码',
+        translatorTip: '提示：翻译器起到对服务代码批量替换的作用，可以快速的将服务代码转换成Freemarker或者其他编译器语言的代码。',
         translate: '翻译',
         path: '翻译文件路径',
         type: '类型',
@@ -234,10 +234,32 @@ export default {
       },
       // 构建
       build: {
-        buildTip: '提示：安装构建为安装服务后自动执行的脚本',
+        buildTip: '提示：安装构建为安装服务后自动执行的脚本。',
+        unBuildTip: '提示：卸载构建为卸载服务后自动执行的脚本。',
         buildCommand: '请输入构建命令',
         input: '文本',
         file: '文件'
+      },
+      // 变量
+      variable: {
+        addVariable: '添加变量',
+        addGroup: '添加变量组',
+        noVariables: '暂无变量设定',
+        variableSetting: '变量设置',
+        variableHolderTitle: '变量和变量组设置',
+        variableHolderTip: '点击左侧变量来打开变量或变量组设置。如无法获取变量值，请留意您选择的编译器。',
+        name: '变量名',
+        label: '变量提示',
+        groupName: '组变量名',
+        groupLabel: '组变量提示',
+        inputType: '输入类型',
+        options: '值选项列表',
+        optionLabel: '名称',
+        optionValue: '值',
+        defaultValue: '默认值',
+        required: '是否必填',
+        hidden: '是否隐藏',
+        compiler: '编译器'
       }
     }
   },

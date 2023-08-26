@@ -2,8 +2,8 @@
   <div class="tree">
     <div class="variables-wrap">
       <div class="tools">
-        <el-button icon="Plus" type="primary" @click="createVariable()">Add Variable</el-button>
-        <el-button icon="Plus" type="primary" @click="createGroup(null, 'service')">Add Group</el-button>
+        <el-button icon="Plus" type="primary" @click="createVariable()">{{$t('service.settings.variable.addVariable')}}</el-button>
+        <el-button icon="Plus" type="primary" @click="createGroup(null, 'service')">{{$t('service.settings.variable.addGroup')}}</el-button>
       </div>
       <el-tree
         ref="tree"
@@ -16,7 +16,7 @@
         draggable
         :allow-drop="allowDrop"
         :allow-drag="allowDrag"
-        empty-text="No Variables"
+        :empty-text="$t('service.settings.variable.noVariables')"
         @node-drag-start="handleDragStart"
         @node-drop="handleDrop"
       >
@@ -40,7 +40,7 @@
     </div>
     <div class="variable-setting">
       <div class="title">
-        <h4>Variable Setting</h4>
+        <h4>{{$t('service.settings.variable.variableSetting')}}</h4>
         <el-button v-if="currentVariable != null" type="danger" text @click="deleteVariable">Delete</el-button>
       </div>
       <div class="content-wrap">
@@ -60,8 +60,8 @@
         </template>
         <template v-else>
           <div class="variable-holder">
-            <h4>Variable & Variable Group Settings</h4>
-            <p>You can open Settings by clicking on variables or groups of variables on the left.</p>
+            <h4>{{$t('service.settings.variable.variableHolderTitle')}}</h4>
+            <p>{{$t('service.settings.variable.variableHolderTip')}}</p>
           </div>
         </template>
       </div>

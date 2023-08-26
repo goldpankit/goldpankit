@@ -232,9 +232,30 @@ export default {
       },
       build: {
         buildTip: 'tips: The following builds are performed after the service is installed',
+        unBuildTip: 'tips: The following builds are performed after the service is uninstalled',
         buildCommand: 'Build command',
         input: 'Input',
         file: 'File'
+      },
+      variable: {
+        addVariable: 'Add Variable',
+        addGroup: 'Add Group',
+        noVariables: 'No Variables',
+        variableSetting: 'Variable Setting',
+        variableHolderTitle: 'Variable & Variable Group Settings',
+        variableHolderTip: 'You can open Settings by clicking on variables or groups of variables on the left.',
+        name: 'Name',
+        label: 'Label',
+        groupName: 'Name',
+        groupLabel: 'Label',
+        inputType: 'Input Type',
+        options: 'Options',
+        optionLabel: 'Label',
+        optionValue: 'Value',
+        defaultValue: 'Default Value',
+        required: 'Required',
+        hidden: 'Hidden',
+        compiler: 'Compiler'
       }
     }
   },

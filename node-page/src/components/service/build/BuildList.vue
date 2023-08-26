@@ -1,8 +1,9 @@
 <template>
   <div class="service-build-list">
     <div class="toolbar">
-      <p>{{$t('service.settings.build.buildTip')}}</p>
-      <el-button type="primary" @click="create">Create</el-button>
+      <p v-if="withUnbuild">{{$t('service.settings.build.unBuildTip')}}</p>
+      <p v-else>{{$t('service.settings.build.buildTip')}}</p>
+      <el-button type="primary" @click="create">{{$t('common.create')}}</el-button>
     </div>
     <el-collapse v-if="builds.length > 0" v-model="actives" @change="handleChange">
       <el-collapse-item

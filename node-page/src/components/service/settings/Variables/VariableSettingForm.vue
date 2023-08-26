@@ -1,12 +1,12 @@
 <template>
   <el-form :model="variable">
-    <el-form-item label="Label" required>
+    <el-form-item :label="$t('service.settings.variable.label')" required>
       <el-input v-model="variable.label" @input="handleChange"/>
     </el-form-item>
-    <el-form-item label="Name" required>
+    <el-form-item :label="$t('service.settings.variable.name')" required>
       <el-input v-model="variable.name" @input="handleChange"/>
     </el-form-item>
-    <el-form-item label="Input Type" required>
+    <el-form-item :label="$t('service.settings.variable.inputType')" required>
       <InputTypeSelect
         v-model="variable.inputType"
         :with-group="withGroup"
@@ -15,15 +15,15 @@
     </el-form-item>
     <el-form-item
       v-if="variable.inputType === 'select' || variable.inputType === 'checkbox' || variable.inputType === 'radio'"
-      label="Options"
+      :label="$t('service.settings.variable.options')"
       class="item-options"
       required
     >
       <template #label>
         <div>
-          <label>Options</label>
+          <label>{{$t('service.settings.variable.options')}}</label>
           <div class="opera">
-            <el-button type="primary" @click="createOption">Add</el-button>
+            <el-button type="primary" @click="createOption">{{$t('common.add')}}</el-button>
           </div>
         </div>
       </template>
@@ -37,17 +37,17 @@
         <el-table-column width="25px">
           <SortableButton/>
         </el-table-column>
-        <el-table-column label="*Label" min-width="200px">
+        <el-table-column :label="'*' + $t('service.settings.variable.optionLabel')" min-width="200px">
           <template #default="{ row }">
             <el-input v-model="row.label" type="textarea" :rows="1" @input="handleChange"/>
           </template>
         </el-table-column>
-        <el-table-column label="*Value" min-width="120px">
+        <el-table-column :label="'*' + $t('service.settings.variable.optionValue')" min-width="120px">
           <template #default="{ row }">
             <el-input v-model="row.value" @input="handleChange"/>
           </template>
         </el-table-column>
-        <el-table-column label="Remark" min-width="150px">
+        <el-table-column :label="$t('common.remark')" min-width="150px">
           <template #default="{ row }">
             <el-input v-model="row.remark" type="textarea" :rows="1" @input="handleChange"/>
           </template>
@@ -66,17 +66,17 @@
       <!-- 选项设置 -->
       <OptionSettingWindow ref="optionSettingWindow" @change="handleChange"/>
     </el-form-item>
-    <el-form-item label="Default Value">
+    <el-form-item :label="$t('service.settings.variable.defaultValue')">
       <VariableInput
         :variable="variable"
         value-key="defaultValue"
         @change="handleDefaultValueChange"
       />
     </el-form-item>
-    <el-form-item label="Required">
+    <el-form-item :label="$t('service.settings.variable.required')">
       <el-switch v-model="variable.required" @change="handleChange"/>
     </el-form-item>
-    <el-form-item label="Hidden">
+    <el-form-item :label="$t('service.settings.variable.hidden')">
       <el-switch v-model="variable.hidden" @change="handleChange"/>
     </el-form-item>
     <el-form-item
@@ -87,11 +87,11 @@
         rootVariable.inputType !== 'query_model' &&
         rootVariable.inputType !== 'table'
       "
-      label="Compiler"
+      :label="$t('service.settings.variable.compiler')"
     >
       <CompilerSelect v-model="variable.compiler" @change="handleChange"/>
     </el-form-item>
-    <el-form-item label="Remark">
+    <el-form-item :label="$t('common.remark')">
       <el-input v-model="variable.remark" type="textarea" :rows="3" @input="handleChange"/>
     </el-form-item>
   </el-form>

@@ -7,10 +7,10 @@
 <!--        <el-radio label="query_model_field" border>Query Model Field</el-radio>-->
 <!--      </el-radio-group>-->
 <!--    </el-form-item>-->
-    <el-form-item label="Label" required>
+    <el-form-item :label="$t('service.settings.variable.groupLabel')" required>
       <el-input v-model="variable.label" @input="handleChange"/>
     </el-form-item>
-    <el-form-item label="Name" required>
+    <el-form-item :label="$t('service.settings.variable.groupName')" required>
       <el-input v-model="variable.name" @input="handleChange"/>
     </el-form-item>
   </el-form>
