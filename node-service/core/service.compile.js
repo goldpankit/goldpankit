@@ -31,7 +31,6 @@ class Kit {
     return new Promise((resolve, reject) => {
       // 验证安装
       const checkResult = this.#checkInstall(dto.projectId, dto.space, dto.service, dto.serviceType)
-      console.log('checkResult', checkResult)
       if (checkResult != null) {
         reject(checkResult)
         return
@@ -148,6 +147,11 @@ class Kit {
    */
   compile(dto) {
     return new Promise((resolve, reject) => {
+      const checkResult = this.#checkInstall(dto.projectId, dto.space, dto.service, dto.serviceType)
+      if (checkResult != null) {
+        reject(checkResult)
+        return
+      }
       this.#compile(dto)
         .then(data => {
           try {
@@ -236,6 +240,10 @@ class Kit {
     const project = userProject.findDetailById(projectId)
     if (project == null) {
       return response.INSTALL.MISSING_PROJECT
+    }
+    // 没有安装过任何项目
+    if (project.main === undefined) {
+      return
     }
     // 验证当前项目是否安装了别的主服务，如果是，则做出提醒
     if (project.space !== space || (project.main != null && project.main[service] == null)) {

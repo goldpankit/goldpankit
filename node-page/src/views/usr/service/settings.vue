@@ -166,6 +166,7 @@ export default {
       this.isWorking.compile = true
       compile({
         ...this.route,
+        serviceType: this.service.type,
         projectId: this.currentProject,
         database: this.currentDatabase,
         variables: this.$refs.variables.getVariables()
