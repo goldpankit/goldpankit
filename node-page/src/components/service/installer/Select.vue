@@ -24,6 +24,7 @@
         v-if="currentOption != null"
         v-model="optionSettingData.visible"
         :title="`${currentOption.label} Settings`"
+        :append-to-body="true"
       >
         <el-form>
           <el-form-item

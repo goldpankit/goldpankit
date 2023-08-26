@@ -5,6 +5,7 @@
     v-model="visible"
     fullscreen
     append-to-body
+    :close-on-press-escape="false"
     :show-close="false"
   >
     <div class="merge-wrap">

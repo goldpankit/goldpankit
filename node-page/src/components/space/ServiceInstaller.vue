@@ -75,7 +75,7 @@ import DirectorySelect from "../common/DirectorySelect.vue";
 import ProjectSelect from "../usr/project/ProjectSelect.vue";
 import {install, uninstall} from "../../api/service.compile";
 import {fetchVersion} from "../../api/service.version";
-import {getDefaultEmptyValue} from "../../utils/variable";
+import {getDefaultEmptyValue, isEmptyValue} from "../../utils/variable";
 import MergeWindow from "../service/installer/merge/MergeWindow.vue";
 import ServiceCodeErrorWindow from "../service/ServiceCodeErrorWindow.vue";
 
@@ -194,7 +194,19 @@ export default {
         return
       }
       this.isWorking.install = true
-      // 安装服务
+      // 项目验证
+      if (this.currentProject == null) {
+        this.$tip.warning('请选择项目')
+        this.isWorking.install = false
+        return
+      }
+      // 变量验证
+      const variables = this.__getInstallVariables(this.variables)
+      if (!this.__checkVariables(variables)) {
+        this.isWorking.install = false
+        return
+      }
+      // 开始安装
       install({
         projectId: this.currentProject,
         database: this.currentDatabase,
@@ -202,7 +214,7 @@ export default {
         service: this.service,
         serviceType: this.serviceType,
         version: this.version,
-        variables: this.__getInstallVariables(this.variables)
+        variables
       })
         .then(installData => {
           this.$tip.success(this.$t('service.installSuccessfully'))
@@ -270,6 +282,76 @@ export default {
           this.isWorking.uninstall = false
         })
     },
+    // 检查变量
+    __checkVariables (variables, groupName) {
+      // 开始验证
+      for (const variable of variables) {
+        // 查询模型 & 表
+        if (variable.inputType === 'query_model' || variable.inputType === 'table') {
+          // 字段变量组
+          for (const fieldGroup of variable.children) {
+            const fieldGroupValue = fieldGroup.value
+            // 字段变量
+            for (const fieldVariable of fieldGroup.children) {
+              if (!fieldVariable.required) {
+                continue
+              }
+              const emptyField = fieldGroupValue.find(field => isEmptyValue(field[fieldVariable.name]))
+              if (emptyField != null) {
+                this.$tip.warning(`在${fieldGroup.label}中，${emptyField.name}缺少${fieldVariable.label}`)
+                return false
+              }
+            }
+          }
+          continue
+        }
+        // select
+        if (variable.inputType === 'select') {
+          console.log(variable)
+          const selected = variable.value
+          // 必填且未选择值
+          if (variable.required && selected.value == null) {
+            this.__tipEmptyVariable(variable, groupName)
+            return false
+          }
+          // 选中了值，那么查看选项中的设定是否有空缺
+          if (selected.value != null) {
+            const selectedOption = variable.options.find(opt => opt.value === selected.value)
+            if (selectedOption.settings.length > 0) {
+              for (const optionSett of selectedOption.settings) {
+                if (isEmptyValue(selected.settings[optionSett.name])) {
+                  this.$tip.warning(`${variable.label}缺失${optionSett.label}设定`)
+                  return false
+                }
+              }
+            }
+          }
+          continue
+        }
+        // 变量组
+        if (variable.type === 'group') {
+          const checkResult = this.__checkVariables(variable.children, variable.label)
+          if (!checkResult) {
+            return false
+          }
+          continue
+        }
+        // 普通变量
+        if (isEmptyValue(variable.value)) {
+          this.__tipEmptyVariable(variable, groupName)
+          return false
+        }
+      }
+      return true
+    },
+    // 提示空变量
+    __tipEmptyVariable (variable, groupName) {
+      if (groupName != null) {
+        this.$tip.warning(`${groupName}组中缺少${variable.label}`)
+      } else {
+        this.$tip.warning(`缺少${variable.label}`)
+      }
+    },
     // 获取安装变量值
     __getInstallVariables (variables) {
       return variables.map(variable => {
@@ -284,6 +366,10 @@ export default {
             settings[setting.name] = setting.value
           }
           variable.value.settings = settings
+        }
+        // 变量组
+        if (variable.type === 'group') {
+          variable.children = this.__getInstallVariables(variable.children)
         }
         return variable
       })
