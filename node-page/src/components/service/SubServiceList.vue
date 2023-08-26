@@ -3,7 +3,7 @@
     <li
       v-for="service in services"
       :key="service.id"
-      :class="{...customClass(service), 'service-installed': installed(service)}"
+      :class="{...customClass(service), 'service-installed': installed(service) === true}"
       @click.stop="$emit('click', service)"
     >
       <h5>
@@ -13,7 +13,7 @@
       </h5>
       <p class="latest-version">
         <span>{{$t('service.latestVersion')}}: v{{service.lastVersion}}</span>
-        <span v-if="installed(service)">{{$t('service.installed')}}</span>
+        <span v-if="installed(service) === true">{{$t('service.installed')}}</span>
       </p>
       <p>{{service.introduce}}</p>
       <!-- 用户信息 -->
