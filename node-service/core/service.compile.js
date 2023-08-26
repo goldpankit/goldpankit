@@ -1,4 +1,5 @@
 // 安装服务
+const response = require('./constants/response')
 const service = require('./service')
 const cache = require("./utils/cache");
 const serviceApi = require("./api/service");
@@ -28,6 +29,13 @@ class Kit {
    */
   install (dto) {
     return new Promise((resolve, reject) => {
+      // 验证安装
+      const checkResult = this.#checkInstall(dto.projectId, dto.space, dto.service, dto.serviceType)
+      console.log('checkResult', checkResult)
+      if (checkResult != null) {
+        reject(checkResult)
+        return
+      }
       dto.operaType = 'INSTALL'
       this.#install(dto)
         .then(({ data, project, service, database, variables}) => {
@@ -213,6 +221,28 @@ class Kit {
   }
 
   /**
+   * 检查安装
+   * @param projectId 安装的目标项目ID
+   * @param space 需安装的服务空间名称
+   * @param service 需安装的服务名称
+   * @param serviceType 需安装的服务类型
+   */
+  #checkInstall (projectId, space, service, serviceType) {
+    // 非主服务，不做验证
+    if (serviceType !== 'MAIN') {
+      return
+    }
+    // 查询项目
+    const project = userProject.findDetailById(projectId)
+    if (project == null) {
+      return response.INSTALL.MISSING_PROJECT
+    }
+    // 验证当前项目是否安装了别的主服务，如果是，则做出提醒
+    if (project.space !== space || (project.main != null && project.main[service] == null)) {
+      return response.INSTALL.PROJECT_NOT_ALLOWED
+    }
+  }
+  /**
    * 编译服务
    * @param dto = {
    *   projectId: '', // 当前选择的项目ID
@@ -291,7 +321,7 @@ class Kit {
       const projectId = dto.projectId
       const project = userProject.findDetailById(projectId)
       if (project == null) {
-        return Promise.reject('Please select a project.')
+        return Promise.reject(response.INSTALL.MISSING_PROJECT)
       }
       // 获取数据库信息
       const database = cache.datasources.get(dto.database)

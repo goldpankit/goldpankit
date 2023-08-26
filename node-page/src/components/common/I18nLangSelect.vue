@@ -22,6 +22,7 @@ export default {
       fetchLang()
         .then(lang => {
           this.$i18n.locale = lang
+          window.localStorage.setItem('lang', lang)
         })
         .catch(e => {
           this.$tip.apiFailed(e)

@@ -1,6 +1,5 @@
 import axios from 'axios'
 import {trim} from "./util";
-
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_LOCAL_API_PREFIX,
   timeout: 600000,
@@ -11,6 +10,8 @@ const axiosInstance = axios.create({
 
 // 添加请求拦截器
 axiosInstance.interceptors.request.use(function (config) {
+  // 补充国际化语言
+  config.headers['x-lang'] = window.localStorage.getItem('lang')
   // 参数去空格
   if (config.trim === true) {
     if (config.data != null) {

@@ -18,6 +18,7 @@ class Request {
       try {
         // 存储请求头到缓存中
         cache.set('request_headers', req.headers)
+        cache.set('request_lang', req.headers['x-lang'])
         let result = callback
         if (typeof callback === 'function') {
           result = callback(req)
@@ -43,35 +44,6 @@ class Request {
     })
   }
 
-  // 代理
-  proxy () {
-    router[this.#methods](this.#url, (req, res, next) => {
-      // console.log(`Proxy: ${this.#methods} ${this.#url}`)
-      // 存储请求头到缓存中
-      cache.set('request_headers', req.headers)
-      // 如果存在参数
-      let url = this.#url
-      if (url.indexOf(':') !== -1 && req.params != null && typeof req.params === 'object') {
-        for (const key in req.params) {
-          url = url.replace(new RegExp(`:${key}`,'g'), req.params[key])
-        }
-      }
-      let requestPromise = null
-      if (this.#methods === 'get') {
-        requestPromise = request[this.#methods](url)
-      } else {
-        requestPromise = request[this.#methods](url, req.body)
-      }
-      requestPromise
-        .then(data => {
-          res.send(this.#buildSuccess(data))
-        })
-        .catch(e => {
-          res.send(this.#buildError(e))
-        })
-    })
-  }
-
   #buildSuccess(data) {
     return {
       code: 200,
@@ -82,7 +54,14 @@ class Request {
   }
 
   #buildError(e) {
-    const message = typeof e === 'string' ? e : e.message
+    let message = e
+    if (typeof e !== 'string') {
+      message = e.message
+      // 读取i18n消息
+      if (message.withI18n === true) {
+        message = message[cache.get('request_lang')]
+      }
+    }
     log.error(message)
     return {
       code: e.code || 500,
