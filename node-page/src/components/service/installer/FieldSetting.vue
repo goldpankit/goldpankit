@@ -15,7 +15,7 @@
       :min-width="getColumnMinWidth(variable)"
     >
       <template #header>
-        <em v-if="variable.required" class="required">*</em>{{variable.name}}
+        <em v-if="variable.required" class="required">*</em>{{variable.label}}
       </template>
       <template #default="{ row }">
         <TableFieldVariableInput
