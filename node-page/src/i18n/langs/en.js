@@ -177,6 +177,7 @@ export default {
     serviceType: 'Service Type',
     mainService: 'Main Service',
     commonService: 'Sub Service',
+    selectProject: 'Please select a project first',
     fieldMissingValueTip: 'In「{fieldGroupLabel}」，the field「{emptyFieldName}」is missing「{fieldVariableLabel}」',
     variableMissingSettingTip: '「{variable}」is missing the「{settingLabel}」setting',
     missingVariableValueTip: 'Missing「{variable}」',

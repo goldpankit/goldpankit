@@ -195,7 +195,7 @@ export default {
       }
       this.isWorking.install = true
       // 项目验证
-      if (this.currentProject == null) {
+      if (this.currentProject == null || this.currentProject === '') {
         this.$tip.warning(this.$t('service.selectProject'))
         this.isWorking.install = false
         return
