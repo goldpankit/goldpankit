@@ -196,7 +196,7 @@ export default {
       this.isWorking.install = true
       // 项目验证
       if (this.currentProject == null) {
-        this.$tip.warning('请选择项目')
+        this.$tip.warning(this.$t('service.selectProject'))
         this.isWorking.install = false
         return
       }
@@ -298,7 +298,15 @@ export default {
               }
               const emptyField = fieldGroupValue.find(field => isEmptyValue(field[fieldVariable.name]))
               if (emptyField != null) {
-                this.$tip.warning(`在${fieldGroup.label}中，${emptyField.name}缺少${fieldVariable.label}`)
+                this.$tip.warning(
+                  this.$t('service.fieldMissingValueTip',
+                    {
+                      fieldGroupLabel:fieldGroup.label,
+                      emptyFieldName: emptyField.name,
+                      fieldVariableLabel: fieldVariable.label
+                    }
+                  )
+                )
                 return false
               }
             }
@@ -307,7 +315,6 @@ export default {
         }
         // select
         if (variable.inputType === 'select') {
-          console.log(variable)
           const selected = variable.value
           // 必填且未选择值
           if (variable.required && selected.value == null) {
@@ -320,7 +327,15 @@ export default {
             if (selectedOption.settings.length > 0) {
               for (const optionSett of selectedOption.settings) {
                 if (isEmptyValue(selected.settings[optionSett.name])) {
-                  this.$tip.warning(`${variable.label}缺失${optionSett.label}设定`)
+                  this.$tip.warning(
+                    this.$t(
+                      'service.variableMissingSettingTip',
+                      {
+                        variable: variable.label,
+                        settingLabel: optionSett.label
+                      }
+                    )
+                  )
                   return false
                 }
               }
@@ -347,9 +362,9 @@ export default {
     // 提示空变量
     __tipEmptyVariable (variable, groupName) {
       if (groupName != null) {
-        this.$tip.warning(`${groupName}组中缺少${variable.label}`)
+        this.$tip.warning(this.$t('service.missingGroupVariableValueTip', { variable: variable.label, groupName }))
       } else {
-        this.$tip.warning(`缺少${variable.label}`)
+        this.$tip.warning(this.$t('service.missingVariableValueTip', { variable: variable.label }))
       }
     },
     // 获取安装变量值
@@ -424,13 +439,6 @@ export default {
          * 要初始化值，需要将variable.children（也就是字段变量组）的value值给定为settings下的组值
          */
         if (variable.inputType === 'table' || variable.inputType === 'query_model') {
-          // console.log('variable', variable)
-          // console.log('value', value)
-          // // 字段变量组
-          // for (const group of variable.children) {
-          //   group.value = group.defaultValue
-          // }
-          // variable.value = value
           for (const groupName in value.settings) {
             const targetGroup = variable.children.find(group => group.name === groupName)
             if (targetGroup == null) {
@@ -439,7 +447,6 @@ export default {
             targetGroup.value = value.settings[groupName]
           }
           variable.value = value.value
-          console.log(variable.name, variable.value, value)
           return variable
         }
         if (variable.type === 'group') {

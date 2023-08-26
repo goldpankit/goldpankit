@@ -177,6 +177,11 @@ export default {
     serviceType: 'Service Type',
     mainService: 'Main Service',
     commonService: 'Sub Service',
+    fieldMissingValueTip: 'In「{fieldGroupLabel}」，the field「{emptyFieldName}」is missing「{fieldVariableLabel}」',
+    variableMissingSettingTip: '「{variable}」is missing the「{settingLabel}」setting',
+    missingVariableValueTip: 'Missing「{variable}」',
+    missingGroupVariableValueTip: 'Missing「{variable}」In「{groupName}」',
+    settingsForSelectType: ' Deep Settings',
     // 租赁类型
     leaseType: {
       freeLabel: 'Free',

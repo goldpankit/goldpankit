@@ -178,6 +178,12 @@ export default {
     serviceType: '服务类型',
     mainService: '主服务',
     commonService: '子服务',
+    selectProject: '请选择项目',
+    fieldMissingValueTip: '在「{fieldGroupLabel}」中，「{emptyFieldName}」字段缺少「{fieldVariableLabel}」',
+    variableMissingSettingTip: '「{variable}」缺少「{settingLabel}」设定',
+    missingVariableValueTip: '缺少「{variable}」',
+    missingGroupVariableValueTip: '「{groupName}」中缺少「{variable}」',
+    settingsForSelectType: '深度设置',
     // 租赁类型
     leaseType: {
       freeLabel: '免费',
