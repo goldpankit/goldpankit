@@ -2,7 +2,7 @@
   <el-dialog
     v-model="visible"
     class="publish-window"
-    title="Publish version"
+    :title="$t('service.settings.publishVersion')"
     width="500px"
     draggable
     :close-on-press-escape="false"
@@ -20,9 +20,9 @@
     </el-form>
     <template #footer>
       <span class="dialog-footer">
-        <el-button @click="visible = false">Cancel</el-button>
+        <el-button @click="visible = false">{{$t('common.cancel')}}</el-button>
         <el-button type="primary" :disabled="isWorking" @click="publish">
-          Confirm
+          {{$t('service.settings.publish')}}
         </el-button>
       </span>
     </template>

@@ -10,6 +10,7 @@
         class="variables"
         :expand-on-click-node="false"
         :default-expand-all="true"
+        :highlight-current="true"
         :data="variables"
         node-key="name"
         @node-click="selectVariable"
@@ -533,15 +534,6 @@ export default {
         &:last-of-type {
           border-bottom: 0;
         }
-        &.is-current > .el-tree-node__content {
-          background: var(--selected-background-color);
-          &:hover {
-            background: var(--selected-background-color);
-          }
-        }
-        //&:focus > .el-tree-node__content, &:hover > .el-tree-node__content {
-        //  background: var(--selected-background-color);
-        //}
       }
       :deep(.title) {
         width: 100%;

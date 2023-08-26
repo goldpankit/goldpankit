@@ -325,19 +325,6 @@ export default {
             color: var(--color-gray);
           }
         }
-        // 节点
-        /*.el-tree-node {*/
-        /*  min-height: 30px;*/
-        /*  .el-tree-node__content {*/
-        /*    min-height: 30px;*/
-        /*  }*/
-        /*  &.is-current > .el-tree-node__content {*/
-        /*    background: var(--selected-background-color);*/
-        /*    &:hover {*/
-        /*      background: var(--selected-background-color);*/
-        /*    }*/
-        /*  }*/
-        /*}*/
       }
     }
     // 内容预览

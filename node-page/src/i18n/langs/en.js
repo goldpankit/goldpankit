@@ -202,6 +202,7 @@ export default {
       compile: 'Compile',
       cleanCompile: 'Clean Compile',
       publish: 'Publish',
+      publishVersion: 'Publish Version',
       at: 'At',
       space: 'Space',
       service: 'Service',
@@ -256,6 +257,15 @@ export default {
         required: 'Required',
         hidden: 'Hidden',
         compiler: 'Compiler'
+      },
+      file: {
+        filterKeyword: 'Filter keyword',
+        noFiles: 'No Files',
+        fileSetting: 'File Settings',
+        fileSettingHolder: 'You can click on the file on the left to open file settings.',
+        compiler: 'Compiler',
+        enableExpress: 'Enable Express',
+        enableExpressHolder: `The expression is compiled using the current file compiler. It is considered enabled when the result is the string 'true' or when it is empty.`
       }
     }
   },

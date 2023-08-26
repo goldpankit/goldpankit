@@ -2,11 +2,12 @@
   <div class="tree">
     <div class="files-wrap">
       <div class="search-wrap">
-        <el-input placeholder="Filter keyword" />
+        <el-input :placeholder="$t('service.settings.file.filterKeyword')" />
       </div>
       <el-tree
         :data="files"
-        empty-text="No Files"
+        :highlight-current="true"
+        :empty-text="$t('service.settings.file.noFiles')"
         @node-click="handleNodeClick"
       >
         <template #default="{ node, data }">
@@ -19,58 +20,25 @@
       </el-tree>
     </div>
     <div class="file-setting">
-      <h4>File Setting</h4>
+      <h4>{{$t('service.settings.file.fileSetting')}}</h4>
       <div class="content-wrap">
         <el-form v-if="currentNode != null">
-          <el-form-item label="Compiler">
+          <el-form-item :label="$t('service.settings.file.compiler')">
             <CompilerSelect v-model="currentNode.compiler" :with-follow-service="true" @change="saveFileSetting"/>
           </el-form-item>
-          <el-form-item label="Enable Express">
-            <el-input v-model="currentNode.enableExpress" type="textarea" :rows="8" @input="saveFileSetting"/>
-          </el-form-item>
-          <el-form-item label="Variables" class="item-variables">
-            <template #label>
-              <div>
-                <label>Variables</label>
-                <div class="opera">
-                  <el-button icon="Top" class="button-icon"></el-button>
-                  <el-button icon="Bottom" class="button-icon"></el-button>
-                  <el-button @click="createVariable">Add</el-button>
-                </div>
-              </div>
-            </template>
-            <el-table :data="currentNode.variables" v-sortable:config="{ data: currentNode.variables, onChange: handleSorted }">
-              <el-table-column width="25px">
-                <SortableButton/>
-              </el-table-column>
-              <el-table-column label="*Name" min-width="120px">
-                <template #default="{ row }">
-                  <el-input v-model="row.name" @input="saveFileSetting"/>
-                </template>
-              </el-table-column>
-              <el-table-column label="*Value" min-width="200px">
-                <template #default="{ row }">
-                  <el-input v-model="row.value" type="textarea" :rows="1" @change="saveFileSetting"/>
-                </template>
-              </el-table-column>
-              <el-table-column label="*Compiler" min-width="120px">
-                <template #default="{ row }">
-                  <CompilerSelect v-model="row.compiler" @change="saveFileSetting"/>
-                </template>
-              </el-table-column>
-              <el-table-column label="Remark" min-width="140px">
-                <template #default="{ row }">
-                  <el-input v-model="row.remark" type="textarea" :rows="1" @input="saveFileSetting"/>
-                </template>
-              </el-table-column>
-              <el-table-column v-if="currentNode.variables.length > 0" min-width="60px" fixed="right">
-                <template #default="{ row, index }">
-                  <el-button icon="Delete" class="button-icon" @click="deleteVariable(index)"></el-button>
-                </template>
-              </el-table-column>
-            </el-table>
+          <el-form-item :label="$t('service.settings.file.enableExpress')">
+            <el-input
+              v-model="currentNode.enableExpress"
+              type="textarea"
+              :rows="8"
+              :placeholder="$t('service.settings.file.enableExpressHolder')"
+              @input="saveFileSetting"
+            />
           </el-form-item>
         </el-form>
+        <div v-else class="setting-holder">
+          {{$t('service.settings.file.fileSettingHolder')}}
+        </div>
       </div>
     </div>
   </div>
@@ -202,7 +170,6 @@ export default {
       }
       .filename {
         flex-grow: 1;
-        color: #005980;
         word-break: break-all;
         &.flag-file {
           color: var(--primary-color-match-2);
@@ -234,6 +201,15 @@ export default {
             }
           }
         }
+      }
+      .setting-holder {
+        width: 100%;
+        height: 100%;
+        font-size: var(--font-size-middle);
+        color: var(--color-gray);
+        display: flex;
+        justify-content: center;
+        padding-top: 100px;
       }
     }
   }

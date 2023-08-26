@@ -203,6 +203,7 @@ export default {
       compile: '编译',
       cleanCompile: '反向编译',
       publish: '发布',
+      publishVersion: '发布版本',
       at: '在',
       space: '空间设置',
       service: '服务设置',
@@ -260,6 +261,16 @@ export default {
         required: '是否必填',
         hidden: '是否隐藏',
         compiler: '编译器'
+      },
+      // 文件
+      file: {
+        filterKeyword: '关键字',
+        noFiles: '暂无服务文件',
+        fileSetting: '文件设置',
+        fileSettingHolder: '你可以点击左侧文件打开文件设置',
+        compiler: '编译器',
+        enableExpress: '文件启用表达式',
+        enableExpressHolder: `表达式使用当前文件编译器编译，结果为'true'字符串或空时表示启用`
       }
     }
   },
