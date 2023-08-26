@@ -2,32 +2,32 @@
   <div class="space-settings">
     <div v-loading="loading" class="form-wrap">
       <el-form ref="form" :model="form" :rules="rules">
-        <el-form-item label="Space Name" prop="name">
+        <el-form-item :label="$t('space.spaceName')" prop="name">
           <h3>{{form.name}}</h3>
         </el-form-item>
-        <el-form-item label="Homepage" prop="homepage">
+        <el-form-item :label="$t('space.homePage')" prop="homepage">
           <el-input v-model="form.homepage" />
         </el-form-item>
-        <el-form-item label="Introduce" prop="introduce" required>
+        <el-form-item :label="$t('common.introduce')" prop="introduce" required>
           <el-input v-model="form.introduce" type="textarea" :rows="3" maxlength="200"/>
         </el-form-item>
-        <el-form-item label="Other settings" class="item-other-settings">
+        <el-form-item :label="$t('space.otherSettings')" class="item-other-settings">
           <div>
-            <el-checkbox v-model="form.withPrivate" label="Is a private space"/>
+            <el-checkbox v-model="form.withPrivate" :label="$t('space.isPrivateServiceTip')"/>
           </div>
           <div>
-            <el-checkbox v-model="form.subServiceReceivable" label="Receive sub services."/>
+            <el-checkbox v-model="form.subServiceReceivable" :label="$t('space.receiveSubServicesTip')"/>
           </div>
         </el-form-item>
       </el-form>
       <el-form ref="descForm" class="description-form" :model="form">
-        <el-form-item label="Description / Space Readme" prop="description" required>
-          <MarkdownEditor v-model="form.description" placeholder="space description"/>
+        <el-form-item :label="$t('space.spaceDescriptionLabel')" prop="description" required>
+          <MarkdownEditor v-model="form.description" :placeholder="$t('space.spaceDescription')"/>
         </el-form-item>
       </el-form>
     </div>
     <div class="opera">
-      <el-button type="primary" size="large" :disabled="isWorking" @click="save">Save</el-button>
+      <el-button type="primary" size="large" :disabled="isWorking" @click="save">{{$t('common.save')}}</el-button>
     </div>
   </div>
 </template>

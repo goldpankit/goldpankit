@@ -28,6 +28,10 @@ export default {
     saveSuccessfully: 'Save successfully',
     deleteSuccessfully: 'Delete successfully',
     refresh: 'Refresh',
+    create: 'Create',
+    add: 'Add',
+    type: 'Type',
+    clickToSelectFile: 'Click to select a file',
     // 模态框
     modal: {
       confirmDelete: 'Confirm Delete',
@@ -192,6 +196,46 @@ export default {
       executeAll: 'Run all scripts',
       viewScript: 'View Script',
       targetDataSource: 'Target Data Source'
+    },
+    // 设置
+    settings: {
+      compile: 'Compile',
+      cleanCompile: 'Clean Compile',
+      publish: 'Publish',
+      at: 'At',
+      space: 'Space',
+      service: 'Service',
+      readme: 'Readme',
+      variables: 'Variables',
+      files: 'Files',
+      version: 'Version',
+      compiler: 'Compiler',
+      supportedDatabases: 'Supported Databases',
+      repository: 'Repository',
+      introduce: 'Introduce',
+      charge: 'Charge',
+      otherSettings: 'Other settings',
+      installBuilds: 'Install Builds',
+      uninstallBuilds: 'Uninstall Builds',
+      codespace: 'Code Space',
+      changeCodespace: 'Change',
+      selectNewCodespace: 'Select new codespace',
+      reinitialize: 'Reinitialize',
+      translator: {
+        translator: 'Translator',
+        translatorTip: 'tips: The translator can be configured to quickly translate source code into service code',
+        translate: 'Translate',
+        path: 'Path',
+        type: 'Type',
+        pattern: 'Pattern',
+        code: 'Code'
+      },
+      build: {
+        buildTip: 'tips: The following builds are performed after the service is installed',
+        buildCommand: 'Build command',
+        input: 'Input',
+        file: 'File'
+      }
     }
   },
   // 问题

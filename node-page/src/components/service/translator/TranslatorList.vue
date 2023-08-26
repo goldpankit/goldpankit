@@ -1,10 +1,10 @@
 <template>
   <div class="translator-setting">
     <div class="toolbar">
-      <p>tips: The translator can be configured to quickly translate source code into service code</p>
+      <p>{{$t('service.settings.translator.translatorTip')}}</p>
       <div class="opera">
-        <el-button type="primary" @click="add">Add</el-button>
-        <el-button type="primary" @click="translate">Translate</el-button>
+        <el-button type="primary" @click="add">{{$t('common.add')}}</el-button>
+        <el-button type="primary" @click="translate">{{$t('service.settings.translator.translate')}}</el-button>
       </div>
     </div>
     <el-collapse v-if="translators.length > 0" v-model="actives" @change="handleChange">
@@ -22,13 +22,13 @@
             </div>
             <div v-else class="edit">
               <el-form :model="item">
-                <el-form-item label="Name" required>
+                <el-form-item :label="$t('common.name')" required>
                   <el-input class="name" v-model="item.name" @click.stop @keypress.stop @input="handleSave"/>
                 </el-form-item>
-                <el-form-item label="Path" required>
+                <el-form-item :label="$t('service.settings.translator.path')" required>
                   <el-input class="path" v-model="item.path" @click.stop @keypress.stop @input="handleSave"/>
                 </el-form-item>
-                <el-form-item label="Type" required>
+                <el-form-item :label="$t('service.settings.translator.type')" required>
                   <TranslatorTypeSelect class="type" v-model="item.type" @change="handleSave"/>
                 </el-form-item>
               </el-form>
@@ -188,13 +188,14 @@ export default {
     & > p {
       flex-grow: 1;
       font-weight: bold;
-      line-height: 15px;
+      line-height: 20px;
     }
     & > .opera {
       flex-shrink: 0;
       width: 150px;
       display: flex;
       justify-content: flex-end;
+      margin-left: 30px;
     }
   }
   .el-collapse {

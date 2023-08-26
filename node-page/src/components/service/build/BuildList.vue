@@ -1,7 +1,7 @@
 <template>
   <div class="service-build-list">
     <div class="toolbar">
-      <p>tips: The following builds are performed after the service is installed</p>
+      <p>{{$t('service.settings.build.buildTip')}}</p>
       <el-button type="primary" @click="create">Create</el-button>
     </div>
     <el-collapse v-if="builds.length > 0" v-model="actives" @change="handleChange">
@@ -18,34 +18,34 @@
             </div>
             <div v-else class="edit">
               <el-form :model="build">
-                <el-form-item label="Name" required>
+                <el-form-item :label="$t('common.name')" required>
                   <el-input class="name" v-model="build.name" @click.stop @keypress.stop @input="handleSave"/>
                 </el-form-item>
-                <el-form-item label="Type" required>
+                <el-form-item :label="$t('common.type')" required>
                   <BuildCommandTypeSelect class="type" v-model="build.type" @change="handleSave"/>
                 </el-form-item>
               </el-form>
             </div>
             <!-- 操作 -->
             <div class="opera">
-              <el-button icon="Delete" @click.stop="deleteBuild(index)">Delete</el-button>
+              <el-button icon="Delete" @click.stop="deleteBuild(index)">{{$t('common.delete')}}</el-button>
             </div>
           </div>
         </template>
         <!-- 命令输入 -->
         <el-tabs v-model="build.contentType">
-          <el-tab-pane name="string" label="Input">
+          <el-tab-pane name="string" :label="$t('service.settings.build.input')">
             <el-input
               v-model="build.content"
               type="textarea"
-              placeholder="Build command"
+              :placeholder="$t('service.settings.build.buildCommand')"
               :rows="5"
               @input="handleSave"
             />
           </el-tab-pane>
-          <el-tab-pane name="file" label="File">
+          <el-tab-pane name="file" :label="$t('service.settings.build.file')">
             <div class="select-holder" @click="openSelectFileWindow(build)">
-              <p v-if="build.__filepath == null || build.__filepath === ''" class="holder">Click to select file.</p>
+              <p v-if="build.__filepath == null || build.__filepath === ''" class="holder">{{$t('common.clickToSelectFile')}}</p>
               <p v-else>{{build.__filepath}}</p>
             </div>
           </el-tab-pane>

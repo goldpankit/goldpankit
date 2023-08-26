@@ -2,22 +2,22 @@
   <div class="basic-setting">
     <div class="wrap">
       <el-form :model="form">
-        <el-form-item label="Version" prop="version" required>
+        <el-form-item :label="$t('service.settings.version')" prop="version" required>
           <el-input v-model="form.version" @input="saveConfig"/>
         </el-form-item>
-        <el-form-item label="Compiler" prop="compiler" required>
+        <el-form-item :label="$t('service.settings.compiler')" prop="compiler" required>
           <CompilerSelect v-model="form.compiler" @change="saveConfig"/>
         </el-form-item>
-        <el-form-item label="Supported Databases" prop="supportedDatabases">
+        <el-form-item :label="$t('service.settings.supportedDatabases')" prop="supportedDatabases">
           <DatabaseTypeSelect v-model="form.supportedDatabases" @change="saveConfig"/>
         </el-form-item>
-        <el-form-item label="Repository" prop="repository">
+        <el-form-item :label="$t('service.settings.repository')" prop="repository">
           <el-input v-model="form.repository" @input="saveConfig"/>
         </el-form-item>
-        <el-form-item label="Introduce" prop="introduce" required>
+        <el-form-item :label="$t('service.settings.introduce')" prop="introduce" required>
           <el-input type="textarea" :rows="5" v-model="form.introduce" @input="saveConfig"/>
         </el-form-item>
-        <el-form-item label="Charge" prop="prices[0].type" required>
+        <el-form-item :label="$t('service.settings.charge')" prop="prices[0].type" required>
           <el-radio-group v-model="form.prices[0].type" @change="changePriceType">
             <el-radio-button
               v-for="option in $const.getServiceLeaseTypes($t)"
@@ -30,36 +30,36 @@
           <span><img src="/public/images/bean.png"></span>
           <el-input-number :controls="false" v-model="form.prices[0].value" @input="saveConfig"/>
         </el-form-item>
-        <el-form-item label="Other settings" class="item-other-settings">
+        <el-form-item :label="$t('service.settings.otherSettings')" class="item-other-settings">
           <div>
             <el-checkbox v-model="form.private" label="Is a private service" @change="saveConfig"/>
           </div>
         </el-form-item>
-        <el-form-item label="Translator" prop="translator">
+        <el-form-item :label="$t('service.settings.translator.translator')" prop="translator">
           <TranslatorList :space="space" :service="service" :translator="form.translator" @save="saveConfig"/>
         </el-form-item>
-        <el-form-item label="Install Builds" prop="builds">
+        <el-form-item :label="$t('service.settings.installBuilds')" prop="builds">
           <BuildList :builds="form.builds" :service-config="serviceConfig" @save="saveConfig"/>
         </el-form-item>
-        <el-form-item label="Uninstall Builds" prop="unbuilds">
+        <el-form-item :label="$t('service.settings.uninstallBuilds')" prop="unbuilds">
           <BuildList :builds="form.unbuilds" :with-unbuild="true" :service-config="serviceConfig" @save="saveConfig"/>
         </el-form-item>
-        <el-form-item label="Code Space" prop="codespace">
+        <el-form-item :label="$t('service.settings.codespace')" prop="codespace">
           <div v-if="!newCodespace.changing" class="codespace-wrap">
             <p>{{form.codespace}}</p>
-            <el-button type="primary" @click="changeCodespace">Change</el-button>
+            <el-button type="primary" @click="changeCodespace">{{$t('service.settings.changeCodespace')}}</el-button>
           </div>
           <DirectorySelect
             v-else
-            title="Select new codespace"
+            :title="$t('service.settings.selectNewCodespace')"
             v-model="newCodespace.value"
             @change="fetchConfig"
           />
         </el-form-item>
       </el-form>
       <div v-if="newCodespace.changing" class="opera-wrap">
-        <el-button size="large" @click="newCodespace.changing=false">Cancel</el-button>
-        <el-button size="large" type="primary" @click="initialize">Reinitialize</el-button>
+        <el-button size="large" @click="newCodespace.changing=false">{{$t('common.cancel')}}</el-button>
+        <el-button size="large" type="primary" @click="initialize">{{$t('service.settings.reinitialize')}}</el-button>
       </div>
     </div>
   </div>

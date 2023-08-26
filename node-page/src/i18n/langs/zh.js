@@ -28,6 +28,10 @@ export default {
     saveSuccessfully: '保存成功',
     deleteSuccessfully: '删除成功',
     refresh: '刷新',
+    create: '创建',
+    add: '添加',
+    type: '类型',
+    clickToSelectFile: '点击此处选择文件',
     // 模态框
     modal: {
       confirmDelete: '确认删除',
@@ -193,6 +197,48 @@ export default {
       executeAll: '全部执行',
       viewScript: '查看执行脚本',
       targetDataSource: '目标数据源'
+    },
+    // 设置
+    settings: {
+      compile: '编译',
+      cleanCompile: '反向编译',
+      publish: '发布',
+      at: '在',
+      space: '空间设置',
+      service: '服务设置',
+      readme: '服务描述',
+      variables: '变量设定',
+      files: '文件设置',
+      version: '版本',
+      compiler: '编译器',
+      supportedDatabases: '支持的数据库',
+      repository: '代码仓库',
+      introduce: '简介',
+      charge: '费用',
+      otherSettings: '其他设置',
+      installBuilds: '安装构建',
+      uninstallBuilds: '卸载构建',
+      codespace: '本地服务代码位置',
+      changeCodespace: '修改',
+      selectNewCodespace: '选择新的位置',
+      reinitialize: '重新初始化',
+      // 翻译器
+      translator: {
+        translator: '翻译器',
+        translatorTip: '提示：翻译器起到对服务代码批量替换的作用，可以快速的将服务代码转换成Freemarker或者其他编译器语言的代码',
+        translate: '翻译',
+        path: '翻译文件路径',
+        type: '类型',
+        pattern: '正则表达式',
+        code: '代码'
+      },
+      // 构建
+      build: {
+        buildTip: '提示：安装构建为安装服务后自动执行的脚本',
+        buildCommand: '请输入构建命令',
+        input: '文本',
+        file: '文件'
+      }
     }
   },
   issue: {

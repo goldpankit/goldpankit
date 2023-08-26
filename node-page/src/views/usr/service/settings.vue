@@ -5,24 +5,24 @@
         <div class="header">
           <h2>{{service.space.name}}·{{service.name}}</h2>
           <div v-if="initialized" class="opera">
-            <el-button type="primary" :disabled="currentProject == null || isWorking.compile" @click="compile">Compile</el-button>
-            <el-button type="primary" :disabled="currentProject == null || isWorking.cleanCompile" @click="cleanCompile">Clean Compile</el-button>
-            <el-button type="important" @click="$refs.publishWindow.open(route.space, route.service)">Publish</el-button>
+            <el-button type="primary" :disabled="currentProject == null || isWorking.compile" @click="compile">{{$t('service.settings.compile')}}</el-button>
+            <el-button type="primary" :disabled="currentProject == null || isWorking.cleanCompile" @click="cleanCompile">{{$t('service.settings.cleanCompile')}}</el-button>
+            <el-button type="important" @click="$refs.publishWindow.open(route.space, route.service)">{{$t('service.settings.publish')}}</el-button>
           </div>
         </div>
         <p
           v-if="initialized"
           class="text-info-1 service-path"
-        >At {{service.local.codespace}}</p>
+        >{{$t('service.settings.at')}} {{service.local.codespace}}</p>
       </div>
       <div class="main">
         <template v-if="initialized">
           <ul class="tabs">
-            <li :class="{ selected: currentTab === 'space' }" @click="currentTab = 'space'">Space</li>
-            <li :class="{ selected: currentTab === 'basic' }" @click="currentTab = 'basic'">Service</li>
-            <li :class="{ selected: currentTab === 'readme' }" @click="currentTab = 'readme'">Readme</li>
-            <li :class="{ selected: currentTab === 'variables' }" @click="currentTab = 'variables'">Variables</li>
-            <li :class="{ selected: currentTab === 'files' }" @click="currentTab = 'files'">Files</li>
+            <li :class="{ selected: currentTab === 'space' }" @click="currentTab = 'space'">{{$t('service.settings.space')}}</li>
+            <li :class="{ selected: currentTab === 'basic' }" @click="currentTab = 'basic'">{{$t('service.settings.service')}}</li>
+            <li :class="{ selected: currentTab === 'readme' }" @click="currentTab = 'readme'">{{$t('service.settings.readme')}}</li>
+            <li :class="{ selected: currentTab === 'variables' }" @click="currentTab = 'variables'">{{$t('service.settings.variables')}}</li>
+            <li :class="{ selected: currentTab === 'files' }" @click="currentTab = 'files'">{{$t('service.settings.files')}}</li>
           </ul>
           <div class="tab-content">
             <SpaceSettings
