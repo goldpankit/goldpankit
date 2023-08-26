@@ -23,6 +23,7 @@
             <li :class="{ selected: currentTab === 'readme' }" @click="currentTab = 'readme'">{{$t('service.settings.readme')}}</li>
             <li :class="{ selected: currentTab === 'variables' }" @click="currentTab = 'variables'">{{$t('service.settings.variables')}}</li>
             <li :class="{ selected: currentTab === 'files' }" @click="currentTab = 'files'">{{$t('service.settings.files')}}</li>
+            <li :class="{ selected: currentTab === 'system_variables' }" @click="currentTab = 'system_variables'">{{$t('service.settings.systemVariables')}}</li>
           </ul>
           <div class="tab-content">
             <SpaceSettings
@@ -52,6 +53,9 @@
               v-show="currentTab === 'files'"
               :space="route.space"
               :service="route.service"
+            />
+            <SystemVariableTable
+              v-show="currentTab === 'system_variables'"
             />
           </div>
         </template>
@@ -84,9 +88,11 @@ import SpaceSettings from "../../../components/service/settings/SpaceSettings.vu
 import ServiceCodeErrorWindow from "../../../components/service/ServiceCodeErrorWindow.vue";
 import {fetchConfig, fetchProfile, saveConfig} from "../../../api/service";
 import {cleanCompile, compile} from "../../../api/service.compile";
+import SystemVariableTable from "../../../components/service/settings/SystemVariableTable.vue";
 
 export default {
   components: {
+    SystemVariableTable,
     ServiceCodeErrorWindow,
     SpaceSettings,
     MarkdownEditor,

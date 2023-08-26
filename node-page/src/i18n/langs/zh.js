@@ -216,6 +216,7 @@ export default {
       readme: '服务描述',
       variables: '变量设定',
       files: '文件设置',
+      systemVariables: '内置变量',
       version: '版本',
       compiler: '编译器',
       supportedDatabases: '支持的数据库',

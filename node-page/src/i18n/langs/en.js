@@ -215,6 +215,7 @@ export default {
       readme: 'Readme',
       variables: 'Variables',
       files: 'Files',
+      systemVariables: 'System Variables',
       version: 'Version',
       compiler: 'Compiler',
       supportedDatabases: 'Supported Databases',
