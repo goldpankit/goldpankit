@@ -55,7 +55,7 @@
               :service="route.service"
             />
             <SystemVariableTable
-              v-show="currentTab === 'system_variables'"
+              v-if="currentTab === 'system_variables'"
             />
           </div>
         </template>
