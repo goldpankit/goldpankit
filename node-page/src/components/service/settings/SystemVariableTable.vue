@@ -3,8 +3,7 @@
     <h3>日期相关</h3>
     <el-table :data="variableData.date">
       <el-table-column label="变量名" width="200px" prop="name"></el-table-column>
-      <el-table-column v-if="$i18n.locale === 'en'" label="变量备注" width="300px" prop="enRemark"></el-table-column>
-      <el-table-column v-if="$i18n.locale === 'zh'" label="变量备注" width="300px" prop="zhRemark"></el-table-column>
+      <el-table-column label="变量备注" width="300px" prop="zhRemark"></el-table-column>
       <el-table-column label="示例" prop="demo">
         <template #default="{row}">
           <pre>{{row.demo}}</pre>
@@ -13,12 +12,37 @@
     </el-table>
   </div>
   <div class="variable-block">
-    <h3>表相关</h3>
+    <h3>MySQL表相关</h3>
     <p>定义变量且输入类型为Table，则可以通过变量名访问以下信息！</p>
-    <el-table :data="variableData.table">
-      <el-table-column label="变量名" width="200px" prop="name"></el-table-column>
-      <el-table-column v-if="$i18n.locale === 'en'" label="变量备注" width="300px" prop="enRemark"></el-table-column>
-      <el-table-column v-if="$i18n.locale === 'zh'" label="变量备注" width="300px" prop="zhRemark"></el-table-column>
+    <el-table :data="variableData.mysqlTable">
+      <el-table-column label="变量名" width="235px" prop="name"></el-table-column>
+      <el-table-column label="变量备注" width="300px" prop="zhRemark"></el-table-column>
+      <el-table-column label="示例" prop="demo">
+        <template #default="{row}">
+          <pre>{{row.demo}}</pre>
+        </template>
+      </el-table-column>
+    </el-table>
+  </div>
+  <div class="variable-block">
+    <h3>MySQL查询模型相关</h3>
+    <p>定义变量且输入类型为Query Model，则可以通过变量名访问以下信息！</p>
+    <el-table :data="variableData.mysqlQueryModel">
+      <el-table-column label="变量名" width="235px" prop="name"></el-table-column>
+      <el-table-column label="变量备注" width="300px" prop="zhRemark"></el-table-column>
+      <el-table-column label="示例" prop="demo">
+        <template #default="{row}">
+          <pre>{{row.demo}}</pre>
+        </template>
+      </el-table-column>
+    </el-table>
+  </div>
+  <div class="variable-block">
+    <h3>Select输入类型的深度设置</h3>
+    <p>定义变量且输入类型为Select，则可以通过变量名添加"Settings"后缀来获取深度设置对象！</p>
+    <el-table :data="variableData.select">
+      <el-table-column label="变量名" width="235px" prop="name"></el-table-column>
+      <el-table-column label="变量备注" width="300px" prop="zhRemark"></el-table-column>
       <el-table-column label="示例" prop="demo">
         <template #default="{row}">
           <pre>{{row.demo}}</pre>
@@ -44,7 +68,7 @@ export default {
           { name: '_ss', enRemark: '', zhRemark: '秒（固定2位）', demo: '${_ss} => 00' },
           { name: '_sss', enRemark: '', zhRemark: '毫秒（固定3位）', demo: '${_sss} => 000' },
         ],
-        table: [
+        mysqlTable: [
           { name: 'name', enRemark: '', zhRemark: '原始表名', demo: '${myTable.name} => MY_TABLE' },
           { name: 'camelCaseName', enRemark: '', zhRemark: '表名（驼峰命名法）', demo: '${myTable.camelCaseName} => myTables' },
           { name: 'kebabCaseName', enRemark: '', zhRemark: '表名（中划线命名法）', demo: '${myTable.kebabCaseName} => my-table' },
@@ -52,6 +76,47 @@ export default {
           { name: 'underScoreCaseName', enRemark: '', zhRemark: '表名（下划线命名法）', demo: '${myTable.underScoreCaseName} => my_table' },
           { name: 'comment', enRemark: '', zhRemark: '表注释', demo: '${myTable.comment}' },
           { name: 'fields', enRemark: '', zhRemark: '表字段数组', type: 'Array', demo: '<#list myTable.fields as field>\n${field.name}\n</#list>' },
+          { name: 'fields.name', enRemark: '', zhRemark: '字段原始名称', type: 'String', demo: '<#list myTable.fields as field>\n${field.name}\n</#list>' },
+          { name: 'fields.camelCaseName', enRemark: '', zhRemark: '字段名称（驼峰命名法）', type: 'String', demo: '<#list myTable.fields as field>\n${field.camelCaseName}\n</#list>' },
+          { name: 'fields.kebabCaseName', enRemark: '', zhRemark: '字段名称（中划线命名法）', type: 'String', demo: '<#list myTable.fields as field>\n${field.kebabCaseName}\n</#list>' },
+          { name: 'fields.pascalCaseName', enRemark: '', zhRemark: '字段名称（帕斯卡命名法）', type: 'String', demo: '<#list myTable.fields as field>\n${field.pascalCaseName}\n</#list>' },
+          { name: 'fields.underScoreCaseName', enRemark: '', zhRemark: '字段名称（下划线命名法）', type: 'String', demo: '<#list myTable.fields as field>\n${field.underScoreCaseName}\n</#list>' },
+          { name: 'fields.type', enRemark: '', zhRemark: '数据库字段类型', type: 'String', demo: '<#list myTable.fields as field>\n${field.type}\n</#list>' },
+          { name: 'fields.length', enRemark: '', zhRemark: '数据库字段类型长度', type: 'Integer', demo: '<#list myTable.fields as field>\n${field.length}\n</#list>' },
+          { name: 'fields.decimal', enRemark: '', zhRemark: '数据库字段类型精度', type: 'Integer', demo: '<#list myTable.fields as field>\n${field.decimal}\n</#list>' },
+          { name: 'fields.defaultValue', enRemark: '', zhRemark: '字段默认值', type: 'Any', demo: '<#list myTable.fields as field>\n${field.defaultValue}\n</#list>' },
+          { name: 'fields.required', enRemark: '', zhRemark: '是否必填', type: 'Boolean', demo: '<#list myTable.fields as field>\n${field.required}\n</#list>' },
+          { name: 'fields.isPrimaryKey', enRemark: '', zhRemark: '是否为主键', type: 'Boolean', demo: '<#list myTable.fields as field>\n${field.isPrimaryKey}\n</#list>' },
+          { name: 'fields.isAutoIncrement', enRemark: '', zhRemark: '是否为自增长', type: 'Boolean', demo: '<#list myTable.fields as field>\n${field.isAutoIncrement}\n</#list>' },
+          { name: 'fields.comment', enRemark: '', zhRemark: '字段注释', type: 'Boolean', demo: '<#list myTable.fields as field>\n${field.comment}\n</#list>' },
+        ],
+        mysqlQueryModel: [
+          { name: 'name', enRemark: '', zhRemark: '模型原始名称', demo: '${myModel.name}' },
+          { name: 'camelCaseName', enRemark: '', zhRemark: '模型名称（驼峰命名法）', demo: '${myModel.camelCaseName}' },
+          { name: 'kebabCaseName', enRemark: '', zhRemark: '模型名称（中划线命名）', demo: '${myModel.kebabCaseName}' },
+          { name: 'pascalCaseName', enRemark: '', zhRemark: '模型名称（帕斯卡命名）', demo: '${myModel.pascalCaseName}' },
+          { name: 'underScoreCaseName', enRemark: '', zhRemark: '模型名称（下划线命名）', demo: '${myModel.underScoreCaseName}' },
+          { name: 'comment', enRemark: '', zhRemark: '模型注释', demo: '${myModel.comment}' },
+          { name: 'mainTable', enRemark: '', zhRemark: '主表，包含了MySQL表的所有信息', demo: '${myModel.mainTable.name} => 主表名称\n${myModel.mainTable.camelCaseName} => 主表名称（驼峰命名法）' },
+          { name: 'mainTable.alias', enRemark: '', zhRemark: '主表别名', demo: '${myModel.mainTable.alias}' },
+          { name: 'mainTable.isVirtual', enRemark: '', zhRemark: '是否为虚拟表', demo: '${myModel.mainTable.isVirtual}' },
+          { name: 'subTables', enRemark: '', zhRemark: '子表，包含了MySQL表的所有信息', type: 'Array', demo: '<#list myModel.subTables as subTable>\n${subTable.name}\n</#list>' },
+          { name: 'subTables.alias', enRemark: '', zhRemark: '子表别名', type: 'Array', demo: '<#list myModel.subTables as subTable>\n${subTable.alias}\n</#list>' },
+          { name: 'subTables.isVirtual', enRemark: '', zhRemark: '子表是否为虚拟表', type: 'Array', demo: '<#list myModel.subTables as subTable>\n${subTable.isVirtual}\n</#list>' },
+          { name: 'joins', enRemark: '', zhRemark: '关联信息', demo: '<#list myModel.joins as join>\n${join.joinType}\n</#list>' },
+          { name: 'joins.table', enRemark: '', zhRemark: '左表', demo: '<#list myModel.joins as join>\n${join.table.alias}\n</#list>' },
+          { name: 'joins.targetTable', enRemark: '', zhRemark: '右表', demo: '<#list myModel.joins as join>\n${join.targetTable.alias}\n</#list>' },
+          { name: 'joins.joinType', enRemark: '', zhRemark: 'JOIN类型', demo: '<#list myModel.joins as join>\n${join.joinType}\n</#list>' },
+          { name: 'joins.ons', enRemark: '', zhRemark: 'JOIN ON条件', demo: '<#list myModel.joins as join>\n  <#list join.ons as on>\n    ${on.field.alias} => 字段别名\n  </#list>\n</#list>' },
+          { name: 'joins.ons.field', enRemark: '', zhRemark: '左侧字段', demo: '<#list myModel.joins as join>\n  <#list join.ons as on>\n    ${on.field.name}\n  </#list>\n</#list>' },
+          { name: 'joins.ons.targetField', enRemark: '', zhRemark: '右侧字段', demo: '<#list myModel.joins as join>\n  <#list join.ons as on>\n    ${on.targetField.name}\n  </#list>\n</#list>' },
+          { name: 'joins.ons.relation', enRemark: '', zhRemark: 'ON关系，AND或者OR', demo: '<#list myModel.joins as join>\n  <#list join.ons as on>\n    ${on.relation}\n  </#list>\n</#list>' },
+          { name: 'aggregates', enRemark: '', zhRemark: '聚合信息，内容待定', demo: '' },
+          { name: 'sql', enRemark: '', zhRemark: '各个部分的SQL语句', demo: '<#list myModel.sql.fields as field>\n${field}\n</#list>\n\n<#list myModel.sql.joins as joinSql>\n${joinSql}\n</#list>\n\n${myModel.sql.where} => where sql\n${myModel.sql.orderBy} => order by sql' },
+        ],
+        select: [
+          { name: 'mySelect', enRemark: '', zhRemark: '选项值', type: 'Any', demo: '${mySelect}' },
+          { name: 'mySelectSetting', enRemark: '', zhRemark: 'select深度设置内容', type: 'Object', demo: '${mySelectSetting.myField}' },
         ]
       }
     }
