@@ -38,7 +38,7 @@ module.exports = {
   },
   // 成功消息
   success (message) {
-    console.log(this.__prefix(), colors('green', message))
+    console.log(this.__prefix(), colors('green', '[SUCCESS]'), message)
   },
   // 日志前缀
   __prefix () {
