@@ -237,6 +237,7 @@ export default {
       cleanCompileTipTitle: 'Clean Compiled Result',
       cleanCompileTip: 'After decompiling, the compiled files or content will be removed from the current project code.',
       cleanCompileTipWithProject: 'After decompiling, the compiled files or contents will be removed from the 「{project}」 project code.',
+      serviceReadmeHolder: 'A detailed service description helps users better understand your service intent. You can write service introductions, code designs, usage instructions, and other information here.',
       initialize: {
         initializeService: 'Initialize Service',
         initializeServiceTip: 'Tips: You must first specify or create a local directory and initialize the service. Then you can code the service in the specified local directory.',

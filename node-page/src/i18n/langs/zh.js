@@ -238,6 +238,7 @@ export default {
       cleanCompileTipTitle: '反向编译服务代码',
       cleanCompileTip: '请先选择一个项目，反向编译后将会从当前项目代码中删除已编译的文件或内容。',
       cleanCompileTipWithProject: '反向编译后将会从「{project}」项目代码中删除已编译的文件或内容。',
+      serviceReadmeHolder: '详细的服务描述有利于使用者更好的明确您的服务意图，您可以在此编写服务介绍、代码设计、使用方法等信息。',
       // 初始化
       initialize: {
         initializeService: '初始化服务',

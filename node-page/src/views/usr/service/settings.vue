@@ -61,7 +61,7 @@
               v-if="service.description != null"
               v-show="currentTab === 'readme'"
               v-model="service.description"
-              placeholder="详细的服务描述有利于使用者更好的明确您的服务意图，您可以再次编写服务介绍、代码设计、使用方法等信息。"
+              :placeholder="$t('service.settings.serviceReadmeHolder')"
               @update:modelValue="saveConfig"
             />
             <Variables
