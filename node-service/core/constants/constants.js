@@ -30,7 +30,7 @@ module.exports = {
     },
     settings: [], // 文件设置列表，设置内容见SERVICE_FILE_CONFIG_CONTENT
     introduce: '', // 服务简介
-    readme: '' // 服务说明
+    readme: `详细的服务描述有利于使用者更好的明确您的服务意图，您可以采用以下大纲来完善您的服务信息。\n\n## 服务介绍\n\n\n## 代码设计\n\n\n## 使用说明\n\n\n## 效果预览\n\n\n## 注意事项` // 服务说明
   },
   // 服务文件配置
   SERVICE_FILE_CONFIG_CONTENT: {
