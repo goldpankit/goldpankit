@@ -1,18 +1,18 @@
 <template>
   <div class="initialize-wrap">
     <div class="tip">
-      <h3>Initialize Service</h3>
-      <p>You must first specify or create a local directory and initialize the service. Then you can code the service in the specified local directory.</p>
+      <h3>{{$t('service.settings.initialize.initializeService')}}</h3>
+      <p>{{$t('service.settings.initialize.initializeServiceTip')}}</p>
     </div>
     <div class="directory-select-wrap">
       <DirectorySelect
         v-model="form.codespace"
-        title="Select Service Directory"
+        :title="$t('service.settings.initialize.selectServiceCodespace')"
         @change="fetchConfig"
       />
     </div>
     <div class="opera-bottom">
-      <el-button type="primary" size="large" @click="initialize">Initialize Service</el-button>
+      <el-button type="primary" size="large" @click="initialize">{{$t('service.settings.initialize.initializeService')}}</el-button>
     </div>
   </div>
 </template>
@@ -86,14 +86,13 @@ export default {
   flex-direction: column;
   padding-top: var(--gap-page-bottom);
   .tip {
-    text-align: center;
     h3 {
       margin-bottom: 20px;
       font-size: var(--font-size-large);
     }
     p {
-      font-size: var(--font-size-middle);
       line-height: 1.5;
+      font-weight: bold;
     }
   }
   .directory-select-wrap {

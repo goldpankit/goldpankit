@@ -230,6 +230,12 @@ export default {
       changeCodespace: '修改',
       selectNewCodespace: '选择新的位置',
       reinitialize: '重新初始化',
+      // 初始化
+      initialize: {
+        initializeService: '初始化服务',
+        initializeServiceTip: '提示：您需要选择一个目录，用于存放您的服务代码，服务初始化后将产生.kit/kit.json文件用于存放您的服务配置。您的服务代码和配置应该通过GIT或者其他方式存储，以便您进一步修改。',
+        selectServiceCodespace: '请选择服务代码存放位置'
+      },
       // 翻译器
       translator: {
         translator: '翻译器',

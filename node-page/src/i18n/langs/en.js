@@ -229,6 +229,11 @@ export default {
       changeCodespace: 'Change',
       selectNewCodespace: 'Select new codespace',
       reinitialize: 'Reinitialize',
+      initialize: {
+        initializeService: 'Initialize Service',
+        initializeServiceTip: 'Tips: You must first specify or create a local directory and initialize the service. Then you can code the service in the specified local directory.',
+        selectServiceCodespace: 'Select Service Directory'
+      },
       translator: {
         translator: 'Translator',
         translatorTip: 'tips: The translator can be configured to quickly translate source code into service code',
