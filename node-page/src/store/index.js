@@ -8,6 +8,12 @@ const currentProjectStr = window.localStorage.getItem('CURRENT_PROJECT')
 if (currentProjectStr != null) {
   currentProject = JSON.parse(currentProjectStr)
 }
+// 获取本地项目
+let currentProjectDetail = null
+const currentProjectDetailStr = window.localStorage.getItem('CURRENT_PROJECT_DETAIL')
+if (currentProjectDetailStr != null) {
+  currentProjectDetail = JSON.parse(currentProjectDetailStr)
+}
 // 从本地获取已选数据库
 let currentDatabase = window.localStorage.getItem('CURRENT_DATABASE')
 export default new Vuex.Store({
@@ -16,6 +22,7 @@ export default new Vuex.Store({
     userInfo: null,
     // 当前项目ID
     currentProject,
+    currentProjectDetail,
     // 当前数据库ID
     currentDatabase,
     // 帮助中心，服务于当前查看的帮助内容
@@ -41,7 +48,17 @@ export default new Vuex.Store({
     },
     setCurrentProject(state, project) {
       state.currentProject = project
-      window.localStorage.setItem('CURRENT_PROJECT', JSON.stringify(project))
+      window.localStorage.removeItem('CURRENT_PROJECT')
+      if (project != null) {
+        window.localStorage.setItem('CURRENT_PROJECT', JSON.stringify(project))
+      }
+    },
+    setCurrentProjectDetail(state, project) {
+      state.currentProjectDetail = project
+      window.localStorage.removeItem('CURRENT_PROJECT_DETAIL')
+      if (project != null) {
+        window.localStorage.setItem('CURRENT_PROJECT_DETAIL', JSON.stringify(project))
+      }
     },
     setCurrentDatabase (state, database) {
       state.currentDatabase = database

@@ -37,7 +37,10 @@
           </el-form-item>
         </el-form>
         <div v-else class="setting-holder">
-          {{$t('service.settings.file.fileSettingHolder')}}
+          <div class="holder-wrap">
+            <h5>{{$t('service.settings.file.fileSetting')}}</h5>
+            <p>{{$t('service.settings.file.fileSettingHolder')}}</p>
+          </div>
         </div>
       </div>
     </div>
@@ -206,10 +209,22 @@ export default {
         width: 100%;
         height: 100%;
         font-size: var(--font-size-middle);
-        color: var(--color-gray);
         display: flex;
         justify-content: center;
         padding-top: 100px;
+        .holder-wrap {
+          width: 500px;
+          margin: 0 auto;
+          text-align: center;
+          line-height: 30px;
+          h5 {
+            font-size: var(--font-size-large);
+            margin-bottom: 20px;
+          }
+          p {
+            color: var(--color-gray);
+          }
+        }
       }
     }
   }

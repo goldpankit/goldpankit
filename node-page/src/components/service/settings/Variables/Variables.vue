@@ -61,7 +61,7 @@
         </template>
         <template v-else>
           <div class="variable-holder">
-            <h4>{{$t('service.settings.variable.variableHolderTitle')}}</h4>
+            <h5>{{$t('service.settings.variable.variableHolderTitle')}}</h5>
             <p>{{$t('service.settings.variable.variableHolderTip')}}</p>
           </div>
         </template>
@@ -592,17 +592,22 @@ export default {
       }
       // 变量空提示
       .variable-holder {
-        font-size: 18px;
-        width: 455px;
+        width: 500px;
         margin: 30px auto 0 auto;
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        padding: 50px;
+        text-align: center;
+        padding-top: 100px;
+        h5 {
+          font-size: var(--font-size-large);
+          margin-bottom: 20px;
+        }
         p {
           line-height: 30px;
           color: var(--color-gray);
+          font-size: var(--font-size-middle);
         }
       }
     }

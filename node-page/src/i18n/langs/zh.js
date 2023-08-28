@@ -32,6 +32,8 @@ export default {
     add: '添加',
     type: '类型',
     clickToSelectFile: '点击此处选择文件',
+    currentProject: '当前项目',
+    currentDataSource: '当前数据源',
     // 模态框
     modal: {
       confirmDelete: '确认删除',
@@ -230,6 +232,12 @@ export default {
       changeCodespace: '修改',
       selectNewCodespace: '选择新的位置',
       reinitialize: '重新初始化',
+      compileTipTitle: '编译服务代码',
+      compileTip: '请先选择一个项目，编译后将会把服务代码编译结果输出到当前选择的项目目录中。',
+      compileTipWithProject: '编译后将会把服务代码编译结果输出到「{project}」项目目录中',
+      cleanCompileTipTitle: '反向编译服务代码',
+      cleanCompileTip: '请先选择一个项目，反向编译后将会从当前项目代码中删除已编译的文件或内容。',
+      cleanCompileTipWithProject: '反向编译后将会从「{project}」项目代码中删除已编译的文件或内容。',
       // 初始化
       initialize: {
         initializeService: '初始化服务',
@@ -280,7 +288,7 @@ export default {
         filterKeyword: '关键字',
         noFiles: '暂无服务文件',
         fileSetting: '文件设置',
-        fileSettingHolder: '你可以点击左侧文件打开文件设置',
+        fileSettingHolder: '你可以点击左侧文件打开文件设置，在文件设置中，您可以根据变量来控制文件是否需要被编译输出。',
         compiler: '编译器',
         enableExpress: '文件启用表达式',
         enableExpressHolder: `表达式使用当前文件编译器编译，结果为'true'字符串或空时表示启用`

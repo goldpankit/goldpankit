@@ -12,7 +12,7 @@
         :label="item.name"
       />
       <template v-if="withPrefix" #prefix>
-        <template v-if="prefix == null">Data Source</template>
+        <template v-if="prefix == null">{{$t('common.currentDataSource')}}</template>
         <template v-else>{{prefix}}</template>:
       </template>
     </el-select>

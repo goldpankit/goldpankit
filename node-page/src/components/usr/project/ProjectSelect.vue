@@ -3,7 +3,7 @@
     <el-select
       :model-value="modelValue"
       @update:modelValue="$emit('update:modelValue', $event)"
-      @change="$emit('change', $event)"
+      @change="handleChange"
       clearable
     >
       <el-option
@@ -12,7 +12,7 @@
         :key="item.id"
         :label="item.name"
       />
-      <template v-if="withPrefix" #prefix>Project:</template>
+      <template v-if="withPrefix" #prefix>{{$t('common.currentProject')}}:</template>
     </el-select>
     <el-button class="button-icon" type="primary" icon="Plus" @click="$refs.createProjectWindow.open()"></el-button>
     <CreateProjectWindow ref="createProjectWindow" @success="handleCreateSuccess"/>
@@ -24,6 +24,7 @@
 import {search} from "../../../api/user.project";
 import DirectorySelect from "../../common/DirectorySelect.vue";
 import CreateProjectWindow from "./CreateProjectWindow.vue";
+import {mapMutations, mapState} from "vuex";
 
 export default {
   name: "ProjectSelect",
@@ -43,22 +44,31 @@ export default {
     }
   },
   methods: {
+    ...mapMutations(['setCurrentProjectDetail']),
     fetchList () {
       search()
         .then(data => {
           this.list = data
-          // 清空不存在的项目选择s
+          // 清空不存在的项目选择
           if (this.modelValue != null) {
             const targetProject = this.list.find(p => p.id === this.modelValue)
+            this.setCurrentProjectDetail(targetProject)
             if (targetProject == null) {
               this.$emit('update:modelValue', null)
               this.$emit('change', null)
+              this.handleChange(null)
             }
           }
         })
         .catch(e => {
           this.$tip.apiFailed(e)
         })
+    },
+    // 选择项目
+    handleChange (projectId) {
+      const targetProject = this.list.find(item => item.id === projectId)
+      this.setCurrentProjectDetail(targetProject)
+      this.$emit('change', projectId)
     },
     // 创建完成
     handleCreateSuccess (projectId) {

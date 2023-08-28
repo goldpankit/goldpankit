@@ -5,8 +5,28 @@
         <div class="header">
           <h2>{{service.space.name}}·{{service.name}}</h2>
           <div v-if="initialized" class="opera">
-            <el-button type="primary" :disabled="currentProject == null || isWorking.compile" @click="compile">{{$t('service.settings.compile')}}</el-button>
-            <el-button type="primary" :disabled="currentProject == null || isWorking.cleanCompile" @click="cleanCompile">{{$t('service.settings.cleanCompile')}}</el-button>
+            <el-popover
+              placement="top-start"
+              :title="$t('service.settings.compileTipTitle')"
+              :width="200"
+              trigger="hover"
+              :content="compileTip"
+            >
+              <template #reference>
+                <el-button type="primary" :class="{ 'is-disabled': currentProject == null || isWorking.compile}" @click="compile">{{$t('service.settings.compile')}}</el-button>
+              </template>
+            </el-popover>
+            <el-popover
+                placement="top-start"
+                :title="$t('service.settings.cleanCompileTipTitle')"
+                :width="200"
+                trigger="hover"
+                :content="cleanCompileTip"
+            >
+              <template #reference>
+                <el-button type="primary" :class="{ 'is-disabled': currentProject == null || isWorking.cleanCompile}" @click="cleanCompile">{{$t('service.settings.cleanCompile')}}</el-button>
+              </template>
+            </el-popover>
             <el-button type="important" @click="$refs.publishWindow.open(route.space, route.service)">{{$t('service.settings.publish')}}</el-button>
           </div>
         </div>
@@ -116,9 +136,23 @@ export default {
     }
   },
   computed: {
-    ...mapState(['currentProject', 'currentDatabase', 'installData']),
+    ...mapState(['currentProject', 'currentProjectDetail', 'currentDatabase', 'installData']),
     initialized () {
       return this.serviceConfig != null && this.serviceConfig.version != null
+    },
+    // 编译提醒
+    compileTip () {
+      if (this.currentProjectDetail != null) {
+        return this.$t('service.settings.compileTipWithProject', { project: this.currentProjectDetail.name })
+      }
+      return this.$t('service.settings.compileTip')
+    },
+    // 反向编译提醒
+    cleanCompileTip () {
+      if (this.currentProjectDetail != null) {
+        return this.$t('service.settings.cleanCompileTipWithProject', { project: this.currentProjectDetail.name })
+      }
+      return this.$t('service.settings.cleanCompileTip')
     }
   },
   methods: {
@@ -166,7 +200,7 @@ export default {
     },
     // 编译服务
     compile () {
-      if (this.isWorking.compile) {
+      if (this.isWorking.compile || this.currentProject == null || this.currentProject === '') {
         return
       }
       this.isWorking.compile = true
@@ -194,7 +228,7 @@ export default {
     },
     // 清空编译
     cleanCompile () {
-      if (this.isWorking.cleanCompile) {
+      if (this.isWorking.cleanCompile || this.currentProject == null || this.currentProject === '') {
         return
       }
       this.isWorking.cleanCompile = true

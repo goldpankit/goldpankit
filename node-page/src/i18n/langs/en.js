@@ -32,6 +32,8 @@ export default {
     add: 'Add',
     type: 'Type',
     clickToSelectFile: 'Click to select a file',
+    currentProject: 'Project',
+    currentDataSource: 'Data Source',
     // 模态框
     modal: {
       confirmDelete: 'Confirm Delete',
@@ -206,7 +208,7 @@ export default {
     // 设置
     settings: {
       compile: 'Compile',
-      cleanCompile: 'Clean Compile',
+      cleanCompile: 'Decompile',
       publish: 'Publish',
       publishVersion: 'Publish Version',
       at: 'At',
@@ -229,6 +231,12 @@ export default {
       changeCodespace: 'Change',
       selectNewCodespace: 'Select new codespace',
       reinitialize: 'Reinitialize',
+      compileTipTitle: 'Compile Service',
+      compileTip: 'After compiling, the compiled result of the service code will be output to the currently selected project directory.',
+      compileTipWithProject: 'After compilation, the output of the service code will be placed in the 「{project}」 project directory.',
+      cleanCompileTipTitle: 'Clean Compiled Result',
+      cleanCompileTip: 'After decompiling, the compiled files or content will be removed from the current project code.',
+      cleanCompileTipWithProject: 'After decompiling, the compiled files or contents will be removed from the 「{project}」 project code.',
       initialize: {
         initializeService: 'Initialize Service',
         initializeServiceTip: 'Tips: You must first specify or create a local directory and initialize the service. Then you can code the service in the specified local directory.',
@@ -274,7 +282,7 @@ export default {
         filterKeyword: 'Filter keyword',
         noFiles: 'No Files',
         fileSetting: 'File Settings',
-        fileSettingHolder: 'You can click on the file on the left to open file settings.',
+        fileSettingHolder: 'You can click on the left-hand side file to open the file settings, where you can control whether a file needs to be compiled and outputted based on variables.',
         compiler: 'Compiler',
         enableExpress: 'Enable Express',
         enableExpressHolder: `The expression is compiled using the current file compiler. It is considered enabled when the result is the string 'true' or when it is empty.`
