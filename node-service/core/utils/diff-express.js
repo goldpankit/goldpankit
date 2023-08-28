@@ -102,29 +102,18 @@ class DiffExpress {
         errorGroups.push(diffGroup)
         continue
       }
-      // 解析组内删除行
-      const deletedLines = diffGroup.diffLines.filter(diffLine => diffLine.operaType === OPERA_TYPE.DELETE)
-      for (const diffLine of deletedLines) {
-        // 匹配到了删除的行
-        if (this.#eq(diffLine.content.substring(1), contentLines[diffLine.lineIndex])) {
-          contentLines.splice(diffLine.lineIndex, 1)
-        }
-        // 未匹配到删除的行，添加到错误组中
-        else {
-          errorGroups.push({
-            ...diffGroup,
-            error: true,
-            message: `can not match diff line '${diffLine.content.substring(1)}'.`
-          })
-          break
-        }
+      if (diffGroup.direction === 'TOP') {
+        // 解析组内新增行
+        this.#mergeInsertLines(diffGroup, contentLines, errorGroups)
+        // 解析组内删除行
+        this.#mergeDeleteLines(diffGroup, contentLines, errorGroups)
+        continue
       }
-      // 解析组内新增行
-      const insertLines = diffGroup.diffLines.filter(diffLine => diffLine.operaType === OPERA_TYPE.INSERT)
-      if (!this.#existsLines(insertLines, contentLines)) {
-        for (const diffLine of insertLines) {
-          contentLines.splice(diffLine.lineIndex, 0, diffLine.content.substring(1))
-        }
+      if (diffGroup.direction === 'BOTTOM' || diffGroup.direction === DIRECTION.CENTER) {
+        // 解析组内删除行
+        this.#mergeDeleteLines(diffGroup, contentLines, errorGroups)
+        // 解析组内新增行
+        this.#mergeInsertLines(diffGroup, contentLines, errorGroups)
       }
     }
     // 如果存在解析失败的组，则把解析失败的组构建为差异字符串后返回
@@ -359,6 +348,46 @@ class DiffExpress {
   }
 
   /**
+   * 合并删除行
+   * @param diffGroup 差异组
+   * @param contentLines 内容行数组
+   * @param errorGroups 错误组
+   */
+  #mergeDeleteLines (diffGroup, contentLines, errorGroups) {
+    const deletedLines = diffGroup.diffLines.filter(diffLine => diffLine.operaType === OPERA_TYPE.DELETE)
+    for (const diffLine of deletedLines) {
+      // 匹配到了删除的行
+      if (this.#eq(diffLine.content.substring(1), contentLines[diffLine.lineIndex])) {
+        contentLines.splice(diffLine.lineIndex, 1)
+      }
+      // 未匹配到删除的行，添加到错误组中
+      else {
+        errorGroups.push({
+          ...diffGroup,
+          error: true,
+          message: `can not match diff line '${diffLine.content.substring(1)}'.`
+        })
+        break
+      }
+    }
+  }
+
+  /**
+   *
+   * @param diffGroup 差异组
+   * @param contentLines 内容行数组
+   * @param errorGroups 错误组
+   */
+  #mergeInsertLines (diffGroup, contentLines, errorGroups) {
+    const insertLines = diffGroup.diffLines.filter(diffLine => diffLine.operaType === OPERA_TYPE.INSERT)
+    if (!this.#existsLines(insertLines, contentLines)) {
+      for (const diffLine of insertLines) {
+        contentLines.splice(diffLine.lineIndex, 0, diffLine.content.substring(1))
+      }
+    }
+  }
+
+  /**
    * 获取行在内容中的索引
    * @param targetLine 目标行内容
    * @param contentLines 目标内容行数组
@@ -392,8 +421,19 @@ class DiffExpress {
         if (index === -1) {
           return []
         }
-        // 不是连续的，重新查找
-        if (searchStartIndex !== 0 && (index - 1) !== searchStartIndex) {
+        /**
+         * 不是连续的，重新查找
+         * 这里增加searchStartIndex !== index的判断，是因为进行重新查找时，
+         * searchStartIndex已经不为0，但是找到的结果又是searchStartIndex本身，
+         * 这就会导致index-1永远!=searchStartIndex，导致搜索失败，举个例子，下面有三行代码，都是"}"
+         *     }
+         *   }
+         * }
+         * 00000
+         * 那么第一次查找位置为1，但是后面不是00000，那么继续查找，此时搜索开始位置为1
+         * 那么下一次开始搜索位置为2，且搜索到的结果也为2，此时不满足结果-1=搜索位置，会认为是不连续的
+         */
+        if (searchStartIndex !== 0 && (index - 1) !== searchStartIndex && searchStartIndex !== index) {
           return this.#getPositionLines(expressLines, contentLines, searchStartIndex + 1)
         }
         positionLines.push({
