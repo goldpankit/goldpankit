@@ -75,56 +75,76 @@ class DiffExpress {
    * 按找表达式组一组一组合并，合并失败的组组装起来作为errorExpress（错误的表达式），所以即使失败了，也可能存在自动合并的部分
    * @param express 表达式
    * @param content 目标内容
+   * @param reverse 是否为反向编译
    * @return result = {
    *   success: 是否成功,
    *   errorExpress: 错误的表达式,
    *   content: 合并结果
    * }
    */
-  merge (express, content) {
-    const normalizedExpress = this.#normalizeExpress(express)
-    // 如果内容为空，视为合并失败，返回表达式本身
-    if (content == null || content === '') {
-      return normalizedExpress
-    }
-    // 如果不是正确的表达式，视为不应合并，返回内容本身
-    if (!this.isDiffEllipsis(normalizedExpress)) {
-      return content
-    }
-    const normalizedContent = this.#normalizeContent(content)
-    const contentLines = this.#getLines(normalizedContent)
-    const diffGroups = this.getDiffGroups(normalizedExpress, contentLines)
-    // 解析失败的组
-    const errorGroups = []
-    // 解析组
-    for (const diffGroup of diffGroups) {
-      if (diffGroup.error) {
-        errorGroups.push(diffGroup)
-        continue
+  merge (express, content, reverse=false) {
+    try {
+      const normalizedExpress = this.#normalizeExpress(express)
+      // 如果内容为空，视为合并失败，返回表达式本身
+      if (content == null || content === '') {
+        return normalizedExpress
       }
-      if (diffGroup.direction === 'TOP') {
-        // 解析组内新增行
-        this.#mergeInsertLines(diffGroup, contentLines, errorGroups)
-        // 解析组内删除行
-        this.#mergeDeleteLines(diffGroup, contentLines, errorGroups)
-        continue
+      // 如果不是正确的表达式，视为不应合并，返回内容本身
+      if (!this.isDiffEllipsis(normalizedExpress)) {
+        return content
       }
-      if (diffGroup.direction === 'BOTTOM' || diffGroup.direction === DIRECTION.CENTER) {
-        // 解析组内删除行
-        this.#mergeDeleteLines(diffGroup, contentLines, errorGroups)
-        // 解析组内新增行
-        this.#mergeInsertLines(diffGroup, contentLines, errorGroups)
+      const normalizedContent = this.#normalizeContent(content)
+      const contentLines = this.#getLines(normalizedContent)
+      const diffGroups = this.getDiffGroups(normalizedExpress, contentLines)
+      // 解析失败的组
+      const errorGroups = []
+      // 解析组
+      for (const diffGroup of diffGroups) {
+        // 如果组存在错误，则直接加入错误组
+        if (diffGroup.error) {
+          errorGroups.push(diffGroup)
+          continue
+        }
+        if (reverse) {
+          // 验证是否已反向合并过
+          if (this.#isReversed(diffGroup, contentLines)) {
+            continue
+          }
+        } else {
+          // 验证是否已合并过
+          if (this.#isMerged(diffGroup, contentLines)) {
+            continue
+          }
+        }
+        // 如果差异行在顶部
+        if (diffGroup.direction === 'TOP') {
+          // 解析组内新增行
+          this.#mergeInsertLines(diffGroup, contentLines, errorGroups, reverse)
+          // 解析组内删除行
+          this.#mergeDeleteLines(diffGroup, contentLines, errorGroups)
+          continue
+        }
+        // 如果差异行在底部或中间
+        if (diffGroup.direction === 'BOTTOM' || diffGroup.direction === DIRECTION.CENTER) {
+          // 解析组内删除行
+          this.#mergeDeleteLines(diffGroup, contentLines, errorGroups)
+          // 解析组内新增行
+          this.#mergeInsertLines(diffGroup, contentLines, errorGroups, reverse)
+        }
       }
-    }
-    // 如果存在解析失败的组，则把解析失败的组构建为差异字符串后返回
-    let errorExpress = ''
-    if (errorGroups.length > 0) {
-      errorExpress = this.#toDiffExpress(errorGroups)
-    }
-    return {
-      success: errorExpress === '',
-      errorExpress,
-      content: this.#linesToText(contentLines)
+      // 如果存在解析失败的组，则把解析失败的组构建为差异字符串后返回
+      let errorExpress = ''
+      if (errorGroups.length > 0) {
+        errorExpress = this.#toDiffExpress(errorGroups)
+      }
+      return {
+        success: errorExpress === '',
+        errorExpress,
+        content: this.#linesToText(contentLines)
+      }
+    } catch (e) {
+      console.log('merge diff throw an exception', e)
+      throw e
     }
   }
 
@@ -134,7 +154,7 @@ class DiffExpress {
    * @param content 内容
    */
   revertMerge (express, content) {
-    return this.merge(this.getRevertExpress(express), content)
+    return this.merge(this.getRevertExpress(express), content, true)
   }
 
   /**
@@ -158,6 +178,69 @@ class DiffExpress {
       }
     })
     return this.#linesToText(expressLines)
+  }
+
+  /**
+   * 判断是否已经反向合并过
+   * @param diffGroup 差异组
+   * @param contentLines 内容行组
+   * @returns {boolean}
+   */
+  #isReversed (diffGroup, contentLines) {
+    const originExpress = this.#linesToText(diffGroup.expressLines)
+    const originExpressLines = this.#getLines(this.getRevertExpress(originExpress))
+    // 获取原始表达式中新增的行数组
+    let originInsertLines = originExpressLines.filter(line => line.startsWith('+')).map(line => {
+      // 转换为对象，以调用#existsLines方法
+      return { content: line }
+    })
+    // 获取原始表达式中删除的行数组
+    let originDeleteLines = originExpressLines.filter(line => line.startsWith('-')).map(line => {
+      // 转换为对象，以调用#existsLines方法
+      return { content: line }
+    })
+    // 差异行都是从后往前，这里拿到的行是从前往后的，所以做一次反转
+    originInsertLines.reverse()
+    originDeleteLines.reverse()
+    /**
+     * 在原始表达式中，如果新增的行都不存在于目标内容中，或者已经删除的行依然存在于
+     * 目标内容中，都说明已经卸载过或未安装过，此时无需再做反向合并。
+     */
+    if (originInsertLines.length > 0) {
+      return !this.#existsLines(originInsertLines, contentLines)
+    }
+    return this.#existsLines(originDeleteLines, contentLines)
+  }
+
+  /**
+   * 判断是否已经合并过
+   * @param diffGroup 差异组
+   * @param contentLines 内容行组
+   * @returns {boolean}
+   */
+  #isMerged (diffGroup, contentLines) {
+    const expressLines = diffGroup.expressLines
+    // 获取原始表达式中新增的行数组
+    let insertLines = expressLines.filter(line => line.startsWith('+')).map(line => {
+      // 转换为对象，以调用#existsLines方法
+      return { content: line }
+    })
+    // 获取原始表达式中删除的行数组
+    let deleteLines = expressLines.filter(line => line.startsWith('-')).map(line => {
+      // 转换为对象，以调用#existsLines方法
+      return { content: line }
+    })
+    // 差异行都是从后往前，这里拿到的行是从前往后的，所以做一次反转
+    insertLines.reverse()
+    deleteLines.reverse()
+    /**
+     * 如果新增的行都存在于目标内容中，或者已经删除的行不存在于
+     * 目标内容中，都说明已经卸载过或未安装过，此时无需在合并
+     */
+    if (insertLines.length > 0) {
+      return this.#existsLines(insertLines, contentLines)
+    }
+    return !this.#existsLines(deleteLines, contentLines)
   }
 
   /**
@@ -378,9 +461,15 @@ class DiffExpress {
    * @param contentLines 内容行数组
    * @param errorGroups 错误组
    */
-  #mergeInsertLines (diffGroup, contentLines, errorGroups) {
+  #mergeInsertLines (diffGroup, contentLines, errorGroups, reverse) {
     const insertLines = diffGroup.diffLines.filter(diffLine => diffLine.operaType === OPERA_TYPE.INSERT)
-    if (!this.#existsLines(insertLines, contentLines)) {
+    /**
+     * 如果新增的行不存在与内容行中，则新增，避免重复合并
+     * 如果仅仅按照以上的逻辑去处理，在反向编译下，-变成+，如果转变后为只有一条“+}”语句，那么大概率会无法插入，
+     * 所以这里再加一个或条件，如果是反转就认为“+”是允许的，但依然如果多次进行反编译，会重复的新增行
+     * 所以，反编译要先进行抽取出原表达式的新增行，并判断这些行是否存在于内容行中，如果存在，再执行卸载操作。
+     */
+    if (reverse || !this.#existsLines(insertLines, contentLines)) {
       for (const diffLine of insertLines) {
         contentLines.splice(diffLine.lineIndex, 0, diffLine.content.substring(1))
       }

@@ -46,7 +46,9 @@ module.exports = {
           file.content = content
           file.localContent = localFileContent
           file.contentEncode = fileInfo.encode
-          diffFiles.push(file)
+          if (file.content !== file.localContent) {
+            diffFiles.push(file)
+          }
           continue
         }
         // 待删除文件，填充本地内容，加入删除文件队列
