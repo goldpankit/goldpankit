@@ -17,14 +17,15 @@ module.exports = {
           }
           // 执行升级命令
           const upgradeCommand = `npm install goldpankit@${latestVersion.versionNo} -g --registry https://registry.npmjs.org`
+          const upgradeCommandTip = `npm install goldpankit@${latestVersion.versionNo} -g --registry https://registry.npmjs.org\nOR\nsudo npm install goldpankit@${latestVersion.versionNo} -g --registry https://registry.npmjs.org`
           log.tip(`We are currently using command '${upgradeCommand}' for automatic upgrade, please wait a moment.`)
           node.exec(process.cwd(), upgradeCommand)
             .then(() => {
-              log.success(`The automatic upgrade is complete. The latest version is ${latestVersion.versionNo}. and now, you can try re-running the 'kit' command to launch the kit. if you see this message repeatedly, please try manually executing the following command to complete the upgrade.\n\`\`\`\n${upgradeCommand}\n\`\`\``)
+              log.success(`The automatic upgrade is complete. The latest version is ${latestVersion.versionNo}. and now, you can try re-running the 'kit' command to launch the kit. if you see this message repeatedly, please try manually executing the following command to complete the upgrade.\n\`\`\`\n${upgradeCommandTip}\n\`\`\``)
               resolve(true)
             })
             .catch(e => {
-              log.error(`Automatic upgrade failed. You can manually execute the following commands to attempt an upgrade.\n\`\`\`\n${upgradeCommand}\n\`\`\`\nIf you still cannot complete the upgrade, please try using superuser privileges to execute or adjust your node version.`)
+              log.error(`Automatic upgrade failed. You can manually execute the following commands to attempt an upgrade.\n\`\`\`\n${upgradeCommandTip}\n\`\`\`\nIf you still cannot complete the upgrade, please try using superuser privileges to execute or adjust your node version.`)
               reject(e)
             })
         })
