@@ -25,6 +25,7 @@ export default {
   position: absolute;
   right: 50px;
   bottom: 50px;
+  z-index: 98;
   background: rgba(255, 255, 255, .95);
   padding: 20px 10px;
   border-radius: 10px;
