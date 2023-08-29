@@ -6,7 +6,7 @@
   >
     <div class="setting-wrap">
       <h3>参数设置</h3>
-      <el-form :model="aiParam">
+      <el-form ref="aiForm" :model="aiParam">
         <el-form-item label="Mode" prop="mode">
           <p class="mode">gpt-3.5-turbo</p>
         </el-form-item>
@@ -68,7 +68,7 @@
           <el-input-number v-model="aiParam.presencePenalty" :min="0" :max="1" :step="0.1" @blur="setDefault($event, 'presencePenalty', 0.6)"></el-input-number>
         </el-form-item>
       </el-form>
-      <el-form :model="config">
+      <el-form ref="configForm" :model="config">
         <el-form-item label="自动滚动" prop="autoScroll">
           <el-switch v-model="config.autoScroll"/>
         </el-form-item>
@@ -77,8 +77,8 @@
         </el-form-item>
       </el-form>
       <div class="opera">
-        <el-button>重置</el-button>
-        <el-button>清空记录</el-button>
+        <el-button @click="reset">重置</el-button>
+        <el-button @click="clearMessages">清空记录</el-button>
       </div>
     </div>
     <div class="message-wrap">
@@ -128,7 +128,7 @@
         </li>
       </ul>
       <div class="input-wrap">
-        <el-input v-model="message" type="textarea" :rows="5" @keydown="handleSend" placeholder="请输入问题并Ctrl+Enter"/>
+        <el-input ref="messageInput" v-model="message" type="textarea" :rows="5" @keydown="handleSend" placeholder="请输入问题"/>
         <el-button type="primary" :disabled="disabled" @click="send">发送</el-button>
       </div>
     </div>
@@ -138,7 +138,7 @@
 <script>
 import ToolWindow from "../ToolWindow.vue";
 import BaseToolWindow from "../BaseToolWindow.vue";
-import {mapState} from "vuex";
+import {mapActions, mapMutations, mapState} from "vuex";
 import {askAi} from "../../../api/user.ai";
 import {reactive} from "vue";
 
@@ -187,10 +187,17 @@ export default {
     visible () {
       if (this.visible && this.messages.length === 0) {
         this.outputTitle()
+        // 自动聚焦
+        setTimeout(() => {
+          this.$nextTick(() => {
+            this.$refs.messageInput.focus()
+          })
+        }, 300)
       }
     }
   },
   methods: {
+    ...mapActions(['refreshBalance']),
     // 发送
     send () {
       const message = this.message.trim()
@@ -225,10 +232,12 @@ export default {
           if (!data.success) {
             chatMessage.content = data.errorMessage
             this.output(chatMessage)
+            return
           }
           // 成功
           chatMessage.content = data.answer
           this.output(chatMessage)
+          this.refreshBalance()
         })
         .catch(e => {
           chatMessage.loading = false
@@ -240,6 +249,15 @@ export default {
           chatMessage.content = this.businessMessages[Math.round(Math.random() * 2)]
           this.output(chatMessage)
         })
+    },
+    // 重置
+    reset () {
+      this.$refs.aiForm.resetFields()
+      this.$refs.configForm.resetFields()
+    },
+    // 清空记录
+    clearMessages () {
+      this.messages = this.messages.filter(msg => msg.content !== msg.currentText)
     },
     // 回车
     handleSend(event) {

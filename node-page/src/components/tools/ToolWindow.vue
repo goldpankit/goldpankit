@@ -1,7 +1,7 @@
 <template>
   <el-dialog
     class="tool-window"
-    width="1000px"
+    :class="{fullscreen}"
     draggable
     :fullscreen="true"
     :show-close="false"
@@ -10,6 +10,12 @@
     <template #header>
       <header class="tool-window__header">
         <h2>{{title}}</h2>
+        <div class="window-opera">
+          <span class="icon" @click="fullscreen = !fullscreen">
+            <el-icon v-if="!fullscreen"><FullScreen /></el-icon>
+            <img v-else src="/images/common/exit-fullscreen.svg">
+          </span>
+        </div>
       </header>
     </template>
     <slot></slot>
@@ -23,6 +29,11 @@ export default {
   props: {
     title: {
       required: true
+    }
+  },
+  data () {
+    return {
+      fullscreen: false
     }
   }
 }
@@ -38,6 +49,12 @@ export default {
   display: flex;
   flex-direction: column;
   position: relative;
+  transition: all ease .15s;
+  &.fullscreen {
+    width: 98% !important;
+    height: 95% !important;
+    top: 2.5%;
+  }
   .el-dialog__header {
     flex-shrink: 0;
     padding: 0;
@@ -48,9 +65,39 @@ export default {
       line-height: 30px;
       display: flex;
       justify-content: center;
+      position: relative;
       h2 {
         font-size: var(--font-size);
         font-weight: normal;
+      }
+      .window-opera {
+        position: absolute;
+        top: 0;
+        right: 0;
+        height: 100%;
+        padding-right: 10px;
+        display: flex;
+        align-items: center;
+        .icon {
+          height: 26px;
+          padding: 5px;
+          box-sizing: border-box;
+          line-height: initial;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          border-radius: 5px;
+          transition: all ease .15s;
+          &:hover {
+            background: #e0e0e0;
+          }
+          .el-icon {
+            font-size: 14px;
+          }
+          img {
+            width: 14px;
+          }
+        }
       }
     }
   }
