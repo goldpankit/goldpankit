@@ -4,7 +4,7 @@
       <div class="icon-wrap" @click="$refs.aiWindow.open()">
         <AIIcon/>
       </div>
-      <span>AI问答</span>
+      <span>{{$t('tool.ai.name')}}</span>
     </li>
   </ul>
   <AIWindow ref="aiWindow"/>
@@ -28,10 +28,7 @@ export default {
   background: rgba(255, 255, 255, .95);
   padding: 20px 10px;
   border-radius: 10px;
-  box-shadow: 0 0 10px -5px rgba(0, 0, 0, .5);
-  &:hover {
-    box-shadow: 0 0 10px -5px rgba(0, 0, 0, .8);
-  }
+  box-shadow: 0 0 10px -5px rgba(0, 0, 0, .25);
   li {
     display: flex;
     flex-direction: column;

@@ -1,11 +1,11 @@
 <template>
   <ToolWindow
     v-model="visible"
-    title="AI问答"
+    :title="$t('tool.ai.name')"
     class="ai-window"
   >
     <div class="setting-wrap">
-      <h3>参数设置</h3>
+      <h3>{{$t('tool.ai.parameterSettings')}}</h3>
       <el-form ref="aiForm" :model="aiParam">
         <el-form-item label="Mode" prop="mode">
           <p class="mode">gpt-3.5-turbo</p>
@@ -19,7 +19,7 @@
                 title="Temperature"
                 :width="400"
                 trigger="hover"
-                content="用于调节生成文本的多样性和随机性。较高的Temperature值（例如1.0）会增加生成文本的随机性。这意味着模型更有可能选择不太常见或不太合理的单词，从而产生更具创造力但可能也更不准确或不连贯的回复。较低的Temperature值（例如0.2）会降低生成文本的随机性。这意味着模型更倾向于选择常见或合理的单词，从而产生更准确和连贯但可能也相对较少新颖或有趣的回复。根据任务和需求，您可以根据所需文本输出类型调整Temperature值以获得适当程度的多样性和创造力。"
+                :content="$t('tool.ai.temperatureDescription')"
               >
                 <template #reference>
                   <el-icon><QuestionFilled /></el-icon>
@@ -38,7 +38,7 @@
                 title="Frequency Penalty"
                 :width="200"
                 trigger="hover"
-                content="用于控制生成文本中重复词语出现频率的惩罚力度。当设置较高的频率惩罚值时，模型将倾向于生成更多不同的词汇，减少相同词语的重复。"
+                :content="$t('tool.ai.frequencyPenaltyDescription')"
               >
                 <template #reference>
                   <el-icon><QuestionFilled /></el-icon>
@@ -51,13 +51,13 @@
         <el-form-item label="Presence Penalty" prop="presencePenalty">
           <template #label>
             <div class="form-item-label">
-              <label>Frequency Penalty</label>
+              <label>Presence Penalty</label>
               <el-popover
                 placement="top-start"
                 title="Presence Penalty"
                 :width="200"
                 trigger="hover"
-                content="用于控制生成文本中特定主题或关键词出现次数的惩罚力度。通过设置较高的存在惩罚值，可以强制模型避免过多地涉及特定主题或关键词，并鼓励它产生更加全面和多样化的回答。"
+                :content="$t('tool.ai.presencePenaltyDescription')"
               >
                 <template #reference>
                   <el-icon><QuestionFilled /></el-icon>
@@ -69,31 +69,31 @@
         </el-form-item>
       </el-form>
       <el-form ref="configForm" :model="config">
-        <el-form-item label="自动滚动" prop="autoScroll">
+        <el-form-item :label="$t('tool.ai.autoScroll')" prop="autoScroll">
           <el-switch v-model="config.autoScroll"/>
         </el-form-item>
-        <el-form-item label="输出动画" prop="animation">
+        <el-form-item :label="$t('tool.ai.outputAnimation')" prop="animation">
           <el-switch v-model="config.animation"/>
         </el-form-item>
       </el-form>
       <div class="opera">
-        <el-button @click="reset">重置</el-button>
-        <el-button @click="clearMessages">清空记录</el-button>
+        <el-button @click="reset">{{$t('common.reset')}}</el-button>
+        <el-button @click="clearMessages">{{$t('tool.ai.clearMessages')}}</el-button>
       </div>
     </div>
     <div class="message-wrap">
       <ul class="message-list">
         <li v-if="messages.length === 0" class="tip-wrap">
           <h2>{{currentTitle}}</h2>
-          <h4>使用说明：</h4>
+          <h4>{{$t('tool.ai.tipTitle')}}</h4>
           <ul>
-            <li>每次提问将扣除1颗金豆</li>
-            <li>您可以使用AI问答来快速解决您的技术问题</li>
-            <li>如果您想要调试AI参数，可以通过左侧的参数配置快速调整</li>
-            <li>国内网络可直接使用，如果出现错误请稍后再试</li>
-            <li>在底部灰色的输入框中输入文字后按下Ctrl+Enter或Command+Enter即可发起提问</li>
-            <li>综合考虑，暂时不支持问答上下文</li>
-            <li>如果您在中华人民共和国之外的区域，访问速度可能较慢</li>
+            <li>{{$t('tool.ai.tip1')}}</li>
+            <li>{{$t('tool.ai.tip2')}}</li>
+            <li>{{$t('tool.ai.tip3')}}</li>
+            <li>{{$t('tool.ai.tip4')}}</li>
+            <li>{{$t('tool.ai.tip5')}}</li>
+            <li>{{$t('tool.ai.tip6')}}</li>
+            <li>{{$t('tool.ai.tip7')}}</li>
           </ul>
         </li>
         <li v-for="message in messages" :key="message.id" class="message" :class="{'self-message': message.self}">
@@ -128,8 +128,8 @@
         </li>
       </ul>
       <div class="input-wrap">
-        <el-input ref="messageInput" v-model="message" type="textarea" :rows="5" @keydown="handleSend" placeholder="请输入问题"/>
-        <el-button type="primary" :disabled="disabled" @click="send">发送</el-button>
+        <el-input ref="messageInput" v-model="message" type="textarea" :rows="5" @keydown="handleSend" :placeholder="$t('tool.ai.inputTip')"/>
+        <el-button type="primary" :disabled="disabled" @click="send">{{$t('tool.ai.send')}}</el-button>
       </div>
     </div>
   </ToolWindow>
@@ -138,7 +138,7 @@
 <script>
 import ToolWindow from "../ToolWindow.vue";
 import BaseToolWindow from "../BaseToolWindow.vue";
-import {mapActions, mapMutations, mapState} from "vuex";
+import {mapActions, mapState} from "vuex";
 import {askAi} from "../../../api/user.ai";
 import {reactive} from "vue";
 
@@ -162,13 +162,8 @@ export default {
         presencePenalty: 0.6
       },
       message: '',
-      currentTitle: '欢迎使用AI问答',
-      messages: [],
-      businessMessages: [
-        '毕竟是数据在球对面，数据拿过来需要些时间，超时甚至失败是难免的，来，重新试一遍～',
-        '当前服务繁忙，多问几遍就好了，实在不行看看左侧站长其它作品？枇杷村IT面试宝典，CodeRd啥的其实做的都还可以的，瞅瞅瞅瞅吧～',
-        '要不换个问题？比如"coderd好用吗？"'
-      ]
+      currentTitle: '',
+      messages: []
     }
   },
   computed: {
@@ -230,7 +225,7 @@ export default {
           chatMessage.loading = false
           // 失败
           if (!data.success) {
-            chatMessage.content = data.errorMessage
+            chatMessage.content = data.errorMessage + '\n' + this.$t('tool.ai.errorDeductedTip')
             this.output(chatMessage)
             return
           }
@@ -241,12 +236,7 @@ export default {
         })
         .catch(e => {
           chatMessage.loading = false
-          if (e.code === 6001) {
-            chatMessage.content = e.message
-            this.output(chatMessage)
-            return
-          }
-          chatMessage.content = this.businessMessages[Math.round(Math.random() * 2)]
+          chatMessage.content = e.message + '\n' + this.$t('tool.ai.errorDeductedTip')
           this.output(chatMessage)
         })
     },
@@ -257,7 +247,7 @@ export default {
     },
     // 清空记录
     clearMessages () {
-      this.messages = this.messages.filter(msg => msg.content !== msg.currentText)
+      this.messages = []
     },
     // 回车
     handleSend(event) {
@@ -296,7 +286,7 @@ export default {
     },
     // 输出标题
     outputTitle () {
-      const text = '你好，欢迎使用AI问答！'.split('')
+      const text = this.$t('tool.ai.tip0').split('')
       let i = 0
       const timer = setInterval(() => {
         if (i >= text.length) {

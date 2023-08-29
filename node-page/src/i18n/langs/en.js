@@ -34,6 +34,7 @@ export default {
     clickToSelectFile: 'Click to select a file',
     currentProject: 'Project',
     currentDataSource: 'Data Source',
+    reset: 'Reset',
     // 模态框
     modal: {
       confirmDelete: 'Confirm Delete',
@@ -60,6 +61,31 @@ export default {
       sending: 'Sending...',
       resend: 'Resend OTP Code',
       sendTip: 'tips: We are sending you a OTP code to {email}. If you do not receive it, you can resend it in 60 seconds.'
+    }
+  },
+  // 工具
+  tool: {
+    ai: {
+      name: 'AI Q&A',
+      parameterSettings: 'Parameters',
+      clearMessages: 'Clear',
+      tipTitle: 'Instructions for use:',
+      tip0: 'Hello, welcome to AI Q&A!',
+      tip1: 'Each question will deduct 1 gold bean.',
+      tip2: 'You can use AI Q&A to quickly solve your technical questions.',
+      tip3: 'If you want to debug AI parameters, you can quickly adjust them through the parameter configuration on the left side.',
+      tip4: 'The Chinese internet is available for direct use. If an error occurs, please try again later.',
+      tip5: 'Type in the gray input box at the bottom and press Ctrl+Enter or Command+Enter to submit your question.',
+      tip6: 'After comprehensive consideration, we do not currently support question and answer context.',
+      tip7: 'If you are outside the People\'s Republic of China, the access speed may be slower.',
+      inputTip: 'Please enter a question.',
+      send: 'Send',
+      autoScroll: 'Automatic scrolling',
+      outputAnimation: 'Animation',
+      errorDeductedTip: 'Charge Explanation: This inquiry does not deduct any gold beans.',
+      temperatureDescription: 'The temperature is used to adjust the diversity and randomness of generated text. A higher temperature value (e.g., 1.0) increases the randomness of generated text. This means that the model is more likely to choose less common or less reasonable words, resulting in more creative but potentially inaccurate or incoherent responses. On the other hand, a lower temperature value (e.g., 0.2) reduces the randomness of generated text. This means that the model tends to choose more common or reasonable words, resulting in more accurate and coherent but relatively less novel or interesting responses. Depending on the task and requirements, you can adjust the temperature value according to the desired type of text output to achieve an appropriate level of diversity and creativity.',
+      frequencyPenaltyDescription: 'The penalty strength used to control the frequency of repeated words in generated text. When a higher frequency penalty value is set, the model tends to generate more diverse vocabulary and reduce the repetition of the same words.',
+      presencePenaltyDescription: 'The penalty strength is used to control the frequency of specific topics or keywords in generated text. By setting a higher penalty value, it can force the model to avoid excessive involvement with specific topics or keywords and encourage it to produce more comprehensive and diverse responses.',
     }
   },
   // 表单
