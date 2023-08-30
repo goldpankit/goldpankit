@@ -108,7 +108,13 @@ export default {
     reset () {
       this.$refs.aiForm.resetFields()
       this.$refs.configForm.resetFields()
-    }
+    },
+    // 设置默认值
+    setDefault (event, key, defaultValue) {
+      if (event.target.value === '') {
+        this.aiParam[key] = defaultValue
+      }
+    },
   }
 }
 </script>

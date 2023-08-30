@@ -4,23 +4,41 @@
       <h3>会话列表</h3>
     </div>
     <div class="session-list__body">
-      <ul class="session-list">
-        <li class="selected">
-          <h4>今天</h4>
-          <p>vue3怎么集成element-ui</p>
-          <p>32次提问</p>
-        </li>
-        <li>
-          <h4>昨天</h4>
-          <p>vue3怎么集成element-ui</p>
-          <p>16次提问</p>
-        </li>
-        <li>
-          <h4>2023/8/27</h4>
-          <p>vue3怎么集成element-ui</p>
-          <p>16次提问</p>
-        </li>
-      </ul>
+      <el-tabs v-model="currentTab">
+        <el-tab-pane name="date" label="最近">
+          <ul class="session-list">
+            <li
+              v-for="session in dateSessions"
+              :key="session.title"
+              :class="{ 'selected': modelValue === session }"
+              @click="selectSession(session)"
+            >
+              <h4>{{getDayText(session.title)}}</h4>
+              <p>vue3怎么集成element-ui</p>
+              <p>{{session.count}}次提问</p>
+            </li>
+          </ul>
+        </el-tab-pane>
+        <el-tab-pane name="defined" label="自定义">
+          <ul class="session-list">
+            <li class="selected">
+              <h4>今天</h4>
+              <p>vue3怎么集成element-ui</p>
+              <p>32次提问</p>
+            </li>
+            <li>
+              <h4>昨天</h4>
+              <p>vue3怎么集成element-ui</p>
+              <p>16次提问</p>
+            </li>
+            <li>
+              <h4>2023/8/27</h4>
+              <p>vue3怎么集成element-ui</p>
+              <p>16次提问</p>
+            </li>
+          </ul>
+        </el-tab-pane>
+      </el-tabs>
     </div>
     <div class="session-list__footer">
       <el-button type="primary" size="large" @click="$emit('open-settings')">参数设置</el-button>
@@ -31,8 +49,56 @@
 
 <script>
 
+import {fetchDateSessions, fetchSessionMessages} from "../../../api/user.ai";
+
 export default {
-  name: "SessionList"
+  name: "SessionList",
+  props: {
+    modelValue: {}
+  },
+  data () {
+    return {
+      currentTab: 'date',
+      dateSessions: []
+    }
+  },
+  methods: {
+    // 选择会话
+    selectSession (session) {
+      this.$emit('update:modelValue', session)
+      fetchSessionMessages({
+        page: 1,
+        capacity: 10,
+        model: {
+          sessionId: session.id,
+          date: session.id == null ? session.title : null
+        }
+      })
+        .then(data => {
+          session.messageData = data
+          this.$emit('session-change', session)
+        })
+        .catch(e => {
+          this.$tip.apiFailed(e)
+        })
+    },
+    // 查询日期会话
+    fetchDateSessions () {
+      fetchDateSessions()
+        .then(data => {
+          this.dateSessions = data
+          if (this.dateSessions.length > 0) {
+            this.selectSession(this.dateSessions[0])
+          }
+        })
+        .catch(e => {
+          this.$tip.apiFailed(e)
+        })
+    }
+  },
+  created () {
+    this.fetchDateSessions()
+  }
 }
 </script>
 
@@ -62,6 +128,9 @@ export default {
   }
   .session-list__body {
     flex-grow: 1;
+    :deep(.el-tabs__item) {
+      padding: 0 20px !important;
+    }
     .session-list {
       padding: 0 5px;
       li {

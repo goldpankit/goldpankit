@@ -11,10 +11,14 @@
       </div>
       <!-- 聊天列表 -->
       <div class="wrap-content">
-        <SessionList @open-settings="config.visibleSettings = true"/>
+        <SessionList
+          v-model="currentSession"
+          @open-settings="config.visibleSettings = true"
+          @session-change="handleSessionChange"
+        />
       </div>
     </div>
-    <div class="message-wrap">
+    <div class="message-wrap" :class="{editable: getEditable(currentSession)}">
       <ul class="message-list">
         <li v-if="messages.length === 0" class="tip-wrap">
           <h2>{{currentTitle}}</h2>
@@ -62,7 +66,13 @@
       </ul>
       <div class="input-wrap">
         <el-input ref="messageInput" v-model="message" type="textarea" :rows="5" @keydown="handleSend" :placeholder="$t('tool.ai.inputTip')"/>
-        <el-button type="primary" :disabled="disabled" @click="send">{{$t('tool.ai.send')}}</el-button>
+        <el-button v-if="userInfo == null" type="primary" @click="navigateToLogin">请登录</el-button>
+        <el-button
+          v-else
+          type="primary"
+          :disabled="disabled"
+          @click="send"
+        >{{$t('tool.ai.send')}}</el-button>
       </div>
     </div>
   </ToolWindow>
@@ -76,6 +86,7 @@ import {askAi} from "../../../api/user.ai";
 import {reactive} from "vue";
 import SessionList from "./SessionList.vue";
 import ParameterSettings from "./ParameterSettings.vue";
+import dayjs from "dayjs";
 
 export default {
   name: "AIWindow",
@@ -86,6 +97,8 @@ export default {
       message: '',
       currentTitle: '',
       messages: [],
+      // 当前会话
+      currentSession: null,
       // 配置
       config: {
         visibleSettings: false,
@@ -118,16 +131,17 @@ export default {
       if (this.visible && this.messages.length === 0) {
         this.outputTitle()
         // 自动聚焦
-        setTimeout(() => {
-          this.$nextTick(() => {
-            this.$refs.messageInput.focus()
-          })
-        }, 300)
+        this.__focus()
       }
     }
   },
   methods: {
     ...mapActions(['refreshBalance']),
+    // 前往登录
+    navigateToLogin () {
+      this.$router.push({name: 'SignIn'})
+      this.close()
+    },
     // 发送
     send () {
       const message = this.message.trim()
@@ -154,6 +168,8 @@ export default {
       this.message = ''
       askAi({
         ...this.aiParam,
+        sessionId: this.currentSession.id,
+        sessionDate: this.currentSession.id == null ? this.currentSession.title : null,
         message
       })
         .then(data => {
@@ -175,16 +191,24 @@ export default {
           this.output(chatMessage)
         })
     },
+    // 处理会话切换
+    handleSessionChange (session) {
+      const messages = session.messageData.records
+      this.messages = messages.map(message => {
+        return {
+          self: message.role === 'user',
+          loading: false,
+          content: message.message,
+          currentText: message.message
+        }
+      })
+      this.__scrollToBottom()
+      this.__focus()
+    },
     // 回车
     handleSend(event) {
       if ((event.metaKey || event.ctrlKey) && event.keyCode === 13) {
         this.send()
-      }
-    },
-    // 设置默认值
-    setDefault (event, key, defaultValue) {
-      if (event.target.value === '') {
-        this.aiParam[key] = defaultValue
       }
     },
     // 输出内容
@@ -223,6 +247,18 @@ export default {
         }
       }, 50)
     },
+    // 判断会话是否可编辑
+    getEditable (session) {
+      if (session == null) {
+        return true
+      }
+      if (session.id != null) {
+        return true
+      }
+      const targetText = dayjs(session.title).format('YYYY-MM-DD')
+      const todayText = dayjs().format('YYYY-MM-DD')
+      return targetText === todayText
+    },
     // 滚动到底部
     __scrollToBottom () {
       if (this.config.autoScroll) {
@@ -230,6 +266,14 @@ export default {
           document.querySelector('.message-list').scrollTop = document.querySelector('.message-list').scrollHeight
         })
       }
+    },
+    // 输入聚焦
+    __focus () {
+      setTimeout(() => {
+        this.$nextTick(() => {
+          this.$refs.messageInput.focus()
+        })
+      }, 300)
     }
   },
   mounted () {
@@ -275,8 +319,16 @@ export default {
   display: flex;
   flex-direction: column;
   overflow-y: auto;
+  &.editable {
+    .message-list {
+      padding-bottom: 180px;
+    }
+    .input-wrap {
+      display: block;
+    }
+  }
   .message-list {
-    padding: 0 50px 180px 50px;
+    padding: 0 50px 30px 50px;
     margin: 20px 0 0 0;
     list-style: none;
     flex-grow: 1;
@@ -355,6 +407,7 @@ export default {
     padding: 30px 50px;
     box-sizing: border-box;
     background: #fff;
+    display: none;
     :deep(.el-textarea) {
       .el-textarea__inner {
         background: var(--background-color);

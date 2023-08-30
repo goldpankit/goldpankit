@@ -58,6 +58,24 @@ export default {
     })
   },
   /**
+   * 获取日期文本
+   * @param dateText 时间字符串
+   */
+  getDayText (dateText) {
+    const $t = this.$t
+    const targetText = dayjs(dateText).format('YYYY-MM-DD')
+    const today = dayjs();
+    const todayText = today.format('YYYY-MM-DD')
+    const yesterdayText = today.subtract(1, 'day').format('YYYY-MM-DD')
+    if (targetText === todayText) {
+      return '今天'
+    }
+    if (targetText === yesterdayText) {
+      return '昨天'
+    }
+    return targetText
+  },
+  /**
    * 获取时间差文本
    * @param dateText 时间字符串
    * @returns {*}
