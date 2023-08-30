@@ -4,81 +4,14 @@
     :title="$t('tool.ai.name')"
     class="ai-window"
   >
-    <div class="setting-wrap">
-      <h3>{{$t('tool.ai.parameterSettings')}}</h3>
-      <el-form ref="aiForm" :model="aiParam">
-        <el-form-item label="Mode" prop="mode">
-          <p class="mode">gpt-3.5-turbo</p>
-        </el-form-item>
-        <el-form-item label="Temperature" prop="temperature">
-          <template #label>
-            <div class="form-item-label">
-              <label>Temperature</label>
-              <el-popover
-                placement="top-start"
-                title="Temperature"
-                :width="400"
-                trigger="hover"
-                :content="$t('tool.ai.temperatureDescription')"
-              >
-                <template #reference>
-                  <el-icon><QuestionFilled /></el-icon>
-                </template>
-              </el-popover>
-            </div>
-          </template>
-          <el-input-number v-model="aiParam.temperature" :min="0" :max="1" :step="0.1" @blur="setDefault($event, 'temperature', 0.2)"></el-input-number>
-        </el-form-item>
-        <el-form-item label="Frequency Penalty" prop="frequencyPenalty">
-          <template #label>
-            <div class="form-item-label">
-              <label>Frequency Penalty</label>
-              <el-popover
-                placement="top-start"
-                title="Frequency Penalty"
-                :width="200"
-                trigger="hover"
-                :content="$t('tool.ai.frequencyPenaltyDescription')"
-              >
-                <template #reference>
-                  <el-icon><QuestionFilled /></el-icon>
-                </template>
-              </el-popover>
-            </div>
-          </template>
-          <el-input-number v-model="aiParam.frequencyPenalty" :min="0" :max="1" :step="0.1" @blur="setDefault($event, 'frequencyPenalty', 0.8)"></el-input-number>
-        </el-form-item>
-        <el-form-item label="Presence Penalty" prop="presencePenalty">
-          <template #label>
-            <div class="form-item-label">
-              <label>Presence Penalty</label>
-              <el-popover
-                placement="top-start"
-                title="Presence Penalty"
-                :width="200"
-                trigger="hover"
-                :content="$t('tool.ai.presencePenaltyDescription')"
-              >
-                <template #reference>
-                  <el-icon><QuestionFilled /></el-icon>
-                </template>
-              </el-popover>
-            </div>
-          </template>
-          <el-input-number v-model="aiParam.presencePenalty" :min="0" :max="1" :step="0.1" @blur="setDefault($event, 'presencePenalty', 0.6)"></el-input-number>
-        </el-form-item>
-      </el-form>
-      <el-form ref="configForm" :model="config">
-        <el-form-item :label="$t('tool.ai.autoScroll')" prop="autoScroll">
-          <el-switch v-model="config.autoScroll"/>
-        </el-form-item>
-        <el-form-item :label="$t('tool.ai.outputAnimation')" prop="animation">
-          <el-switch v-model="config.animation"/>
-        </el-form-item>
-      </el-form>
-      <div class="opera">
-        <el-button @click="reset">{{$t('common.reset')}}</el-button>
-        <el-button @click="clearMessages">{{$t('tool.ai.clearMessages')}}</el-button>
+    <div class="setting-wrap" :class="{'parameter-settings': config.visibleSettings}">
+      <!-- 参数设置 -->
+      <div class="wrap-content setting-content" :class="{visible: config.visibleSettings}">
+        <ParameterSettings :config="config" :ai-param="aiParam" @close="config.visibleSettings = false"/>
+      </div>
+      <!-- 聊天列表 -->
+      <div class="wrap-content">
+        <SessionList @open-settings="config.visibleSettings = true"/>
       </div>
     </div>
     <div class="message-wrap">
@@ -141,16 +74,21 @@ import BaseToolWindow from "../BaseToolWindow.vue";
 import {mapActions, mapState} from "vuex";
 import {askAi} from "../../../api/user.ai";
 import {reactive} from "vue";
+import SessionList from "./SessionList.vue";
+import ParameterSettings from "./ParameterSettings.vue";
 
 export default {
   name: "AIWindow",
   extends: BaseToolWindow,
-  components: {ToolWindow},
+  components: {ParameterSettings, SessionList, ToolWindow},
   data () {
     return {
-      disabled: true,
+      message: '',
+      currentTitle: '',
+      messages: [],
       // 配置
       config: {
+        visibleSettings: false,
         autoScroll: true,
         animation: true
       },
@@ -161,9 +99,6 @@ export default {
         frequencyPenalty: 0.8,
         presencePenalty: 0.6
       },
-      message: '',
-      currentTitle: '',
-      messages: []
     }
   },
   computed: {
@@ -240,15 +175,6 @@ export default {
           this.output(chatMessage)
         })
     },
-    // 重置
-    reset () {
-      this.$refs.aiForm.resetFields()
-      this.$refs.configForm.resetFields()
-    },
-    // 清空记录
-    clearMessages () {
-      this.messages = []
-    },
     // 回车
     handleSend(event) {
       if ((event.metaKey || event.ctrlKey) && event.keyCode === 13) {
@@ -315,35 +241,31 @@ export default {
 <style scoped lang="scss">
 .setting-wrap {
   flex-shrink: 0;
-  padding: 30px 30px 80px 30px;
   background: var(--background-color);
-  overflow-y: auto;
-  h3 {
-    margin-bottom: 20px;
-  }
-  .mode {
-    font-weight: bold;
-  }
-  .form-item-label {
-    display: flex;
-    align-items: center;
-    .el-icon {
-      margin-left: 5px;
-      font-size: 16px;
-    }
-  }
-  .opera {
-    border-top: 2px solid #eee;
-    background: var(--background-color);
+  width: 255px;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+  transition: all ease .3s;
+  &.parameter-settings {
     width: 215px;
+  }
+  .wrap-content {
+    height: 100%;
+    box-sizing: border-box;
+    overflow-y: auto;
+    position: relative;
+  }
+  .setting-content {
     position: absolute;
+    width: 215px;
+    top: 0;
     left: 0;
-    bottom: 0;
-    display: flex;
-    justify-content: center;
-    padding: 20px;
-    .el-button {
-      width: 45%;
+    z-index: 9;
+    transform: translateX(-500px);
+    transition: all ease .3s;
+    &.visible {
+      transform: translateX(0);
     }
   }
 }
