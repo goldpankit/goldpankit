@@ -65,7 +65,7 @@
         </li>
       </ul>
       <div class="input-wrap">
-        <el-input ref="messageInput" v-model="message" type="textarea" :rows="5" @keydown="handleSend" :placeholder="$t('tool.ai.inputTip')"/>
+        <el-input ref="messageInput" v-model="message" type="textarea" :rows="5" @keydown="handleKeydown" :placeholder="$t('tool.ai.inputTip')"/>
         <el-button v-if="userInfo == null" type="primary" @click="navigateToLogin">请登录</el-button>
         <el-button
           v-else
@@ -215,8 +215,14 @@ export default {
       this.__focus()
     },
     // 回车
-    handleSend(event) {
+    handleKeydown(event) {
+      // ctrl+enter 或 command + enter添加换行
       if ((event.metaKey || event.ctrlKey) && event.keyCode === 13) {
+        this.message += '\n'
+        return
+      }
+      // 回车发送
+      if (event.keyCode === 13) {
         this.send()
       }
     },
@@ -372,9 +378,6 @@ export default {
       }
     }
     .self-message {
-      //font-size: 20px;
-      //line-height: 30px;
-      //font-weight: bold;
       color: #3a020e;
       background-color: transparent !important;
     }

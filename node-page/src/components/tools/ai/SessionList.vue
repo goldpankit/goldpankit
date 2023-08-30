@@ -24,7 +24,7 @@
         </ul>
       </template>
       <template v-if="currentTab === 'defined'">
-        <ul class="session-list">
+        <ul v-if="definedSessions.length > 0" class="session-list">
           <li
             v-for="session in definedSessions"
             :key="session.id"
@@ -38,6 +38,7 @@
             </div>
           </li>
         </ul>
+        <Empty v-else/>
       </template>
     </div>
     <div class="session-list__footer">
@@ -48,12 +49,14 @@
 </template>
 
 <script>
-
+import dayjs from 'dayjs'
 import {createSession, fetchDateSessions, fetchDefinedSessions, fetchSessionMessages} from "../../../api/user.ai";
 import {reactive} from "vue";
+import Empty from "../../common/Empty.vue";
 
 export default {
   name: "SessionList",
+  components: {Empty},
   props: {
     modelValue: {}
   },
@@ -99,9 +102,17 @@ export default {
       fetchDateSessions()
         .then(data => {
           this.dateSessions = data
-          if (this.dateSessions.length > 0) {
-            this.selectSession(this.dateSessions[0])
+          // 添加今日会话
+          const todayText = dayjs().format('YYYY-MM-DD')
+          const todaySession = this.dateSessions.find(session => session.title === todayText)
+          if (todaySession == null) {
+            this.dateSessions.unshift({
+              title: todayText,
+              count: 0,
+              loading: false
+            })
           }
+          this.selectSession(this.dateSessions[0])
         })
         .catch(e => {
           this.$tip.apiFailed(e)
