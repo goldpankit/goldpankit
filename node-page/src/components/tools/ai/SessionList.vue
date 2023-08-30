@@ -19,7 +19,12 @@
             @click="selectSession(session)"
           >
             <h4>{{getDayText(session.title)}}</h4>
-            <p>{{session.count}}次提问</p>
+            <div class="info">
+              <span>{{session.count}}次提问</span>
+              <span v-if="todayText === session.title">
+                <el-button :disabled="session.__clearing" @click="clearDateSessionMessages(session)">清空</el-button>
+              </span>
+            </div>
           </li>
         </ul>
       </template>
@@ -50,7 +55,13 @@
 
 <script>
 import dayjs from 'dayjs'
-import {createSession, fetchDateSessions, fetchDefinedSessions, fetchSessionMessages} from "../../../api/user.ai";
+import {
+  clearDateSessionMessages,
+  createSession,
+  fetchDateSessions,
+  fetchDefinedSessions,
+  fetchSessionMessages
+} from "../../../api/user.ai";
 import {reactive} from "vue";
 import Empty from "../../common/Empty.vue";
 
@@ -62,6 +73,7 @@ export default {
   },
   data () {
     return {
+      todayText: dayjs().format('YYYY-MM-DD'),
       currentTab: 'date',
       dateSessions: [],
       definedSessions: [],
@@ -77,7 +89,7 @@ export default {
       this.$emit('update:modelValue', session)
       fetchSessionMessages({
         page: 1,
-        capacity: 10,
+        capacity: 50,
         model: {
           sessionId: session.id,
           date: session.id == null ? session.title : null
@@ -103,11 +115,10 @@ export default {
         .then(data => {
           this.dateSessions = data
           // 添加今日会话
-          const todayText = dayjs().format('YYYY-MM-DD')
-          const todaySession = this.dateSessions.find(session => session.title === todayText)
+          const todaySession = this.dateSessions.find(session => session.title === this.todayText)
           if (todaySession == null) {
             this.dateSessions.unshift({
-              title: todayText,
+              title: this.todayText,
               count: 0,
               loading: false
             })
@@ -156,6 +167,29 @@ export default {
         })
         .finally(() => {
           this.isWorking.create = false
+        })
+    },
+    // 清理日期会话消息
+    clearDateSessionMessages (session) {
+      if (session.__clearing) {
+        return
+      }
+      session.__clearing = true
+      clearDateSessionMessages({
+        date: session.title
+      })
+        .then(() => {
+          // 如果当前会话为清理的会话，重选一次会话更新消息
+          if (session === this.modelValue) {
+            this.selectSession(session)
+          }
+          this.$tip.success('数据清空成功')
+        })
+        .catch(e => {
+          this.$tip.apiFailed(e)
+        })
+        .finally(() => {
+          session.__clearing = false
         })
     },
     // 滚动到底部
@@ -235,6 +269,7 @@ export default {
         }
         .info {
           display: flex;
+          align-items: center;
           justify-content: space-between;
           margin-top: 10px;
           font-size: var(--font-size);

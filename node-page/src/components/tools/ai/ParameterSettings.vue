@@ -68,12 +68,6 @@
       </el-form-item>
     </el-form>
     <el-form ref="configForm" :model="config">
-    <!--          <el-form-item label="开启上下文" prop="enableContext">-->
-    <!--            <el-switch v-model="config.enableContext"/>-->
-    <!--          </el-form-item>-->
-    <!--          <el-form-item :label="$t('tool.ai.autoScroll')" prop="autoScroll">-->
-    <!--            <el-switch v-model="config.autoScroll"/>-->
-    <!--          </el-form-item>-->
     <el-form-item :label="$t('tool.ai.outputAnimation')" prop="animation">
       <el-switch v-model="config.animation"/>
     </el-form-item>
@@ -81,7 +75,7 @@
   </div>
   <div class="settings__footer">
     <el-button @click="$emit('close')" size="large">关闭</el-button>
-    <el-button @click="reset" type="primary" size="large">{{$t('common.reset')}}</el-button>
+    <el-button @click="reset" size="large">{{$t('common.reset')}}</el-button>
   </div>
 </div>
 </template>
