@@ -94,7 +94,8 @@ export default {
       presencePenaltyDescription: 'The penalty strength is used to control the frequency of specific topics or keywords in generated text. By setting a higher penalty value, it can force the model to avoid excessive involvement with specific topics or keywords and encourage it to produce more comprehensive and diverse responses.',
       timesQuestion: '{times} questions',
       newSession: 'New Session',
-      createSession: 'New'
+      createSession: 'New',
+      deleteTip: 'Are you sure you want to delete this session?'
     }
   },
   // 表单

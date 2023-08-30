@@ -94,7 +94,8 @@ export default {
       presencePenaltyDescription: '用于控制生成文本中特定主题或关键词出现次数的惩罚力度。通过设置较高的存在惩罚值，可以强制模型避免过多地涉及特定主题或关键词，并鼓励它产生更加全面和多样化的回答。',
       timesQuestion: '{times}次提问',
       newSession: '新的会话',
-      createSession: '新建会话'
+      createSession: '新建会话',
+      deleteTip: '确认删除该会话吗？'
     }
   },
   // 表单

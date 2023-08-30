@@ -21,7 +21,7 @@
             <h4>{{getDayText(session.title)}}</h4>
             <div class="info">
               <span>{{$t('tool.ai.timesQuestion', { times: session.count })}}</span>
-              <span>
+              <span v-if="todayText === session.title">
                 <el-button
                   round
                   :disabled="session.__clearing"
@@ -29,6 +29,7 @@
                 >{{$t('common.clear')}}</el-button>
               </span>
             </div>
+            <span v-if="todayText !== session.title" class="button-delete" @click.stop="clearDateSessionMessages(session)"><el-icon><SemiSelect /></el-icon></span>
           </li>
         </ul>
       </template>
@@ -203,7 +204,7 @@ export default {
       if (session.__deleting) {
         return
       }
-      this.deleteConfirm('确认删除该会话吗？')
+      this.deleteConfirm(this.$t('tool.ai.deleteTip'))
         .then(() => {
           session.__deleting = true
           deleteSession(session.id)
