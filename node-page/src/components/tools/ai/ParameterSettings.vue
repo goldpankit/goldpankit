@@ -135,11 +135,15 @@ export default {
       display: flex;
       justify-content: center;
       align-items: center;
-      background: #ccc;
+      position: relative;
+      top: -1px;
+      &:hover {
+        background: #eee;
+      }
     }
   }
   .settings__body {
-    padding: 30px 30px 80px 30px;
+    padding: 30px;
     flex-grow: 1;
     overflow-y: auto;
     .mode {
