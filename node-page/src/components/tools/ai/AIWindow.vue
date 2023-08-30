@@ -18,7 +18,7 @@
         />
       </div>
     </div>
-    <div class="message-wrap" :class="{editable: getEditable(currentSession)}">
+    <div v-if="currentSession != null" class="message-wrap" v-loading="currentSession.loading" :class="{editable: getEditable(currentSession)}">
       <ul class="message-list">
         <li v-if="messages.length === 0" class="tip-wrap">
           <h2>{{currentTitle}}</h2>
@@ -148,6 +148,14 @@ export default {
       if (message === '') {
         return
       }
+      // 记录当前提问的会话
+      const session = this.currentSession
+      // 是否为首条消息
+      const isFirstMessage = this.messages.length === 0
+      // 如果当前会话为自定义会话并且没有名称，则将问题本身作为名称
+      if (isFirstMessage && session.id != null && session.title == null) {
+        session.title = message
+      }
       // 添加用户消息
       this.messages.push({
         self: true,
@@ -168,8 +176,8 @@ export default {
       this.message = ''
       askAi({
         ...this.aiParam,
-        sessionId: this.currentSession.id,
-        sessionDate: this.currentSession.id == null ? this.currentSession.title : null,
+        sessionId: session.id,
+        sessionDate: session.id == null ? session.title : null,
         message
       })
         .then(data => {
@@ -184,6 +192,7 @@ export default {
           chatMessage.content = data.answer
           this.output(chatMessage)
           this.refreshBalance()
+          session.count ++
         })
         .catch(e => {
           chatMessage.loading = false
@@ -363,8 +372,10 @@ export default {
       }
     }
     .self-message {
-      font-size: 20px;
-      line-height: 30px;
+      //font-size: 20px;
+      //line-height: 30px;
+      //font-weight: bold;
+      color: #3a020e;
       background-color: transparent !important;
     }
     .message {

@@ -12,9 +12,21 @@ export function fetchDateSessions (data) {
     baseURL: import.meta.env.VITE_REMOTE_API_PREFIX
   })
 }
+// 查询自定义会话
+export function fetchDefinedSessions (data) {
+  return request.post('/usr/ai/sessions', data,{
+    baseURL: import.meta.env.VITE_REMOTE_API_PREFIX
+  })
+}
 // 查询会话消息
 export function fetchSessionMessages (data) {
   return request.post('/usr/ai/session/messages', data,{
+    baseURL: import.meta.env.VITE_REMOTE_API_PREFIX
+  })
+}
+// 创建会话
+export function createSession () {
+  return request.get('/usr/ai/session/create', {
     baseURL: import.meta.env.VITE_REMOTE_API_PREFIX
   })
 }
