@@ -188,6 +188,9 @@ export default {
       height: 100%;
       line-height: 25px;
     }
+    h3 {
+      font-size: var(--font-size);
+    }
     & > span {
       width: 30px;
       display: flex;

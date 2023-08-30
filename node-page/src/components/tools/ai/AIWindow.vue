@@ -60,7 +60,13 @@
                 <animateTransform attributeName="transform" type="scale" begin="0s" calcMode="spline" keySplines="0.3 0 0.7 1;0.3 0 0.7 1" values="0;1;0" keyTimes="0;0.5;1" dur="1s" repeatCount="indefinite"></animateTransform>
               </circle>
             </g>
-            </svg><pre v-else>{{message.currentText}}</pre>
+            </svg>
+            <MarkdownEditor
+              v-else
+              :model-value="message.currentText"
+              :readonly="true"
+              :without-padding="true"
+            />
           </div>
         </li>
       </ul>
@@ -87,11 +93,12 @@ import {reactive} from "vue";
 import SessionList from "./SessionList.vue";
 import ParameterSettings from "./ParameterSettings.vue";
 import dayjs from "dayjs";
+import MarkdownEditor from "../../common/MarkdownEditor.vue";
 
 export default {
   name: "AIWindow",
   extends: BaseToolWindow,
-  components: {ParameterSettings, SessionList, ToolWindow},
+  components: {MarkdownEditor, ParameterSettings, SessionList, ToolWindow},
   data () {
     return {
       message: '',
@@ -224,6 +231,7 @@ export default {
       // 回车发送
       if (event.keyCode === 13) {
         this.send()
+        event.preventDefault()
       }
     },
     // 输出内容
@@ -405,11 +413,9 @@ export default {
           top: -8px;
           left: 8px;
         }
-        pre {
-          white-space: pre-wrap;
-          word-wrap: break-word;
-          word-break: break-all;
-          margin: 0;
+        .markdown-editor {
+          padding: 10px;
+          background: #fff;
         }
       }
     }
@@ -421,11 +427,13 @@ export default {
     padding: 30px 50px;
     box-sizing: border-box;
     background: #fff;
+    z-index: 11;
     display: none;
     :deep(.el-textarea) {
       .el-textarea__inner {
         background: var(--background-color);
         resize: none;
+        padding: 8px 15px;
       }
     }
     :deep(.el-button) {
