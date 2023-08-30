@@ -228,7 +228,7 @@ export default {
     },
     // 处理会话切换
     handleSessionChange (session) {
-      const messages = session.messageData.records
+      const messages = session.messages
       this.messages = messages.map(message => {
         return {
           self: message.role === 'user',

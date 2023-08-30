@@ -45,6 +45,7 @@
               <span>{{$t('tool.ai.timesQuestion', { times: session.count })}}</span>
               <span>{{getDateOffsetText(session.createTime)}}</span>
             </div>
+            <span class="button-delete" @click.stop="deleteSession(session)"><el-icon><SemiSelect /></el-icon></span>
           </li>
         </ul>
         <Empty v-else/>
@@ -61,7 +62,7 @@
 import dayjs from 'dayjs'
 import {
   clearDateSessionMessages,
-  createSession,
+  createSession, deleteSession,
   fetchDateSessions,
   fetchDefinedSessions,
   fetchSessionMessages
@@ -100,10 +101,16 @@ export default {
         }
       })
         .then(data => {
-          session.messageData = data
+          session.messages = data.records
           this.$emit('session-change', session)
         })
         .catch(e => {
+          // 未登录
+          if (e.code === 4007) {
+            session.messages = []
+            this.$emit('session-change', session)
+            return
+          }
           this.$tip.apiFailed(e)
         })
         .finally(() => {
@@ -130,6 +137,20 @@ export default {
           this.selectSession(this.dateSessions[0])
         })
         .catch(e => {
+          // 未登录
+          if (e.code === 4007) {
+            // 添加今日会话
+            const todaySession = this.dateSessions.find(session => session.title === this.todayText)
+            if (todaySession == null) {
+              this.dateSessions.unshift({
+                title: this.todayText,
+                count: 0,
+                loading: false
+              })
+              this.selectSession(this.dateSessions[0])
+            }
+            return
+          }
           this.$tip.apiFailed(e)
         })
       // 查询自定义会话
@@ -141,6 +162,9 @@ export default {
           this.definedSessions = data.records
         })
         .catch(e => {
+          if (e.code === 4007) {
+            return
+          }
           this.$tip.apiFailed(e)
         })
     },
@@ -173,6 +197,30 @@ export default {
         .finally(() => {
           this.isWorking.create = false
         })
+    },
+    // 删除会话
+    deleteSession (session) {
+      if (session.__deleting) {
+        return
+      }
+      this.deleteConfirm('确认删除该会话吗？')
+        .then(() => {
+          session.__deleting = true
+          deleteSession(session.id)
+            .then(() => {
+              const index = this.definedSessions.findIndex(s => s.id === session.id)
+              if (index !== -1) {
+                this.definedSessions.splice(index, 1)
+              }
+            })
+            .catch(e => {
+              this.$tip.apiFailed(e)
+            })
+            .finally(() => {
+              session.__deleting = false
+            })
+        })
+        .catch(() => {})
     },
     // 清理日期会话消息
     clearDateSessionMessages (session) {
@@ -264,8 +312,12 @@ export default {
         border-bottom: 1px solid #eee;
         border-radius: 10px;
         cursor: pointer;
+        position: relative;
         &:hover {
           background: #eee;
+          .button-delete {
+            opacity: 1;
+          }
         }
         &.selected {
           background: var(--primary-color-match-1);
@@ -284,6 +336,24 @@ export default {
           justify-content: space-between;
           margin-top: 10px;
           font-size: var(--font-size);
+        }
+        .button-delete {
+          transition: all ease .15s;
+          position: absolute;
+          top: 10px;
+          right: 5px;
+          width: 20px;
+          height: 20px;
+          border-radius: 50%;
+          background: #ccc;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          opacity: 0;
+          &:hover {
+            background: var(--color-danger);
+            color: var(--color-light);
+          }
         }
       }
     }

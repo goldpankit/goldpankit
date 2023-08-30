@@ -30,6 +30,12 @@ export function createSession () {
     baseURL: import.meta.env.VITE_REMOTE_API_PREFIX
   })
 }
+// 删除会话
+export function deleteSession (id) {
+  return request.get(`/usr/ai/session/delete/${id}`, {
+    baseURL: import.meta.env.VITE_REMOTE_API_PREFIX
+  })
+}
 // 删除日期会话消息
 export function clearDateSessionMessages (data) {
   return request.post('/usr/ai/date/session/clear', data, {
