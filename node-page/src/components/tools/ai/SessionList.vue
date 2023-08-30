@@ -212,6 +212,14 @@ export default {
               if (index !== -1) {
                 this.definedSessions.splice(index, 1)
               }
+              // 删除的是当前这个
+              if (this.modelValue === session) {
+                if (this.definedSessions.length > 0) {
+                  this.selectSession(this.definedSessions[0])
+                } else {
+                  this.selectSession(this.dateSessions[0])
+                }
+              }
             })
             .catch(e => {
               this.$tip.apiFailed(e)
