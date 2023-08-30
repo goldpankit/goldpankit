@@ -1,13 +1,13 @@
 <template>
   <div class="ai-session-list">
     <div class="session-list__header">
-      <h3>会话列表</h3>
+      <h3>{{$t('tool.ai.sessions')}}</h3>
     </div>
     <div class="session-list__body">
       <div class="tabs">
         <el-tabs v-model="currentTab">
-          <el-tab-pane name="date" label="最近"></el-tab-pane>
-          <el-tab-pane name="defined" label="自定义"></el-tab-pane>
+          <el-tab-pane name="date" :label="$t('tool.ai.recent')"></el-tab-pane>
+          <el-tab-pane name="defined" :label="$t('tool.ai.customized')"></el-tab-pane>
         </el-tabs>
       </div>
       <template v-if="currentTab === 'date'">
@@ -20,9 +20,13 @@
           >
             <h4>{{getDayText(session.title)}}</h4>
             <div class="info">
-              <span>{{session.count}}次提问</span>
-              <span v-if="todayText === session.title">
-                <el-button :disabled="session.__clearing" @click="clearDateSessionMessages(session)">清空</el-button>
+              <span>{{$t('tool.ai.timesQuestion', { times: session.count })}}</span>
+              <span>
+                <el-button
+                  round
+                  :disabled="session.__clearing"
+                  @click.stop="clearDateSessionMessages(session)"
+                >{{$t('common.clear')}}</el-button>
               </span>
             </div>
           </li>
@@ -36,9 +40,9 @@
             :class="{ 'selected': modelValue === session }"
             @click="selectSession(session)"
           >
-            <h4>{{session.title == null ? '新的会话' : session.title}}</h4>
+            <h4>{{session.title == null ? $t('tool.ai.newSession') : session.title}}</h4>
             <div class="info">
-              <span>{{session.count}}次提问</span>
+              <span>{{$t('tool.ai.timesQuestion', { times: session.count })}}</span>
               <span>{{getDateOffsetText(session.createTime)}}</span>
             </div>
           </li>
@@ -47,8 +51,8 @@
       </template>
     </div>
     <div class="session-list__footer">
-      <el-button type="primary" size="large" @click="$emit('open-settings')">参数设置</el-button>
-      <el-button type="primary" size="large" :loading="isWorking.create" :disabled="isWorking.create" @click="createSession">新建会话</el-button>
+      <el-button type="primary" size="large" @click="$emit('open-settings')">{{$t('tool.ai.parameterSettings')}}</el-button>
+      <el-button type="primary" size="large" :loading="isWorking.create" :disabled="isWorking.create" @click="createSession">{{$t('tool.ai.createSession')}}</el-button>
     </div>
   </div>
 </template>
@@ -105,7 +109,7 @@ export default {
         .finally(() => {
           setTimeout(() => {
             session.loading = false
-          }, 300)
+          }, 150)
         })
     },
     // 查询会话
@@ -156,6 +160,7 @@ export default {
             title: null,
             count: 0
           })
+          console.log('newSession', newSession)
           this.definedSessions.unshift(newSession)
           // 默认选中会话
           this.selectSession(newSession)
@@ -179,11 +184,17 @@ export default {
         date: session.title
       })
         .then(() => {
-          // 如果当前会话为清理的会话，重选一次会话更新消息
-          if (session === this.modelValue) {
-            this.selectSession(session)
+          // 清理的不是今天，则直接删除
+          if (session.title !== this.todayText) {
+            const targetIndex = this.dateSessions.findIndex(s => s.title === session.title)
+            if (targetIndex !== -1) {
+              this.dateSessions.splice(targetIndex, 1)
+            }
           }
-          this.$tip.success('数据清空成功')
+          // 如果清理的是当前这个会话，则选中今天
+          if (session === this.modelValue) {
+            this.selectSession(this.dateSessions[0])
+          }
         })
         .catch(e => {
           this.$tip.apiFailed(e)

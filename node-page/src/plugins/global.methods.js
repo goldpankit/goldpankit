@@ -68,10 +68,10 @@ export default {
     const todayText = today.format('YYYY-MM-DD')
     const yesterdayText = today.subtract(1, 'day').format('YYYY-MM-DD')
     if (targetText === todayText) {
-      return '今天'
+      return $t('common.today')
     }
     if (targetText === yesterdayText) {
-      return '昨天'
+      return $t('common.yesterday')
     }
     return targetText
   },

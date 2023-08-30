@@ -34,7 +34,6 @@
             <li>{{$t('tool.ai.tip3')}}</li>
             <li>{{$t('tool.ai.tip4')}}</li>
             <li>{{$t('tool.ai.tip5')}}</li>
-            <li>{{$t('tool.ai.tip6')}}</li>
             <li>{{$t('tool.ai.tip7')}}</li>
           </ul>
         </li>
@@ -153,14 +152,12 @@ export default {
     visible () {
       if (this.visible && this.messages.length === 0) {
         this.outputTitle()
-        // 自动聚焦
-        this.__focus()
       }
     },
     currentSession () {
       if (this.currentSession != null) {
-        // 初始化自动滚动事件
-        // this.initAutoScrollEvent()
+        // 自动聚焦
+        this.__focus()
       }
     }
   },

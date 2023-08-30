@@ -35,6 +35,10 @@ export default {
     currentProject: '当前项目',
     currentDataSource: '当前数据源',
     reset: '重置',
+    today: '今天',
+    yesterday: '昨天',
+    clear: '清空',
+    close: '关闭',
     // 模态框
     modal: {
       confirmDelete: '确认删除',
@@ -67,6 +71,9 @@ export default {
   tool: {
     ai: {
       name: 'AI问答',
+      sessions: '会话列表',
+      recent: '最近',
+      customized: '自定义',
       parameterSettings: '参数设置',
       clearMessages: '清空记录',
       tipTitle: '使用提示：',
@@ -75,8 +82,7 @@ export default {
       tip2: '您可以使用AI问答来快速解决您的技术问题',
       tip3: '如果您想要调试AI参数，可以通过左侧的参数配置快速调整',
       tip4: '国内网络可直接使用，如果出现错误请稍后再试',
-      tip5: '在底部灰色的输入框中输入文字后按下Ctrl+Enter或Command+Enter即可发起提问',
-      tip6: '综合考虑，暂时不支持问答上下文',
+      tip5: '在底部灰色的输入框中输入文字后回车即可发起提问',
       tip7: '如果您在中华人民共和国之外的区域，访问速度可能较慢',
       inputTip: '请输入问题',
       send: '发送',
@@ -86,6 +92,9 @@ export default {
       temperatureDescription: '用于调节生成文本的多样性和随机性。较高的Temperature值（例如1.0）会增加生成文本的随机性。这意味着模型更有可能选择不太常见或不太合理的单词，从而产生更具创造力但可能也更不准确或不连贯的回复。较低的Temperature值（例如0.2）会降低生成文本的随机性。这意味着模型更倾向于选择常见或合理的单词，从而产生更准确和连贯但可能也相对较少新颖或有趣的回复。根据任务和需求，您可以根据所需文本输出类型调整Temperature值以获得适当程度的多样性和创造力。',
       frequencyPenaltyDescription: '用于控制生成文本中重复词语出现频率的惩罚力度。当设置较高的频率惩罚值时，模型将倾向于生成更多不同的词汇，减少相同词语的重复',
       presencePenaltyDescription: '用于控制生成文本中特定主题或关键词出现次数的惩罚力度。通过设置较高的存在惩罚值，可以强制模型避免过多地涉及特定主题或关键词，并鼓励它产生更加全面和多样化的回答。',
+      timesQuestion: '{times}次提问',
+      newSession: '新的会话',
+      createSession: '新建会话'
     }
   },
   // 表单

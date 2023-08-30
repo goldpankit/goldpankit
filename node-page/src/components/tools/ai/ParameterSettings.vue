@@ -74,7 +74,7 @@
   </el-form>
   </div>
   <div class="settings__footer">
-    <el-button @click="$emit('close')" size="large">关闭</el-button>
+    <el-button @click="$emit('close')" size="large">{{$t('common.close')}}</el-button>
     <el-button @click="reset" size="large">{{$t('common.reset')}}</el-button>
   </div>
 </div>
