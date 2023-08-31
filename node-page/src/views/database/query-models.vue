@@ -159,6 +159,7 @@ export default {
               })
             }
           })
+          console.log(this.tables)
           // 查询模型
           this.fetchModels()
         })
@@ -221,6 +222,7 @@ export default {
           id: item.id,
           name: item.name,
           alias: item.alias,
+          comment: item.comment,
           isVirtual: item.isVirtual,
           type: item.type,
           fields: item.fields.map(f => {
@@ -296,7 +298,7 @@ export default {
         isVirtual: modelField.isVirtual,
         type: modelField.isVirtual ? modelField.type : dbField.type,
         comment: modelField.isVirtual ? modelField.comment : dbField.comment,
-        visible: true
+        visible: modelField.visible == null ? true : modelField.visible
       }
     },
     // 模型join转join详情

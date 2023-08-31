@@ -541,7 +541,7 @@ class Kit {
                 const relationText = index === 0 ? '' : on.relation
                 return `${relationText} ${mainTable.alias}.${on.field} = ${targetTable.alias}.${on.targetField}`
               })
-              return `${join.joinType} ${join.targetTable} ON
+              return `${join.joinType} ${targetTable.name} ${targetTable.alias} ON
   ${ons.join('\n  ')}`
             })
             // 查询字段
@@ -574,10 +574,22 @@ class Kit {
                 const table = model.tables.find(t => t.id === join.table)
                 const targetTable = model.tables.find(t => t.id === join.targetTable)
                 const ons = join.ons.map(on => {
+                  // 左字段
+                  const field = table.fields.find(f => f.name === on.field)
+                  field.table = {
+                    ...table,
+                    fields: undefined
+                  }
+                  // 右字段
+                  const targetField = targetTable.fields.find(f => f.name === on.targetField)
+                  targetField.table = {
+                    ...targetTable,
+                    fields: undefined
+                  }
                   return {
                     ...on,
-                    field: table.fields.find(f => f.name === on.field),
-                    targetField: targetTable.fields.find(f => f.name === on.targetField),
+                    field,
+                    targetField,
                   }
                 })
                 return {
@@ -677,6 +689,12 @@ class Kit {
     const groupPromises = []
     for (const group of variable.children) {
       value[group.name] = group.value === undefined ? group.defaultValue : group.value
+      // 给mainTable补充已选字段
+      value.mainTable[group.name] = value[group.name].filter(field => field.table.id === value.mainTable.id)
+      // 给subTables补充已选字段
+      for (const subTable of value.subTables) {
+        subTable[group.name] = value[group.name].filter(field => field.table.id === subTable.id)
+      }
       groupPromises.push(Promise.all(this.#getVariables(project, database, group.children, false))
         .then(vars => {
           group.children = vars

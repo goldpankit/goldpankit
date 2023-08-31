@@ -308,6 +308,7 @@ export default {
   box-sizing: border-box;
   top: 62px;
   bottom: 0;
+  z-index: 100;
   right: 0;
   width: 800px;
   overflow: hidden;

@@ -2,6 +2,7 @@
   <el-select
     class="mysql-field-select"
     popper-class="mysql-field-select__popper"
+    clearable
     :multiple="multiple"
     :model-value="modelValue == null ? [] : modelValue.map(f => f.table.alias + '.' + f.name)"
     @update:modelValue="handleInput"
@@ -41,11 +42,14 @@ export default {
     fieldGroups () {
       let fieldGroups = []
       for (const table of this.model.tables) {
-        fieldGroups.push({
-          name: table.name,
-          alias: table.alias,
-          options: table.fields
-        })
+        const visibleFields = table.fields.filter(f => f.visible)
+        if (visibleFields.length > 0) {
+          fieldGroups.push({
+            name: table.name,
+            alias: table.alias,
+            options: visibleFields
+          })
+        }
       }
       return fieldGroups
     },
