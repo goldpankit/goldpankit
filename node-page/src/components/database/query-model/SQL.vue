@@ -161,7 +161,7 @@ export default {
       })
       this.handleChange()
     },
-    // 获取聚合语句
+    // 获取字段聚合信息
     getAggregate (field) {
       const aggregate = this.aggregates.find(agg => agg.field.name === field.name)
       if (aggregate == null) {

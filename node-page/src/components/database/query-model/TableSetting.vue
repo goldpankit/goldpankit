@@ -5,7 +5,7 @@
       <el-button type="primary" @click="execute">{{$t('common.execute')}}</el-button>
     </div>
     <div class="wrap" v-if="table != null">
-      <SQL :aggregates="aggregates" :joins="joins" :table="table"/>
+      <SQL :aggregates="aggregates" :joins="joins" :table="table" @field:change="handleChange"/>
     </div>
     <SQLPreview ref="sqlPreview"/>
   </div>
@@ -39,6 +39,30 @@ export default {
   },
   computed: {
     ...mapState(['currentDatabase']),
+    // 展示字段
+    visibleFields () {
+      let fields = new Set()
+      // 当前表的字段
+      for (const field of this.table.fields) {
+        field.table = this.table
+        field.alias = field.name
+        fields.add(field)
+      }
+      // join表字段
+      for (const join of this.joins) {
+        // 不是当前表的join关系，不做处理
+        if (join.table.id !== this.table.id) {
+          continue
+        }
+        // 拿到join的表
+        for (const field of join.targetTable.fields) {
+          field.table = join.targetTable
+          field.alias = field.name
+          fields.add(field)
+        }
+      }
+      return [...fields]
+    }
   },
   methods: {
     // 拷贝语句
@@ -76,7 +100,7 @@ export default {
     },
     // 获取sql语句
     __getSql () {
-      const sqlLines = []
+      let sqlLines = []
       sqlLines.push('SELECT')
       // 字段列表
       for (const field of this.visibleFields) {
@@ -87,7 +111,9 @@ export default {
         if (agg != null) {
           sqlLines.push('(SELECT')
           sqlLines.push(`${agg.function}(${agg.targetTable.alias}.${agg.targetField.name})`)
-          sqlLines.push(`FROM ${agg.targetTable.name} AS ${agg.targetTable.alias}) AS ${agg.field.name},`)
+          sqlLines.push(`FROM ${agg.targetTable.name} AS ${agg.targetTable.alias}`)
+          sqlLines = sqlLines.concat(this.__getJoinSql(agg.targetTable, this.joins))
+          sqlLines.push(`) AS ${agg.field.name},`)
         } else {
           sqlLines.push(`${field.table.alias}.${field.name} AS ${field.alias},`)
         }
@@ -99,16 +125,31 @@ export default {
         sqlLines.push(`FROM ${this.table.name} AS ${this.table.alias}`)
       }
       // join关系
-      for (const join of this.joins) {
-        sqlLines.push(`${join.joinType} ${join.targetTable.name} ${join.targetTable.alias}`)
+      sqlLines = sqlLines.concat(this.__getJoinSql(this.table, this.joins))
+      return sqlLines.join('\n')
+    },
+    // 获取JOIN语句
+    __getJoinSql (table, joins) {
+      const joinLines = []
+      const currentTableJoins = joins.filter(join => join.table.id === table.id)
+      for (const join of currentTableJoins) {
+        joinLines.push(`${join.joinType} ${join.targetTable.name} ${join.targetTable.alias}`)
         for (let i = 0; i < join.ons.length; i++) {
           const on = join.ons[i]
           let relationText = i === 0 ? 'ON ': `${on.relation} `
-          sqlLines.push(`${relationText}${join.targetTable.alias}.${on.targetField.name} = ${join.table.alias}.${on.field.name}`)
+          joinLines.push(`${relationText}${join.targetTable.alias}.${on.targetField.name} = ${join.table.alias}.${on.field.name}`)
         }
       }
-      return sqlLines.join('\n')
-    }
+      return joinLines
+    },
+    // 获取字段聚合信息
+    getAggregate (field) {
+      const aggregate = this.aggregates.find(agg => agg.field.name === field.name)
+      if (aggregate == null) {
+        return null
+      }
+      return aggregate
+    },
   }
 }
 </script>

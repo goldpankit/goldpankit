@@ -40,7 +40,7 @@ export default {
 .sql-line {
   display: flex;
   align-items: center;
-  padding: 5px 10px 5px 0;
+  padding: 0 10px 0 0;
   letter-spacing: 1px;
   justify-content: space-between;
   &.sql-line__hide {
@@ -97,7 +97,7 @@ export default {
           border: 1px solid var(--primary-color);
         }
         .el-icon {
-          font-size: 16px;
+          font-size: 12px;
         }
       }
     }
