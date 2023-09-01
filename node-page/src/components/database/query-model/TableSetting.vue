@@ -74,17 +74,6 @@ export default {
     handleChange () {
       this.$emit('field:change')
     },
-    // 获取聚合函数宽度
-    __getAggregateFunctionWidth (functionName) {
-      const widths = {
-        COUNT: 63,
-        SUM: 42,
-        AVG: 40,
-        MAX: 42,
-        MIN: 38
-      }
-      return widths[functionName]
-    },
     // 获取sql语句
     __getSql () {
       const sqlLines = []

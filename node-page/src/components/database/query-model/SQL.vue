@@ -27,6 +27,8 @@
         <span>{{getAggregate(field).targetTable.name}}</span>
         <DynamicWidthInput v-model="getAggregate(field).targetTable.alias" @change="handleChange"/>
       </SQLLine>
+      <!-- 觉和表的JOIN -->
+      <SQLJoin :indent-level="3" :joins="joins" :table="getAggregate(field).targetTable"/>
       <!-- 聚合表别名的等信息 -->
       <SQLLine
         indent="20"
@@ -84,48 +86,8 @@
     <em>AS</em>
     <DynamicWidthInput v-model="table.alias" @change="handleChange"/>
   </SQLLine>
-  <ul class="joins">
-    <li v-for="join in currentTableJoins">
-      <SQLLine>
-        <SQLLineKeywordSelect
-          v-model="join.joinType"
-          :data="['INNER JOIN', 'LEFT JOIN', 'RIGHT JOIN', 'OUTER JOIN']"
-          class="keyword"
-          style="width: 100px;"
-          @change="handleChange"
-        />
-        <span class="hidden">{{join.joinType}}</span>
-        <span>{{join.targetTable.name}}</span>
-        <DynamicWidthInput v-model="join.targetTable.alias" @change="handleChange"/>
-        <em>ON</em>
-        <SQLLineKeywordSelect
-          v-model="join.relation"
-          :data="['ONE-TO-ONE', 'ONE-TO-MANY', 'MANY-TO-ONE']"
-          class="relation"
-          style="width: 115px;"
-          @change="handleChange"
-        />
-      </SQLLine>
-      <ul class="join-ons">
-        <SQLLine v-for="(on,index) in join.ons" indent="20">
-          <SQLLineKeywordSelect
-            v-if="index !== 0"
-            v-model="on.relation"
-            :data="['AND', 'OR']"
-            style="width:40px"
-            @change="handleChange"
-          />
-          <DynamicWidthInput v-model="join.targetTable.alias" @change="handleChange"/>
-          <span>.</span>
-          <span>{{on.targetField.name}}</span>
-          <span>=</span>
-          <DynamicWidthInput v-model="join.table.alias" @change="handleChange"/>
-          <span>.</span>
-          <span>{{on.field.name}}</span>
-        </SQLLine>
-      </ul>
-    </li>
-  </ul>
+  <!-- JOIN语句 -->
+  <SQLJoin :joins="joins" :table="table"/>
 </template>
 
 <script>
@@ -133,10 +95,11 @@
 import SQLLineKeywordSelect from "./SQLLineKeywordSelect.vue";
 import SQLLine from "./SQLLine.vue";
 import DynamicWidthInput from "../../common/DynamicWidthInput.vue";
+import SQLJoin from "./SQLJoin.vue";
 
 export default {
   name: "SQL",
-  components: {DynamicWidthInput, SQLLine, SQLLineKeywordSelect},
+  components: {SQLJoin, DynamicWidthInput, SQLLine, SQLLineKeywordSelect},
   props: {
     // 表
     table: {
@@ -214,6 +177,17 @@ export default {
     deleteVirtualField (index) {
       this.table.fields.splice(index, 1)
       this.handleChange()
+    },
+    // 获取聚合函数宽度
+    __getAggregateFunctionWidth (functionName) {
+      const widths = {
+        COUNT: 63,
+        SUM: 42,
+        AVG: 40,
+        MAX: 42,
+        MIN: 38
+      }
+      return widths[functionName]
     },
   }
 }
