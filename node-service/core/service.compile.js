@@ -534,40 +534,46 @@ class Kit {
             const mainTable = model.tables.find(t => t.type === 'MAIN')
             // 子表
             const subTables = model.tables.filter(t => t.type !== 'MAIN')
+            // JOIN
+            const joins = model.joins.map(join => {
+              const table = model.tables.find(t => t.id === join.table)
+              const targetTable = model.tables.find(t => t.id === join.targetTable)
+              const ons = join.ons.map(on => {
+                // 左字段
+                const field = table.fields.find(f => f.name === on.field)
+                field.table = {
+                  ...table,
+                  fields: undefined
+                }
+                // 右字段
+                const targetField = targetTable.fields.find(f => f.name === on.targetField)
+                targetField.table = {
+                  ...targetTable,
+                  fields: undefined
+                }
+                return {
+                  ...on,
+                  field,
+                  targetField,
+                }
+              })
+              return {
+                ...join,
+                table,
+                targetTable,
+                ons
+              }
+            })
+            // 语句
+            const statement = this.#getQueryModelStatement(item, model, mainTable, joins)
             const value = {
               name: model.name,
               comment: model.comment,
               mainTable,
               subTables,
-              joins: model.joins.map(join => {
-                const table = model.tables.find(t => t.id === join.table)
-                const targetTable = model.tables.find(t => t.id === join.targetTable)
-                const ons = join.ons.map(on => {
-                  // 左字段
-                  const field = table.fields.find(f => f.name === on.field)
-                  field.table = {
-                    ...table,
-                    fields: undefined
-                  }
-                  // 右字段
-                  const targetField = targetTable.fields.find(f => f.name === on.targetField)
-                  targetField.table = {
-                    ...targetTable,
-                    fields: undefined
-                  }
-                  return {
-                    ...on,
-                    field,
-                    targetField,
-                  }
-                })
-                return {
-                  ...join,
-                  table,
-                  targetTable,
-                  ons
-                }
-              })
+              // 仅保留模型主表的join语句
+              joins: joins.filter(join => join.table === mainTable),
+              statement
             }
             // 处理字段变量
             if (item.children != null && item.children.length > 0) {
@@ -649,19 +655,23 @@ class Kit {
    */
   #paddingFieldVariablesWithResolve (project, database, variable, value, model, resolve, reject) {
     const groupPromises = []
-    for (const group of variable.children) {
-      value[group.name] = group.value === undefined ? group.defaultValue : group.value
-      // group.children为字段变量组中的变量设定（例如查询条件queryFields中的字段定义）
-      groupPromises.push(Promise.all(this.#getVariables(project, database, group.children, false))
-        .then(vars => {
-          group.children = vars
-          return Promise.resolve()
-        })
-        .catch(e => {
-          return Promise.reject(e)
-        }))
-      Promise.all(groupPromises)
-        .then(() => {
+    if (variable.children != null && variable.children.length > 0) {
+      for (const group of variable.children) {
+        value[group.name] = group.value === undefined ? group.defaultValue : group.value
+        // group.children为字段变量组中的变量设定（例如查询条件queryFields中的字段定义）
+        groupPromises.push(Promise.all(this.#getVariables(project, database, group.children, false))
+          .then(vars => {
+            group.children = vars
+            return Promise.resolve(group)
+          })
+          .catch(e => {
+            return Promise.reject(e)
+          }))
+      }
+    }
+    Promise.all(groupPromises)
+      .then(groups => {
+        for (const group of groups) {
           /**
            * 输入类型为select的字段变量处理
            *   输入类型为select的字段变量，得到的value格式为{value: null, settings: {}}
@@ -677,42 +687,144 @@ class Kit {
               field[`${v.name}Settings`] = varValue.settings
             }
           }
-          if (model != null) {
+          /**
+           * 补充字段信息
+           * 所有字段增加sql，表示字段的sql语句
+           * 对于虚拟字段，补充聚合信息
+           */
+          const tables = [value.mainTable, ...value.subTables]
+          for (const field of value[group.name]) {
             /**
-             * 针对虚拟字段做处理
-             * 虚拟字段补充字段的SQL语句
+             * 非虚拟字段
              */
-            const tables = [value.mainTable, ...value.subTables]
-            tables.push(model)
-            for (const field of value[group.name]) {
-              if (!field.isVirtual) {
-                continue
+            if (!field.isVirtual) {
+              field.statements = `${field.name} AS ${field.alias}`
+              continue
+            }
+            /**
+             * 为字段补充SQL语句
+             * 拿到聚合信息。。。。
+             */
+            const agg = model.aggregates.find(agg => agg.field === field.name)
+            if (agg != null) {
+              const targetTable = tables.find(t => t.id === agg.targetTable)
+              const targetField = targetTable.fields.find(f => f.name === agg.targetField)
+              // 补充聚合信息
+              field.aggregate = {
+                table: targetTable,
+                field: targetField,
+                function: agg.function
               }
-              /**
-               * 为字段补充SQL语句
-               * 拿到聚合信息。。。。
-               */
-              const agg = model.aggregates.find(agg => agg.field === field.name)
-              if (agg != null) {
-                const targetTable = tables.find(t => t.id === agg.targetTable)
-                const targetField = targetTable.fields.find(f => f.name === agg.targetField)
-                field.aggregate = {
-                  table: targetTable,
-                  field: targetField,
-                  function: agg.function
-                }
-              }
+              // 补充字段SQL
+              field.statements = this.#getAggregateSQL(field, field.aggregate, model.joins)
             }
           }
           resolve({
             ...variable,
             value
           })
-        })
-        .catch(e => {
-          reject(e)
-        })
+        }
+      })
+      .catch(e => {
+        reject(e)
+      })
+  }
+
+  /**
+   * 获取模型语句
+   * @param variable 模型变量
+   * @param model 模型信息
+   * @param mainTable 主表
+   * @param joins join关系列表
+   */
+  #getQueryModelStatement (variable, model, mainTable, joins) {
+    const statement = {
+      from: `FROM ${mainTable.name} ${mainTable.alias}`,
+      joins: this.#getJoinSQL(mainTable, joins, ''),
     }
+    // 动态添加字段变量组语句，例如queryFields，则可以通过queryModel.statement.queryFields来获得字段语句列表
+    if (variable.children != null && variable.children.length > 0) {
+      for (const group of variable.children) {
+        statement[group.name] = []
+        const fields = group.value === undefined ? group.defaultValue : group.value
+        for (let i = 0; i < fields.length; i++) {
+          const field = fields[i]
+          // 非虚拟字段
+          if (!field.isVirtual) {
+            let sql = `\`${field.table.alias}\`.\`${field.name}\` AS \`${field.alias}\``
+            if (i < fields.length - 1) {
+              sql += ','
+            }
+            statement[group.name].push(sql)
+            continue
+          }
+          // 虚拟字段
+          let agg = model.aggregates.find(agg => agg.field === field.name)
+          // - 没有聚合信息
+          if (agg == null) {
+            let sql = `\`${field.table.alias}\`.\`${field.name}\` AS \`${field.alias}\``
+            if (i < fields.length - 1) {
+              sql += ','
+            }
+            statement[group.name].push(sql)
+            continue
+          }
+          // - 存在聚合信息
+          const targetTable = model.tables.find(t => t.id === agg.targetTable)
+          const targetField = targetTable.fields.find(f => f.name === agg.targetField)
+          agg = {
+            table: targetTable,
+            field: targetField,
+            function: agg.function
+          }
+          const lines = this.#getAggregateSQL(field, agg, joins)
+          if (i < fields.length - 1) {
+            lines[lines.length - 1] += ','
+          }
+          statement[group.name] = statement[group.name].concat(lines)
+        }
+      }
+    }
+    return statement
+  }
+
+  /**
+   * 获取聚合语句
+   * @param field 聚合字段（虚拟字段）
+   * @param aggregate 聚合信息
+   * @param joins 模型joins
+   * @returns {*[]}
+   */
+  #getAggregateSQL (field, aggregate, joins) {
+    let sqlLines = []
+    sqlLines.push('(')
+    sqlLines.push(`  SELECT`)
+    sqlLines.push(`    ${aggregate.function}(\`${aggregate.table.alias}\`.\`${aggregate.field.name}\`)`)
+    sqlLines.push(`  FROM \`${aggregate.table.name}\` \`${aggregate.table.alias}\``)
+    sqlLines = sqlLines.concat(this.#getJoinSQL(aggregate.table, joins, '  '))
+    sqlLines.push(`) AS \`${field.alias}\``)
+    return sqlLines
+  }
+
+  /**
+   * 获取表的join语句
+   * @param table 主表
+   * @param joins 模型joins
+   * @param indent 缩进
+   * @returns {*[]}
+   */
+  #getJoinSQL (table, joins, indent) {
+    const joinLines = []
+    const currentTableJoins = joins.filter(join => join.table.id === table.id)
+    for (const join of currentTableJoins) {
+      joinLines.push(`${indent}${join.joinType} \`${join.targetTable.name}\` \`${join.targetTable.alias}\``)
+      for (let i = 0; i < join.ons.length; i++) {
+        const on = join.ons[i]
+        let relationText = i === 0 ? 'ON ': `${on.relation} `
+        joinLines.push(`  ${indent}${relationText}\`${join.targetTable.alias}\`.\`${on.targetField.name}\` = \`${join.table.alias}\`.\`${on.field.name}\``)
+      }
+    }
+    return joinLines
   }
 }
 
