@@ -159,7 +159,6 @@ export default {
               })
             }
           })
-          console.log(this.tables)
           // 查询模型
           this.fetchModels()
         })
@@ -181,10 +180,12 @@ export default {
           // 获取字段信息
           let fields = table.fields
           if (dbTable != null) {
-            fields = dbTable.fields.map(f => {
-              const mField = table.fields.find(dbField => dbField.name === f.name)
-              return this.__modelField2field(mField, f)
+            fields = fields.map(f => {
+              const dbField = dbTable.fields.find(dbField => dbField.name === f.name)
+              return this.__modelField2field(f, dbField)
             })
+            // 过滤掉已删除的字段（为null的字段）
+            fields = fields.filter(f => f != null)
           }
           return {
             ...table,
@@ -288,12 +289,12 @@ export default {
         }
       }
       // 没有对应的数据库表字段，说明字段已删除
-      if (dbField == null) {
+      if (dbField == null && !modelField.isVirtual) {
         return null
       }
       // 整合模型字段和表字段信息
       return {
-        ...dbField,
+        ...modelField,
         alias: modelField.alias,
         isVirtual: modelField.isVirtual,
         type: modelField.isVirtual ? modelField.type : dbField.type,
