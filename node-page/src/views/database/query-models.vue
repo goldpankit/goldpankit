@@ -19,14 +19,6 @@
             <label>{{$t('database.aggregateLine')}}</label>
           </li>
         </ul>
-<!--        <ul class="opera">-->
-<!--          <li>-->
-<!--            <el-button icon="Edit">Edit</el-button>-->
-<!--          </li>-->
-<!--          <li>-->
-<!--            <el-button text type="danger">Delete</el-button>-->
-<!--          </li>-->
-<!--        </ul>-->
       </div>
       <!-- 设计器 -->
       <QueryModelDesigner
@@ -39,8 +31,8 @@
       <!-- 表设置 -->
       <TableSetting
         :table="currentTable"
-        :table-joins="currentTableJoins"
-        :aggregates="currentTableAggregates"
+        :joins="joins"
+        :aggregates="aggregates"
         @field:change="handleSettingChange"
       />
     </div>
@@ -86,20 +78,19 @@ export default {
       }
       return this.currentModel.tables.find(t => t.id === this.currentModel.previewTableId)
     },
-    // 当前表joins
-    currentTableJoins () {
-      if (this.currentTable == null || this.currentTable.type !== 'MAIN') {
+    // 当前模型joins
+    joins () {
+      if (this.currentTable == null) {
         return []
       }
       return this.currentModel.joins
-      // return this.currentModel.joins.filter(r => r.table.id === this.currentTable.id || r.joinTable.id === this.currentTable.id)
     },
-    // 当前表的聚合函数列
-    currentTableAggregates () {
+    // 当前模型的聚合信息
+    aggregates () {
       if (this.currentTable == null || this.currentTable.type !== 'MAIN') {
         return []
       }
-      return this.currentModel.aggregates.filter(agg => agg.table.id === this.currentTable.id)
+      return this.currentModel.aggregates
     }
   },
   methods: {
@@ -191,7 +182,7 @@ export default {
             ...table,
             fields,
             // 添加joins，用于存放join关系
-            joins: []
+            // joins: []
           }
         })
         // 过滤掉不存在的表
@@ -212,6 +203,7 @@ export default {
         model.aggregates = model.aggregates.filter(agg => agg != null)
         return model
       })
+      console.log('queryModels', this.queryModels)
       // 过滤掉无效的模型（不存在表的模型）
       // this.queryModels = this.queryModels.filter(m => m != null)
     },

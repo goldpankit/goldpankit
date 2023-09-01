@@ -5,133 +5,7 @@
       <el-button type="primary" @click="execute">{{$t('common.execute')}}</el-button>
     </div>
     <div class="wrap" v-if="table != null">
-      <!-- 查询语句 -->
-      <SQLLine type="select" @field:create="createVirtualField"><em>SELECT</em></SQLLine>
-      <!-- 字段列表 -->
-      <template v-for="(field,index) in visibleFields">
-        <!-- 聚合字段 -->
-        <template v-if="getAggregate(field)">
-          <SQLLine indent="20" :visible="field.visible">(</SQLLine>
-          <SQLLine indent="40" :visible="field.visible"><em>SELECT</em></SQLLine>
-          <SQLLine indent="60" :visible="field.visible">
-            <SQLLineKeywordSelect
-              v-model="getAggregate(field).function"
-              :data="['COUNT', 'SUM', 'AVG', 'MAX', 'MIN']"
-              :style="`width: ${__getAggregateFunctionWidth(getAggregate(field).function)}px;`"
-              @change="handleChange"
-            />
-            <span class="hidden">{{getAggregate(field).function}}</span>
-            <span>(</span>
-            <DynamicWidthInput v-model="getAggregate(field).targetTable.alias" @change="handleChange"/>
-            <span>.</span>
-            <span>{{getAggregate(field).targetField.name}}</span>
-            <span>)</span>
-          </SQLLine>
-          <!-- 聚合表 -->
-          <SQLLine indent="40" :visible="field.visible">
-            <em>FROM</em>
-            <span>{{getAggregate(field).targetTable.name}}</span>
-            <DynamicWidthInput v-model="getAggregate(field).targetTable.alias" @change="handleChange"/>
-          </SQLLine>
-          <!-- 聚合表别名的等信息 -->
-          <SQLLine
-            indent="20"
-            :type="field.isVirtual ? 'virtual-field': 'field'"
-            v-model:visible="field.visible"
-            @field:delete="deleteVirtualField(index)"
-            @update:visible="fieldVisibleChange"
-          >
-            <span>)</span>
-            <em>AS</em>
-            <DynamicWidthInput v-model="field.alias"/>
-            <span>{{visibleFields.length === index + 1 ? '' : ','}}</span>
-            <!-- 虚拟字段展示类型和注释 -->
-            <template v-if="field.isVirtual">
-              <span class="comment">#</span>
-              <DynamicWidthInput v-model="field.type" class="comment" @change="handleChange"/>
-              <DynamicWidthInput v-model="field.comment" class="comment" @change="handleChange"/>
-            </template>
-          </SQLLine>
-        </template>
-        <!-- 非聚合字段 -->
-        <SQLLine
-          v-else
-          :key="field.name"
-          :type="field.isVirtual ? 'virtual-field': 'field'"
-          v-model:visible="field.visible"
-          indent="20"
-          @field:delete="deleteVirtualField(index)"
-          @update:visible="fieldVisibleChange"
-        >
-          <DynamicWidthInput v-model="field.table.alias" @change="handleChange"/>
-          <span>.</span>
-          <!-- 非虚拟字段 -->
-          <template v-if="!field.isVirtual">
-            <span>{{field.name}}</span>
-            <em>AS</em>
-            <DynamicWidthInput v-model="field.alias" @change="handleChange"/>
-            <span>{{visibleFields.length === index + 1 ? '' : ','}}</span>
-          </template>
-          <!-- 虚拟字段 -->
-          <template v-else>
-            <DynamicWidthInput :model-value="field.name" v-model:blur-model-value="field.name" @blur="handleChange"/>
-            <em>AS</em>
-            <DynamicWidthInput :model-value="field.alias" v-model:blur-model-value="field.alias" @blur="handleChange"/>
-            <span>{{visibleFields.length === index + 1 ? '' : ','}}</span>
-            <span class="comment">#</span>
-            <DynamicWidthInput v-model="field.type" class="comment" @change="handleChange"/>
-            <DynamicWidthInput v-model="field.comment" class="comment" @change="handleChange"/>
-          </template>
-        </SQLLine>
-      </template>
-      <SQLLine v-if="!table.isVirtual">
-        <em>FROM</em>
-        <span>{{table.name}}</span>
-        <em>AS</em>
-        <DynamicWidthInput v-model="table.alias" @change="handleChange"/>
-      </SQLLine>
-      <ul class="joins">
-        <li v-for="join in tableJoins">
-          <SQLLine>
-            <SQLLineKeywordSelect
-              v-model="join.joinType"
-              :data="['INNER JOIN', 'LEFT JOIN', 'RIGHT JOIN', 'OUTER JOIN']"
-              class="keyword"
-              style="width: 100px;"
-              @change="handleChange"
-            />
-            <span class="hidden">{{join.joinType}}</span>
-            <span>{{join.targetTable.name}}</span>
-            <DynamicWidthInput v-model="join.targetTable.alias" @change="handleChange"/>
-            <em>ON</em>
-            <SQLLineKeywordSelect
-              v-model="join.relation"
-              :data="['ONE-TO-ONE', 'ONE-TO-MANY', 'MANY-TO-ONE']"
-              class="relation"
-              style="width: 115px;"
-              @change="handleChange"
-            />
-          </SQLLine>
-          <ul class="join-ons">
-            <SQLLine v-for="(on,index) in join.ons" indent="20">
-              <SQLLineKeywordSelect
-                v-if="index !== 0"
-                v-model="on.relation"
-                :data="['AND', 'OR']"
-                style="width:40px"
-                @change="handleChange"
-              />
-              <DynamicWidthInput v-model="join.targetTable.alias" @change="handleChange"/>
-              <span>.</span>
-              <span>{{on.targetField.name}}</span>
-              <span>=</span>
-              <DynamicWidthInput v-model="join.table.alias" @change="handleChange"/>
-              <span>.</span>
-              <span>{{on.field.name}}</span>
-            </SQLLine>
-          </ul>
-        </li>
-      </ul>
+      <SQL :aggregates="aggregates" :joins="joins" :table="table"/>
     </div>
     <SQLPreview ref="sqlPreview"/>
   </div>
@@ -144,17 +18,18 @@ import DynamicWidthInput from "../../common/DynamicWidthInput.vue";
 import SQLLineKeywordSelect from "./SQLLineKeywordSelect.vue";
 import SQLPreview from "./SQLPreview.vue";
 import {execSql, formatSql} from "../../../api/database.util";
+import SQL from "./SQL.vue";
 
 export default {
   name: "TableSetting",
-  components: {SQLPreview, SQLLineKeywordSelect, DynamicWidthInput, SQLLine},
+  components: {SQL, SQLPreview, SQLLineKeywordSelect, DynamicWidthInput, SQLLine},
   props: {
     // 表
     table: {
       required: true
     },
     // 表join信息
-    tableJoins: {
+    joins: {
       type: Array
     },
     // 聚合信息
@@ -164,28 +39,6 @@ export default {
   },
   computed: {
     ...mapState(['currentDatabase']),
-    // 展示字段
-    visibleFields () {
-      let fields = new Set()
-      for (const field of this.table.fields) {
-        field.table = this.table
-        field.alias = field.name
-        fields.add(field)
-      }
-      for (const join of this.tableJoins) {
-        for (const field of join.table.fields) {
-          field.table = join.table
-          field.alias = field.name
-          fields.add(field)
-        }
-        for (const field of join.targetTable.fields) {
-          field.table = join.targetTable
-          field.alias = field.name
-          fields.add(field)
-        }
-      }
-      return [...fields]
-    }
   },
   methods: {
     // 拷贝语句
@@ -216,35 +69,6 @@ export default {
         .catch(e => {
           this.$tip.apiFailed(e)
         })
-    },
-    // 创建虚拟字段
-    createVirtualField () {
-      this.table.fields.push({
-        name: 'virtual1',
-        alias: 'virtual1',
-        type: 'int',
-        comment: 'Virtual field 1',
-        isVirtual: true,
-        visible: true
-      })
-      this.handleChange()
-    },
-    // 删除虚拟字段
-    deleteVirtualField (index) {
-      this.table.fields.splice(index, 1)
-      this.handleChange()
-    },
-    // 获取聚合语句
-    getAggregate (field) {
-      const aggregate = this.aggregates.find(agg => agg.field.name === field.name)
-      if (aggregate == null) {
-        return null
-      }
-      return aggregate
-    },
-    // 字段显示改变
-    fieldVisibleChange () {
-      this.$emit('field:change')
     },
     // 修改设置
     handleChange () {
@@ -286,7 +110,7 @@ export default {
         sqlLines.push(`FROM ${this.table.name} AS ${this.table.alias}`)
       }
       // join关系
-      for (const join of this.tableJoins) {
+      for (const join of this.joins) {
         sqlLines.push(`${join.joinType} ${join.targetTable.name} ${join.targetTable.alias}`)
         for (let i = 0; i < join.ons.length; i++) {
           const on = join.ons[i]
