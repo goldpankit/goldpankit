@@ -203,7 +203,6 @@ export default {
         model.aggregates = model.aggregates.filter(agg => agg != null)
         return model
       })
-      console.log('queryModels', this.queryModels)
       // 过滤掉无效的模型（不存在表的模型）
       // this.queryModels = this.queryModels.filter(m => m != null)
     },
@@ -365,6 +364,7 @@ export default {
     flex-grow: 1;
     position: relative;
     background: var(--primary-color);
+    overflow: hidden;
     .toolbar {
       display: flex;
       align-items: center;
@@ -373,9 +373,10 @@ export default {
       left: 0;
       width: 100%;
       height: 62px;
-      background: var(--background-color);
+      background: #333;
       padding: 0 20px;
       box-sizing: border-box;
+      box-shadow: 0 1px 10px rgba(0, 0, 0, .5);
       z-index: 100;
       .line-types {
         display: flex;
@@ -390,9 +391,9 @@ export default {
           align-items: center;
           border-radius: 10px;
           &.selected {
-            background: #fff;
+            background: var(--primary-color-match-1);
             label {
-              color: var(--primary-color-match-2);
+              color: var(--font-color);
               font-weight: bold;
             }
           }

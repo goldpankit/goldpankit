@@ -14,7 +14,8 @@
               :class="{selected: currentModel != null && currentModel.id === model.id}"
               @click="selectModel(model)"
             >
-              <p>{{model.name}}</p>
+              <label>{{model.name}}</label>
+              <p>{{model.comment}}</p>
               <div>
                 <span @click.stop="updateModel(model)"><el-icon><Edit/></el-icon></span>
                 <span @click.stop="deleteModel(model)"><el-icon><Delete/></el-icon></span>
@@ -67,7 +68,10 @@
           :name="table.name"
           draggable="true"
           @dragstart="handleDragStart"
-        >{{table.name}}({{table.comment}})</li>
+        >
+          <label>{{table.name}}</label>
+          <p>{{table.comment}}</p>
+        </li>
       </ul>
     </div>
   </div>
@@ -263,13 +267,19 @@ export default {
     flex-grow: 1;
     overflow-y: auto;
     li {
-      padding: 5px 10px 5px 20px;
+      padding: 10px 10px 10px 20px;
       display: flex;
       justify-content: space-between;
-      align-items: center;
       cursor: default;
-      & > p {
+      flex-direction: column;
+      position: relative;
+      & > label {
         word-break: break-all;
+        font-weight: bold;
+      }
+      & > p {
+        color: var(--color-gray);
+        font-size: var(--font-size-mini);
       }
       & > div {
         flex-shrink: 0;
@@ -278,6 +288,9 @@ export default {
         opacity: 0;
         transition: all ease .15s;
         margin-left: 10px;
+        position: absolute;
+        top: 0px;
+        right: 10px;
         span {
           padding: 3px;
           margin-left: 5px;
@@ -292,14 +305,16 @@ export default {
         }
       }
       &.selected {
-        color: var(--primary-color-match-2);
-        background: #e0e0e0;
+        background: var(--primary-color-match-1);
         &:hover {
-          background: #e0e0e0;
+          background: var(--primary-color-match-1);
+        }
+        & > p {
+          color: var(--font-color);
         }
       }
       &:hover {
-        background: #efefef;
+        background: var(--primary-color-match-1);
         & > div {
           opacity: 1;
         }
@@ -311,10 +326,18 @@ export default {
     flex-grow: 1;
     overflow-y: auto;
     li {
-      padding: 5px 20px;
+      padding: 8px 20px;
       cursor: move;
       &:hover {
         background: #efefef;
+      }
+      label {
+        cursor: move;
+      }
+      p {
+        cursor: move;
+        color: var(--color-gray);
+        font-size: var(--font-size-mini);
       }
     }
   }

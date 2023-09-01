@@ -17,9 +17,9 @@ const COLORS = {
     selectedColor: '#FC777D'
   },
   aggregate: {
-    color: '#9b8e35',
-    hoverColor: '#d9c64b',
-    selectedColor: '#FFE957'
+    color: '#FFE957',
+    hoverColor: '#faa5aa',
+    selectedColor: '#FC777D'
   }
 }
 export default {
