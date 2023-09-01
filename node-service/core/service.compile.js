@@ -500,9 +500,9 @@ class Kit {
               database: database.schema
             }, item.value === undefined ? item.defaultValue : item.value)
               .then(value => {
-                // 补充动态字段，children为变量信息
+                // 补充动态字段，children为字段变量组
                 if (item.children != null && item.children.length > 0) {
-                  this.#paddingFieldVariablesWithResolve(project, database, item, value, resolve, reject)
+                  this.#paddingFieldVariablesWithResolve(project, database, item, value, null, resolve, reject)
                   return
                 }
                 resolve({
@@ -534,37 +534,6 @@ class Kit {
             const mainTable = model.tables.find(t => t.type === 'MAIN')
             // 子表
             const subTables = model.tables.filter(t => t.type !== 'MAIN')
-            // join
-            const joins = model.joins.map(join => {
-              const targetTable = model.tables.find(t => t.id === join.targetTable)
-              const ons = join.ons.map((on,index) => {
-                const relationText = index === 0 ? '' : on.relation
-                return `${relationText} ${mainTable.alias}.${on.field} = ${targetTable.alias}.${on.targetField}`
-              })
-              return `${join.joinType} ${targetTable.name} ${targetTable.alias} ON
-  ${ons.join('\n  ')}`
-            })
-            // 查询字段
-            const fields = []
-            for (const table of model.tables) {
-              for (const field of table.fields) {
-                const agg = model.aggregates.find(
-                  agg => agg.table.toLowerCase() === table.name.toLowerCase() &&
-                    agg.field.toLowerCase() === field.name.toLowerCase()
-                )
-                if (agg == null) {
-                  fields.push(`${table.alias}.${field.name} AS ${field.alias}`)
-                } else {
-                  const targetTable = model.tables.find(t => t.name.toLowerCase() === agg.targetTable.toLowerCase())
-                  const targetField = targetTable.fields.find(f => f.name.toLowerCase() === agg.targetField.toLowerCase())
-                    fields.push(`(
-    SELECT
-      ${agg.function}(${targetTable.alias}.${agg.targetField})
-    FROM ${targetTable.name} ${targetTable.alias}
-  ) AS ${field.alias}`)
-                }
-              }
-            }
             const value = {
               name: model.name,
               comment: model.comment,
@@ -598,18 +567,11 @@ class Kit {
                   targetTable,
                   ons
                 }
-              }),
-              aggregates: model.aggregates,
-              sql: {
-                fields: fields,
-                joins: joins,
-                where: '',
-                orderBy: ''
-              }
+              })
             }
             // 处理字段变量
             if (item.children != null && item.children.length > 0) {
-              this.#paddingFieldVariablesWithResolve(project, database, item, value, resolve, reject)
+              this.#paddingFieldVariablesWithResolve(project, database, item, value, model, resolve, reject)
               return
             }
             resolve({
@@ -685,16 +647,11 @@ class Kit {
    *   ]
    * }
    */
-  #paddingFieldVariablesWithResolve (project, database, variable, value, resolve, reject) {
+  #paddingFieldVariablesWithResolve (project, database, variable, value, model, resolve, reject) {
     const groupPromises = []
     for (const group of variable.children) {
       value[group.name] = group.value === undefined ? group.defaultValue : group.value
-      // 给mainTable补充已选字段
-      value.mainTable[group.name] = value[group.name].filter(field => field.table.id === value.mainTable.id)
-      // 给subTables补充已选字段
-      for (const subTable of value.subTables) {
-        subTable[group.name] = value[group.name].filter(field => field.table.id === subTable.id)
-      }
+      // group.children为字段变量组中的变量设定（例如查询条件queryFields中的字段定义）
       groupPromises.push(Promise.all(this.#getVariables(project, database, group.children, false))
         .then(vars => {
           group.children = vars
@@ -718,6 +675,33 @@ class Kit {
               const varValue = field[v.name]
               field[v.name] = varValue.value
               field[`${v.name}Settings`] = varValue.settings
+            }
+          }
+          if (model != null) {
+            /**
+             * 针对虚拟字段做处理
+             * 虚拟字段补充字段的SQL语句
+             */
+            const tables = [value.mainTable, ...value.subTables]
+            tables.push(model)
+            for (const field of value[group.name]) {
+              if (!field.isVirtual) {
+                continue
+              }
+              /**
+               * 为字段补充SQL语句
+               * 拿到聚合信息。。。。
+               */
+              const agg = model.aggregates.find(agg => agg.field === field.name)
+              if (agg != null) {
+                const targetTable = tables.find(t => t.id === agg.targetTable)
+                const targetField = targetTable.fields.find(f => f.name === agg.targetField)
+                field.aggregate = {
+                  table: targetTable,
+                  field: targetField,
+                  function: agg.function
+                }
+              }
             }
           }
           resolve({
