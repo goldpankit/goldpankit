@@ -765,7 +765,6 @@ class Kit {
           }
           // 虚拟字段
           let agg = model.aggregates.find(agg => agg.field === field.name)
-          console.log(field, agg)
           // - 没有聚合信息
           if (agg == null) {
             let sql = `\`${field.table.alias}\`.\`${field.name}\` AS \`${field.alias}\``
