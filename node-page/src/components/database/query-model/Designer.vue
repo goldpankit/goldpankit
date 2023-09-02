@@ -296,7 +296,6 @@ export default {
         type: 'MAIN',
         // 标记为虚拟表
         isVirtual: true,
-        fields: [],
         x: 100,
         y: 100,
         // 添加joins，用于存放join关系
@@ -304,6 +303,7 @@ export default {
         // 添加aggregates，用于存放聚合列
         aggregates: []
       }
+      newTable.fields = this.__getVirtualTableDefaultFields(newTable)
       this.model.tables.push(newTable)
       // 重新渲染，使新添加的元素绘制在stage中
       this.render()
@@ -329,6 +329,54 @@ export default {
           this.computeRelations()
         })
       })
+    },
+    // 获取虚拟表默认字段
+    __getVirtualTableDefaultFields (table) {
+      const fields = [
+        {
+          name: 'field1',
+          alias: 'field1',
+          type: 'int',
+          length: 0,
+          decimal: 0,
+          required: false,
+          isPrimaryKey: false,
+          isAutoIncrement: false,
+          comment: 'Virtual field 1',
+          isVirtual: true,
+          visible: true,
+          table
+        },
+        {
+          name: 'field2',
+          alias: 'field2',
+          type: 'int',
+          length: 0,
+          decimal: 0,
+          required: false,
+          isPrimaryKey: false,
+          isAutoIncrement: false,
+          comment: 'Virtual field 2',
+          isVirtual: true,
+          visible: true,
+          table
+        },
+        {
+          name: 'field3',
+          alias: 'field3',
+          type: 'int',
+          length: 0,
+          decimal: 0,
+          required: false,
+          isPrimaryKey: false,
+          isAutoIncrement: false,
+          comment: 'Virtual field 3',
+          isVirtual: true,
+          visible: true,
+          table
+        }
+      ]
+      return JSON.parse(JSON.stringify(fields))
     },
     // 删除线
     __deleteLine () {

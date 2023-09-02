@@ -10,6 +10,7 @@ const object = require("./utils/object");
 const serviceBuild = require("./service.build");
 const mysql = require("./utils/db/mysql");
 const serviceTranslator = require('./service.translator')
+const {stat} = require("fs");
 const env = require('../env').getConfig()
 
 class Kit {
@@ -742,6 +743,10 @@ class Kit {
       from: `FROM ${mainTable.name} ${mainTable.alias}`,
       joins: this.#getJoinSQL(mainTable, joins, ''),
     }
+    // 虚拟表from语句为空
+    if (mainTable.isVirtual) {
+      statement.from = null
+    }
     // 动态添加字段变量组语句，例如queryFields，则可以通过queryModel.statement.queryFields来获得字段语句列表
     if (variable.children != null && variable.children.length > 0) {
       for (const group of variable.children) {
@@ -760,6 +765,7 @@ class Kit {
           }
           // 虚拟字段
           let agg = model.aggregates.find(agg => agg.field === field.name)
+          console.log(field, agg)
           // - 没有聚合信息
           if (agg == null) {
             let sql = `\`${field.table.alias}\`.\`${field.name}\` AS \`${field.alias}\``
