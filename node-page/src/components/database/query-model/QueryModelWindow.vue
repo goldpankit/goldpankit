@@ -10,7 +10,7 @@
       <h2>查询模型设计</h2>
       <div class="header__opera">
         <DataSourceSelect :model-value="currentDatabase"/>
-        <el-icon><Close /></el-icon>
+        <el-icon @click="visible = false"><Close /></el-icon>
       </div>
     </template>
     <QueryModelView/>
