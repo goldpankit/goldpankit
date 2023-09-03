@@ -289,7 +289,7 @@ export default {
         transition: all ease .15s;
         margin-left: 10px;
         position: absolute;
-        top: 0px;
+        top: 6px;
         right: 10px;
         span {
           padding: 3px;
