@@ -8,7 +8,7 @@
       </el-button>
     </div>
     <ul v-if="projects.length > 0">
-      <li v-for="project in projects">
+      <li v-for="project in projects" :key="project.id">
         <div class="avatar">{{project.name.substring(0,1)}}</div>
         <div class="info">
           <h3>{{project.name}}</h3>
@@ -16,6 +16,7 @@
           <p>{{project.remark}}</p>
         </div>
         <div class="opera">
+          <el-button size="small" icon="Edit" @click="editProject(project)">{{$t('common.edit')}}</el-button>
           <el-button type="danger" text @click="deleteProject(project)">{{$t('common.delete')}}</el-button>
         </div>
       </li>
@@ -47,6 +48,10 @@ export default {
         .catch(e => {
           this.$tip.apiFailed(e)
         })
+    },
+    // 编辑项目
+    editProject (project) {
+      this.$refs.createProjectWindow.open(project)
     },
     // 删除项目
     deleteProject (project) {
@@ -115,6 +120,9 @@ export default {
       position: absolute;
       top: 10px;
       right: 5px;
+      .el-button {
+        margin-left: 10px;
+      }
     }
   }
 }
