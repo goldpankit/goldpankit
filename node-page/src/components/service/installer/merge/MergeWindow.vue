@@ -105,6 +105,12 @@ export default {
   watch: {
     diffFiles () {
       this.__handleDiffChange()
+    },
+    newContent() {
+      // 获取最新编辑框内容并替换
+      this.installData.diff.diffFiles.forEach(item => {
+        if(item.filepath == this.currentFile.filepath) item.content = this.currentFile.content
+      })
     }
   },
   methods: {
