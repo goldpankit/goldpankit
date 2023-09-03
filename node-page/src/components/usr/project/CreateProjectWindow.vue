@@ -1,7 +1,7 @@
 <template>
   <el-dialog
     v-model="visible"
-    :title="$t('project.createProject')"
+    :title="form.id ? $t('project.editProject') : $t('project.createProject')"
     custom-class="create-project-dialog"
     append-to-body
     width="800px"
@@ -24,7 +24,7 @@
     </el-form>
     <div class="opera">
       <el-button size="large" @click="cancelCreate">{{$t('common.cancel')}}</el-button>
-      <el-button type="primary" size="large" @click="confirmCreate">{{$t('project.createProject')}}</el-button>
+      <el-button type="primary" size="large" @click="confirmCreate">{{form.id ? $t('project.editProject') : $t('project.createProject')}}</el-button>
     </div>
   </el-dialog>
 </template>
@@ -48,11 +48,12 @@ export default {
     }
   },
   methods: {
-    open () {
+    open (data) {
       this.visible = true
       this.$nextTick(() => {
         this.$refs.form.resetFields()
       })
+      if(data) this.form = data
     },
     getRules () {
       return {

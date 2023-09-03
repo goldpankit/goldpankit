@@ -1,7 +1,7 @@
 <template>
   <el-dialog
     v-model="visible"
-    :title="$t('database.createDatabase')"
+    :title="form.id ? $t('database.editDatabase') : $t('database.createDatabase')"
     custom-class="create-database-dialog"
     append-to-body
     :close-on-click-modal="false"
@@ -44,7 +44,7 @@
     </el-form>
     <div class="opera">
       <el-button size="large" @click="cancelCreate">{{$t('common.cancel')}}</el-button>
-      <el-button type="primary" size="large" @click="confirmCreate">{{$t('database.createDatabase')}}</el-button>
+      <el-button type="primary" size="large" @click="confirmCreate">{{form.id ? $t('database.editDatabase') : $t('database.createDatabase')}}</el-button>
     </div>
   </el-dialog>
 </template>
@@ -85,11 +85,12 @@ export default {
     }
   },
   methods: {
-    open () {
+    open (data) {
       this.visible = true
       this.$nextTick(() => {
         this.$refs.form.resetFields()
       })
+      if(data) this.form = data
     },
     getRules () {
       return {

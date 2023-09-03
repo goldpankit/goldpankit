@@ -8,7 +8,7 @@
     :close-on-press-escape="false"
     :close-on-click-modal="false"
   >
-    <el-form ref="form" :model="form" :rules="getRules()">
+    <el-form ref="form" :model="form" :rules="getRules()" v-loading="isWorking">
       <el-form-item :label="$t('service.versionNumber')" prop="version" required>
         <el-input v-model="form.version" @input="saveConfig">
           <template #prefix>v</template>
@@ -62,7 +62,7 @@ export default {
           { validator: checkVersionNumber, message: this.$t('form.isIncorrect', { field: this.$t('service.versionNumber') }) }
         ],
         publishDescription: [
-          { required: true, message: this.$t('form.isRequired', { value: this.$t('service.versionDescription') })}
+          { required: true, message: this.$t('form.isRequired', { value: this.$t('service.versionDescription') }), trigger: 'blur'}
         ]
       }
     },
@@ -96,24 +96,27 @@ export default {
     },
     // 发布
     publish () {
-      if (this.isWorking) {
-        return
-      }
-      this.isWorking = true
-      publish({
-        space: this.space,
-        service: this.service,
-        publishDescription: this.form.publishDescription
+      this.$refs.form.validate().then(() => {
+        if (this.isWorking) {
+          return
+        }
+        this.isWorking = true
+        publish({
+          space: this.space,
+          service: this.service,
+          publishDescription: this.form.publishDescription
+        })
+          .then(() => {
+            this.visible = false
+            this.$message.success('发布成功')
+          })
+          .catch(e => {
+            this.$tip.apiFailed(e)
+          })
+          .finally(() => {
+            this.isWorking = false
+          })
       })
-        .then(() => {
-          this.visible = false
-        })
-        .catch(e => {
-          this.$tip.apiFailed(e)
-        })
-        .finally(() => {
-          this.isWorking = false
-        })
     }
   }
 }

@@ -77,7 +77,7 @@ export default {
     cursor: pointer;
     &.selected {
       //background: var(--primary-color-match-1);
-      color: var(--primary-color-match-2)
+      color: var(--primary-color-match-2) !important;
     }
     &.service-installed {
       color: var(--color-gray);

@@ -27,6 +27,7 @@ export default ({ mode }) => {
       }
     },
     server: {
+      host: '127.0.0.1',
       proxy: {
         [localApiPrefix]: {
           target: 'http://localhost/local-api',

@@ -64,7 +64,8 @@ export default {
     },
     // 修改数据库
     edit (db) {
-      this.$refs.window.push('operaDatabase')
+      // this.$refs.window.push('operaDatabase')
+      this.$refs.operaDatabaseWindow.open(db)
     },
     // 删除数据库
     deleteDatabase (id) {
