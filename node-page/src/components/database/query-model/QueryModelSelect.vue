@@ -1,23 +1,30 @@
 <template>
-  <el-select
-    class="model-select"
-    popper-class="model-select__popper"
-    :model-value="modelValue"
-    clearable
-    @change="handleChange"
-  >
-    <el-option
-      v-for="model in models"
-      :key="model.id"
-      :value="model.id"
-      :label="model.name"
+  <div class="query-model-select">
+    <el-select
+      class="model-select"
+      popper-class="model-select__popper"
+      :model-value="modelValue"
+      clearable
+      @change="handleChange"
     >
-      <p class="option-content">
-        <span>{{ model.name }}</span>
-        <span class="text-info-1">{{ model.comment }}</span>
-      </p>
-    </el-option>
-  </el-select>
+      <el-option
+        v-for="model in models"
+        :key="model.id"
+        :value="model.id"
+        :label="model.name"
+      >
+        <p class="option-content">
+          <span>{{ model.name }}</span>
+          <span class="text-info-1">{{ model.comment }}</span>
+        </p>
+      </el-option>
+    </el-select>
+    <el-button class="button-icon" type="primary" @click="$refs.queryModelWindow.open()">
+      <img src="/images/database/icon-design.svg">
+    </el-button>
+    <!-- 查询模型设计窗口 -->
+    <QueryModelWindow ref="queryModelWindow"/>
+  </div>
   <ul v-if="selected != null && fieldVariableGroup.length > 0" class="field-settings">
     <li v-for="group of fieldVariableGroup" :key="group.label">
       <QueryModelFieldSetting
@@ -31,14 +38,14 @@
 </template>
 
 <script>
-
 import {mapState} from "vuex";
-import QueryModelFieldSetting from "../service/installer/QueryModelFieldSetting.vue";
-import {search} from "../../api/database";
+import QueryModelFieldSetting from "../../service/installer/QueryModelFieldSetting.vue";
+import {search} from "../../../api/database";
+import QueryModelWindow from "./QueryModelWindow.vue";
 
 export default {
   name: "QueryModelSelect",
-  components: {QueryModelFieldSetting},
+  components: {QueryModelWindow, QueryModelFieldSetting},
   props: {
     modelValue: {},
     // 值字段
@@ -118,8 +125,16 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.model-select {
-  width: 100%;
+.query-model-select {
+  display: flex;
+  :deep(.el-button) {
+    img {
+      width: 14px;
+    }
+  }
+  .model-select {
+    width: 100%;
+  }
 }
 .field-settings {
   width: 100%;

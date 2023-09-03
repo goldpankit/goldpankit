@@ -63,7 +63,7 @@ import InstallInput from "./Input.vue";
 import InstallRadio from "./Radio.vue";
 import InstallCheckbox from "./Checkbox.vue";
 import TableSelect from "../../common/TableSelect.vue";
-import QueryModelSelect from "../../common/QueryModelSelect.vue";
+import QueryModelSelect from "../../database/query-model/QueryModelSelect.vue";
 import DataSourceSelect from "../../database/DataSourceSelect.vue";
 import InstallSelect from "./Select.vue";
 import InstallNumberInput from "./NumberInput.vue";
