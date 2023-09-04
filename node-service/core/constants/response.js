@@ -24,5 +24,18 @@ module.exports = {
       'The current project has already installed another main service, please switch to a different project and try again.',
       '当前项目已安装了其他的主服务，请切换项目后重试'
     ),
+  },
+  // 项目
+  PROJECT: {
+    PROJECT_NOT_EXISTS: new Response(
+      'project_not_exists',
+      'Project does not exists.',
+      '项目不存在'
+    ),
+    PROJECT_NAME_EXISTS: new Response(
+      'project_name_exists',
+      'Project name is already taken.',
+      '项目名称已被占用'
+    )
   }
 }

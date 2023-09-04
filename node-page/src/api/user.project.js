@@ -10,7 +10,7 @@ export function deleteProject (projectId) {
   return request.get(`/usr/project/delete/${projectId}`)
 }
 // 保存项目配置
-export function saveConfig (data) {
+export function save (data) {
   return request.post('/usr/project/save', data)
 }
 

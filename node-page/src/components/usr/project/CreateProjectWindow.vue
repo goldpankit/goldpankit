@@ -31,7 +31,7 @@
 
 <script>
 import DirectorySelect from "../../common/DirectorySelect.vue";
-import {create} from "../../../api/user.project";
+import {create, save} from "../../../api/user.project";
 
 export default {
   name: "CreateProjectWindow",
@@ -69,29 +69,58 @@ export default {
     confirmCreate () {
       this.$refs.form.validate()
         .then(() => {
-          if (this.isWorking) {
+          if (this.form.id != null) {
+            this.__confirmUpdate()
             return
           }
-          this.isWorking = true
-          create({
-            ...this.form,
-            name: this.form.name.trim()
-          })
-            .then(data => {
-              this.visible = false
-              this.$emit('success', data)
-            })
-            .catch(e => {
-              this.$tip.apiFailed(e)
-            })
-            .finally(() => {
-              this.isWorking = false
-            })
+          this.__confirmCreate()
         })
     },
     // 取消创建
     cancelCreate () {
       this.visible = false
+    },
+    // 确认新建
+    __confirmCreate () {
+      if (this.isWorking) {
+        return
+      }
+      this.isWorking = true
+      create({
+        ...this.form,
+        name: this.form.name.trim()
+      })
+        .then(data => {
+          this.visible = false
+          this.$emit('success', data)
+        })
+        .catch(e => {
+          this.$tip.apiFailed(e)
+        })
+        .finally(() => {
+          this.isWorking = false
+        })
+    },
+    // 确认修改
+    __confirmUpdate () {
+      if (this.isWorking) {
+        return
+      }
+      this.isWorking = true
+      save({
+        ...this.form,
+        name: this.form.name.trim()
+      })
+        .then(data => {
+          this.visible = false
+          this.$emit('success', data)
+        })
+        .catch(e => {
+          this.$tip.apiFailed(e)
+        })
+        .finally(() => {
+          this.isWorking = false
+        })
     }
   }
 }
