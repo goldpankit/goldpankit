@@ -44,7 +44,7 @@
     </el-form>
     <div class="opera">
       <el-button size="large" @click="cancelCreate">{{$t('common.cancel')}}</el-button>
-      <el-button type="primary" size="large" @click="confirmCreate">{{form.id ? $t('database.editDatabase') : $t('database.createDatabase')}}</el-button>
+      <el-button type="primary" size="large" @click="confirm">{{form.id ? $t('common.confirmUpdate') : $t('common.confirmAdd')}}</el-button>
     </div>
   </el-dialog>
 </template>
@@ -52,17 +52,19 @@
 <script>
 import DatabaseTypeSelect from "./DatabaseTypeSelect.vue";
 import {testConnect} from "../../api/database.util";
-import {create} from "../../api/database";
+import {create, updateById} from "../../api/database";
 import {trim} from "../../utils/util";
+import {strictCopy} from "../../utils/object";
 
 export default {
-  name: "CreateDatabaseWindow",
+  name: "OperaDataSourceWindow",
   components: {DatabaseTypeSelect},
   data () {
     return {
       visible: false,
       isWorking: false,
       form: {
+        id: null,
         name: '',
         type: 'mysql',
         host: 'localhost',
@@ -89,8 +91,18 @@ export default {
       this.visible = true
       this.$nextTick(() => {
         this.$refs.form.resetFields()
+        this.form.id = null
+        // 编辑
+        if (data != null) {
+          this.form = strictCopy(this.form, data)
+        }
+        // 清理验证
+        setTimeout(() => {
+          for (const key in this.form) {
+            this.$refs.form.clearValidate(key)
+          }
+        }, 0)
       })
-      if(data) this.form = data
     },
     getRules () {
       return {
@@ -107,7 +119,7 @@ export default {
           { required: true, message: this.$t('form.isRequired', { value: this.$t('database.port') })},
         ],
         schema: [
-          { required: true, message: this.$t('form.isRequired', { value: this.$t('database.schema') })},
+          { required: true, message: this.$t('form.isRequired', { value: this.$t('database.schema') }), trigger: 'blur'},
         ],
         username: [
           { required: true, message: this.$t('form.isRequired', { value: this.$t('database.username') })},
@@ -118,7 +130,7 @@ export default {
       }
     },
     // 确认创建
-    confirmCreate () {
+    confirm () {
       this.$refs.form.validate()
         .then(() => {
           if (this.isWorking) {
@@ -130,17 +142,11 @@ export default {
           const form = trim(this.form)
           form.password = password
           // 执行创建
-          create(form)
-            .then(data => {
-              this.visible = false
-              this.$emit('success', data)
-            })
-            .catch(e => {
-              this.$tip.apiFailed(e)
-            })
-            .finally(() => {
-              this.isWorking = false
-            })
+          if (form.id == null) {
+            this.__confirmCreate(form)
+            return
+          }
+          this.__confirmUpdate(form)
         })
         .catch(() => {})
     },
@@ -176,6 +182,36 @@ export default {
         })
         .finally(() => {
           this.connectResult.connecting = false
+        })
+    },
+    // 确认创建
+    __confirmCreate (form) {
+      // 执行创建
+      create(form)
+        .then(data => {
+          this.visible = false
+          this.$emit('success', data)
+        })
+        .catch(e => {
+          this.$tip.apiFailed(e)
+        })
+        .finally(() => {
+          this.isWorking = false
+        })
+    },
+    // 确认修改
+    __confirmUpdate (form) {
+      // 执行创建
+      updateById(form)
+        .then(data => {
+          this.visible = false
+          this.$emit('success', data)
+        })
+        .catch(e => {
+          this.$tip.apiFailed(e)
+        })
+        .finally(() => {
+          this.isWorking = false
         })
     }
   }

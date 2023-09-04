@@ -16,19 +16,19 @@
         <template v-else>{{prefix}}</template>:
       </template>
     </el-select>
-    <el-button v-if="withCreateButton" class="button-icon" type="primary" icon="Plus" @click="$refs.createDatabaseWindow.open()"></el-button>
-    <CreateDatabaseWindow ref="createDatabaseWindow" @success="handleCreateSuccess"/>
+    <el-button v-if="withCreateButton" class="button-icon" type="primary" icon="Plus" @click="$refs.operaDataSourceWindow.open()"></el-button>
+    <OperaDataSourceWindow ref="operaDataSourceWindow" @success="handleCreateSuccess"/>
   </div>
 </template>
 
 <script>
 import {search} from "../../api/database";
-import CreateDatabaseWindow from "./CreateDatabaseWindow.vue";
+import OperaDataSourceWindow from "./OperaDataSourceWindow.vue";
 import {mapMutations} from "vuex";
 
 export default {
   name: "DataSourceSelect",
-  components: {CreateDatabaseWindow},
+  components: {OperaDataSourceWindow},
   props: {
     modelValue: {},
     withPrefix: {

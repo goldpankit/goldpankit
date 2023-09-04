@@ -24,7 +24,7 @@
     </el-form>
     <div class="opera">
       <el-button size="large" @click="cancelCreate">{{$t('common.cancel')}}</el-button>
-      <el-button type="primary" size="large" @click="confirmCreate">{{form.id ? $t('common.confirmUpdate') : $t('project.createProject')}}</el-button>
+      <el-button type="primary" size="large" @click="confirm">{{form.id ? $t('common.confirmUpdate') : $t('common.confirmCreate')}}</el-button>
     </div>
   </el-dialog>
 </template>
@@ -55,9 +55,16 @@ export default {
       this.$nextTick(() => {
         this.$refs.form.resetFields()
         this.form.id = null
+        // 编辑
         if (data != null) {
           this.form = strictCopy(this.form, data)
         }
+        // 清理验证
+        setTimeout(() => {
+          for (const key in this.form) {
+            this.$refs.form.clearValidate(key)
+          }
+        }, 0)
       })
     },
     getRules () {
@@ -71,7 +78,7 @@ export default {
       }
     },
     // 确认创建
-    confirmCreate () {
+    confirm () {
       this.$refs.form.validate()
         .then(() => {
           if (this.form.id != null) {

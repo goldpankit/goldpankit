@@ -40,6 +40,8 @@ export default {
     clear: 'Clear',
     close: 'Close',
     confirmUpdate: 'Save',
+    confirmCreate: 'Create',
+    confirmAdd: 'Add',
     // 模态框
     modal: {
       confirmDelete: 'Confirm Delete',

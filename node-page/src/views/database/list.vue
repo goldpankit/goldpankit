@@ -8,7 +8,7 @@
       <div class="database-list-wrap">
         <ul class="toolbar">
           <li>
-            <el-button type="primary" @click="$refs.operaDatabaseWindow.open()">{{$t('database.addNewDatabase')}}</el-button>
+            <el-button type="primary" @click="$refs.operaDataSourceWindow.open()">{{$t('database.addNewDatabase')}}</el-button>
           </li>
         </ul>
         <ul v-if="databases.length > 0" class="database-list">
@@ -24,7 +24,7 @@
         <Pagination :pagination="pagination"/>
       </div>
     </div>
-    <CreateDatabaseWindow ref="operaDatabaseWindow" @success="search"/>
+    <OperaDataSourceWindow ref="operaDataSourceWindow" @success="search"/>
   </div>
 </template>
 
@@ -35,11 +35,11 @@ import DatabaseView from "@/components/usr/project/DatabaseView.vue";
 import {deleteById, search} from "../../api/database";
 import Empty from "../../components/common/Empty.vue";
 import Pagination from "../../components/common/Pagination.vue";
-import CreateDatabaseWindow from "../../components/database/CreateDatabaseWindow.vue";
+import OperaDataSourceWindow from "../../components/database/OperaDataSourceWindow.vue";
 
 export default {
   components: {
-    CreateDatabaseWindow,
+    OperaDataSourceWindow,
     Pagination, Empty, DatabaseView, InnerRouterViewWindow, InnerRouterView},
   data () {
     return {
@@ -64,8 +64,7 @@ export default {
     },
     // 修改数据库
     edit (db) {
-      // this.$refs.window.push('operaDatabase')
-      this.$refs.operaDatabaseWindow.open(db)
+      this.$refs.operaDataSourceWindow.open(db)
     },
     // 删除数据库
     deleteDatabase (id) {

@@ -37,5 +37,18 @@ module.exports = {
       'Project name is already taken.',
       '项目名称已被占用'
     )
+  },
+  // 数据源
+  DATA_SOURCE: {
+    NOT_EXISTS: new Response(
+      'datasource_not_exists',
+      'Data source does not exists.',
+      '数据源不存在'
+    ),
+    NAME_EXISTS: new Response(
+      'datasource_not_exists',
+      'Data source name is already taken.',
+      '数据源名称已存在'
+    ),
   }
 }
