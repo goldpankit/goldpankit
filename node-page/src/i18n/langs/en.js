@@ -39,6 +39,7 @@ export default {
     yesterday: 'Yesterday',
     clear: 'Clear',
     close: 'Close',
+    confirmUpdate: 'Save',
     // 模态框
     modal: {
       confirmDelete: 'Confirm Delete',

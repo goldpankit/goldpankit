@@ -24,7 +24,7 @@
     </el-form>
     <div class="opera">
       <el-button size="large" @click="cancelCreate">{{$t('common.cancel')}}</el-button>
-      <el-button type="primary" size="large" @click="confirmCreate">{{form.id ? $t('project.editProject') : $t('project.createProject')}}</el-button>
+      <el-button type="primary" size="large" @click="confirmCreate">{{form.id ? $t('common.confirmUpdate') : $t('project.createProject')}}</el-button>
     </div>
   </el-dialog>
 </template>
