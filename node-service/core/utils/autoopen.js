@@ -12,12 +12,12 @@ module.exports = {
       const projects = cache.projects.getAll()
       const targetProject = projects.find(p => p.codespace === root)
       if (targetProject != null) {
-        open(`http://localhost:${port}/workbench?project_id=${targetProject.id}`)
+        open(`http://127.0.0.1:${port}/workbench?project_id=${targetProject.id}`)
         return
       }
     }
     // 找不到配置文件或项目，则打开公共空间页面
-    open(`http://localhost:${port}`)
+    open(`http://127.0.0.1:${port}`)
   },
   // 查询可用的端口号
   findAvailablePort(port, callback) {
