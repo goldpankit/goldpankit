@@ -10,7 +10,7 @@
       <h2>查询模型设计</h2>
       <div class="header__opera">
         <DataSourceSelect :model-value="currentDatabase"/>
-        <el-icon @click="visible = false"><Close /></el-icon>
+        <el-icon @click="close"><Close /></el-icon>
       </div>
     </template>
     <QueryModelView/>
@@ -37,6 +37,10 @@ export default {
   methods: {
     open () {
       this.visible = true
+    },
+    close () {
+      this.visible = false
+      this.$emit('close')
     }
   }
 }

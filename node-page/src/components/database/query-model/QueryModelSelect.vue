@@ -23,7 +23,7 @@
       <img src="/images/database/icon-design.svg">
     </el-button>
     <!-- 查询模型设计窗口 -->
-    <QueryModelWindow ref="queryModelWindow"/>
+    <QueryModelWindow ref="queryModelWindow" @close="fetchDatabases"/>
   </div>
   <ul v-if="selected != null && fieldVariableGroup.length > 0" class="field-settings">
     <li v-for="group of fieldVariableGroup" :key="group.label">
@@ -109,7 +109,8 @@ export default {
         return
       }
       this.models = database.models
-      // 填充默认选中的table
+      console.log('this.models', this.models)
+      // 填充默认选中的模型
       if (this.modelValue != null) {
         this.selected = this.models.find(model => model.id === this.modelValue)
         if (this.selected == null) {

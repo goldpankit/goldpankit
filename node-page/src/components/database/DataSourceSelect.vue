@@ -6,7 +6,7 @@
       clearable
     >
       <el-option
-        v-for="item in list"
+        v-for="item in dataSources"
         :value="item.id"
         :key="item.id"
         :label="item.name"
@@ -46,7 +46,7 @@ export default {
   },
   data () {
     return {
-      list: []
+      dataSources: []
     }
   },
   methods: {
@@ -54,13 +54,13 @@ export default {
     fetchList () {
       search ()
         .then(data => {
-          this.list = data
+          this.dataSources = data
           // 触发handleChange，自动全局选中数据库
-          const selectedDatabase = this.list.find(db => db.id === this.modelValue)
-          if (selectedDatabase == null) {
+          const selectedDataSource = this.dataSources.find(db => db.id === this.modelValue)
+          if (selectedDataSource == null) {
             this.handleChange(null)
           } else {
-            this.handleChange(selectedDatabase.id)
+            this.handleChange(selectedDataSource.id)
           }
         })
         .catch(e => {

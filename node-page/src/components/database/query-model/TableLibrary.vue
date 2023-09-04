@@ -58,7 +58,7 @@
         </InnerRouterView>
       </InnerRouterViewWindow>
     </div>
-    <div class="block">
+    <div class="block table-list-wrap">
       <div class="header">
         <h4>{{$t('database.tables')}}</h4>
       </div>
@@ -231,11 +231,22 @@ export default {
 <style scoped lang="scss">
 .table-library {
   width: 100%;
+  height: 100%;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   .inner-router-view-window {
     padding: 0;
+    height: 100%;
+    overflow: hidden;
+    :deep(.routers) {
+      height: 100%;
+      .inner-router-view {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+      }
+    }
   }
   .create-model-form {
     padding: 20px;
@@ -244,9 +255,11 @@ export default {
       justify-content: center;
     }
   }
+  .table-list-wrap {
+    flex-grow: 1;
+  }
   .block {
     border-top: 1px solid #ccc;
-    flex-grow: 1;
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -260,9 +273,9 @@ export default {
       margin-bottom: 10px;
     }
     &:first-of-type {
-      flex-grow: 0;
+      flex-grow: 1;
       flex-shrink: 0;
-      height: 300px;
+      height: 350px;
       border-top: 0;
     }
   }
