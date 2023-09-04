@@ -133,6 +133,7 @@ export default {
     selectDirectory: 'Select Directory',
     createNewFolder: 'Create New Folder',
     dirExistsTip: 'Directory already exists',
+    pathNotExistsTip: 'The current path “{path}” does not exist or is hidden. Please select a different path.'
   },
   // 用户
   user: {

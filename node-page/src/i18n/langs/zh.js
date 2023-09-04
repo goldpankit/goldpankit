@@ -132,7 +132,8 @@ export default {
   component: {
     selectDirectory: '选择目录',
     createNewFolder: '创建目录',
-    dirExistsTip: '目录已存在'
+    dirExistsTip: '目录已存在',
+    pathNotExistsTip: '当前路径 "{path}" 已不存在或被隐藏，请重新选择路径。'
   },
   // 用户
   user: {

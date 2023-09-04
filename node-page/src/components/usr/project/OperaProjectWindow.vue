@@ -16,7 +16,7 @@
         <el-input v-model="form.name"/>
       </el-form-item>
       <el-form-item :label="$t('project.codespace')" prop="codespace" required>
-        <DirectorySelect v-if="visible" v-model="form.codespace"/>
+        <DirectorySelect v-if="ready" v-model="form.codespace"/>
       </el-form-item>
       <el-form-item :label="$t('common.remark')" prop="remark">
         <el-input type="textarea" :rows="5" v-model="form.remark" maxlength="200"/>
@@ -40,6 +40,8 @@ export default {
   data () {
     return {
       visible: false,
+      // 数据是否准备完成，准备完成后再展示目录选择，避免codespace获取不到
+      ready: false,
       isWorking: false,
       form: {
         id: null,
@@ -51,6 +53,7 @@ export default {
   },
   methods: {
     open (data) {
+      this.ready = false
       this.visible = true
       this.$nextTick(() => {
         this.$refs.form.resetFields()
@@ -59,6 +62,7 @@ export default {
         if (data != null) {
           this.form = strictCopy(this.form, data)
         }
+        this.ready = true
         // 清理验证
         setTimeout(() => {
           for (const key in this.form) {

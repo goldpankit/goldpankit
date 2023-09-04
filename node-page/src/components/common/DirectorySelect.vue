@@ -7,6 +7,10 @@
         <el-button icon="Plus" @click="createDirectory">{{$t('component.createNewFolder')}}</el-button>
       </div>
     </div>
+    <div v-if="initData.isNotExists" class="error-tip">
+      <el-icon><WarningFilled /></el-icon>
+      <p>{{$t('component.pathNotExistsTip', { path: initData.selectedFilepath })}}</p>
+    </div>
     <ul class="paths">
       <li
         v-for="(path,index) in paths"
@@ -80,6 +84,11 @@ export default {
       isWindows: path.getOS() === 'windows',
       paths: [],
       files: [],
+      // 初始化数据，例如编辑项目时当前项目的路径，当前项目路径是否存在等，用于给予用户路径不存在提醒
+      initData: {
+        selectedFilepath: null,
+        isNotExists: false
+      },
       selectedFilepath: null
     }
   },
@@ -201,9 +210,15 @@ export default {
             }
           })
           sortFiles(this.files)
-          callback && callback()
+          callback && callback(this.files)
         })
         .catch(e => {
+          // 目录不存在
+          if (e.code === 'ENOENT') {
+            this.initData.isNotExists = true
+            this.__fetchDefaultPaths()
+            return
+          }
           this.$tip.apiFailed(e)
         })
     },
@@ -226,13 +241,20 @@ export default {
       return path.join(paths)
     }
   },
-  created () {
+  mounted () {
+    // 新建
     if (this.modelValue == null || this.modelValue === '') {
       this.__fetchDefaultPaths()
       return
     }
+    // 编辑
+    this.initData.selectedFilepath = this.modelValue
     this.paths = path.split(this.modelValue).filter(item => item !== '')
-    this.__fetchFiles()
+    this.selectedFilepath = this.paths.pop()
+    this.__fetchFiles(this.paths, files => {
+      // 查看初始化路径是否存在
+      this.initData.isNotExists = files.find(f => f.path === this.selectedFilepath) == null
+    })
   }
 }
 </script>
@@ -258,6 +280,17 @@ export default {
     }
     .opera {
       flex-shrink: 0;
+    }
+  }
+  .error-tip {
+    background: rgba(255, 0, 0, .1);
+    padding: 5px 20px;
+    display: flex;
+    align-items: center;
+    line-height: 15px;
+    .el-icon {
+      margin-right: 5px;
+      color: var(--color-danger);
     }
   }
   .paths {
