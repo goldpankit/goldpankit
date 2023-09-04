@@ -361,7 +361,13 @@ export default {
     createVirtualTableTip: 'create a virtual table',
     joinLine: 'Join Line',
     aggregateLine: 'Aggregate Line',
-    modelName: 'model name'
+    modelName: 'model name',
+    deleteModelTip: 'Do you want to delete the query model named 「{modelName}」',
+    selectDataSourceTip: 'Please select a data source first',
+    dataSourceConnectFailedTip: 'Data source connection failed',
+    editDataSourceInfoTip: 'Edit data source information',
+    queryModelEmptyTipTitle: 'No query models available for the current data source',
+    queryModelEmptyTip: 'With query models, you can quickly establish relationships between tables in a relational database, supporting aggregate functions and JOIN operations. By using services that support query models, project code can be generated quickly for you.'
   },
   // 项目
   project: {

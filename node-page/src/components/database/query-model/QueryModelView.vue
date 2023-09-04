@@ -2,15 +2,15 @@
   <div class="database-query-models">
     <div v-if="currentDatabase == null || currentDatabase === ''" class="no-datasource-tip">
       <div class="tip-wrap">
-        <h4>请先选择一个数据源</h4>
+        <h4>{{$t('database.selectDataSourceTip')}}</h4>
         <DataSourceSelect :model-value="currentDatabase" :with-block="true"/>
       </div>
     </div>
     <div v-else-if="connectError != null" class="connect-error-tip">
       <div class="tip-wrap">
-        <h4>数据源连接失败</h4>
+        <h4>{{$t('database.dataSourceConnectFailedTip')}}</h4>
         <p>{{connectError}}</p>
-        <el-button @click="this.$refs.operaDataSourceWindow.open(this.currentDataSource)">修改数据源信息</el-button>
+        <el-button @click="this.$refs.operaDataSourceWindow.open(this.currentDataSource)">{{$t('database.editDataSourceInfoTip')}}</el-button>
       </div>
     </div>
     <template v-else>
@@ -19,6 +19,7 @@
         :tables="tables"
         @table:drag="handleDragStart"
         v-model:current-model="currentModel"
+        @deleted="handleModelDeleted"
       />
       <div class="designer-wrap">
         <div v-if="currentModel != null" class="toolbar">
@@ -49,6 +50,12 @@
           :aggregates="aggregates"
           @field:change="handleSettingChange"
         />
+        <div v-if="queryModels.length === 0" class="no-model-tip">
+          <div class="tip-wrap">
+            <h4>{{$t('database.queryModelEmptyTipTitle')}}</h4>
+            <p>{{$t('database.queryModelEmptyTip')}}</p>
+          </div>
+        </div>
       </div>
     </template>
     <OperaDataSourceWindow ref="operaDataSourceWindow" @success="fetchDatabases"/>
@@ -125,6 +132,17 @@ export default {
     }
   },
   methods: {
+    // 处理模型删除
+    handleModelDeleted (model) {
+      if (this.currentModel === model) {
+        if (this.queryModels.length > 0) {
+          this.currentModel = this.queryModels[0]
+        }
+      }
+      if (this.queryModels.length === 0) {
+        this.currentModel = null
+      }
+    },
     // 保存查询模型
     saveModel () {
       const modelSettings = this.__getModelSettings(this.currentModel)
@@ -486,6 +504,24 @@ export default {
           content: '|';
           margin: 0 30px;
           color: #ccc;
+        }
+      }
+    }
+    .no-model-tip {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      .tip-wrap {
+        width: 500px;
+        color: var(--color-light);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        h4 {
+          font-size: var(--font-size-large);
+          margin-bottom: 30px;
         }
       }
     }

@@ -1,5 +1,6 @@
 const cache = require('./utils/cache')
 const utils = require('./utils/index')
+const response = require('./constants/response')
 module.exports = {
   // 删除模型
   delete (databaseId, modelId) {
@@ -20,7 +21,7 @@ module.exports = {
   create (databaseId, newModel) {
     const database = cache.datasources.get(databaseId)
     if (database == null) {
-      throw new Error(`Can not found database by id ${databaseId}`)
+      return Promise.reject(response.DATA_SOURCE.NOT_EXISTS)
     }
     if (database.models == null) {
       database.models = []
@@ -28,7 +29,7 @@ module.exports = {
     // 验证名称
     const model = database.models.find(m => m.name === newModel.name)
     if (model != null) {
-      throw new Error(`The model named ${newModel.name} already exists.`)
+      return Promise.reject(response.DATA_SOURCE.MODEL_NAME_EXISTS)
     }
     newModel.id = utils.generateId()
     database.models.push(newModel)
@@ -39,14 +40,14 @@ module.exports = {
   update (databaseId, newModel) {
     const database = cache.datasources.get(databaseId)
     if (database == null) {
-      throw new Error(`Can not found database by id ${databaseId}`)
+      return Promise.reject(response.DATA_SOURCE.NOT_EXISTS)
     }
     if (database.models == null) {
       database.models = []
     }
     const model = database.models.find(m => m.id === newModel.id)
     if (model == null) {
-      throw new Error(`Can not found model by id ${newModel.id}`)
+      return Promise.reject(response.DATA_SOURCE.MODEL_NOT_EXISTS)
     }
     Object.assign(model, newModel)
     cache.datasources.save(database)

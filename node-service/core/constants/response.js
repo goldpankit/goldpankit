@@ -29,26 +29,36 @@ module.exports = {
   PROJECT: {
     PROJECT_NOT_EXISTS: new Response(
       'project_not_exists',
-      'Project does not exists.',
+      'The project does not exists.',
       '项目不存在'
     ),
     PROJECT_NAME_EXISTS: new Response(
       'project_name_exists',
       'Project name is already taken.',
-      '项目名称已被占用'
+      '项目名称已存在，请尝试换一个名称'
     )
   },
   // 数据源
   DATA_SOURCE: {
     NOT_EXISTS: new Response(
       'datasource_not_exists',
-      'Data source does not exists.',
+      'The data source does not exists.',
       '数据源不存在'
     ),
     NAME_EXISTS: new Response(
       'datasource_not_exists',
-      'Data source name is already taken.',
-      '数据源名称已存在'
+      'The data source name is already taken.',
+      '数据源名称已存在，请尝试换一个名称'
+    ),
+    MODEL_NOT_EXISTS: new Response(
+      'datasource_not_exists',
+      'The query model does not exists.',
+      '查询模型不存在'
+    ),
+    MODEL_NAME_EXISTS: new Response(
+      'datasource_model_name_exists',
+      'The model name is already taken.',
+      '模型名称已存在，请尝试换一个名称'
     ),
   }
 }

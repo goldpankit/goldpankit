@@ -366,7 +366,13 @@ export default {
     createVirtualTableTip: '创建虚拟表',
     joinLine: 'JOIN关联线',
     aggregateLine: '聚合关联线',
-    modelName: '模型名称'
+    modelName: '模型名称',
+    deleteModelTip: '确认删除模型「{modelName}」吗？',
+    selectDataSourceTip: '请先选择一个数据源',
+    dataSourceConnectFailedTip: '数据源连接失败',
+    editDataSourceInfoTip: '修改数据源信息',
+    queryModelEmptyTipTitle: '当前数据源下暂无查询模型',
+    queryModelEmptyTip: '通过查询模型，您可以快速建立起关系型数据库中表之间的联系，支持聚合函数和JOIN操作。使用支持查询模型的服务，可以快速为您构建出项目代码。',
   },
   // 项目相关
   project: {

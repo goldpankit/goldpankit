@@ -7,7 +7,7 @@
             <h4>{{$t('database.queryModels')}}</h4>
             <el-button type="primary" icon="Plus" class="button-icon" @click="createQueryModel"></el-button>
           </div>
-          <ul class="model-list">
+          <ul v-if="queryModels.length > 0" class="model-list">
             <li
               v-for="model in queryModels"
               :key="model.name"
@@ -22,6 +22,7 @@
               </div>
             </li>
           </ul>
+          <Empty v-else/>
         </InnerRouterView>
         <InnerRouterView name="create-model" :title="$t('database.createNewModel')">
           <div class="create-model-form">
@@ -83,10 +84,11 @@ import InnerRouterView from "../../common/InnerRouterView/InnerRouterView.vue";
 import {mapState} from "vuex";
 import {createModel, deleteModel, updateModel} from "../../../api/database";
 import {checkTableName} from '../../../utils/form.check'
+import Empty from "../../common/Empty.vue";
 
 export default {
   name: "TableLibrary",
-  components: {InnerRouterView, InnerRouterViewWindow},
+  components: {Empty, InnerRouterView, InnerRouterViewWindow},
   props: {
     queryModels: {
       required: true
@@ -197,7 +199,7 @@ export default {
     },
     // 删除模型
     deleteModel (model) {
-      this.deleteConfirm(`Do you want to delete the query model named 「${model.name}」`)
+      this.deleteConfirm(this.$t('database.deleteModelTip', { modelName: model.name }))
         .then(() => {
           deleteModel({
             database: this.currentDatabase,
@@ -206,9 +208,11 @@ export default {
             .then(() => {
               const index = this.queryModels.findIndex(m => m.id === model.id)
               if (index !== -1) {
+                const targetModel = this.queryModels[index]
                 this.queryModels.splice(index, 1)
+                this.$emit('deleted', targetModel)
               }
-              this.$tip.success('Delete successfully')
+              this.$tip.success(this.$t('common.deleteSuccessfully'))
             })
             .catch(e => {
               this.$tip.apiFailed(e)
