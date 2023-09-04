@@ -476,18 +476,18 @@ class Kit {
         try {
           // 如果类型为数据源，则查询出库信息
           if (item.inputType === 'datasource') {
-            const databaseId = item.value === undefined ?  item.defaultValue : item.value
-            const database = cache.datasources.get(databaseId)
+            const dataSourceId = item.value === undefined ?  item.defaultValue : item.value
+            const dataSource = cache.datasources.get(dataSourceId)
             resolve({
               ...item,
-              value: database
+              value: dataSource
             })
             return
           }
           // 输入类型为表，则查询出表信息
           if (item.inputType === 'table') {
             const tableName = item.value === undefined ? item.defaultValue : item.value
-            if (tableName == null || tableName === '') {
+            if (database == null || tableName == null || tableName === '') {
               resolve({
                 ...item,
                 value: null

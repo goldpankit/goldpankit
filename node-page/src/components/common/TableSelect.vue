@@ -94,6 +94,7 @@ export default {
     fetchTables () {
       const database = this.databases.find(db => db.id === this.currentDatabase)
       if (database == null) {
+        this.tables = []
         return
       }
       fetchTables({
