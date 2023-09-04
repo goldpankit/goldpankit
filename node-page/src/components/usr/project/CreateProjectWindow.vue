@@ -32,6 +32,7 @@
 <script>
 import DirectorySelect from "../../common/DirectorySelect.vue";
 import {create, save} from "../../../api/user.project";
+import {strictCopy} from "../../../utils/object";
 
 export default {
   name: "CreateProjectWindow",
@@ -41,6 +42,7 @@ export default {
       visible: false,
       isWorking: false,
       form: {
+        id: null,
         name: '',
         codespace: '',
         remark: ''
@@ -52,8 +54,11 @@ export default {
       this.visible = true
       this.$nextTick(() => {
         this.$refs.form.resetFields()
+        this.form.id = null
+        if (data != null) {
+          this.form = strictCopy(this.form, data)
+        }
       })
-      if(data) this.form = data
     },
     getRules () {
       return {
