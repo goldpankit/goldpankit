@@ -1,41 +1,57 @@
 <template>
   <div class="database-query-models">
-    <TableLibrary
-      :query-models="queryModels"
-      :tables="tables"
-      @table:drag="handleDragStart"
-      v-model:current-model="currentModel"
-    />
-    <div class="designer-wrap">
-      <div v-if="currentModel != null" class="toolbar">
-        <!-- 线条类型 -->
-        <ul class="line-types">
-          <li :class="{selected: currentModel.lineType === 'join'}" @click="currentModel.lineType = 'join'">
-            <em class="join-line"></em>
-            <label>{{$t('database.joinLine')}}</label>
-          </li>
-          <li :class="{selected: currentModel.lineType === 'aggregate'}" @click="currentModel.lineType = 'aggregate'">
-            <em class="aggregate-line"></em>
-            <label>{{$t('database.aggregateLine')}}</label>
-          </li>
-        </ul>
+    <div v-if="currentDatabase == null || currentDatabase === ''" class="no-datasource-tip">
+      <div class="tip-wrap">
+        <h4>请先选择一个数据源</h4>
+        <DataSourceSelect :model-value="currentDatabase" :with-block="true"/>
       </div>
-      <!-- 设计器 -->
-      <QueryModelDesigner
-        v-if="currentModel != null"
-        ref="designer"
-        :model="currentModel"
-        :field-height="30"
-        @change="saveModel"
-      />
-      <!-- 表设置 -->
-      <TableSetting
-        :table="currentTable"
-        :joins="joins"
-        :aggregates="aggregates"
-        @field:change="handleSettingChange"
-      />
     </div>
+    <div v-else-if="connectError != null" class="connect-error-tip">
+      <div class="tip-wrap">
+        <h4>数据源连接失败</h4>
+        <p>{{connectError}}</p>
+        <el-button @click="this.$refs.operaDataSourceWindow.open(this.currentDataSource)">修改数据源信息</el-button>
+      </div>
+    </div>
+    <template v-else>
+      <TableLibrary
+        :query-models="queryModels"
+        :tables="tables"
+        @table:drag="handleDragStart"
+        v-model:current-model="currentModel"
+      />
+      <div class="designer-wrap">
+        <div v-if="currentModel != null" class="toolbar">
+          <!-- 线条类型 -->
+          <ul class="line-types">
+            <li :class="{selected: currentModel.lineType === 'join'}" @click="currentModel.lineType = 'join'">
+              <em class="join-line"></em>
+              <label>{{$t('database.joinLine')}}</label>
+            </li>
+            <li :class="{selected: currentModel.lineType === 'aggregate'}" @click="currentModel.lineType = 'aggregate'">
+              <em class="aggregate-line"></em>
+              <label>{{$t('database.aggregateLine')}}</label>
+            </li>
+          </ul>
+        </div>
+        <!-- 设计器 -->
+        <QueryModelDesigner
+          v-if="currentModel != null"
+          ref="designer"
+          :model="currentModel"
+          :field-height="30"
+          @change="saveModel"
+        />
+        <!-- 表设置 -->
+        <TableSetting
+          :table="currentTable"
+          :joins="joins"
+          :aggregates="aggregates"
+          @field:change="handleSettingChange"
+        />
+      </div>
+    </template>
+    <OperaDataSourceWindow ref="operaDataSourceWindow" @success="fetchDatabases"/>
   </div>
 </template>
 
@@ -49,10 +65,14 @@ import Table from "./Table.vue";
 import {mapState} from "vuex";
 import {search, updateModel} from "../../../api/database";
 import {fetchTables} from "../../../api/database.util";
+import DataSourceSelect from "../DataSourceSelect.vue";
+import OperaDataSourceWindow from "../OperaDataSourceWindow.vue";
 
 export default {
   name: "QueryModelView",
   components: {
+    OperaDataSourceWindow,
+    DataSourceSelect,
     TableLibrary,
     QueryModelDesigner, TableSetting, RelationLine, Table},
   data () {
@@ -67,8 +87,12 @@ export default {
       tables: [],
       // 关联线类型
       lineType: 'join',
+      // 当前选中的数据源
+      currentDataSource: null,
+      // 当前选中的数据源连接失败消息
+      connectError: null,
       // 当前选中的模型
-      currentModel: null
+      currentModel: null,
     }
   },
   computed: {
@@ -93,6 +117,11 @@ export default {
         return []
       }
       return this.currentModel.aggregates
+    }
+  },
+  watch: {
+    currentDatabase () {
+      this.fetchDatabases()
     }
   },
   methods: {
@@ -120,26 +149,33 @@ export default {
     },
     // 查询库
     fetchDatabases () {
-      search ()
-        .then(data => {
-          this.databases = data
-          this.fetchTables()
-        })
-        .catch(e => {
-          this.$tip.apiFailed(e)
-        })
+      this.currentModel = null
+      this.$nextTick(() => {
+        search ()
+          .then(data => {
+            this.databases = data
+            this.fetchTables()
+          })
+          .catch(e => {
+            this.$tip.apiFailed(e)
+          })
+      })
     },
     // 查询数据库表
     fetchTables () {
-      const database = this.databases.find(db => db.id === this.currentDatabase)
+      this.currentDataSource = this.databases.find(db => db.id === this.currentDatabase)
+      if (this.currentDataSource == null) {
+        return
+      }
       fetchTables ({
-        host: database.host,
-        port: database.port,
-        user: database.username,
-        password: database.password,
-        database: database.schema
+        host: this.currentDataSource.host,
+        port: this.currentDataSource.port,
+        user: this.currentDataSource.username,
+        password: this.currentDataSource.password,
+        database: this.currentDataSource.schema
       })
         .then(tables => {
+          this.connectError = null
           this.tables = tables.map(t => {
             return {
               ...t,
@@ -156,7 +192,7 @@ export default {
           this.fetchModels()
         })
         .catch(e => {
-          this.$tip.apiFailed(e)
+          this.connectError = e.message
         })
     },
     // 查询模型
@@ -205,6 +241,9 @@ export default {
         model.aggregates = model.aggregates.filter(agg => agg != null)
         return model
       })
+      if (this.queryModels.length > 0) {
+        this.currentModel = this.queryModels[0]
+      }
       // 过滤掉无效的模型（不存在表的模型）
       // this.queryModels = this.queryModels.filter(m => m != null)
     },
@@ -358,6 +397,26 @@ export default {
   background: var(--background-color);
   border-top: 5px solid;
   border-image: var(--border-colors);
+  // 未选择数据源提醒 & 数据源连接失败
+  .no-datasource-tip, .connect-error-tip {
+    width: 100%;
+    padding-top: 100px;
+    &.connect-error-tip {
+      p {
+        color: var(--color-danger);
+      }
+    }
+    .tip-wrap {
+      width: 500px;
+      margin: 0 auto;
+      background: var(--color-light);
+      padding: 50px;
+      box-shadow: var(--page-shadow);
+      h4 {
+        margin-bottom: 10px;
+      }
+    }
+  }
   .table-library {
     width: 255px;
     flex-shrink: 0;

@@ -89,14 +89,14 @@ export default {
   computed: {
     tableLength () {
       return this.model.tables.length
+    },
+    // 重新渲染因素
+    reRenderFactors () {
+      return [this.tableLength, this.model]
     }
   },
   watch: {
-    tableLength () {
-      // this.$emit('change')
-      this.render()
-    },
-    model () {
+    reRenderFactors () {
       this.render()
     }
   },
@@ -228,7 +228,6 @@ export default {
     },
     // stage拖拽放下
     handleDrop (e, a) {
-      console.log('handleDrop', a)
       const stage = this.$refs.stage.getNode()
       stage.setPointersPositions(e);
       const position = stage.getPointerPosition()
@@ -291,7 +290,6 @@ export default {
     },
     // 渲染
     render () {
-      console.log('render')
       this.rendered = false
       this.$nextTick(() => {
         this.rendered = true
@@ -517,6 +515,9 @@ export default {
       const y = table.y + this.fieldHeight + (fieldIndex + 1) * this.fieldHeight - 15 - stagePosition.y
       return { x, y }
     }
+  },
+  mounted() {
+    this.render()
   }
 }
 </script>
