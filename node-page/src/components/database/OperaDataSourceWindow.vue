@@ -2,6 +2,7 @@
   <el-dialog
     v-model="visible"
     :title="form.id ? $t('database.editDatabase') : $t('database.createDatabase')"
+    width="550px"
     custom-class="create-database-dialog"
     append-to-body
     :close-on-click-modal="false"
@@ -89,6 +90,11 @@ export default {
   methods: {
     open (data) {
       this.visible = true
+      this.connectResult = {
+        connecting: false,
+        message: null,
+        withError: false
+      }
       this.$nextTick(() => {
         this.$refs.form.resetFields()
         this.form.id = null
