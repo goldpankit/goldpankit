@@ -99,10 +99,17 @@ export default {
           { name: 'comment', enRemark: '', zhRemark: '模型注释', demo: '${myModel.comment}' },
           { name: 'mainTable', enRemark: '', zhRemark: '主表，包含了MySQL表的所有信息', demo: '${myModel.mainTable.name} => 主表名称\n${myModel.mainTable.camelCaseName} => 主表名称（驼峰命名法）' },
           { name: 'mainTable.alias', enRemark: '', zhRemark: '主表别名', demo: '${myModel.mainTable.alias}' },
+          { name: 'mainTable.fields.aggregate', enRemark: '', zhRemark: '字段聚合信息', demo: '' },
+          { name: 'mainTable.fields.aggregate.table', enRemark: '', zhRemark: '目标表（聚合的表）', demo: '' },
+          { name: 'mainTable.fields.aggregate.field', enRemark: '', zhRemark: '目标字段（聚合的字段）', demo: '' },
+          { name: 'mainTable.fields.aggregate.function', enRemark: '', zhRemark: '使用的聚合函数', demo: '<#list myModel.mainTable.fields as field>\n  <#if field.aggregate??>\n    ${field.aggregate.function}(\`${field.aggregate.table.alias}\`.\`${field.aggregate.field.name}\`)\n  </#if>\n</#list>\n => COUNT(\`user\`.\`id\`)' },
           { name: 'mainTable.isVirtual', enRemark: '', zhRemark: '是否为虚拟表', demo: '${myModel.mainTable.isVirtual}' },
           { name: 'subTables', enRemark: '', zhRemark: '子表，包含了MySQL表的所有信息', type: 'Array', demo: '<#list myModel.subTables as subTable>\n${subTable.name}\n</#list>' },
           { name: 'subTables.alias', enRemark: '', zhRemark: '子表别名', type: 'Array', demo: '<#list myModel.subTables as subTable>\n${subTable.alias}\n</#list>' },
           { name: 'subTables.isVirtual', enRemark: '', zhRemark: '子表是否为虚拟表', type: 'Array', demo: '<#list myModel.subTables as subTable>\n${subTable.isVirtual}\n</#list>' },
+          { name: 'statement', enRemark: '', zhRemark: '各个部分的SQL语句', demo: '' },
+          { name: 'statement.joins', enRemark: '', zhRemark: '查询模型的join语句', demo: '<#list myModel.statement.joins as joinLine>\n${joinLine}\n</#list>\n => INNER JOIN USER `user` ON `user`.`id` = `test.`field`\nINNER JOIN USER `user` ON `test`.`field` = `test2.`field2`' },
+          { name: 'statement.from', enRemark: '', zhRemark: '查询模型的from语句', demo: '${myModel.statement.from}\n => FROM USER `user`' },
           { name: 'joins', enRemark: '', zhRemark: '关联信息', demo: '<#list myModel.joins as join>\n${join.joinType}\n</#list>' },
           { name: 'joins.table', enRemark: '', zhRemark: '左表', demo: '<#list myModel.joins as join>\n${join.table.alias}\n</#list>' },
           { name: 'joins.targetTable', enRemark: '', zhRemark: '右表', demo: '<#list myModel.joins as join>\n${join.targetTable.alias}\n</#list>' },
@@ -111,8 +118,6 @@ export default {
           { name: 'joins.ons.field', enRemark: '', zhRemark: '左侧字段', demo: '<#list myModel.joins as join>\n  <#list join.ons as on>\n    ${on.field.name}\n  </#list>\n</#list>' },
           { name: 'joins.ons.targetField', enRemark: '', zhRemark: '右侧字段', demo: '<#list myModel.joins as join>\n  <#list join.ons as on>\n    ${on.targetField.name}\n  </#list>\n</#list>' },
           { name: 'joins.ons.relation', enRemark: '', zhRemark: 'ON关系，AND或者OR', demo: '<#list myModel.joins as join>\n  <#list join.ons as on>\n    ${on.relation}\n  </#list>\n</#list>' },
-          { name: 'aggregates', enRemark: '', zhRemark: '聚合信息，内容待定', demo: '' },
-          { name: 'sql', enRemark: '', zhRemark: '各个部分的SQL语句', demo: '<#list myModel.sql.fields as field>\n${field}\n</#list>\n\n<#list myModel.sql.joins as joinSql>\n${joinSql}\n</#list>\n\n${myModel.sql.where} => where sql\n${myModel.sql.orderBy} => order by sql' },
         ],
         select: [
           { name: 'mySelect', enRemark: '', zhRemark: '选项值', type: 'Any', demo: '${mySelect}' },
@@ -132,6 +137,10 @@ export default {
   }
   & > .el-table {
     margin-top: 20px;
+    pre {
+      word-break: break-all;
+      white-space: pre-wrap;
+    }
   }
 }
 </style>
