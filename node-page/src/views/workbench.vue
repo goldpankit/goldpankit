@@ -187,6 +187,8 @@ export default {
   },
   watch: {
     currentProject () {
+      // 切换项目后，置空最新的主服务信息，让方法重新获取当前项目的最新主服务信息
+      this.latestMainService = null
       this.fetchProject(true)
     }
   },
