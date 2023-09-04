@@ -2,7 +2,7 @@
   <div class="user-projects">
     <div class="title">
       <h2>{{ $t('project.myProjects') }}</h2>
-      <el-button type="primary" @click="$refs.createProjectWindow.open()">
+      <el-button type="primary" @click="$refs.operaProjectWindow.open()">
         <el-icon :size="14" style="margin-right: 5px;"><Plus /></el-icon>
         {{ $t('project.createProject') }}
       </el-button>
@@ -22,18 +22,18 @@
       </li>
     </ul>
     <Empty v-else :description="$t('project.noProjects')"/>
-    <CreateProjectWindow ref="createProjectWindow" @success="search"/>
+    <OperaProjectWindow ref="operaProjectWindow" @success="search"/>
   </div>
 </template>
 
 <script>
 import {deleteProject, search} from "../../../api/user.project";
 import Empty from "../../common/Empty.vue";
-import CreateProjectWindow from "./CreateProjectWindow.vue";
+import OperaProjectWindow from "./OperaProjectWindow.vue";
 
 export default {
   name: "UserProjects",
-  components: {CreateProjectWindow, Empty},
+  components: {OperaProjectWindow, Empty},
   data () {
     return {
       projects: []
@@ -51,7 +51,7 @@ export default {
     },
     // 编辑项目
     editProject (project) {
-      this.$refs.createProjectWindow.open(project)
+      this.$refs.operaProjectWindow.open(project)
     },
     // 删除项目
     deleteProject (project) {

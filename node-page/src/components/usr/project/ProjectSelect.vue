@@ -14,8 +14,8 @@
       />
       <template v-if="withPrefix" #prefix>{{$t('common.currentProject')}}:</template>
     </el-select>
-    <el-button class="button-icon" type="primary" icon="Plus" @click="$refs.createProjectWindow.open()"></el-button>
-    <CreateProjectWindow ref="createProjectWindow" @success="handleCreateSuccess"/>
+    <el-button class="button-icon" type="primary" icon="Plus" @click="$refs.operaProjectWindow.open()"></el-button>
+    <OperaProjectWindow ref="operaProjectWindow" @success="handleCreateSuccess"/>
   </div>
 </template>
 
@@ -23,12 +23,12 @@
 
 import {search} from "../../../api/user.project";
 import DirectorySelect from "../../common/DirectorySelect.vue";
-import CreateProjectWindow from "./CreateProjectWindow.vue";
+import OperaProjectWindow from "./OperaProjectWindow.vue";
 import {mapMutations, mapState} from "vuex";
 
 export default {
   name: "ProjectSelect",
-  components: {CreateProjectWindow, DirectorySelect},
+  components: {OperaProjectWindow, DirectorySelect},
   props: {
     modelValue: {},
     withPrefix: {
