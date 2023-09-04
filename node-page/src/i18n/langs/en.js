@@ -353,6 +353,7 @@ export default {
     addNewDatabase: 'New Source',
     queryModels: 'Query Models',
     createNewModel: 'Create New Model',
+    updateModelTitle: 'Edit Model',
     tables: 'Tables',
     dragTip: 'You can drag and drop the table on the left here.',
     createVirtualTableTip: 'create a virtual table',

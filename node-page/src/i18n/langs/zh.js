@@ -358,6 +358,7 @@ export default {
     addNewDatabase: '添加数据源',
     queryModels: '查询模型',
     createNewModel: '创建模型',
+    updateModelTitle: '编辑模型',
     tables: '表',
     dragTip: '您可以从左侧拖拽表到此区域进行模型设计',
     createVirtualTableTip: '创建虚拟表',

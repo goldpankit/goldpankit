@@ -35,23 +35,23 @@
             </el-form>
             <div class="opera">
               <el-button @click="$refs.routerViewWindow.back()">{{$t('common.cancel')}}</el-button>
-              <el-button type="primary" @click="confirmCreate">{{$t('common.confirm')}}</el-button>
+              <el-button type="primary" @click="confirmCreate">{{$t('common.confirmAdd')}}</el-button>
             </div>
           </div>
         </InnerRouterView>
-        <InnerRouterView name="update-model" title="Update Model">
+        <InnerRouterView name="update-model" :title="$t('database.updateModelTitle')">
           <div class="create-model-form">
             <el-form ref="editForm" :model="editModel" :rules="getRules()">
-              <el-form-item label="Model Name" prop="name" required>
+              <el-form-item :label="$t('common.name')" prop="name" required>
                 <el-input v-model="editModel.name"/>
               </el-form-item>
-              <el-form-item label="Comment" prop="comment">
+              <el-form-item :label="$t('common.remark')" prop="comment">
                 <el-input v-model="editModel.comment" type="textarea" :rows="2"/>
               </el-form-item>
             </el-form>
             <div class="opera">
-              <el-button @click="$refs.routerViewWindow.back()">Cancel</el-button>
-              <el-button type="primary" @click="confirmUpdate">Confirm</el-button>
+              <el-button @click="$refs.routerViewWindow.back()">{{$t('common.cancel')}}</el-button>
+              <el-button type="primary" @click="confirmUpdate">{{$t('common.confirmUpdate')}}</el-button>
             </div>
           </div>
         </InnerRouterView>
