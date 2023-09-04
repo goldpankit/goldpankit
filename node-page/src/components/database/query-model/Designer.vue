@@ -4,32 +4,12 @@
     v-if="model.tables.length === 0"
     class="empty-tip"
     @dragover.prevent
-    @drop="handleDrop"
+    @drop="handleDrop($event, 1)"
   >
     <div class="wrap">
       <p>{{$t('database.dragTip')}}</p>
       <p>{{$t('common.or')}}</p>
       <p><em @click="confirmCreateVirtualTable">{{$t('database.createVirtualTableTip')}}</em></p>
-<!--      <el-table :data="virtualTable.fields">-->
-<!--        <el-table-column prop="name" label="*Name">-->
-<!--          <template #default="{ row }">-->
-<!--            <el-input v-model="row.name"/>-->
-<!--          </template>-->
-<!--        </el-table-column>-->
-<!--        <el-table-column prop="type" label="*Type">-->
-<!--          <template #default="{ row }">-->
-<!--            <el-input v-model="row.type"/>-->
-<!--          </template>-->
-<!--        </el-table-column>-->
-<!--        <el-table-column prop="comment" label="*Comment">-->
-<!--          <template #default="{ row }">-->
-<!--            <el-input v-model="row.comment"/>-->
-<!--          </template>-->
-<!--        </el-table-column>-->
-<!--      </el-table>-->
-<!--      <div class="opera">-->
-<!--        <el-button type="important" @click="confirmCreateVirtualTable">Confirm Create</el-button>-->
-<!--      </div>-->
     </div>
   </div>
   <div class="stage-wrap" tabindex="-1" @keyup.delete="handleDelete">
@@ -205,6 +185,9 @@ export default {
     },
     // 处理字段按下弹起（添加字段关联）
     handleFieldMouseUp ({ table, field }) {
+      if (this.relationRuntime.table == null) {
+        return
+      }
       // 开启stage拖动，用于恢复整体拖动
       const stageNode = this.$refs.stage.getNode()
       stageNode.draggable(true)
@@ -244,7 +227,8 @@ export default {
       this.model.previewTableId = tableId
     },
     // stage拖拽放下
-    handleDrop (e) {
+    handleDrop (e, a) {
+      console.log('handleDrop', a)
       const stage = this.$refs.stage.getNode()
       stage.setPointersPositions(e);
       const position = stage.getPointerPosition()
@@ -275,8 +259,6 @@ export default {
         joins: []
       }
       this.model.tables.push(newTable)
-      // 重新渲染，使新添加的元素绘制在stage中
-      this.render()
       this.$emit('change')
     },
     // 添加虚拟表
@@ -305,12 +287,11 @@ export default {
       }
       newTable.fields = this.__getVirtualTableDefaultFields(newTable)
       this.model.tables.push(newTable)
-      // 重新渲染，使新添加的元素绘制在stage中
-      this.render()
       this.$emit('change')
     },
     // 渲染
     render () {
+      console.log('render')
       this.rendered = false
       this.$nextTick(() => {
         this.rendered = true
@@ -324,7 +305,7 @@ export default {
           // 放下时增加表
           container.addEventListener('drop', (e) => {
             e.preventDefault();
-            this.handleDrop(e)
+            this.handleDrop(e, 2)
           })
           this.computeRelations()
         })
@@ -433,7 +414,6 @@ export default {
             this.model.joins = []
             this.model.aggregates = []
             this.$emit('change')
-            this.render()
             return
           }
           // 删除join关系
@@ -458,7 +438,6 @@ export default {
           // 删除table
           this.model.tables.splice(tableIndex, 1)
           this.$emit('change')
-          this.render()
         })
         .catch(() => {})
     },
@@ -538,9 +517,6 @@ export default {
       const y = table.y + this.fieldHeight + (fieldIndex + 1) * this.fieldHeight - 15 - stagePosition.y
       return { x, y }
     }
-  },
-  mounted () {
-    this.render()
   }
 }
 </script>
