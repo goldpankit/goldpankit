@@ -35,7 +35,7 @@ import {create, save} from "../../../api/user.project";
 import {strictCopy} from "../../../utils/object";
 
 export default {
-  name: "CreateProjectWindow",
+  name: "OperaProjectWindow",
   components: {DirectorySelect},
   data () {
     return {

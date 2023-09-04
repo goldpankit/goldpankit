@@ -156,19 +156,17 @@
 <script>
 import {mapMutations, mapState} from 'vuex'
 import ServiceInstaller from "../components/space/ServiceInstaller.vue";
-import {fetchProfile, fetchSubServices} from "../api/service";
+import {fetchSubServices} from "../api/service";
 import {fetchById} from "../api/user.project";
 import MarkdownEditor from "../components/common/MarkdownEditor.vue";
 import Empty from "../components/common/Empty.vue";
 import IssueListView from "../components/space/IssueListView.vue";
 import BeanAmount from "../components/common/BeanAmount.vue";
 import SubServiceList from "../components/service/SubServiceList.vue";
-import CreateProjectWindow from "../components/usr/project/CreateProjectWindow.vue";
-import {fetchProfileByName} from "../api/service.space";
 import {fetchLatestVersion} from "../api/service.version";
 
 export default {
-  components: {CreateProjectWindow, SubServiceList, BeanAmount, IssueListView, Empty, MarkdownEditor, ServiceInstaller},
+  components: {SubServiceList, BeanAmount, IssueListView, Empty, MarkdownEditor, ServiceInstaller},
   data () {
     return {
       loading: true,
