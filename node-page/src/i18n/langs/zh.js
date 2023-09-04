@@ -182,8 +182,8 @@ export default {
     structure: '代码结构',
     withParametersTip: '安装提示: 填写以下信息并点击底部安装按钮即可安装该服务代码到您当前项目代码中。',
     withoutParametersTip: '当前服务没有参数，点击底部安装按钮即可安装该服务代码到您当前项目代码中。',
-    install: '安装',
-    install2: '安装',
+    install: '安装服务',
+    install2: '安装服务',
     installing: '安装中...',
     installed: '已安装',
     reinstall: '重新安装',
@@ -226,6 +226,7 @@ export default {
     missingVariableValueTip: '缺少「{variable}」',
     missingGroupVariableValueTip: '「{groupName}」中缺少「{variable}」',
     settingsForSelectType: '深度设置',
+    installTip: '服务安装后，代码将会自动写入您的当前项目中。如果您对服务代码不满意，可直接卸载。如果服务代码出现了BUG，修复后您可以通过一键升级的方式快速修复。',
     // 租赁类型
     leaseType: {
       freeLabel: '免费',

@@ -225,6 +225,7 @@ export default {
     missingVariableValueTip: 'Missing「{variable}」',
     missingGroupVariableValueTip: 'Missing「{variable}」In「{groupName}」',
     settingsForSelectType: ' Deep Settings',
+    installTip: 'After the installation of the service, the code will be automatically written into your current project. If you are not satisfied with the service code, you can uninstall it directly. In case any bugs occur in the service code, you can quickly fix them by upgrading with just one click.',
     // 租赁类型
     leaseType: {
       freeLabel: 'Free',

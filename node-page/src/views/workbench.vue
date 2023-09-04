@@ -102,21 +102,21 @@
                     size="large"
                     icon="Upload"
                     :disabled="isWorking.install"
-                    @click="$refs.installer.install()"
+                    @click="install"
                   >{{$t('service.upgrade')}}</el-button>
                   <el-button
                     v-else
                     type="primary"
                     size="large"
                     :disabled="isWorking.install"
-                    @click="$refs.installer.install()"
+                    @click="install"
                   >
                     {{ isWorking.install ? $t('service.installing') : $t('service.reinstall')}}
                   </el-button>
                   <el-button
                     size="large"
                     :disabled="isWorking.uninstall"
-                    @click="$refs.installer.uninstall()"
+                    @click="uninstall"
                   >
                     {{ isWorking.uninstall ? $t('service.uninstalling') : $t('service.uninstall')}}
                   </el-button>
@@ -126,10 +126,14 @@
                   type="primary"
                   size="large"
                   :disabled="isWorking.install"
-                  @click="$refs.installer.install()"
+                  @click="install"
                 >
                   {{ isWorking.install ? $t('service.installing') : $t('service.install')}}
                 </el-button>
+              </div>
+              <div class="opera-tip">
+                <el-icon><InfoFilled /></el-icon>
+                <p>{{$t('service.installTip')}}</p>
               </div>
             </template>
             <div v-else class="setting-holder">
@@ -210,6 +214,16 @@ export default {
   },
   methods: {
     ...mapMutations(['setCurrentProject']),
+    // 安装
+    install () {
+      this.currentServiceDimension = 'install'
+      this.$refs.installer.install()
+    },
+    // 卸载
+    uninstall () {
+      this.currentServiceDimension = 'install'
+      this.$refs.installer.uninstall()
+    },
     // 判断是否已安装
     withInstalled (service) {
       return this.project.services[service.name] != null
@@ -484,9 +498,10 @@ export default {
           }
         }
       }
+      // 服务操作
       .opera {
         flex-shrink: 0;
-        padding: 15px;
+        padding: 15px 15px 0 15px;
         border-top: 10px solid;
         border-image: linear-gradient(to right, var(--primary-color-match-1), var(--primary-color-match-2), var(--primary-color)) 1;
         display: flex;
@@ -494,6 +509,18 @@ export default {
         .el-button {
           width: 200px;
           font-size: var(--font-size-middle);
+        }
+      }
+      // 操作提示
+      .opera-tip {
+        padding: 5px 10px;
+        margin-top: 5px;
+        font-size: var(--font-size-mini);
+        display: flex;
+        .el-icon {
+          flex-shrink: 0;
+          margin-right: 3px;
+          margin-top: 2px;
         }
       }
     }
