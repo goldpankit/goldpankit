@@ -13,17 +13,22 @@ request
 request
   .get('/local/file/list')
   .data((req) => {
-    return fs.getFiles(req.query.target).map(item => {
+    const files = fs.getFiles(req.query.target).map(item => {
       let type = 'UNKNOWN'
       try {
         type = fs.isDirectory(path.join(req.query.target, item)) ? 'DIRECTORY' : 'FILE'
       } catch (e) {
+      }
+      // 过滤掉隐藏文件
+      if (item.startsWith('.')) {
+        return null
       }
       return {
         path: item,
         type
       }
     })
+    return files.filter(file => file != null)
   })
 
 // 创建本地目录
