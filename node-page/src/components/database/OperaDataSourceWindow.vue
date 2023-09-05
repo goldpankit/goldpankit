@@ -8,6 +8,9 @@
     :close-on-click-modal="false"
     :close-on-press-escape="false"
   >
+    <section class="tip">
+      {{$t('database.tip')}}
+    </section>
     <el-form ref="form" :model="form" :rules="getRules()">
       <el-form-item :label="$t('common.name')" prop="name" required>
         <el-input v-model="form.name"/>
@@ -232,6 +235,23 @@ export default {
   }
   .el-dialog__body {
     padding: 0;
+    // 提示
+    & > .tip {
+      padding: 20px;
+      background: var(--primary-color-match-2);
+      color: var(--color-light);
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+      em {
+        background: rgba(0, 0, 0, .15);
+        padding: 3px 5px;
+        border-radius: 5px;
+        font-style: normal;
+        font-weight: bold;
+        margin: 0 5px;
+      }
+    }
     & > .opera {
       display: flex;
       justify-content: flex-end;
