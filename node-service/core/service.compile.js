@@ -10,7 +10,7 @@ const object = require("./utils/object");
 const serviceBuild = require("./service.build");
 const mysql = require("./utils/db/mysql");
 const serviceTranslator = require('./service.translator')
-const {stat} = require("fs");
+const path = require('path')
 const env = require('../env').getConfig()
 
 class Kit {
@@ -183,6 +183,7 @@ class Kit {
           }
         })
         .catch(e => {
+          console.log(e)
           reject(e)
         })
     })
