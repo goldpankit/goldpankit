@@ -71,6 +71,9 @@ module.exports = {
     const diffFiles = []
     let fileCount = 0
     for (const file of files) {
+      if (file.filepath.endsWith('assets')) {
+        console.log('assets file', file)
+      }
       // 目录，不做处理
       if (file.filetype === 'DIRECTORY') {
         continue
@@ -174,11 +177,15 @@ module.exports = {
    * @returns {string}
    */
   readFile(filepath) {
-    const buffer = fs.readFileSync(filepath)
-    const encode = this.getContentEncode(buffer)
-    return {
-      encode,
-      content: buffer.toString(encode)
+    try {
+      const buffer = fs.readFileSync(filepath)
+      const encode = this.getContentEncode(buffer)
+      return {
+        encode,
+        content: buffer.toString(encode)
+      }
+    } catch (e) {
+      console.log(`读取${filepath}文件失败`, e)
     }
   },
   readJSONFile(filepath) {

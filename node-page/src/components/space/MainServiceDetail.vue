@@ -1,10 +1,6 @@
 <template>
   <div v-if="majorVersionDetail != null" class="service-detail">
     <div class="nav">
-      <div class="title">
-        <el-button class="button-icon" icon="ArrowLeftBold" @click="$emit('back')"></el-button>
-        <h4>{{service}}</h4>
-      </div>
       <ul>
         <li
           v-for="version in majorVersions"

@@ -172,6 +172,7 @@ export default {
   },
   // 服务
   service: {
+    plugins: 'plugins',
     services: 'services',
     services2: 'Services',
     versions: 'versions',

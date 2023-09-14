@@ -1,5 +1,6 @@
 @import "app-vars";
 @import "theme-light";
+@import "iconfont";
 @import "element-ui";
 html {
   body {
@@ -63,6 +64,11 @@ html {
     // 表格的滚动条始终展示
     .el-scrollbar__bar {
       display: block !important;
+    }
+  }
+  .el-button {
+    .iconfont {
+      margin-right: 5px;
     }
   }
 }

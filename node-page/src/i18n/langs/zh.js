@@ -166,19 +166,20 @@ export default {
     introduce: '简介',
     otherSettings: '其他设置',
     isPrivateServiceTip: '这是一个私有空间',
-    receiveSubServicesTip: '允许其他人发布子服务到该空间',
+    receiveSubServicesTip: '允许其他人发布插件到该空间',
     spaceDescriptionLabel: '空间描述',
     spaceDescription: '详细描述空间的内容和提供的服务，会让服务空间更有吸引力'
   },
   // 服务
   service: {
+    plugins: '个插件',
     services: '个服务',
     services2: '服务',
     versions: '个版本',
     latestVersion: '最新版本',
     lastPublish: '最后发布于',
-    createNewService: '创建服务',
-    subServices: '子服务',
+    createNewService: '创建插件',
+    subServices: '服务插件',
     structure: '代码结构',
     withParametersTip: '安装提示: 填写以下信息并点击底部安装按钮即可安装该服务代码到您当前项目代码中。',
     withoutParametersTip: '当前服务没有参数，点击底部安装按钮即可安装该服务代码到您当前项目代码中。',
@@ -194,7 +195,7 @@ export default {
     uninstallSuccessfully: '卸载完成',
     payInstall: '支付并安装',
     noServices: '无服务',
-    noSubServices: '无子服务',
+    noSubServices: '该服务未扩展插件',
     serviceSettings: '服务设置',
     codespace: '本地位置',
     repository: '代码仓库',
@@ -218,8 +219,8 @@ export default {
     createServiceFor2: '空间创建服务',
     serviceName: '服务名称',
     serviceType: '服务类型',
-    mainService: '主服务',
-    commonService: '子服务',
+    mainService: '服务',
+    commonService: '服务插件',
     selectProject: '请选择项目',
     fieldMissingValueTip: '在「{fieldGroupLabel}」中，「{emptyFieldName}」字段缺少「{fieldVariableLabel}」',
     variableMissingSettingTip: '「{variable}」缺少「{settingLabel}」设定',
@@ -392,7 +393,7 @@ export default {
     noProjectTip2: '了解服务和服务安装的用途！',
     noServiceInstalledTip1: '当前项目没有安装服务，请切换项目或前往',
     noServiceInstalledTip2: '为此项目安装服务！',
-    subServiceSettings: '子服务设置',
-    subServiceSettingsTip: '点击左侧的子服务打开设置并安装。'
+    subServiceSettings: '服务插件设置',
+    subServiceSettingsTip: '点击左侧的插件打开设置并安装。'
   }
 }

@@ -56,6 +56,11 @@ const router = createRouter({
           component: () => import('@/views/space/detail.vue')
         },
         {
+          path: '/space/:spaceName/:serviceName',
+          name: 'ServiceDetail',
+          component: () => import('@/views/service/detail.vue')
+        },
+        {
           path: '/workbench',
           name: 'Workbench',
           component: () => import('@/views/workbench.vue')
