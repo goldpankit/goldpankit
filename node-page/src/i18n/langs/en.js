@@ -181,7 +181,7 @@ export default {
     createNewService: 'Create New Service',
     subServices: 'Sub Services',
     structure: 'Structure',
-    withParametersTip: 'tips: Install the service by filling out the form below and clicking the Install button at the bottom.',
+    withParametersTip: 'tips: Install the service by filling out the form below and clicking the install button.',
     withoutParametersTip: 'This service does not have any parameters, click the INSTALL button at the bottom to install.',
     install: 'INSTALL',
     install2: 'Install',

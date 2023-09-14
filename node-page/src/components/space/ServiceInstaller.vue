@@ -4,8 +4,13 @@
       <div class="title">
         <h4>@{{space}}/{{service}}{{version == null ? '' : ' · ' + version.toUpperCase()}} · {{$t('service.install2')}}</h4>
       </div>
+      <div v-if="withInstallButton" class="install">
+        <el-button type="important" @click="install" :disabled="isWorking.install">
+          {{ isWorking.install ? $t('service.installing') : $t('service.install') }}
+        </el-button>
+      </div>
     </div>
-    <div class="content-wrap">
+    <div class="content-wrap" :style="contentWrapStyle">
       <template v-if="withProject || serviceVariables.length > 0">
         <p class="install-tip">{{$t('service.withParametersTip')}}</p>
         <div class="form-wrap">
@@ -65,11 +70,6 @@
       </template>
       <div v-else class="parameters-holder">
         <p>{{$t('service.withoutParametersTip')}}</p>
-      </div>
-      <div v-if="withInstallButton" class="install">
-        <el-button type="important" @click="install" :disabled="isWorking.install">
-          {{ isWorking.install ? $t('service.installing') : $t('service.install') }}
-        </el-button>
       </div>
     </div>
     <!-- 代码出错提示窗口 -->
@@ -149,6 +149,13 @@ export default {
     // 服务变量集
     serviceVariables () {
       return this.variables
+    },
+    // content-wrap样式
+    contentWrapStyle () {
+      if (this.withTitle) {
+        return 'border-top: 3px; margin-top: 20px;'
+      }
+      return 'padding-top: 0; border-top: 0;margin-top: 0;'
     },
     unique () {
       return [this.space, this.service, this.version]
@@ -521,19 +528,28 @@ export default {
         font-size: var(--font-size-title);
       }
     }
+    // 安装按钮
+    .install {
+      flex-shrink: 0;
+      margin-left: 50px;
+      width: 155px;
+      .el-button {
+        width: 100%;
+        height: 40px;
+        font-size: var(--font-size-middle);
+      }
+    }
   }
   .content-wrap {
-    // padding: 50px;
+    border-top: 3px solid;
+    border-image: var(--border-colors);
+    padding-top: 20px;
+    margin-top: 20px;
     .install-tip {
-      margin-top: 10px;
       margin-bottom: 10px;
     }
     // 变量表单
     .form-wrap {
-      border-top: 3px solid;
-      border-image: var(--border-colors);
-      padding-top: 20px;
-      margin-top: 20px;
       :deep(.el-form-item__label) {
         padding-right: 0;
         .label-wrap {
@@ -567,16 +583,6 @@ export default {
         font-size: var(--font-size-middle);
         color: var(--color-gray);
         line-height: 25px;
-      }
-    }
-    // 安装按钮
-    .install {
-      margin-top: 50px;
-      .el-button {
-        width: 100%;
-        height: 70px;
-        font-size: var(--font-size-large);
-        font-weight: bold;
       }
     }
     // 提示
