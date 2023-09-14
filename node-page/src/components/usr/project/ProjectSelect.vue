@@ -44,7 +44,7 @@ export default {
     }
   },
   methods: {
-    ...mapMutations(['setCurrentProjectDetail']),
+    ...mapMutations(['setCurrentProject', 'setCurrentProjectDetail']),
     fetchList () {
       search()
         .then(data => {
@@ -67,7 +67,9 @@ export default {
     // 选择项目
     handleChange (projectId) {
       const targetProject = this.list.find(item => item.id === projectId)
+      this.setCurrentProject(projectId)
       this.setCurrentProjectDetail(targetProject)
+      this.$emit('update:modelValue', projectId)
       this.$emit('change', projectId)
     },
     // 创建完成

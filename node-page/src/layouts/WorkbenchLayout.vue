@@ -10,10 +10,10 @@
       </div>
       <ul class="opera">
         <li>
-          <ProjectSelect :model-value="currentProject" @change="setCurrentProject"/>
+          <ProjectSelect :model-value="currentProject"/>
         </li>
         <li>
-          <DataSourceSelect :model-value="currentDatabase" @change="setCurrentDatabase"/>
+          <DataSourceSelect :model-value="currentDatabase"/>
         </li>
         <li>
           <LoginView/>
@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import {mapMutations, mapState} from 'vuex'
+import {mapState} from 'vuex'
 import DataSourceSelect from "../components/database/DataSourceSelect.vue";
 import ProjectSelect from "../components/usr/project/ProjectSelect.vue";
 import AppLayout from "./AppLayout.vue";
@@ -38,9 +38,6 @@ export default {
   components: {LoginView, AppLayout, ProjectSelect, DataSourceSelect },
   computed: {
     ...mapState(['currentProject', 'currentDatabase', 'userInfo'])
-  },
-  methods: {
-    ...mapMutations(['setCurrentProject', 'setCurrentDatabase'])
   }
 }
 </script>

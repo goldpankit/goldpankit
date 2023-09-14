@@ -50,7 +50,7 @@ export default {
     }
   },
   methods: {
-    ...mapMutations(['setCurrentDatabase']),
+    ...mapMutations(['setCurrentDatabase', 'setCurrentDatabaseDetail']),
     fetchList () {
       search ()
         .then(data => {
@@ -69,10 +69,11 @@ export default {
     },
     // 切换数据库
     handleChange(databaseId) {
+      const targetDataSource = this.dataSources.find(item => item.id === databaseId)
+      this.setCurrentDatabase(databaseId)
+      this.setCurrentDatabaseDetail(targetDataSource)
       this.$emit('update:modelValue', databaseId)
       this.$emit('change', databaseId)
-      // 全局设定为当前数据库
-      this.setCurrentDatabase(databaseId)
     },
     // 创建完成
     handleCreateSuccess (databaseId) {

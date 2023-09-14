@@ -16,15 +16,21 @@ if (currentProjectDetailStr != null) {
 }
 // 从本地获取已选数据库
 let currentDatabase = window.localStorage.getItem('CURRENT_DATABASE')
+let currentDatabaseDetail = null
+const currentDatabaseDetailStr = window.localStorage.getItem('CURRENT_DATABASE_DETAIL')
+if (currentDatabaseDetailStr != null) {
+  currentDatabaseDetail = JSON.parse(currentDatabaseDetailStr)
+}
 export default new Vuex.Store({
   state: {
     // 用户信息
     userInfo: null,
-    // 当前项目ID
+    // 当前项目
     currentProject,
     currentProjectDetail,
-    // 当前数据库ID
+    // 当前数据库
     currentDatabase,
+    currentDatabaseDetail,
     // 帮助中心，服务于当前查看的帮助内容
     help: {
       code: null
@@ -63,6 +69,13 @@ export default new Vuex.Store({
     setCurrentDatabase (state, database) {
       state.currentDatabase = database
       window.localStorage.setItem('CURRENT_DATABASE', database)
+    },
+    setCurrentDatabaseDetail (state, database) {
+      state.currentDatabaseDetail = database
+      window.localStorage.removeItem('CURRENT_DATABASE_DETAIL')
+      if (database != null) {
+        window.localStorage.setItem('CURRENT_DATABASE_DETAIL', JSON.stringify(database))
+      }
     },
     setInstallData (state, value) {
       if (state.installData == null) {

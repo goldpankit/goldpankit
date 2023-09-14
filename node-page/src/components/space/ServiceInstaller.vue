@@ -1,9 +1,8 @@
 <template>
   <div class="service-installer">
-    <div v-if="withBreadcrumbs" class="nav">
+    <div v-if="withTitle" class="nav">
       <div class="title">
-        <el-button class="button-icon" icon="ArrowLeftBold" @click="$emit('back')"></el-button>
-        <h4>{{service}}{{version == null ? '' : ' · ' + version.toUpperCase()}} · {{$t('service.install2')}}</h4>
+        <h4>@{{space}}/{{service}}{{version == null ? '' : ' · ' + version.toUpperCase()}} · {{$t('service.install2')}}</h4>
       </div>
     </div>
     <div class="content-wrap">
@@ -11,13 +10,18 @@
         <p class="install-tip">{{$t('service.withParametersTip')}}</p>
         <div class="form-wrap">
           <el-form>
-            <el-form-item v-if="withProject" :label="$t('project.project')" required>
+            <el-form-item v-if="withProject" :label="$t('project.project')" required class="form-item-project">
               <ProjectSelect
                 :model-value="currentProject"
                 :with-block="true"
                 :with-prefix="false"
-                @change="setCurrentProject"
               />
+              <div class="form-item-tip" v-if="currentProjectDetail != null">
+                <el-icon><InfoFilled /></el-icon>
+                <p>
+                  服务安装后代码将写入<em>{{currentProjectDetail.codespace}}</em>目录。
+                </p>
+              </div>
             </el-form-item>
             <template v-for="variable in serviceVariables">
               <el-form-item
@@ -44,6 +48,16 @@
                     <VariableInput :variable="v"/>
                   </li>
                 </ul>
+                <!-- 选择的数据源信息 -->
+                <div
+                  v-if="variable.inputType === 'datasource' && currentDatabaseDetail != null"
+                  class="form-item-tip"
+                >
+                  <el-icon><InfoFilled /></el-icon>
+                  <p>
+                    基础信息：{{currentDatabaseDetail.host}}:{{currentDatabaseDetail.port}}/{{currentDatabaseDetail.schema}}
+                  </p>
+                </div>
               </el-form-item>
             </template>
           </el-form>
@@ -114,7 +128,7 @@ export default {
     },
     // 项目配置信息（项目安装完服务后的配置信息）
     projectConfig: {},
-    withBreadcrumbs: {
+    withTitle: {
       default: false
     },
     withInstallButton: {
@@ -131,7 +145,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['currentProject', 'currentDatabase']),
+    ...mapState(['currentProject', 'currentProjectDetail', 'currentDatabase', 'currentDatabaseDetail']),
     // 服务变量集
     serviceVariables () {
       return this.variables
@@ -152,7 +166,7 @@ export default {
     }
   },
   methods: {
-    ...mapMutations(['setCurrentProject', 'setInstallData']),
+    ...mapMutations(['setInstallData']),
     ...mapActions(['refreshBalance']),
     // 获取版本信息
     fetchVersion () {
@@ -503,11 +517,8 @@ export default {
     .title {
       align-items: center;
       display: flex;
-      .el-button {
-        border: 0;
-      }
       h4 {
-        font-size: var(--font-size-middle);
+        font-size: var(--font-size-title);
       }
     }
   }
@@ -516,16 +527,13 @@ export default {
     .install-tip {
       margin-top: 10px;
       margin-bottom: 10px;
-      font-weight: bold;
-    }
-    .write-tip {
-      margin-bottom: 10px;
     }
     // 变量表单
     .form-wrap {
-      padding: 30px;
-      box-shadow: var(--form-shadow);
-      border-radius: var(--radius-page);
+      border-top: 3px solid;
+      border-image: var(--border-colors);
+      padding-top: 20px;
+      margin-top: 20px;
       :deep(.el-form-item__label) {
         padding-right: 0;
         .label-wrap {
@@ -569,6 +577,25 @@ export default {
         height: 70px;
         font-size: var(--font-size-large);
         font-weight: bold;
+      }
+    }
+    // 提示
+    .form-item-tip {
+      display: flex;
+      margin-top: 5px;
+      .el-icon {
+        margin-top: 4px;
+        margin-right: 5px;
+      }
+      p {
+        color: var(--color-gray);
+        line-height: 1.5;
+        em {
+          font-weight: bold;
+          font-style: normal;
+          color: var(--font-color);
+          margin: 0 5px;
+        }
       }
     }
   }

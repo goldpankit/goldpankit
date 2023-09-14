@@ -4,8 +4,9 @@
       <div class="header">
         <h2>@{{space.name}}/{{service.name}}</h2>
         <div class="tech-stack-wrap">
-          <em>private</em>
-          <p class="tech-stack">{{majorVersionDetail.subServices.length}} {{$t('service.plugins')}}</p>
+          <em>{{ service.withPrivate ? $t('common.private') : $t('common.public') }}</em>
+          <p>{{majorVersionDetail.subServices.length}} {{$t('service.plugins')}}</p>
+          <BeanAmount :price="service.price.price" :type="service.price.leaseType"/>
         </div>
         <ul class="major-versions">
           <li
@@ -35,18 +36,27 @@
         <div class="info">
           <div class="user-profile">
             <div class="user-info">
-              <img :src="'/images/avatar/default.png'">
-              <h4>Eva</h4>
+              <img :src="getAccessUri(service.user.avatar, '/images/avatar/default.png')">
+              <h4>{{service.user.username}}</h4>
             </div>
             <p class="introduce">
-              No introduce
+              {{service.user.introduce === '' || service.user.introduce == null ? 'No introduce' : service.user.introduce }}
             </p>
           </div>
           <div class="install">
             <el-button
               type="important"
               size="large"
-              @click="$emit('install', currentVersion)"
+              @click="$router.push({
+                name: 'ServiceInstaller',
+                params: {
+                  spaceName: space.name,
+                  serviceName: service.name
+                },
+                query: {
+                  major: currentMajorVersion
+                }
+              })"
             >
               <i class="iconfont icon-code"></i>{{$t('service.install')}}
             </el-button>
@@ -83,10 +93,10 @@ import SubServiceList from "../../components/service/SubServiceList.vue";
 import MarkdownEditor from "../../components/common/MarkdownEditor.vue";
 import {fetchMainServiceDetail} from "../../api/service";
 import {fetchProfileByName} from "../../api/service.space";
+import BeanAmount from "../../components/common/BeanAmount.vue";
 
 export default {
-  name: "details",
-  components: {MarkdownEditor, SubServiceList, ServiceStructureView },
+  components: {BeanAmount, MarkdownEditor, SubServiceList, ServiceStructureView },
   data () {
     return {
       currentTab: 'readme',
@@ -169,12 +179,13 @@ export default {
       align-items: center;
       margin-top: 10px;
       em {
-        //padding: 5px 15px;
         border-radius: 30px;
-        //background-color: #efc3ff;
         margin-right: 10px;
         font-style: normal;
         color: var(--primary-color-match-3);
+      }
+      .bean-amount {
+        margin-left: 10px;
       }
     }
     // 主版本号列表
