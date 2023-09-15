@@ -15,9 +15,9 @@
           <div>
             <el-checkbox v-model="form.withPrivate" :label="$t('space.isPrivateServiceTip')"/>
           </div>
-          <div>
-            <el-checkbox v-model="form.subServiceReceivable" :label="$t('space.receiveSubServicesTip')"/>
-          </div>
+<!--          <div>-->
+<!--            <el-checkbox v-model="form.subServiceReceivable" :label="$t('space.receiveSubServicesTip')"/>-->
+<!--          </div>-->
         </el-form-item>
       </el-form>
       <el-form ref="descForm" class="description-form" :model="form">

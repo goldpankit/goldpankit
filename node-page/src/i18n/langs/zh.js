@@ -153,8 +153,6 @@ export default {
   // 空间相关
   space: {
     homePage: '首页',
-    searchPlaceholder: '输入关键字，搜索空间和服务',
-    searchEmpty: '未找到空间或服务',
     publicSpaces: '公共服务空间',
     publicSpaceIntroduce: '点击此处进入公共服务空间，您可以阅读空间的说明和查看提供的服务信息来选择您需要的空间，以协助您快速的研发项目。',
     createNewSpace: '创建新的空间',
@@ -172,6 +170,8 @@ export default {
   },
   // 服务
   service: {
+    searchPlaceholder: '输入关键字，搜索服务',
+    searchEmpty: '未找到服务',
     publicServices: '公共服务',
     publicServiceIntroduce: '点击此处查看已有的公共服务，您可以阅读服务的说明和查看提供的插件信息来选择您需要的服务，以协助您快速的研发项目。',
     plugins: '个插件',

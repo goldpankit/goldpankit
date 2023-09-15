@@ -590,14 +590,14 @@ export default {
       display: flex;
       margin-top: 5px;
       .el-icon {
-        margin-top: 4px;
+        margin-top: 2px;
         margin-right: 5px;
       }
       p {
         color: var(--color-gray);
         line-height: 1.5;
+        font-size: var(--font-size-mini);
         em {
-          font-weight: bold;
           font-style: normal;
           color: var(--font-color);
           margin: 0 5px;

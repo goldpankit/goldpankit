@@ -7,7 +7,7 @@
           <el-input
             v-model="keyword"
             size="large"
-            :placeholder="$t('space.searchPlaceholder')"
+            :placeholder="$t('service.searchPlaceholder')"
             @keypress.enter.native="search"
           />
         </div>
@@ -47,7 +47,7 @@
           </div>
         </li>
       </ul>
-      <Empty v-if="keyword.trim() !== '' && services.length === 0" :description="$t('space.searchEmpty')"/>
+      <Empty v-if="keyword.trim() !== '' && services.length === 0" :description="$t('service.searchEmpty')"/>
       <Pagination
         v-if="pagination.pageCount > 1"
         :pagination="pagination"

@@ -153,8 +153,6 @@ export default {
   // 空间相关
   space: {
     homePage: 'Homepage',
-    searchPlaceholder: 'Search spaces & services',
-    searchEmpty: 'Not Found Spaces',
     publicSpaces: 'Public Spaces',
     publicSpaceIntroduce: 'For all technical teams, you can click in to view all the service space, select and open the service space you need.',
     createNewSpace: 'Create New Space',
@@ -172,6 +170,8 @@ export default {
   },
   // 服务
   service: {
+    searchPlaceholder: 'Enter keywords to search for services',
+    searchEmpty: 'Service not found',
     publicServices: 'Public Services',
     publicServiceIntroduce: 'Click here to view existing public services, where you can read service descriptions and explore plugin information to choose the services you need to assist you in rapid project development.',
     plugins: 'plugins',
