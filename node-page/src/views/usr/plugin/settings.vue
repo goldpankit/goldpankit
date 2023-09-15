@@ -157,10 +157,8 @@ export default {
     saveConfig () {
       saveConfig({
         ...this.route,
-        readme: this.service.description
+        readme: this.plugin.description
       })
-        .then(() => {
-        })
         .catch(e => {
           this.$tip.apiFailed(e)
         })
@@ -187,7 +185,7 @@ export default {
           console.log('pluginConfig', pluginConfig)
           if (pluginConfig != null) {
             this.pluginConfig = pluginConfig
-            this.service.description = pluginConfig.readme
+            this.plugin.description = pluginConfig.readme
           }
         })
         .catch(e => {
@@ -205,7 +203,7 @@ export default {
       this.isWorking.compile = true
       compile({
         ...this.route,
-        serviceType: this.service.type,
+        serviceType: 'COMMON',
         projectId: this.currentProject,
         database: this.currentDatabase,
         variables: this.$refs.variables.getVariables()
