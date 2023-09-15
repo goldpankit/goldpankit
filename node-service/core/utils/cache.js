@@ -186,6 +186,7 @@ module.exports = {
   lang: new Cache('lang', 'en'),
   tokens: new ArrayCache('tokens', ['value']),
   services: new ArrayCache('services', ['space', 'name']),
+  plugins: new ArrayCache('plugins', ['space', 'service', 'name']),
   projects: new ArrayCache('projects', 'id'),
   datasources: new ArrayCache('datasources', 'id'),
 }
