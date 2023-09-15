@@ -71,14 +71,21 @@
 </template>
 
 <script>
-import CompilerSelect from "../../../common/CompilerSelect.vue";
-import InputTypeSelect from "../../../common/InputTypeSelect.vue";
-import I18nInput from "../../../common/I18nInput.vue";
-import VariableInput from "../../installer/VariableInput.vue";
+import CompilerSelect from "@/components/common/CompilerSelect.vue";
+import InputTypeSelect from "@/components/common/InputTypeSelect.vue";
+import I18nInput from "@/components/common/I18nInput.vue";
+import VariableInput from "@/components/service/installer/VariableInput.vue";
 import VariableSettingForm from "./VariableSettingForm.vue";
 import VariableGroupSettingForm from "./VariableGroupSettingForm.vue";
-import {fetchConfig, saveVariables} from "../../../../api/service";
-import {generateId} from "../../../../utils/generator";
+import {generateId} from "@/utils/generator";
+import {
+  fetchConfig as fetchServiceConfig,
+  saveVariables as saveServiceVariables
+} from "@/api/service";
+import {
+  fetchConfig as fetchPluginConfig,
+  saveVariables as savePluginVariables
+} from "@/api/plugin";
 
 export default {
   name: "Variables",
@@ -90,6 +97,9 @@ export default {
     },
     service: {
       required: true
+    },
+    plugin: {
+      required: false
     }
   },
   data() {
@@ -109,6 +119,37 @@ export default {
       dragData: {
         target: null
       }
+    }
+  },
+  computed: {
+    // 是否为插件
+    isPlugin () {
+      return this.plugin != null
+    },
+    unique () {
+      if (this.isPlugin) {
+        return {
+          space: this.space,
+          service: this.service,
+          plugin: this.plugin
+        }
+      }
+      return {
+        space: this.space,
+        service: this.service
+      }
+    },
+    saveVariablesApi () {
+      if (this.isPlugin) {
+        return savePluginVariables
+      }
+      return saveServiceVariables
+    },
+    fetchConfigApi () {
+      if (this.isPlugin) {
+        return fetchPluginConfig
+      }
+      return fetchServiceConfig
     }
   },
   methods: {
@@ -218,9 +259,12 @@ export default {
       }
       this.timeout.save = setTimeout(() => {
         // 请求保存
-        saveVariables({
-          space: this.space,
-          service: this.service,
+        console.log({
+          ...this.unique,
+          variables: this.getVariables()
+        })
+        this.saveVariablesApi({
+          ...this.unique,
           variables: this.getVariables()
         })
           .then(() => {
@@ -235,9 +279,8 @@ export default {
     },
     // 获取变量配置
     fetchVariables () {
-      fetchConfig({
-        space: this.space,
-        service: this.service
+      this.fetchConfigApi({
+        ...this.unique
       })
         .then(data => {
           this.variables = data.variables.map(variable => {

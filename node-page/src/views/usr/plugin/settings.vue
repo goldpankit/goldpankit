@@ -63,7 +63,8 @@
               ref="variables"
               v-show="currentTab === 'variables'"
               :space="route.space"
-              :service="route.plugin"
+              :service="route.service"
+              :plugin="route.plugin"
             />
             <SettingFiles
               v-show="currentTab === 'files'"
