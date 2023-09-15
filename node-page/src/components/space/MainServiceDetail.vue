@@ -22,7 +22,7 @@
         <li :class="{ selected: currentDim === 'structure' }" @click="currentDim = 'structure'">{{ $t('service.structure') }}</li>
       </ul>
       <MarkdownEditor v-show="currentDim === 'readme'" v-model="majorVersionDetail.description" :readonly="true"/>
-      <SubServiceList v-show="currentDim === 'subServices'" :services="majorVersionDetail.subServices"/>
+      <PluginList v-show="currentDim === 'subServices'" :plugins="majorVersionDetail.subServices"/>
       <ServiceStructureView v-show="currentDim === 'structure'" :nodes="majorVersionDetail.structure"/>
     </div>
   </div>
@@ -34,10 +34,10 @@ import ServiceListView from "./ServiceListView.vue";
 import {fetchMainServiceDetail} from "../../api/service";
 import ServiceStructureView from "./ServiceStructureView.vue";
 import MarkdownEditor from "../common/MarkdownEditor.vue";
-import SubServiceList from "../service/SubServiceList.vue";
+import PluginList from "../service/PluginList.vue";
 export default {
   name: "MainServiceDetail",
-  components: {SubServiceList, MarkdownEditor, ServiceStructureView, ServiceListView},
+  components: {PluginList, MarkdownEditor, ServiceStructureView, ServiceListView},
   props: {
     space: {
       required: true

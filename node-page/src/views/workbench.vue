@@ -1,20 +1,20 @@
 <template>
   <div class="page" v-loading="loading">
-    <div v-if="!loading && project != null && mainService != null" class="wrap">
+    <div v-if="!loading && project != null && service != null" class="wrap">
       <div>
         <div class="header">
           <div class="title">
             <h2>{{project.name}}</h2>
             <div class="service-info">
               <p>
-                {{space}} · {{mainService.name}} · v{{mainService.version}}
+                {{space}} · {{service.name}} · v{{service.version}}
                 <template v-if="latestMainService != null">
                   · {{$t('service.latestVersion')}}: v{{latestMainService.version}}
                 </template>
               </p>
               <el-button
                 v-if="latestMainService != null &&
-                  latestMainService.version !== mainService.version"
+                  latestMainService.version !== service.version"
                 type="primary"
                 icon="Upload"
                 @click="$router.push({
@@ -23,7 +23,7 @@
                     name: space
                   },
                   query: {
-                    service: this.mainService.name
+                    service: this.service.name
                   }
                 })"
               >{{$t('service.upgrade')}}</el-button>
@@ -41,23 +41,23 @@
             <div class="search-box">
               <el-input size="large" :placeholder="$t('common.search')"/>
             </div>
-            <!-- 服务列表 -->
-            <SubServiceList
-              :services="subServices"
+            <!-- 插件列表 -->
+            <PluginList
+              :plugins="plugins"
               :custom-class="(service) => {
                 return {selected: currentService != null && currentService.name === service.name}
               }"
               :installed="service => {
                 return withInstalled(service)
               }"
-              @click="selectService($event)"
+              @click="selectPlugin($event)"
             >
-              <template #title="{service}">
-                {{service.name}}
-                <el-icon v-if="hasNewVersion(service)"><Upload /></el-icon>
-                <el-icon v-else-if="withInstalled(service)" class="installed-icon"><Check /></el-icon>
+              <template #title="{plugin}">
+                {{plugin.name}}
+                <el-icon v-if="hasNewVersion(plugin)"><Upload /></el-icon>
+                <el-icon v-else-if="withInstalled(plugin)" class="installed-icon"><Check /></el-icon>
               </template>
-            </SubServiceList>
+            </PluginList>
           </div>
           <!-- 服务信息 -->
           <div class="setting-wrap">
@@ -67,7 +67,7 @@
                 <ul class="service-dimensions">
                   <li :class="{selected: currentServiceDimension === 'readme'}" @click="currentServiceDimension = 'readme'">{{$t('common.readme')}}</li>
                   <li :class="{selected: currentServiceDimension === 'install'}" @click="currentServiceDimension = 'install'">{{$t('service.install2')}}</li>
-                  <li class="disabled" :class="{selected: currentServiceDimension === 'issues'}">{{$t('common.issues')}}</li>
+<!--                  <li class="disabled" :class="{selected: currentServiceDimension === 'issues'}">{{$t('common.issues')}}</li>-->
                 </ul>
                 <div class="dimension-content">
                   <div v-show="currentServiceDimension === 'readme'">
@@ -79,8 +79,8 @@
                     v-model:uninstalling="isWorking.uninstall"
                     v-show="currentServiceDimension === 'install'"
                     :space="space"
-                    :service="currentService.name"
-                    :service-type="currentService.type"
+                    :service="service.name"
+                    :plugin="currentService.name"
                     :service-price="currentService.price.price"
                     :service-lease="currentService.latestLease"
                     :version="currentService.lastVersion"
@@ -149,7 +149,7 @@
         <p>{{$t('workbench.noProjectTip1')}}<router-link :to="{name: 'Index'}">{{$t('common.homepage')}}</router-link>{{$t('workbench.noProjectTip2')}}</p>
       </div>
     </div>
-    <div v-else-if="mainService == null" class="incorrect-wrap">
+    <div v-else-if="service == null" class="incorrect-wrap">
       <div class="content">
         <p>{{$t('workbench.noServiceInstalledTip1')}}<router-link :to="{name: 'PublicSpaces'}">{{$t('common.publicSpace')}}</router-link>{{$t('workbench.noServiceInstalledTip2')}}</p>
       </div>
@@ -166,11 +166,11 @@ import MarkdownEditor from "../components/common/MarkdownEditor.vue";
 import Empty from "../components/common/Empty.vue";
 import IssueListView from "../components/space/IssueListView.vue";
 import BeanAmount from "../components/common/BeanAmount.vue";
-import SubServiceList from "../components/service/SubServiceList.vue";
+import PluginList from "../components/service/PluginList.vue";
 import {fetchLatestVersion} from "../api/service.version";
 
 export default {
-  components: {SubServiceList, BeanAmount, IssueListView, Empty, MarkdownEditor, ServiceInstaller},
+  components: {PluginList, BeanAmount, IssueListView, Empty, MarkdownEditor, ServiceInstaller},
   data () {
     return {
       loading: true,
@@ -179,19 +179,19 @@ export default {
         uninstall: false
       },
       space: null,
-      // 最新的主服务信息
+      // 最新的服务信息
       latestMainService: null,
-      // 项目安装的主服务信息
-      mainService: null,
+      // 项目安装的服务信息
+      service: null,
       currentService: null,
-      subServices: [],
+      plugins: [],
       currentServiceDimension: 'readme',
       project: null
     }
   },
   watch: {
     currentProject () {
-      // 切换项目后，置空最新的主服务信息，让方法重新获取当前项目的最新主服务信息
+      // 切换项目后，置空最新的服务信息，让方法重新获取当前项目的最新服务信息
       this.latestMainService = null
       this.fetchProject(true)
     }
@@ -202,14 +202,22 @@ export default {
       if (this.currentService == null) {
         return false
       }
-      return this.project.services[this.currentService.name] != null
+      return this.installedPlugins[this.currentService.name] != null
     },
-    // 主服务主版本
+    // 服务主版本
     majorVersion () {
-      if (this.mainService == null) {
+      if (this.service == null) {
         return '...'
       }
-      return `${this.mainService.version.substring(0, this.mainService.version.indexOf('.'))}`
+      return `${this.service.version.substring(0, this.service.version.indexOf('.'))}`
+    },
+    // 当前项目已安装的插件(从1.3.0开始，插件安装调整值kit.json/plugins，原来为kit.json/services)
+    installedPlugins () {
+      return this.project.plugins || this.project.services
+    },
+    // 当前项目安装的服务(从1.3.0开始，服务安装调整至kit.json/service，原来为kit.json/main)
+    installedService () {
+      return this.project.main || this.project.service
     }
   },
   methods: {
@@ -226,7 +234,7 @@ export default {
     },
     // 判断是否已安装
     withInstalled (service) {
-      return this.project.services[service.name] != null
+      return this.installedPlugins[service.name] != null
     },
     // 查询项目信息
     fetchProject (withSubServices = false) {
@@ -239,14 +247,14 @@ export default {
       }
       this.refreshProject(withSubServices)
     },
-    // 查询最新的主服务
-    fetchMainService () {
+    // 查询最新的服务版本
+    fetchLatestVersion () {
       if (this.latestMainService != null) {
         return
       }
       fetchLatestVersion({
         space: this.space,
-        service: this.mainService.name
+        service: this.service.name
       })
         .then(data => {
           this.latestMainService = data
@@ -262,25 +270,25 @@ export default {
           this.project = data
           // 获取空间信息
           this.space = this.project.space
-          // 获取主服务信息
-          if (this.project.main == null) {
+          // 获取服务信息
+          if (this.installedService == null) {
             this.loading = false
             return
           }
-          let mainName = null
-          for (const key in this.project.main) {
-            mainName = key
+          let serviceName = null
+          for (const key in this.installedService) {
+            serviceName = key
             break
           }
-          this.mainService = {
-            name: mainName,
-            ...this.project.main[mainName]
+          this.service = {
+            name: serviceName,
+            ...this.installedService[serviceName]
           }
-          // 查询最新的主服务信息
-          this.fetchMainService()
-          // 查询子服务
+          // 查询最新的服务信息
+          this.fetchLatestVersion()
+          // 查询插件
           if (withSubServices) {
-            this.searchSubServices()
+            this.searchPlugins()
           }
         })
         .catch(e => {
@@ -290,32 +298,32 @@ export default {
           this.loading = false
         })
     },
-    // 查询子服务
-    searchSubServices () {
+    // 查询插件
+    searchPlugins () {
       fetchSubServices({
         space: this.space,
-        service: this.mainService.name,
+        service: this.service.name,
         majorVersion: this.majorVersion
       })
         .then(data => {
-          this.subServices = data
-          if (this.subServices.length > 0) {
-            this.selectService(this.subServices[0])
+          this.plugins = data
+          if (this.plugins.length > 0) {
+            this.selectPlugin(this.plugins[0])
           }
         })
         .catch(e => {
           this.$tip.apiFailed(e)
         })
     },
-    // 选择服务
-    selectService (service) {
-      if (this.subServices.length > 0) {
+    // 选择插件
+    selectPlugin (service) {
+      if (this.plugins.length > 0) {
         this.currentService = service
       }
     },
     // 是否可升级
     hasNewVersion (service) {
-      const serviceConfig = this.project.services[service.name]
+      const serviceConfig = this.installedPlugins[service.name]
       if (serviceConfig == null) {
         return false
       }
@@ -416,8 +424,8 @@ export default {
           }
         }
       }
-      // 子服务列表
-      :deep(.sub-service-list) {
+      // 插件列表
+      :deep(.plugin-list) {
         li {
           padding: 15px 30px;
           h5 {

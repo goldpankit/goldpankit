@@ -5,7 +5,6 @@
         v-if="space != null && service != null"
         :space="space.name"
         :service="service.name"
-        :service-type="service.type"
         :service-price="service.price.price"
         :service-lease="service.latestLease"
         :version="service.defaultMajorVersion.version"

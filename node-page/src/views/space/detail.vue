@@ -38,7 +38,6 @@
                 v-else-if="currentMainServiceVersion != null"
                 :space="space.name"
                 :service="currentMainService.name"
-                :service-type="currentMainService.type"
                 :service-price="currentMainService.price.price"
                 :service-lease="currentMainService.latestLease"
                 :version="currentMainServiceVersion"

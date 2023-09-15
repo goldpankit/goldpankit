@@ -22,8 +22,15 @@ module.exports = {
     PROJECT_NOT_ALLOWED: new Response(
       'project_not_allowed',
       'The current project has already installed another main service, please switch to a different project and try again.',
-      '当前项目已安装了其他的主服务，请切换项目后重试'
+      '当前项目已安装了其他的服务，请切换项目后重试'
     ),
+  },
+  UNINSTALL: {
+    PLUGIN_NOT_EXISTS: new Response(
+      'plugin_not_exists',
+      'Unable to uninstall plugin as it is either not installed in the project or the installation configuration has been deleted',
+      '无法卸载插件，该插件未安装在项目中或安装配置已被删除'
+    )
   },
   // 项目
   PROJECT: {

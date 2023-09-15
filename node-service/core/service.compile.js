@@ -17,12 +17,13 @@ class Kit {
   constructor() {
   }
   /**
-   * 安装服务
+   * 安装服务或插件
    * @param dto = {
    *   projectId: '', // 当前选择的项目ID
    *   database: '', // 当前选择的数据库名称
    *   space: '',
    *   service: '',
+   *   plugin: '',
    *   version: '',
    *   variables: []
    * }
@@ -31,7 +32,7 @@ class Kit {
   install (dto) {
     return new Promise((resolve, reject) => {
       // 验证安装
-      const checkResult = this.#checkInstall(dto.projectId, dto.space, dto.service, dto.serviceType)
+      const checkResult = this.#checkInstall(dto.projectId, dto.space, dto.service, dto.plugin != null)
       if (checkResult != null) {
         reject(checkResult)
         return
@@ -50,14 +51,17 @@ class Kit {
           if (projectConfig != null) {
             object.merge(projectConfig, config)
           }
-          if (dto.serviceType === 'MAIN') {
+          // 安装的是服务
+          if (dto.plugin == null) {
             config.space = dto.space
-            config.main[dto.service] = {
+            config.service[dto.service] = {
               version: dto.version,
               variables: this.#getSimpleMainServiceVariables(dto.variables)
             }
-          } else {
-            config.services[dto.service] = {
+          }
+          // 安装的是插件
+          else {
+            config.plugins[dto.plugin] = {
               version: dto.version,
               variables: this.#getSimpleMainServiceVariables(dto.variables)
             }
@@ -92,7 +96,7 @@ class Kit {
     })
   }
   /**
-   * 卸载服务
+   * 卸载插件
    */
   uninstall (dto) {
     return new Promise((resolve, reject) => {
@@ -101,9 +105,10 @@ class Kit {
       const project = userProject.findDetailById(dto.projectId)
       const configPath = userProject.getConfigPath(project.id)
       const projectConfig = fs.readJSONFile(configPath)
-      const installedService = projectConfig.services[dto.service]
+      const plugins = projectConfig.services || projectConfig.plugins
+      const installedService = plugins[dto.plugin]
       if (installedService == null || installedService.version == null) {
-        reject('can not uninstall service: ${dto.service} for version: null')
+        reject(response.UNINSTALL.PLUGIN_NOT_EXISTS)
         return
       }
       dto.version = installedService.version
@@ -116,7 +121,8 @@ class Kit {
               // 删除文件
               const diffFiles = fs.deleteFiles(data.files, project)
               // 删除项目配置中服务的配置
-              delete projectConfig.services[dto.service]
+              const plugins = projectConfig.services || projectConfig.plugins
+              delete plugins[dto.plugin]
               // 重新写入项目配置文件中
               fs.createFile(userProject.getConfigPath(project.id), fs.toJSONFileString(projectConfig), true)
               // 返回构建信息
@@ -134,6 +140,7 @@ class Kit {
               })
             })
             .catch(e => {
+              console.log(e)
               reject(e)
             })
         })
@@ -148,7 +155,7 @@ class Kit {
    */
   compile(dto) {
     return new Promise((resolve, reject) => {
-      const checkResult = this.#checkInstall(dto.projectId, dto.space, dto.service, dto.serviceType)
+      const checkResult = this.#checkInstall(dto.projectId, dto.space, dto.service, dto.plugin != null)
       if (checkResult != null) {
         reject(checkResult)
         return
@@ -232,11 +239,11 @@ class Kit {
    * @param projectId 安装的目标项目ID
    * @param space 需安装的服务空间名称
    * @param service 需安装的服务名称
-   * @param serviceType 需安装的服务类型
+   * @param isPlugin 安装的是否为插件
    */
-  #checkInstall (projectId, space, service, serviceType) {
-    // 非主服务，不做验证
-    if (serviceType !== 'MAIN') {
+  #checkInstall (projectId, space, service, isPlugin) {
+    // 插件，不做验证
+    if (isPlugin) {
       return
     }
     // 查询项目
@@ -337,7 +344,7 @@ class Kit {
       // 获取数据库信息
       const database = cache.datasources.get(dto.database)
       // 组装变量
-      const variables = this.#getVariables(project, database, dto.variables)
+      const variables = this.#getVariables(project, database, dto.variables, dto.plugin != null)
       let serviceVars = null
       return Promise.all(variables)
         .then(vars => {
@@ -346,6 +353,7 @@ class Kit {
           return serviceApi.install({
             space: dto.space,
             service: dto.service,
+            plugin: dto.plugin,
             version: dto.version,
             operaType: dto.operaType,
             variables: vars
@@ -354,7 +362,7 @@ class Kit {
         .then(data => {
           return Promise.resolve({
             data,
-            service: dto.service,
+            service: dto.plugin == null ? dto.service : dto.plugin,
             project,
             database,
             variables: serviceVars
@@ -451,18 +459,23 @@ class Kit {
 
   // 获取安装/编译变量
   #getVariables (project, database, variables, withMainServiceVariables = true) {
-    // 补充主服务变量
+    // 补充服务变量
     if (withMainServiceVariables) {
       const projectConfig = fs.readJSONFile(userProject.__getConfigPath(project.codespace))
-      if (projectConfig != null && projectConfig.main != null) {
-        let mainServiceName = null
-        for (const servceName in projectConfig.main) {
-          mainServiceName = servceName
+      // 获取安装的服务配置
+      let service = null
+      if (projectConfig != null) {
+        service = projectConfig.service || projectConfig.main
+      }
+      if (service != null) {
+        let serviceName = null
+        for (const servceName in service) {
+          serviceName = servceName
           break
         }
         // 将项目主服务的变量添加到最前
-        const mainServiceVariables = projectConfig.main[mainServiceName].variables.reverse()
-        for (const variable of mainServiceVariables) {
+        const serviceVariables = service[serviceName].variables.reverse()
+        for (const variable of serviceVariables) {
           // group,table和query_model安装存储的变量结构与生成时所需的结构不一样，暂不做支持
           if (variable.type === 'group' || variable.inputType === 'table' || variable.inputType === 'query_model') {
             continue

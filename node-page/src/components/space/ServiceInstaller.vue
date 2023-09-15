@@ -105,8 +105,8 @@ export default {
     service: {
       required: true
     },
-    serviceType: {
-      required: true
+    plugin: {
+      required: false
     },
     servicePrice: {
       required: true
@@ -175,6 +175,7 @@ export default {
       fetchVersion({
         space: this.space,
         service: this.service,
+        plugin: this.plugin,
         version: this.version
       })
         .then(data => {
@@ -228,7 +229,7 @@ export default {
         database: this.currentDatabase,
         space: this.space,
         service: this.service,
-        serviceType: this.serviceType,
+        plugin: this.plugin,
         version: this.version,
         variables
       })
@@ -278,7 +279,7 @@ export default {
         database: this.currentDatabase,
         space: this.space,
         service: this.service,
-        serviceType: this.serviceType,
+        plugin: this.plugin,
         version: this.version,
         variables: this.__getInstallVariables(this.variables)
       })

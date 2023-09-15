@@ -28,7 +28,7 @@
           </ul>
           <div v-if="majorVersionDetail != null" class="detail">
             <MarkdownEditor v-show="currentTab === 'readme'" v-model="majorVersionDetail.description" :readonly="true" :without-padding="true"/>
-            <SubServiceList v-show="currentTab === 'extends'" :services="majorVersionDetail.subServices"/>
+            <PluginList v-show="currentTab === 'extends'" :plugins="majorVersionDetail.subServices"/>
             <ServiceStructureView v-show="currentTab === 'structure'" :nodes="majorVersionDetail.structure"/>
           </div>
         </div>
@@ -95,14 +95,14 @@
 
 <script>
 import ServiceStructureView from "../../components/space/ServiceStructureView.vue";
-import SubServiceList from "../../components/service/SubServiceList.vue";
+import PluginList from "../../components/service/PluginList.vue";
 import MarkdownEditor from "../../components/common/MarkdownEditor.vue";
 import {fetchMainServiceDetail} from "../../api/service";
 import {fetchProfileByName} from "../../api/service.space";
 import BeanAmount from "../../components/common/BeanAmount.vue";
 
 export default {
-  components: {BeanAmount, MarkdownEditor, SubServiceList, ServiceStructureView },
+  components: {BeanAmount, MarkdownEditor, PluginList, ServiceStructureView },
   data () {
     return {
       currentTab: 'readme',

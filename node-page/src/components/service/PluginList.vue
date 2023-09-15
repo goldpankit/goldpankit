@@ -1,35 +1,35 @@
 <template>
-  <ul v-if="services.length > 0" class="sub-service-list">
+  <ul v-if="plugins.length > 0" class="plugin-list">
     <li
-      v-for="service in services"
-      :key="service.id"
-      :class="{...customClass(service), 'service-installed': installed(service) === true}"
-      @click.stop="$emit('click', service)"
+      v-for="plugin in plugins"
+      :key="plugin.id"
+      :class="{...customClass(plugin), 'plugin-installed': installed(plugin) === true}"
+      @click.stop="$emit('click', plugin)"
     >
       <h5>
-        <slot name="title" :service="service">
-          {{service.name}}
+        <slot name="title" :plugin="plugin">
+          {{plugin.name}}
         </slot>
       </h5>
       <p class="latest-version">
-        <span>{{$t('service.latestVersion')}}: v{{service.lastVersion}}</span>
-        <span v-if="installed(service) === true">{{$t('service.installed')}}</span>
+        <span>{{$t('service.latestVersion')}}: v{{plugin.lastVersion}}</span>
+        <span v-if="installed(plugin) === true">{{$t('service.installed')}}</span>
       </p>
-      <p>{{service.introduce}}</p>
+      <p>{{plugin.introduce}}</p>
       <!-- 用户信息 -->
-      <div v-if="service.user != null" class="user-profile">
-        <img :src="getAccessUri(service.user.avatar, '/images/avatar/default.png')">
-        <span>{{service.user.username}}</span>
+      <div v-if="plugin.user != null" class="user-profile">
+        <img :src="getAccessUri(plugin.user.avatar, '/images/avatar/default.png')">
+        <span>{{plugin.user.username}}</span>
       </div>
       <div class="price-wrap">
-        <p class="text-info-1 text-mini">{{$t('service.lastPublish')}}: {{getDateOffsetText(service.lastPublishTime)}}</p>
-        <em v-if="service.latestLease != null">
-          {{getRemainingDay(service.latestLease.leaseEndTime)}} {{$t('common.days')}}
+        <p class="text-info-1 text-mini">{{$t('service.lastPublish')}}: {{getDateOffsetText(plugin.lastPublishTime)}}</p>
+        <em v-if="plugin.latestLease != null">
+          {{getRemainingDay(plugin.latestLease.leaseEndTime)}} {{$t('common.days')}}
         </em>
         <BeanAmount
           v-else
-          :price="service.price.price"
-          :type="service.price.leaseType"
+          :price="plugin.price.price"
+          :type="plugin.price.leaseType"
         />
       </div>
     </li>
@@ -43,10 +43,10 @@ import BeanAmount from "../common/BeanAmount.vue";
 import Empty from "../common/Empty.vue";
 
 export default {
-  name: "SubServiceList",
+  name: "PluginList",
   components: {Empty, BeanAmount},
   props: {
-    services: {
+    plugins: {
       type: Array,
       required: true
     },
@@ -67,8 +67,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-// 服务列表
-.sub-service-list {
+.plugin-list {
   background-color: var(--color-light);
   overflow-y: auto;
   li {
@@ -79,7 +78,7 @@ export default {
       //background: var(--primary-color-match-1);
       color: var(--primary-color-match-2) !important;
     }
-    &.service-installed {
+    &.plugin-installed {
       color: var(--color-gray);
     }
     h5 {

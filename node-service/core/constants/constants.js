@@ -80,7 +80,7 @@ module.exports = {
   // 项目配置内容
   PROJECT_CONFIG_FILE_CONTENT: {
     space: '', // 空间名称
-    main: { // 主服务信息
+    service: { // 服务信息
     //   eva: {
     //     version: 'v3.0.0',
     //     variables: {
@@ -88,7 +88,7 @@ module.exports = {
     //     }
     //   }
     },
-    services: { // 子服务信息
+    plugins: { // 插件信息
     //   alipay: {
     //     version: 'v1.2.1',
     //     variables: {}

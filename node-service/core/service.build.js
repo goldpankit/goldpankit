@@ -79,6 +79,7 @@ module.exports = {
           resolve(buildDetails)
         })
         .catch(e => {
+          console.log(e)
           reject(e)
         })
     })
