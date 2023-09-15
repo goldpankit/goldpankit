@@ -59,7 +59,7 @@ export default {
       minutesAgo: '{value}分钟前',
       hoursAgo: '{value}小时前',
       daysAgo: '{value}天前',
-      monthsAgo: '{value}月前',
+      monthsAgo: '{value}个月前',
       yearsAgo: '{value}年前',
     },
     // 动态码

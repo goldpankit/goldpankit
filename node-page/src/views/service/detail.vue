@@ -73,11 +73,11 @@
           <ul>
             <li>
               <label>{{$t('service.subServices')}}</label>
-              <p>{{service.subServiceCount || 0}}</p>
+              <p>{{majorVersionDetail.subServices.length}}</p>
             </li>
             <li>
               <label>{{$t('service.lastPublish')}}</label>
-              <p v-if="service.lastPublish != null">{{service.lastPublish}}</p>
+              <p v-if="service.lastPublish != null">{{getDateOffsetText(service.lastPublish)}}</p>
               <p v-else>None</p>
             </li>
           </ul>
@@ -115,7 +115,11 @@ export default {
     }
   },
   methods: {
+    // 切换主版本
     changeMajorVersion (majorVersion) {
+      if (this.currentMajorVersion === majorVersion) {
+        return
+      }
       this.currentMajorVersion = majorVersion
       this.fetchDetail(majorVersion)
     },

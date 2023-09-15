@@ -40,7 +40,10 @@
           <div class="service-info">
             <h3>@{{service.space.name}}/{{service.name}}</h3>
             <p>{{service.introduce}}</p>
-            <p class="info">最后发布于：{{getDateOffsetText(service.lastPublish)}}</p>
+            <p class="info">
+              <span>{{service.subServiceCount}} 个插件</span>
+              <span>{{getDateOffsetText(service.lastPublish)}}</span>
+            </p>
           </div>
         </li>
       </ul>
@@ -179,7 +182,7 @@ export default {
       width: 100%;
       min-height: 300px;
       & > li {
-        padding: 30px 30px;
+        padding: 15px 30px;
         box-sizing: border-box;
         background-color: var(--color-light);
         display: flex;
@@ -222,11 +225,14 @@ export default {
         display: -webkit-box;
         -webkit-box-orient: vertical;
         line-height: 25px;
-        margin: 10px 0;
+        margin: 0;
       }
       & > .info {
         color: var(--color-gray);
         font-size: var(--font-size-mini);
+        span {
+          margin-right: 15px;
+        }
       }
     }
   }
