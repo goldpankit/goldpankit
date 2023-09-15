@@ -37,8 +37,8 @@ export function fetchProfile (data) {
   return request.post('/service/profile', data)
 }
 // 获取服务文件
-export function fetchFiles (space, service) {
-  return request.post('/service/files', {space, service})
+export function fetchFiles (data) {
+  return request.post('/service/files', data)
 }
 // 获取服务配置
 export function fetchConfig (data) {

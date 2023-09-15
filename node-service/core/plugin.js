@@ -115,13 +115,14 @@ module.exports = {
   },
   // 获取服务文件树
   getFileTree(space, service, plugin) {
-    const pluginConfig = this.getPluginConfig({ space, service, plugin})
+    console.log(space, service, plugin)
+    const pluginConfig = this.getPluginConfig({ space, service, plugin })
     // 获取文件真实存放的路径
     let fileStoragePath = pluginConfig.codespace
     if (pluginConfig.translator.settings.length > 0) {
       fileStoragePath = path.join(fileStoragePath, pluginConfig.translator.output)
       if (!fs.exists(fileStoragePath)) {
-        serviceTranslator.translate({ space, service })
+        serviceTranslator.translate({ space, service, plugin })
         return this.__getFileTree(fileStoragePath, fileStoragePath, pluginConfig.codespace)
       }
     }

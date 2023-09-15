@@ -48,12 +48,18 @@
 </template>
 
 <script>
-import CompilerSelect from "../../common/CompilerSelect.vue";
-import InputTypeSelect from "../../common/InputTypeSelect.vue";
-import {fetchFiles, saveFileSetting} from "../../../api/service";
-import {sortFiles} from "../../../utils/file";
-import Sortable from 'sortablejs'
-import SortableButton from "../../common/SortableButton.vue";
+import CompilerSelect from "@/components/common/CompilerSelect.vue";
+import InputTypeSelect from "@/components/common/InputTypeSelect.vue";
+import SortableButton from "@/components/common/SortableButton.vue";
+import {sortFiles} from "@/utils/file";
+import {
+  fetchFiles as fetchServiceFiles,
+  saveFileSetting as saveServiceFileSetting
+} from "@/api/service";
+import {
+  fetchFiles as fetchPluginFiles,
+  saveFileSetting as savePluginFileSetting
+} from "@/api/plugin";
 
 export default {
   name: "SettingFiles",
@@ -64,6 +70,9 @@ export default {
     },
     service: {
       required: true
+    },
+    plugin: {
+      required: false
     }
   },
   data () {
@@ -72,10 +81,40 @@ export default {
       files: []
     }
   },
+  computed: {
+    isPlugin () {
+      return this.plugin != null
+    },
+    unique () {
+      if (this.isPlugin) {
+        return {
+          space: this.space,
+          service: this.service,
+          plugin: this.plugin
+        }
+      }
+      return {
+        space: this.space,
+        service: this.service
+      }
+    },
+    fetchFilesApi () {
+      if (this.isPlugin) {
+        return fetchPluginFiles
+      }
+      return fetchServiceFiles
+    },
+    saveFileSettingApi () {
+      if (this.isPlugin) {
+        return savePluginFileSetting
+      }
+      return saveServiceFileSetting
+    }
+  },
   methods: {
     // 获取文件
     fetchFiles () {
-      fetchFiles(this.space, this.service)
+      this.fetchFilesApi(this.unique)
         .then(data => {
           this.files = data
           sortFiles(this.files)
@@ -90,9 +129,8 @@ export default {
         clearTimeout(this.saveTimeout)
       }
       this.saveTimeout = setTimeout(() => {
-        saveFileSetting({
-          space: this.space,
-          service: this.service,
+        this.saveFileSettingApi({
+          ...this.unique,
           type: this.currentNode.type,
           path: this.currentNode.path,
           relativePath: this.currentNode.relativePath,

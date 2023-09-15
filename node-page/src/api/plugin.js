@@ -13,8 +13,8 @@ export function fetchProfile (data) {
   return request.post('/plugin/profile', data)
 }
 // 获取插件文件
-export function fetchFiles (space, service, plugin) {
-  return request.post('/plugin/files', {space, service, plugin})
+export function fetchFiles (data) {
+  return request.post('/plugin/files', data)
 }
 // 获取插件配置
 export function fetchConfig (data) {
@@ -26,7 +26,7 @@ export function saveConfig (data) {
 }
 // 保存插件文件配置
 export function saveFileSetting (data) {
-  return request.post('/service/file/setting/save', data)
+  return request.post('/plugin/file/setting/save', data)
 }
 // 保存插件变量
 export function saveVariables (data) {

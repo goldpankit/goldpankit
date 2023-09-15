@@ -69,7 +69,8 @@
             <SettingFiles
               v-show="currentTab === 'files'"
               :space="route.space"
-              :service="route.plugin"
+              :service="route.service"
+              :plugin="route.plugin"
             />
             <SystemVariableTable
               v-if="currentTab === 'system_variables'"
@@ -183,7 +184,6 @@ export default {
           })
         })
         .then(pluginConfig => {
-          console.log('pluginConfig', pluginConfig)
           if (pluginConfig != null) {
             this.pluginConfig = pluginConfig
             this.plugin.description = pluginConfig.readme

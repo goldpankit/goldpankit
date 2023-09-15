@@ -1,6 +1,5 @@
 const request = require('../utils/request.define')
 const plugin = require('../core/plugin')
-const serviceTranslator = require('../core/service.translator')
 
 // 获取所有本地服务
 request
@@ -23,6 +22,7 @@ request
  * req.body = {
  *   space: '',
  *   service: '',
+ *   plugin: '',
  *   codespace: ''
  * }
  */
@@ -33,10 +33,11 @@ request
   })
 
 /**
- * 保存服务配置
+ * 保存插件配置
  * req.body = {
  *   space: '',
  *   service: '',
+ *   plugin: ''
  *   ...配置信息
  * }
  */
@@ -46,14 +47,14 @@ request
     return plugin.savePluginConfig(req.body)
   })
 
-// 查询服务信息
+// 查询插件信息
 request
   .post('/plugin/profile')
   .data ((req) => {
     return plugin.getProfile(req.body.spaceName, req.body.serviceName, req.body.pluginName)
   })
 
-// 查询服务文件
+// 查询插件文件
 request
   .post('/plugin/files')
   .data ((req) => {
