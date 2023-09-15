@@ -15,7 +15,7 @@
           <p>{{$t('service.repository')}}: {{service.repository}}</p>
           <div class="footer-info">
             <!-- 用户信息 -->
-            <div class="user-profile">
+            <div v-if="service.user != null" class="user-profile">
               <img :src="getAccessUri(service.user.avatar, '/images/avatar/default.png')">
               <span>{{service.user.username}}</span>
             </div>
@@ -24,7 +24,7 @@
             </p>
           </div>
           <!-- 只有自己的服务才存在操作 -->
-          <ul v-if="userInfo.id === service.user.id" class="opera">
+          <ul v-if="service.user != null && userInfo.id === service.user.id" class="opera">
             <li><el-button @click="openSettings(service)">{{$t('service.serviceSettings')}}</el-button></li>
             <li><el-button text type="danger" @click="deleteService(service)">{{$t('common.delete')}}</el-button></li>
           </ul>

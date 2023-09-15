@@ -36,7 +36,7 @@ import ServiceTypeSelect from "@/components/service/ServiceTypeSelect.vue";
 import VersionSelect from "@/components/common/VersionSelect.vue";
 import MainServiceSelect from "@/components/service/MainServiceSelect.vue";
 import FormItemTip from "@/components/common/FormItemTip.vue";
-import {createCommon} from "@/api/user.plugin";
+import {create} from "@/api/user.plugin";
 
 export default {
   components: {
@@ -75,7 +75,7 @@ export default {
         if (!pass) {
           return
         }
-        createCommon({
+        create({
           space: this.space,
           service: this.service,
           ...this.form
