@@ -105,7 +105,7 @@
 import MainServiceDetail from "../../components/space/MainServiceDetail.vue";
 import ServiceInstaller from "../../components/space/ServiceInstaller.vue";
 import {fetchByName} from "../../api/service.space";
-import {search} from "../../api/service";
+import {fetchList} from "../../api/service";
 import MarkdownEditor from "../../components/common/MarkdownEditor.vue";
 import Empty from "../../components/common/Empty.vue";
 import IssueListView from "../../components/space/IssueListView.vue";
@@ -148,7 +148,7 @@ export default {
     },
     // 查询服务列表
     fetchServiceList () {
-      search({
+      fetchList({
         space: this.spaceName,
         serviceType: 'MAIN'
       })

@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import {search} from "../../api/service";
+import {fetchList} from "../../api/service";
 
 export default {
   name: "MainServiceSelect",
@@ -26,7 +26,7 @@ export default {
   },
   methods: {
     fetchServices () {
-      search({
+      fetchList({
         space: this.space,
         serviceType: 'MAIN'
       })

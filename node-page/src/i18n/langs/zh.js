@@ -172,6 +172,8 @@ export default {
   },
   // 服务
   service: {
+    publicServices: '公共服务',
+    publicServiceIntroduce: '点击此处查看已有的公共服务，您可以阅读服务的说明和查看提供的插件信息来选择您需要的服务，以协助您快速的研发项目。',
     plugins: '个插件',
     services: '个服务',
     services2: '服务',

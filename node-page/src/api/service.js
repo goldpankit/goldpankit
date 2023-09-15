@@ -5,8 +5,14 @@ export function fetchLocalServices (data) {
   return request.get('/service/list')
 }
 // 搜索
-export function search (data) {
-  return request.post('/service/search', data, {
+export function searchMainServices (data) {
+  return request.post('/service/main/search', data, {
+    baseURL: import.meta.env.VITE_REMOTE_API_PREFIX
+  })
+}
+// 查询服务列表
+export function fetchList (data) {
+  return request.post('/service/list', data, {
     baseURL: import.meta.env.VITE_REMOTE_API_PREFIX
   })
 }

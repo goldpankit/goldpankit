@@ -2,9 +2,9 @@
   <div class="page">
     <div class="wrap">
       <div class="line">
-        <router-link :to="{ name: 'PublicSpaces' }" class="module public-space">
-          <h2>{{$t('space.publicSpaces')}}</h2>
-          <p>{{$t('space.publicSpaceIntroduce')}}</p>
+        <router-link :to="{ name: 'PublicServices' }" class="module public-space">
+          <h2>{{$t('service.publicServices')}}</h2>
+          <p>{{$t('service.publicServiceIntroduce')}}</p>
         </router-link>
         <a @click="toUserProfile" class="module profile">
           <h2 v-if="userInfo == null">{{$t('user.account')}}</h2>

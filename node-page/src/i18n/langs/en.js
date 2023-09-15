@@ -172,6 +172,8 @@ export default {
   },
   // 服务
   service: {
+    publicServices: 'Public Services',
+    publicServiceIntroduce: 'Click here to view existing public services, where you can read service descriptions and explore plugin information to choose the services you need to assist you in rapid project development.',
     plugins: 'plugins',
     services: 'services',
     services2: 'Services',
