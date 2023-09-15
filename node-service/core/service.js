@@ -155,12 +155,12 @@ module.exports = {
   // 发布服务版本
   publish(dto) {
     // 获取服务文件
-    const serviceConfig = this.getServiceConfig({ space: dto.space, service: dto.service })
+    const serviceConfig = this.getServiceConfig({ space: dto.space, service: dto.service, plugin: dto.plugin })
     let fileStoragePath = serviceConfig.codespace
     // 如果存在翻译器，自动翻译，且服务代码空间指定为翻译代码空间
     if (serviceConfig.translator.settings.length > 0) {
       fileStoragePath = path.join(fileStoragePath, Const.TRANSLATOR.DEFAULT_OUTPUT_PATH)
-      serviceTranslator.translate({ space: dto.space, service: dto.service })
+      serviceTranslator.translate({ space: dto.space, service: dto.service, plugin: dto.plugin })
     }
     // 获取文件
     let files = fs.getFilesWithChildren(fileStoragePath, fileStoragePath)
@@ -187,6 +187,7 @@ module.exports = {
     const publishParams = {
       space: dto.space,
       service: dto.service,
+      plugin: dto.plugin,
       version: serviceConfig.version,
       withPrivate: serviceConfig.private,
       receivable: serviceConfig.receivable,

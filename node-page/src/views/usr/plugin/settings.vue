@@ -27,7 +27,7 @@
                 <el-button type="primary" :class="{ 'is-disabled': currentProject == null || isWorking.cleanCompile}" @click="cleanCompile">{{$t('service.settings.cleanCompile')}}</el-button>
               </template>
             </el-popover>
-            <el-button type="important" @click="$refs.publishWindow.open(route.space, route.plugin)">{{$t('service.settings.publish')}}</el-button>
+            <el-button type="important" @click="$refs.publishWindow.open(route.space, route.service, route.plugin)">{{$t('service.settings.publish')}}</el-button>
           </div>
         </div>
         <p

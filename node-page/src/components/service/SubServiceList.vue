@@ -17,7 +17,7 @@
       </p>
       <p>{{service.introduce}}</p>
       <!-- 用户信息 -->
-      <div class="user-profile">
+      <div v-if="service.user != null" class="user-profile">
         <img :src="getAccessUri(service.user.avatar, '/images/avatar/default.png')">
         <span>{{service.user.username}}</span>
       </div>

@@ -267,7 +267,7 @@ class Kit {
     return new Promise((resolve, reject) => {
       try {
         // 获取文件列表
-        const files = this.#getFileConfigList(dto.space, dto.service)
+        const files = this.#getFileConfigList(dto.space, dto.service, dto.plugin)
         if (files.length > env.limitFiles) {
           return reject(`The number of files exceeds the limit of ${env.limitFiles}.`)
         }
@@ -278,10 +278,10 @@ class Kit {
           return
         }
         // 获取服务信息
-        const serviceConfig = service.getServiceConfig({space: dto.space, service: dto.service})
+        const serviceConfig = service.getServiceConfig({space: dto.space, service: dto.service, plugin: dto.plugin})
         // 如果存在翻译器，则先进行翻译
         if (serviceConfig.translator.settings.length > 0) {
-          serviceTranslator.translate({space: dto.space, service: dto.service})
+          serviceTranslator.translate({space: dto.space, service: dto.service, plugin: dto.plugin})
         }
         // 获取数据库信息
         const database = cache.datasources.get(dto.database)
@@ -419,8 +419,8 @@ class Kit {
   }
 
   // 获取文件配置列表
-  #getFileConfigList (space, serviceName) {
-    const serviceConfig = service.getServiceConfig({ space: space, service: serviceName})
+  #getFileConfigList (space, serviceName, plugin) {
+    const serviceConfig = service.getServiceConfig({ space: space, service: serviceName, plugin: plugin})
     // 获取文件真实存放的路径
     let fileStoragePath = serviceConfig.codespace
     if (serviceConfig.translator.settings.length > 0) {

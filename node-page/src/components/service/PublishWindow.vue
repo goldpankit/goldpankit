@@ -30,9 +30,16 @@
 </template>
 
 <script>
-import {fetchConfig, saveConfig} from "../../api/service";
-import {publish} from "../../api/service.version";
-import {checkVersionNumber} from "../../utils/form.check";
+import {publish} from "@/api/service.version";
+import {checkVersionNumber} from "@/utils/form.check";
+import {
+  fetchConfig as fetchServiceConfig,
+  saveConfig as saveServiceConfig
+} from "@/api/service";
+import {
+  fetchConfig as fetchPluginConfig,
+  saveConfig as savePluginConfig
+} from "@/api/plugin";
 
 export default {
   name: "PublishWindow",
@@ -42,16 +49,48 @@ export default {
       isWorking: false,
       space: null,
       service: null,
+      plugin: null,
       form: {
         version: '',
         publishDescription: ''
       }
     }
   },
+  computed: {
+    isPlugin () {
+      return this.plugin != null
+    },
+    unique () {
+      if (this.isPlugin) {
+        return {
+          space: this.space,
+          service: this.service,
+          plugin: this.plugin
+        }
+      }
+      return {
+        space: this.space,
+        service: this.service
+      }
+    },
+    fetchConfigApi () {
+      if (this.isPlugin) {
+        return fetchServiceConfig
+      }
+      return fetchPluginConfig
+    },
+    saveConfigApi () {
+      if (this.isPlugin) {
+        return savePluginConfig
+      }
+      return saveServiceConfig
+    }
+  },
   methods: {
-    open (space, service) {
+    open (space, service, plugin) {
       this.space = space
       this.service = service
+      this.plugin = plugin
       this.visible = true
       this.fetchConfig()
     },
@@ -68,10 +107,7 @@ export default {
     },
     // 获取版本配置
     fetchConfig () {
-      fetchConfig({
-        space: this.space,
-        service: this.service
-      })
+      this.fetchConfigApi(this.unique)
         .then(config => {
           this.form.version = config.version
         })
@@ -81,18 +117,13 @@ export default {
     },
     // 保存配置
     saveConfig () {
-      this.$refs.form.validate()
-        .then(() => {
-          saveConfig({
-            space: this.space,
-            service: this.service,
-            version: this.form.version
-          })
-            .catch(e => {
-              this.$tip.apiFailed(e)
-            })
+        this.saveConfigApi({
+          ...this.unique,
+          version: this.form.version
         })
-        .catch(() => {})
+          .catch(e => {
+            this.$tip.apiFailed(e)
+          })
     },
     // 发布
     publish () {
@@ -102,8 +133,7 @@ export default {
         }
         this.isWorking = true
         publish({
-          space: this.space,
-          service: this.service,
+          ...this.unique,
           publishDescription: this.form.publishDescription
         })
           .then(() => {
