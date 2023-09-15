@@ -101,6 +101,11 @@ const router = createRouter({
           component: () => import('@/views/usr/service/create.vue')
         },
         {
+          path: '/usr/plugin/create',
+          name: 'CreatePlugin',
+          component: () => import('@/views/usr/plugin/create.vue')
+        },
+        {
           path: '/usr/profile',
           name: 'UserProfile',
           component: () => import('@/views/usr/profile/profile.vue')
@@ -138,6 +143,11 @@ const router = createRouter({
           path: '/usr/service/settings',
           name: 'ServiceSettings',
           component: () => import('@/views/usr/service/settings.vue')
+        },
+        {
+          path: '/usr/plugin/common/settings',
+          name: 'PluginSettings',
+          component: () => import('@/views/usr/plugin/common/settings.vue')
         },
       ]
     },

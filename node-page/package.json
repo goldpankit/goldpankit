@@ -16,6 +16,7 @@
     "js-cookie": "^3.0.5",
     "konva": "^9.2.0",
     "monaco-editor": "^0.41.0",
+    "pinyin-pro": "^3.16.6",
     "sortablejs": "^1.15.0",
     "vite-plugin-prismjs": "0.0.8",
     "vue": "^3.3.4",

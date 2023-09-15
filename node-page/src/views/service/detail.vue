@@ -62,7 +62,13 @@
             </el-button>
             <el-button
               size="large"
-              @click="$router.push({ name: 'CreateService', query: { space: spaceName } })"
+              @click="$router.push({
+                name: 'CreatePlugin',
+                query: {
+                  space: space.name,
+                  service: service.name
+                }
+              })"
             >{{$t('service.createNewService')}}</el-button>
 <!--            <el-button-->
 <!--              type="primary"-->

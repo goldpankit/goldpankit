@@ -217,8 +217,6 @@ export default {
     serviceCodeErrorTitle: '服务代码错误',
     serviceCodeErrorTip: '出现该窗口，说明服务的代码无法正确执行，以下是服务代码执行的错误栈信息。',
     createService: '创建服务',
-    createServiceFor1: '为',
-    createServiceFor2: '空间创建服务',
     serviceName: '服务名称',
     serviceType: '服务类型',
     mainService: '服务',
@@ -340,6 +338,15 @@ export default {
       }
     }
   },
+  // 插件
+  plugin: {
+    create: '创建插件',
+    name: '插件标识符',
+    label: '插件名称',
+    createFor1: '为服务',
+    createFor2: '创建插件',
+  },
+  // 问题
   issue: {
     createNewIssue: '创建问题'
   },

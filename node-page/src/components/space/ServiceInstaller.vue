@@ -21,12 +21,10 @@
                 :with-block="true"
                 :with-prefix="false"
               />
-              <div class="form-item-tip" v-if="currentProjectDetail != null">
-                <el-icon><InfoFilled /></el-icon>
-                <p>
-                  服务安装后代码将写入<em>{{currentProjectDetail.codespace}}</em>目录。
-                </p>
-              </div>
+              <FormItemTip
+                v-if="currentProjectDetail != null"
+                :content="`服务安装后代码将写入<em>${currentProjectDetail.codespace}</em>目录。`"
+              />
             </el-form-item>
             <template v-for="variable in serviceVariables">
               <el-form-item
@@ -54,15 +52,10 @@
                   </li>
                 </ul>
                 <!-- 选择的数据源信息 -->
-                <div
+                <FormItemTip
                   v-if="variable.inputType === 'datasource' && currentDatabaseDetail != null"
-                  class="form-item-tip"
-                >
-                  <el-icon><InfoFilled /></el-icon>
-                  <p>
-                    基础信息：{{currentDatabaseDetail.host}}:{{currentDatabaseDetail.port}}/{{currentDatabaseDetail.schema}}
-                  </p>
-                </div>
+                  :content="`基础信息：${currentDatabaseDetail.host}:${currentDatabaseDetail.port}/${currentDatabaseDetail.schema}`"
+                />
               </el-form-item>
             </template>
           </el-form>
@@ -92,10 +85,12 @@ import {fetchVersion} from "../../api/service.version";
 import {getDefaultEmptyValue, isEmptyValue} from "../../utils/variable";
 import MergeWindow from "../service/installer/merge/MergeWindow.vue";
 import ServiceCodeErrorWindow from "../service/ServiceCodeErrorWindow.vue";
+import FormItemTip from "../common/FormItemTip.vue";
 
 export default {
   name: "ServiceInstaller",
   components: {
+    FormItemTip,
     ServiceCodeErrorWindow,
     MergeWindow,
     ProjectSelect,
@@ -583,25 +578,6 @@ export default {
         font-size: var(--font-size-middle);
         color: var(--color-gray);
         line-height: 25px;
-      }
-    }
-    // 提示
-    .form-item-tip {
-      display: flex;
-      margin-top: 5px;
-      .el-icon {
-        margin-top: 2px;
-        margin-right: 5px;
-      }
-      p {
-        color: var(--color-gray);
-        line-height: 1.5;
-        font-size: var(--font-size-mini);
-        em {
-          font-style: normal;
-          color: var(--font-color);
-          margin: 0 5px;
-        }
       }
     }
   }
