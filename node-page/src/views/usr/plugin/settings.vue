@@ -3,7 +3,7 @@
     <div class="wrap">
       <div class="header-wrap">
         <div class="header">
-          <h2>{{plugin.space.name}}·{{plugin.name}}</h2>
+          <h2>@{{plugin.space.name}}/{{plugin.service.name}}/{{plugin.name}}</h2>
           <div v-if="initialized" class="opera">
             <el-popover
               placement="top-start"
@@ -48,8 +48,8 @@
             <BasicSetting
               v-show="currentTab === 'basic'"
               :space="route.space"
-              :service="route.plugin"
-              :service-type="plugin.type"
+              :service="route.service"
+              :plugin="route.plugin"
               :service-config="pluginConfig"
             />
             <MarkdownEditor
@@ -78,7 +78,8 @@
         <template v-else>
           <InitializeView
             :space-name="plugin.space.name"
-            :service-name="plugin.name"
+            :service-name="plugin.service.name"
+            :plugin-name="plugin.name"
             @initialized="fetchProfile"
           />
         </template>
@@ -101,7 +102,7 @@ import PublishWindow from "@/components/service/PublishWindow.vue";
 import Variables from "@/components/service/settings/Variables/Variables.vue";
 import MarkdownEditor from "@/components/common/MarkdownEditor.vue";
 import ServiceCodeErrorWindow from "@/components/service/ServiceCodeErrorWindow.vue";
-import {fetchConfig, fetchProfile, saveConfig} from "@/api/service";
+import {fetchConfig, fetchProfile, saveConfig} from "@/api/plugin";
 import {cleanCompile, compile} from "@/api/service.compile";
 import SystemVariableTable from "@/components/service/settings/SystemVariableTable.vue";
 
@@ -169,7 +170,8 @@ export default {
       this.loading = true
       fetchProfile({
         spaceName: this.route.space,
-        serviceName: this.route.plugin
+        serviceName: this.route.service,
+        pluginName: this.route.plugin,
       })
         .then(data => {
           this.plugin = data
@@ -177,10 +179,12 @@ export default {
         .then(() => {
           return fetchConfig({
             space: this.route.space,
-            service: this.route.plugin
+            service: this.route.service,
+            plugin: this.route.plugin
           })
         })
         .then(pluginConfig => {
+          console.log('pluginConfig', pluginConfig)
           if (pluginConfig != null) {
             this.pluginConfig = pluginConfig
             this.service.description = pluginConfig.readme

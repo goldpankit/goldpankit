@@ -7,11 +7,13 @@ module.exports = {
   SERVICE_CONFIG_FILE: `${PROJECT_NAME}.json`,
   // 服务配置文件内容
   SERVICE_CONFIG_CONTENT: {
-    name: '', // 服务名称
+    name: '', // 服务标识符
+    label: '', // 服务名称
     version: '1.0.0', // 版本号
     private: false, // 是否为私有服务
     receivable: false, // 是否接收服务
     compiler: 'static', // 编译器
+    repository: '', // 仓库
     supportedDatabases: [], // 支持的数据库列表
     prices: [ // 价格定义
       {
@@ -52,8 +54,18 @@ module.exports = {
     // 服务列表
     services: [
       // {
-      //   "space": "eva", // 空间名称
-      //   "name": "单表接口", // 服务名称
+      //   "space": "eva", // 空间标识符
+      //   "name": "单表接口", // 服务标识符
+      //   "repository": "", // 仓库地址
+      //   "codespace": "/Users/caesar/adjustrd/goldpankit/spaces/eva/eva-server-table-crud"
+      // },
+    ],
+    // 插件列表
+    plugins: [
+      // {
+      //   "space": "eva", // 空间标识符
+      //   "service": "eva", // 服务标识符
+      //   "name": "单表接口", // 插件标识符
       //   "repository": "", // 仓库地址
       //   "codespace": "/Users/caesar/adjustrd/goldpankit/spaces/eva/eva-server-table-crud"
       // },

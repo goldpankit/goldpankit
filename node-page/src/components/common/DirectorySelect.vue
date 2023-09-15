@@ -114,6 +114,9 @@ export default {
       if (file.__creating || file.type !== 'DIRECTORY') {
         return
       }
+      if (this.selectedFilepath === file.path) {
+        return
+      }
       this.selectedFilepath = file.path
       const paths = JSON.parse(JSON.stringify(this.paths))
       paths.push(this.selectedFilepath)

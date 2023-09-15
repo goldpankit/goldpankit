@@ -66,12 +66,21 @@
 </template>
 
 <script>
-import CompilerSelect from "../../common/CompilerSelect.vue";
-import DatabaseTypeSelect from "../../database/DatabaseTypeSelect.vue";
-import DirectorySelect from "../../common/DirectorySelect.vue";
-import BuildList from "../build/BuildList.vue";
-import TranslatorList from "../translator/TranslatorList.vue";
-import {fetchConfig, initialize, saveConfig} from "../../../api/service";
+import CompilerSelect from "@/components/common/CompilerSelect.vue";
+import DatabaseTypeSelect from "@/components/database/DatabaseTypeSelect.vue";
+import DirectorySelect from "@/components/common/DirectorySelect.vue";
+import BuildList from "@/components/service/build/BuildList.vue";
+import TranslatorList from "@/components/service/translator/TranslatorList.vue";
+import {
+  fetchConfig as fetchServiceConfig,
+  initialize as initService,
+  saveConfig as saveServiceConfig
+} from "@/api/service";
+import {
+  fetchConfig as fetchPluginConfig,
+  initialize as initPlugin,
+  saveConfig as savePluginConfig
+} from "@/api/plugin";
 
 export default {
   name: "BasicSetting",
@@ -83,8 +92,8 @@ export default {
     service: {
       required: true
     },
-    serviceType: {
-      required: true
+    plugin: {
+      required: false
     },
     serviceConfig: {}
   },
@@ -121,6 +130,12 @@ export default {
       }
     }
   },
+  computed: {
+    // 是否为插件
+    isPlugin () {
+      return this.plugin != null
+    }
+  },
   methods: {
     // 初始化数据
     initData () {
@@ -132,11 +147,22 @@ export default {
     // 初始化
     initialize () {
       this.form.codespace = this.newCodespace.value
-      initialize({
-        space: this.space,
-        name: this.service,
-        ...this.form
-      })
+      let promise
+      if (this.isPlugin) {
+        promise = initPlugin({
+          space: this.space,
+          service: this.service,
+          name: this.plugin,
+          ...this.form
+        })
+      } else {
+        promise = initService({
+          space: this.space,
+          name: this.service,
+          ...this.form
+        })
+      }
+      promise
         .then(() => {
           this.newCodespace.changing = false
           this.$emit('initialized', this.form)
@@ -159,9 +185,16 @@ export default {
     },
     // 获取配置
     fetchConfig (codespace) {
-      fetchConfig({
-        codespace
-      })
+      let promise
+      // 获取插件配置
+      if (this.isPlugin) {
+        promise = fetchPluginConfig({codespace})
+      }
+      // 获取服务配置
+      else {
+        promise = fetchServiceConfig({codespace})
+      }
+      promise
         .then(config => {
           if (config != null) {
             this.form.version = config.version || this.form.version
@@ -184,10 +217,27 @@ export default {
       if (this.newCodespace.changing) {
         return
       }
+      let unique,saveConfig
+      // 保存插件配置
+      if (this.isPlugin) {
+        saveConfig = savePluginConfig
+        unique = {
+          space: this.space,
+          service: this.service,
+          plugin: this.plugin
+        }
+      }
+      // 保存服务配置
+      else {
+        saveConfig = saveServiceConfig
+        unique = {
+          space: this.space,
+          service: this.service
+        }
+      }
       // 保存配置
       saveConfig({
-        space: this.space,
-        service: this.service,
+        ...unique,
         ...this.form,
         translator: {
           ...this.form.translator,

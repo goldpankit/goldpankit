@@ -4,7 +4,6 @@ const cache = require('./utils/cache')
 const object = require('./utils/object')
 const fs = require('./utils/fs')
 const pluginApi = require("./api/plugin");
-const serviceApi = require("./api/service");
 const serviceTranslator = require('./service.translator')
 const serviceConf = require('./service.config')
 const serviceFile = require('./service.file')
@@ -74,7 +73,7 @@ module.exports = {
     // 读取本地服务配置
     const pluginConfig = cache.plugins.get(spaceName, serviceName, pluginName)
     // 远程获取服务简介
-    return pluginApi.fetchProfile({ spaceName, serviceName })
+    return pluginApi.fetchProfile({ space: spaceName, service: serviceName, plugin: pluginName })
       .then(data => {
         return {
           ...data,
@@ -89,12 +88,12 @@ module.exports = {
       })
   },
   // 获取服务配置信息
-  getServiceConfig(dto) {
+  getPluginConfig(dto) {
     return serviceConf.getServiceConfig(dto)
   },
   // 保存服务配置信息
   savePluginConfig(dto) {
-    const pluginConfig =  this.getServiceConfig({ space: dto.space, service: dto.service, plugin: dto.plugin })
+    const pluginConfig =  this.getPluginConfig({ space: dto.space, service: dto.service, plugin: dto.plugin })
     // 读取配置结构
     const newConfig = JSON.parse(JSON.stringify(Const.SERVICE_CONFIG_CONTENT))
     // 合并配置
@@ -116,7 +115,7 @@ module.exports = {
   },
   // 获取服务文件树
   getFileTree(space, service, plugin) {
-    const pluginConfig = this.getServiceConfig({ space, service, plugin})
+    const pluginConfig = this.getPluginConfig({ space, service, plugin})
     // 获取文件真实存放的路径
     let fileStoragePath = pluginConfig.codespace
     if (pluginConfig.translator.settings.length > 0) {
@@ -160,7 +159,7 @@ module.exports = {
   // 发布服务版本
   publish(dto) {
     // 获取服务文件
-    const pluginConfig = this.getServiceConfig({ space: dto.space, service: dto.service, plugin: dto.plugin })
+    const pluginConfig = this.getPluginConfig({ space: dto.space, service: dto.service, plugin: dto.plugin })
     let fileStoragePath = pluginConfig.codespace
     // 如果存在翻译器，自动翻译，且服务代码空间指定为翻译代码空间
     if (pluginConfig.translator.settings.length > 0) {
@@ -255,9 +254,5 @@ module.exports = {
       }
     });
     return filePool
-  },
-  // 获取服务配置
-  __getServiceConfig (codespace) {
-    return serviceConf.__getServiceConfig(codespace)
   }
 }

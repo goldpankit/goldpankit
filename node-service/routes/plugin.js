@@ -29,7 +29,7 @@ request
 request
   .post('/plugin/config')
   .data(req => {
-    return plugin.getServiceConfig(req.body)
+    return plugin.getPluginConfig(req.body)
   })
 
 /**

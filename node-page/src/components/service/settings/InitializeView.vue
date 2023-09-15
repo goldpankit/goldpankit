@@ -18,10 +18,11 @@
 </template>
 
 <script>
-import DirectorySelect from "../../common/DirectorySelect.vue";
-import CompilerSelect from "../../common/CompilerSelect.vue";
-import DatabaseTypeSelect from "../../database/DatabaseTypeSelect.vue";
-import {fetchConfig, initialize} from "../../../api/service";
+import DirectorySelect from "@/components/common/DirectorySelect.vue";
+import CompilerSelect from "@/components/common/CompilerSelect.vue";
+import DatabaseTypeSelect from "@/components/database/DatabaseTypeSelect.vue";
+import {fetchConfig as fetchServiceConfig, initialize as initService} from "@/api/service";
+import {fetchConfig as fetchPluginConfig, initialize as initPlugin} from "@/api/plugin";
 
 export default {
   name: "InitializeView",
@@ -41,8 +42,7 @@ export default {
     return {
       form: {
         space: this.spaceName,
-        service: this.pluginName == null ? null : this.serviceName,
-        name: this.serviceName,
+        name: null,
         version: '1.0.0',
         compiler: 'static',
         supportedDatabases: [],
@@ -50,10 +50,32 @@ export default {
       }
     }
   },
+  computed: {
+    // 是否为初始化插件
+    isInitPlugin () {
+      return this.pluginName != null
+    }
+  },
   methods: {
     // 初始化
     initialize () {
-      initialize(this.form)
+      let promise
+      // 初始化插件
+      if (this.isInitPlugin) {
+        promise = initPlugin({
+          ...this.form,
+          service: this.serviceName,
+          name: this.pluginName
+        })
+      }
+      // 初始化服务
+      else {
+        promise = initService({
+          ...this.form,
+          name: this.serviceName
+        })
+      }
+      promise
         .then(() => {
           this.$emit('initialized', this.form)
         })
@@ -63,9 +85,16 @@ export default {
     },
     // 获取配置
     fetchConfig (codespace) {
-      fetchConfig({
-        codespace
-      })
+      let promise
+      // 获取插件配置
+      if (this.isInitPlugin) {
+        promise = fetchPluginConfig({codespace})
+      }
+      // 获取服务配置
+      else {
+        promise = fetchServiceConfig({codespace})
+      }
+      promise
         .then(config => {
           if (config != null) {
             this.form.version = config.version || this.form.version

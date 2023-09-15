@@ -57,6 +57,7 @@ app.use(function(err, req, res, next) {
   res.locals.error = err;
   res.status(err.status || 500);
   res.send('error');
+  throw err
 });
 
 // 开发模式直接启动

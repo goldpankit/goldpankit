@@ -145,9 +145,9 @@ const router = createRouter({
           component: () => import('@/views/usr/service/settings.vue')
         },
         {
-          path: '/usr/plugin/common/settings',
+          path: '/usr/plugin/settings',
           name: 'PluginSettings',
-          component: () => import('@/views/usr/plugin/common/settings.vue')
+          component: () => import('@/views/usr/plugin/settings.vue')
         },
       ]
     },
