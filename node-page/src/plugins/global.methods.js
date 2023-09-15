@@ -12,7 +12,7 @@ export default {
       confirmButtonText: $t('common.confirm')
     })
   },
-  // 覆盖确认
+  // 覆盖所有确认
   overwriteAllConfirm () {
     const $t = this.$t
     return ElMessageBox({
@@ -33,6 +33,16 @@ export default {
       cancelButtonText: $t('common.cancel'),
       confirmButtonText: $t('common.delete'),
       confirmButtonClass: 'danger-button'
+    })
+  },
+  // 弹窗提示
+  alert (message, title) {
+    title = title || '提示'
+    return ElMessageBox({
+      title: title,
+      message: message,
+      showCancelButton: false,
+      confirmButtonText: '知道了'
     })
   },
   // 确认安装

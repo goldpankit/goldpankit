@@ -4,9 +4,8 @@ export default {
   apiFailed (e) {
     console.log('e', e)
     if (typeof e === 'string') {
-      ElMessage.error(e)
-      return
+      return ElMessage.error(e)
     }
-    ElMessage.error(e.message)
+    return ElMessage.error(e.message)
   }
 }

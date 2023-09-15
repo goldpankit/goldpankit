@@ -36,7 +36,13 @@
           </div>
         </el-form-item>
         <el-form-item :label="$t('service.settings.translator.translator')" prop="translator">
-          <TranslatorList :space="space" :service="service" :translator="form.translator" @save="saveConfig"/>
+          <TranslatorList
+            :space="space"
+            :service="service"
+            :plugin="plugin"
+            :translator="form.translator"
+            @save="saveConfig"
+          />
         </el-form-item>
         <el-form-item :label="$t('service.settings.installBuilds')" prop="builds">
           <BuildList :builds="form.builds" :service-config="serviceConfig" @save="saveConfig"/>

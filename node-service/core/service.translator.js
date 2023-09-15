@@ -11,7 +11,8 @@ class Translator {
      * 根据翻译器配置翻译空间代码
      * dto = {
      *   space: '',
-     *   service: ''
+     *   service: '',
+     *   plugin: ''
      * }
      */
     translate (dto) {

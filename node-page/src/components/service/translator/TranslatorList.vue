@@ -4,7 +4,7 @@
       <p>{{$t('service.settings.translator.translatorTip')}}</p>
       <div class="opera">
         <el-button type="primary" @click="add">{{$t('common.add')}}</el-button>
-        <el-button type="primary" @click="translate">{{$t('service.settings.translator.translate')}}</el-button>
+<!--        <el-button type="primary" @click="translate">{{$t('service.settings.translator.translate')}}</el-button>-->
       </div>
     </div>
     <el-collapse v-if="translators.length > 0" v-model="actives" @change="handleChange">
@@ -78,8 +78,7 @@
 </template>
 
 <script>
-import Empty from "../../common/Empty.vue";
-import {translate} from "../../../api/service";
+import Empty from "@/components/common/Empty.vue";
 import TranslatorTypeSelect from "./TranslatorTypeSelect.vue";
 
 export default {
@@ -92,6 +91,10 @@ export default {
     service: {
       required: true
     },
+    plugin: {
+      required: true
+    },
+    // 翻译器配置信息
     translator: {
       required: true
     }
@@ -149,18 +152,6 @@ export default {
     // 处理输入
     handleSave () {
       this.$emit('save')
-    },
-    // 翻译服务
-    translate () {
-      translate({
-        space: this.space,
-        service: this.service
-      })
-        .then(() => {
-        })
-        .catch(e => {
-          this.$tip.apiFailed(e)
-        })
     },
     // 生成构建名称
     __generateTranslatorName () {
