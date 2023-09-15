@@ -3,11 +3,12 @@ const Const = require('./constants/constants')
 const cache = require('./utils/cache')
 const object = require('./utils/object')
 const fs = require('./utils/fs')
+const pluginApi = require("./api/plugin");
 const serviceApi = require("./api/service");
 const serviceTranslator = require('./service.translator')
 const serviceConf = require('./service.config')
 const serviceFile = require('./service.file')
-const userServiceApi = require('./api/user.service')
+const userPluginApi = require('./api/user.plugin')
 const env = require('../env').getConfig()
 const ignore = require('ignore')
 module.exports = {
@@ -15,13 +16,14 @@ module.exports = {
    * 删除插件
    * dto = {
    *   space: 空间名称,
-   *   service: 服务名称
+   *   service: 服务名称,
+   *   plugin: 插件名称
    * }
    * @param dto
    */
   deleteService (dto) {
     return new Promise((resolve, reject) => {
-      userServiceApi.deleteService({
+      userPluginApi.delete({
         spaceName: dto.space,
         serviceName: dto.service,
         pluginName: dto.plugin
@@ -35,9 +37,9 @@ module.exports = {
         })
     })
   },
-  // 获取所有本地服务
-  getLocalServices () {
-    return cache.services.getAll()
+  // 获取所有本地插件
+  getLocalPlugins () {
+    return cache.plugins.getAll()
   },
   // 初始化
   initialize(extConfig) {
@@ -59,25 +61,26 @@ module.exports = {
     // 初始化服务文件
     fs.createFile(configPath, fs.toJSONFileString(config), true)
     // 添加本地服务记录
-    cache.services.save({
+    cache.plugins.save({
       space: extConfig.space,
+      service: extConfig.service,
       name: extConfig.name,
       repository: extConfig.repository == null ? '' : extConfig.repository,
       codespace: extConfig.codespace
     })
   },
-  // 获取服务简要信息
-  getProfile(spaceName, serviceName) {
+  // 获取插件简要信息
+  getProfile(spaceName, serviceName, pluginName) {
     // 读取本地服务配置
-    const serviceConfig = cache.services.get(spaceName, serviceName)
+    const pluginConfig = cache.plugins.get(spaceName, serviceName, pluginName)
     // 远程获取服务简介
-    return serviceApi.fetchProfile({ spaceName, serviceName })
+    return pluginApi.fetchProfile({ spaceName, serviceName })
       .then(data => {
         return {
           ...data,
           // 补充本地配置信息
-          local: serviceConfig == null ? null : {
-            ...serviceConfig
+          local: pluginConfig == null ? null : {
+            ...pluginConfig
           }
         }
       })
@@ -90,44 +93,45 @@ module.exports = {
     return serviceConf.getServiceConfig(dto)
   },
   // 保存服务配置信息
-  saveServiceConfig(dto) {
-    const serviceConfig =  this.getServiceConfig({ space: dto.space, service: dto.service })
+  savePluginConfig(dto) {
+    const pluginConfig =  this.getServiceConfig({ space: dto.space, service: dto.service, plugin: dto.plugin })
     // 读取配置结构
     const newConfig = JSON.parse(JSON.stringify(Const.SERVICE_CONFIG_CONTENT))
     // 合并配置
     object
-      .merge(serviceConfig, newConfig)
+      .merge(pluginConfig, newConfig)
       .merge(dto, newConfig)
     // 写入配置文件
-    const configPath = this.__getConfigPath(serviceConfig.codespace)
+    const configPath = this.__getConfigPath(pluginConfig.codespace)
     fs.rewrite(configPath, fs.toJSONFileString(newConfig))
     // 保存服务repository
     if (dto.repository !== undefined) {
-      cache.services.save({
+      cache.plugins.save({
         space: dto.space,
-        name: dto.service,
+        service: dto.service,
+        name: dto.plugin,
         repository: dto.repository
       })
     }
   },
   // 获取服务文件树
-  getFileTree(space, service) {
-    const serviceConfig = this.getServiceConfig({ space, service})
+  getFileTree(space, service, plugin) {
+    const pluginConfig = this.getServiceConfig({ space, service, plugin})
     // 获取文件真实存放的路径
-    let fileStoragePath = serviceConfig.codespace
-    if (serviceConfig.translator.settings.length > 0) {
-      fileStoragePath = path.join(fileStoragePath, serviceConfig.translator.output)
+    let fileStoragePath = pluginConfig.codespace
+    if (pluginConfig.translator.settings.length > 0) {
+      fileStoragePath = path.join(fileStoragePath, pluginConfig.translator.output)
       if (!fs.exists(fileStoragePath)) {
         serviceTranslator.translate({ space, service })
-        return this.__getFileTree(fileStoragePath, fileStoragePath, serviceConfig.codespace)
+        return this.__getFileTree(fileStoragePath, fileStoragePath, pluginConfig.codespace)
       }
     }
-    return this.__getFileTree(fileStoragePath, fileStoragePath, serviceConfig.codespace)
+    return this.__getFileTree(fileStoragePath, fileStoragePath, pluginConfig.codespace)
   },
   // 保存服务文件
   saveFileSetting (fileSettings) {
-    const serviceConfig = cache.services.get(fileSettings.space, fileSettings.service)
-    const configPath = this.__getConfigPath(serviceConfig.codespace)
+    const pluginConfig = cache.plugins.get(fileSettings.space, fileSettings.service, fileSettings.plugin)
+    const configPath = this.__getConfigPath(pluginConfig.codespace)
     const config = fs.readJSONFile(configPath)
     // 读取配置结构
     let settings = JSON.parse(JSON.stringify(Const.SERVICE_FILE_CONFIG_CONTENT))
@@ -147,8 +151,8 @@ module.exports = {
   },
   // 保存变量
   saveVariables (dto) {
-    const service = cache.services.get(dto.space, dto.service)
-    const configPath = this.__getConfigPath(service.codespace)
+    const plugin = cache.plugins.get(dto.space, dto.service, dto.plugin)
+    const configPath = this.__getConfigPath(plugin.codespace)
     const config = fs.readJSONFile(configPath)
     config.variables = dto.variables
     fs.rewrite(configPath, fs.toJSONFileString(config))
@@ -156,12 +160,12 @@ module.exports = {
   // 发布服务版本
   publish(dto) {
     // 获取服务文件
-    const serviceConfig = this.getServiceConfig({ space: dto.space, service: dto.service })
-    let fileStoragePath = serviceConfig.codespace
+    const pluginConfig = this.getServiceConfig({ space: dto.space, service: dto.service, plugin: dto.plugin })
+    let fileStoragePath = pluginConfig.codespace
     // 如果存在翻译器，自动翻译，且服务代码空间指定为翻译代码空间
-    if (serviceConfig.translator.settings.length > 0) {
+    if (pluginConfig.translator.settings.length > 0) {
       fileStoragePath = path.join(fileStoragePath, Const.TRANSLATOR.DEFAULT_OUTPUT_PATH)
-      serviceTranslator.translate({ space: dto.space, service: dto.service })
+      serviceTranslator.translate({ space: dto.space, service: dto.service, plugin: dto.plugin })
     }
     // 获取文件
     let files = fs.getFilesWithChildren(fileStoragePath, fileStoragePath)
@@ -172,7 +176,7 @@ module.exports = {
     files = files.map(fullpath => {
       const filetype = fs.isDirectory(fullpath) ? 'DIRECTORY' : 'FILE'
       const relativePath = fs.getRelativePath(fullpath, fileStoragePath)
-      const fileSetting = this.getFileSetting(serviceConfig.codespace, relativePath)
+      const fileSetting = this.getFileSetting(pluginConfig.codespace, relativePath)
       const fileInfo = filetype === 'DIRECTORY' ? { encode: null, content: null } : fs.readFile(fullpath)
       return {
         filepath: relativePath,
@@ -188,22 +192,23 @@ module.exports = {
     const publishParams = {
       space: dto.space,
       service: dto.service,
-      version: serviceConfig.version,
-      withPrivate: serviceConfig.private,
-      receivable: serviceConfig.receivable,
-      prices: serviceConfig.prices,
-      compiler: serviceConfig.compiler,
-      supportedDatabases: serviceConfig.supportedDatabases.join(','),
-      repository: serviceConfig.repository,
-      builds: JSON.stringify(serviceConfig.builds),
-      unbuilds: JSON.stringify(serviceConfig.unbuilds),
-      variables: JSON.stringify(serviceConfig.variables),
+      plugin: dto.plugin,
+      version: pluginConfig.version,
+      withPrivate: pluginConfig.private,
+      receivable: pluginConfig.receivable,
+      prices: pluginConfig.prices,
+      compiler: pluginConfig.compiler,
+      supportedDatabases: pluginConfig.supportedDatabases.join(','),
+      repository: pluginConfig.repository,
+      builds: JSON.stringify(pluginConfig.builds),
+      unbuilds: JSON.stringify(pluginConfig.unbuilds),
+      variables: JSON.stringify(pluginConfig.variables),
       publishDescription: dto.publishDescription,
-      introduce: serviceConfig.introduce,
-      description: serviceConfig.readme,
+      introduce: pluginConfig.introduce,
+      description: pluginConfig.readme,
       files
     }
-    return serviceApi.publish(publishParams)
+    return pluginApi.publish(publishParams)
   },
   // 获取文件设置
   getFileSetting (codespace, fileRelativePath) {

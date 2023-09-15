@@ -1,5 +1,6 @@
 const client = require('./client')
 const service = require('./service')
+const plugin = require('./plugin')
 const serviceCompile = require('./service.compile')
 const serviceVersion = require('./service.version')
 const userProject = require('./user.project')
@@ -12,6 +13,7 @@ const databaseUtil = require('./database.util')
 module.exports = {
   client,
   service,
+  plugin,
   serviceCompile,
   serviceVersion,
   userProject,

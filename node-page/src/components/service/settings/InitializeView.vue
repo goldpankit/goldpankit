@@ -32,12 +32,16 @@ export default {
     },
     serviceName: {
       required: true
+    },
+    pluginName: {
+      required: false
     }
   },
   data () {
     return {
       form: {
         space: this.spaceName,
+        service: this.pluginName == null ? null : this.serviceName,
         name: this.serviceName,
         version: '1.0.0',
         compiler: 'static',

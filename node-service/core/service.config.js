@@ -5,6 +5,18 @@ const path = require('path')
 module.exports = {
   // 获取服务配置信息
   getServiceConfig(dto) {
+    // 获取插件配置信息
+    if (dto.space != null && dto.service != null && dto.plugin != null) {
+      const plugin = cache.plugins.get(dto.space, dto.service, dto.plugin)
+      if (plugin == null) {
+        return null
+      }
+      return {
+        ...this.__getServiceConfig(plugin.codespace),
+        repository: plugin.repository
+      }
+    }
+    // 获取服务配置信息
     if (dto.space != null && dto.service != null) {
       const service = cache.services.get(dto.space, dto.service)
       if (service == null) {
