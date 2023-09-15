@@ -250,6 +250,7 @@ export default {
     },
     // 设置
     settings: {
+      label: '服务名称',
       compile: '编译',
       cleanCompile: '反向编译',
       publish: '发布',

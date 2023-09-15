@@ -250,6 +250,7 @@ export default {
     },
     // 设置
     settings: {
+      label: 'Service Name',
       compile: 'Compile',
       cleanCompile: 'Decompile',
       publish: 'Publish',
