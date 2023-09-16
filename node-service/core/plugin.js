@@ -38,7 +38,7 @@ module.exports = {
   },
   // 获取所有本地插件
   getLocalPlugins () {
-    return cache.plugins.getAll()
+    return [...cache.plugins.getAll(), ...cache.services.getAll()]
   },
   // 初始化
   initialize(extConfig) {

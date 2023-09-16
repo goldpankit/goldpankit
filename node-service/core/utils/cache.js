@@ -183,10 +183,16 @@ module.exports = {
   remove (key) {
     delete CACHE[key]
   },
+  // 当前语言
   lang: new Cache('lang', 'en'),
+  // 登录令牌
   tokens: new ArrayCache('tokens', ['value']),
+  // 服务
   services: new ArrayCache('services', ['space', 'name']),
+  // 插件
   plugins: new ArrayCache('plugins', ['space', 'service', 'name']),
+  // 项目
   projects: new ArrayCache('projects', 'id'),
+  // 数据源
   datasources: new ArrayCache('datasources', 'id'),
 }
