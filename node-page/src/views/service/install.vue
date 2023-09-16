@@ -8,8 +8,10 @@
         :service-price="service.price.price"
         :service-lease="service.latestLease"
         :version="service.defaultMajorVersion.version"
+        :project-config="project"
         :with-title="true"
         :with-install-button="true"
+        @change-project="handleProjectChange"
         @installed="$router.push({name: 'Workbench'})"
       />
     </div>
@@ -20,6 +22,8 @@
 import ServiceInstaller from "@/components/space/ServiceInstaller.vue";
 import { fetchServiceDetail } from "@/api/service";
 import { fetchProfileByName } from "@/api/service.space";
+import {fetchById} from "@/api/user.project";
+import {mapState} from "vuex";
 
 export default {
   components: {ServiceInstaller},
@@ -32,8 +36,13 @@ export default {
         majorVersion: null
       },
       space: null,
-      service: null
+      service: null,
+      // 当前选中的项目
+      project: null
     }
+  },
+  computed: {
+    ...mapState(['currentProject'])
   },
   methods: {
     // 查询空间
@@ -59,6 +68,16 @@ export default {
         .catch(e => {
           this.$tip.apiFailed(e)
         })
+    },
+    // 切换项目
+    handleProjectChange (projectId) {
+      fetchById(projectId)
+        .then(data => {
+          this.project = data
+        })
+        .catch(e => {
+          this.$tip.apiFailed(e)
+        })
     }
   },
   created () {
@@ -67,6 +86,9 @@ export default {
     this.route.majorVersion = this.$route.query.major
     this.fetchSpace()
     this.fetchService()
+    if (this.currentProject != null) {
+      this.handleProjectChange(this.currentProject)
+    }
   }
 }
 </script>

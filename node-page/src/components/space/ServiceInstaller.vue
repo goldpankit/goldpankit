@@ -20,6 +20,7 @@
                 :model-value="currentProject"
                 :with-block="true"
                 :with-prefix="false"
+                @change="$emit('change-project', $event)"
               />
               <FormItemTip
                 v-if="currentProjectDetail != null"
@@ -136,11 +137,18 @@ export default {
         install: false,
         uninstall: false
       },
+      // 安装的版本信息
+      versionData: null,
+      // 变量
       variables: []
     }
   },
   computed: {
     ...mapState(['currentProject', 'currentProjectDetail', 'currentDatabase', 'currentDatabaseDetail']),
+    // 安装的是否为插件
+    isPlugin () {
+      return this.plugin != null
+    },
     // 服务变量集
     serviceVariables () {
       return this.variables
@@ -165,6 +173,14 @@ export default {
     },
     'isWorking.uninstall': function () {
       this.$emit('update:uninstalling', this.isWorking.uninstall)
+    },
+    // 项目配置发生变化后重新初始化变量值
+    projectConfig () {
+      this.initVariables()
+    },
+    // 切换了插件后重新初始化变量值
+    plugin () {
+      this.initVariables()
     }
   },
   methods: {
@@ -179,9 +195,8 @@ export default {
         version: this.version
       })
         .then(data => {
-          this.variables = JSON.parse(data.variables).map(item => {
-            return this.__initVariableValue(item)
-          })
+          this.versionData = data
+          this.initVariables()
         })
         .catch(e => {
           this.$tip.apiFailed(e)
@@ -205,6 +220,15 @@ export default {
           this.__install()
         })
         .catch(() => {})
+    },
+    // 初始化变量
+    initVariables () {
+      if (this.versionData == null) {
+        return
+      }
+      this.variables = JSON.parse(this.versionData.variables).map(item => {
+        return this.__initVariableValue(item)
+      })
     },
     __install () {
       if (this.isWorking.install) {
@@ -411,31 +435,48 @@ export default {
       if (value == null) {
         // 项目已安装，则从项目已安装信息中获取
         if (this.projectConfig != null) {
-          const service = this.projectConfig.services[this.service]
-          // 从自身服务中获取
-          if (service != null) {
-            // 拿到最后一个变量（变量名可重复，后者覆盖前者）
-            const targetVar = service.variables.findLast(v => v.name === variable.name)
-            if (targetVar != null) {
-              value = targetVar.value
+          // 安装的是插件
+          if (this.isPlugin) {
+            // 从自身服务中获取
+            const pluginProject = this.projectConfig.plugins || this.projectConfig.services
+            const plugin = pluginProject[this.plugin]
+            if (plugin != null) {
+              // 拿到最后一个变量（变量名可重复，后者覆盖前者）
+              const targetVar = plugin.variables.findLast(v => v.name === variable.name)
+              if (targetVar != null) {
+                value = targetVar.value
+              }
+            }
+            // 如果没有获取到值，则还可以从主服务中获取
+            if (value == null) {
+              const serviceObject = this.projectConfig.service || this.projectConfig.main
+              let service = null
+              for (const key in serviceObject) {
+                service = key
+                break
+              }
+              /**
+               * 此处存在漏洞，例如主服务中存在queryFields，子服务中也存在queryFields，但他们想要表达的不是同一层含义。
+               * 对比默认值和主服务中的值，如果类型不匹配，则不视为是同一层含义，此时将value置为null。
+               * 但这样依然可能存在类型相同但含义不同的情况，为少数情况，暂不做处理
+               */
+              const valueFromService = serviceObject[service].variables[variable.name]
+              value = valueFromService
+              if (valueFromService != null && valueFromService.constructor !== variable.defaultValue.constructor) {
+                value = null
+              }
             }
           }
-          // 如果没有获取到值，则还可以从主服务中获取
-          if (value == null) {
-            let mainService = null
-            for (const key in this.projectConfig.main) {
-              mainService = key
-              break
-            }
-            /**
-             * 此处存在漏洞，例如主服务中存在queryFields，子服务中也存在queryFields，但他们想要表达的不是同一层含义。
-             * 对比默认值和主服务中的值，如果类型不匹配，则不视为是同一层含义，此时将value置为null。
-             * 但这样依然可能存在类型相同但含义不同的情况，为少数情况，暂不做处理
-             */
-            const valueFromMain = this.projectConfig.main[mainService].variables[variable.name]
-            value = valueFromMain
-            if (valueFromMain != null && valueFromMain.constructor !== variable.defaultValue.constructor) {
-              value = null
+          // 安装的是服务
+          else {
+            const serviceProject = this.projectConfig.service || this.projectConfig.main
+            const service = serviceProject[this.service]
+            if (service != null) {
+              // 拿到最后一个变量（变量名可重复，后者覆盖前者）
+              const targetVar = service.variables.findLast(v => v.name === variable.name)
+              if (targetVar != null) {
+                value = targetVar.value
+              }
             }
           }
         }

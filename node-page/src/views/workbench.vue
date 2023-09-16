@@ -224,7 +224,7 @@ export default {
     },
     // 当前项目安装的服务(从1.3.0开始，服务安装调整至kit.json/service，原来为kit.json/main)
     installedService () {
-      return this.project.main || this.project.service
+      return this.project.service || this.project.main
     }
   },
   methods: {
