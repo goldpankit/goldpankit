@@ -55,8 +55,9 @@ module.exports = {
       const currentConfig = fs.readJSONFile(configPath)
       object.merge(currentConfig, config)
     }
-    // 保留服务名称
+    // 保留服务标识符和名称
     config.name = extConfig.name
+    config.label = extConfig.label || extConfig.name
     // 初始化服务文件
     fs.createFile(configPath, fs.toJSONFileString(config), true)
     // 添加本地服务记录
@@ -115,7 +116,6 @@ module.exports = {
   },
   // 获取服务文件树
   getFileTree(space, service, plugin) {
-    console.log(space, service, plugin)
     const pluginConfig = this.getPluginConfig({ space, service, plugin })
     // 获取文件真实存放的路径
     let fileStoragePath = pluginConfig.codespace

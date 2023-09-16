@@ -90,7 +90,7 @@
               <p v-else>None</p>
             </li>
           </ul>
-          <div class="relation-services-wrap">
+          <div v-if="relationServices.length > 0" class="relation-services-wrap">
             <h4>相关服务</h4>
             <VerticalServiceList :services="relationServices"/>
           </div>

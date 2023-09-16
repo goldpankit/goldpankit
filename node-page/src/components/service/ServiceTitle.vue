@@ -108,13 +108,14 @@ export default {
     flex-shrink: 0;
     margin-right: 10px;
     em {
-      background: var(--color-gray-2);
+      background: var(--primary-color);
       font-size: var(--font-size-mini);
       padding: 2px 10px;
       border-radius: 5px;
       font-style: normal;
+      color: var(--color-light);
       &.service {
-        background: var(--primary-color-match-2-light);
+        background: var(--primary-color-match-2);
       }
     }
   }

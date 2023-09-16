@@ -89,6 +89,7 @@
             :space-name="plugin.space.name"
             :service-name="plugin.service.name"
             :plugin-name="plugin.name"
+            :plugin-label="plugin.label"
             @initialized="fetchProfile"
           />
         </template>

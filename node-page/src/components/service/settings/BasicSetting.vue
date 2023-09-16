@@ -2,14 +2,24 @@
   <div class="basic-setting">
     <div class="wrap">
       <el-form :model="form">
-        <!-- 服务名称 -->
-        <el-form-item v-if="plugin == null" :label="$t('service.settings.label')" prop="version" required>
-          <el-input v-model="form.label" @input="saveConfig"/>
-        </el-form-item>
-        <!-- 插件名称 -->
-        <el-form-item v-else :label="$t('plugin.label')" prop="version" required>
-          <el-input v-model="form.label" @input="saveConfig"/>
-        </el-form-item>
+        <!-- 服务标识符/名称 -->
+        <template v-if="plugin == null">
+          <el-form-item :label="$t('service.settings.name')" prop="version" required>
+            <el-input v-model="form.name" disabled/>
+          </el-form-item>
+          <el-form-item :label="$t('service.settings.label')" prop="version" required>
+            <el-input v-model="form.label" @input="saveConfig"/>
+          </el-form-item>
+        </template>
+        <!-- 插件标识符/名称 -->
+        <template v-else>
+          <el-form-item :label="$t('plugin.name')" prop="version" required>
+            <el-input v-model="form.name" disabled/>
+          </el-form-item>
+          <el-form-item :label="$t('plugin.label')" prop="version" required>
+            <el-input v-model="form.label" @input="saveConfig"/>
+          </el-form-item>
+        </template>
         <el-form-item :label="$t('service.settings.version')" prop="version" required>
           <el-input v-model="form.version" @input="saveConfig"/>
         </el-form-item>
@@ -120,6 +130,7 @@ export default {
       // 原始form内容
       originForm: null,
       form: {
+        name: '',
         label: '',
         version: '',
         private: false,
@@ -217,6 +228,7 @@ export default {
         .then(config => {
           if (config != null) {
             // 兼容label和name（1.3.0）
+            this.form.name = config.name || this.form.name
             this.form.label = config.label || config.name || this.form.label
             this.form.version = config.version || this.form.version
             this.form.introduce = config.introduce || this.form.introduce

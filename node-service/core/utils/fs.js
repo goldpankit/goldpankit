@@ -71,9 +71,6 @@ module.exports = {
     const diffFiles = []
     let fileCount = 0
     for (const file of files) {
-      if (file.filepath.endsWith('assets')) {
-        console.log('assets file', file)
-      }
       // 目录，不做处理
       if (file.filetype === 'DIRECTORY') {
         continue

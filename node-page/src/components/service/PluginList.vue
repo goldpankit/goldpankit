@@ -22,7 +22,11 @@
         <span>{{plugin.user.username}}</span>
       </div>
       <div class="price-wrap">
-        <p class="text-info-1 text-mini">{{getDateOffsetText(plugin.lastPublishTime)}}</p>
+        <p class="text-info-1 text-mini">
+          <ServiceStatus :with-private="plugin.withPrivate"/>
+          |
+          {{getDateOffsetText(plugin.lastPublishTime)}}
+        </p>
         <em v-if="plugin.latestLease != null">
           {{getRemainingDay(plugin.latestLease.leaseEndTime)}} {{$t('common.days')}}
         </em>
@@ -41,10 +45,11 @@
 
 import BeanAmount from "../common/BeanAmount.vue";
 import Empty from "../common/Empty.vue";
+import ServiceStatus from "./ServiceStatus.vue";
 
 export default {
   name: "PluginList",
-  components: {Empty, BeanAmount},
+  components: {ServiceStatus, Empty, BeanAmount},
   props: {
     plugins: {
       type: Array,

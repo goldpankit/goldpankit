@@ -93,6 +93,7 @@
           <InitializeView
             :space-name="service.space.name"
             :service-name="service.name"
+            :service-label="service.label"
             @initialized="fetchProfile"
           />
         </template>

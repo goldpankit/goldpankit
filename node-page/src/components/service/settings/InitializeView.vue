@@ -34,7 +34,13 @@ export default {
     serviceName: {
       required: true
     },
+    serviceLabel: {
+      required: false
+    },
     pluginName: {
+      required: false
+    },
+    pluginLabel: {
       required: false
     }
   },
@@ -65,14 +71,16 @@ export default {
         promise = initPlugin({
           ...this.form,
           service: this.serviceName,
-          name: this.pluginName
+          name: this.pluginName,
+          label: this.pluginLabel
         })
       }
       // 初始化服务
       else {
         promise = initService({
           ...this.form,
-          name: this.serviceName
+          name: this.serviceName,
+          label: this.serviceLabel
         })
       }
       promise

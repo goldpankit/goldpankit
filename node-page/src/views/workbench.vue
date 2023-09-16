@@ -6,12 +6,18 @@
           <div class="title">
             <h2>{{project.name}}</h2>
             <div class="service-info">
-              <p>
-                {{space}} · {{service.name}} · v{{service.version}}
+              <div class="service-title-wrap">
+                <ServiceTitle
+                  :space="space"
+                  :service="service.name"
+                  :service-label="service.label"
+                  :with-new-page="true"
+                />
+                · v{{service.version}}
                 <template v-if="latestMainService != null">
                   · {{$t('service.latestVersion')}}: v{{latestMainService.version}}
                 </template>
-              </p>
+              </div>
               <el-button
                 v-if="latestMainService != null &&
                   latestMainService.version !== service.version"
@@ -62,7 +68,7 @@
           <!-- 服务信息 -->
           <div class="setting-wrap">
             <template v-if="currentService != null">
-              <h3>{{currentService.name}}</h3>
+              <h3>{{currentService.label || currentService.name}}</h3>
               <div class="main">
                 <ul class="service-dimensions">
                   <li :class="{selected: currentServiceDimension === 'readme'}" @click="currentServiceDimension = 'readme'">{{$t('common.readme')}}</li>
@@ -159,18 +165,19 @@
 
 <script>
 import {mapMutations, mapState} from 'vuex'
-import ServiceInstaller from "../components/space/ServiceInstaller.vue";
-import {fetchList} from "../api/plugin";
-import {fetchById} from "../api/user.project";
-import MarkdownEditor from "../components/common/MarkdownEditor.vue";
-import Empty from "../components/common/Empty.vue";
-import IssueListView from "../components/space/IssueListView.vue";
-import BeanAmount from "../components/common/BeanAmount.vue";
-import PluginList from "../components/service/PluginList.vue";
-import {fetchLatestVersion} from "../api/service.version";
+import ServiceInstaller from "@/components/space/ServiceInstaller.vue";
+import MarkdownEditor from "@/components/common/MarkdownEditor.vue";
+import Empty from "@/components/common/Empty.vue";
+import IssueListView from "@/components/space/IssueListView.vue";
+import BeanAmount from "@/components/common/BeanAmount.vue";
+import PluginList from "@/components/service/PluginList.vue";
+import {fetchLatestVersion} from "@/api/service.version";
+import {fetchList} from "@/api/plugin";
+import {fetchById} from "@/api/user.project";
+import ServiceTitle from "../components/service/ServiceTitle.vue";
 
 export default {
-  components: {PluginList, BeanAmount, IssueListView, Empty, MarkdownEditor, ServiceInstaller},
+  components: {ServiceTitle, PluginList, BeanAmount, IssueListView, Empty, MarkdownEditor, ServiceInstaller},
   data () {
     return {
       loading: true,
@@ -312,6 +319,7 @@ export default {
           }
         })
         .catch(e => {
+          console.log('searchPlugins', e)
           this.$tip.apiFailed(e)
         })
     },
@@ -375,6 +383,15 @@ export default {
         display: flex;
         align-items: center;
         margin-top: 10px;
+        // 服务标题
+        .service-title-wrap {
+          :deep(.service-title) {
+            display: inline-flex;
+            h3 {
+              font-size: var(--font-size);
+            }
+          }
+        }
         .el-button {
           margin-left: 10px;
         }

@@ -28,12 +28,13 @@
             :with-type="true"
           />
           <p class="introduce">{{service.introduce}}</p>
-          <p>{{$t('service.codespace')}}: {{service.codespace}}</p>
-          <p>{{$t('service.repository')}}: {{service.repository}}</p>
-          <div class="price-wrap">
-            <em>{{ service.withPrivate ? $t('common.private') : $t('common.public') }}</em>
-<!--            <p>{{majorVersionDetail.subServices.length}} {{$t('service.plugins')}}</p>-->
-<!--            <BeanAmount :price="service.price.price" :type="service.price.leaseType"/>-->
+          <div class="info">
+            <label>{{$t('service.codespace')}}:</label>
+            <p>{{service.codespace}}</p>
+          </div>
+          <div class="info">
+            <label>{{$t('service.repository')}}:</label>
+            <p>{{service.repository}}</p>
           </div>
           <div class="footer-info">
             <!-- 用户信息 -->
@@ -41,8 +42,10 @@
               <img :src="getAccessUri(service.user.avatar, '/images/avatar/default.png')">
               <span>{{service.user.username}}</span>
             </div>
+            <ServiceStatus :with-private="service.withPrivate"/>
+            <span>|</span>
             <p class="text-info-1 text-mini">
-              {{$t('service.lastPublish')}}: {{service.lastPublish == null ? $t('service.unPublish') : getDateOffsetText(service.lastPublish)}}
+              {{service.lastPublish == null ? $t('service.unPublish') : getDateOffsetText(service.lastPublish)}}
             </p>
           </div>
           <!-- 只有自己的服务才存在操作 -->
@@ -77,9 +80,10 @@ import {fetchLocalServices} from "../../api/service";
 import {mapState} from "vuex";
 import BeanAmount from "../../components/common/BeanAmount.vue";
 import ServiceTitle from "../../components/service/ServiceTitle.vue";
+import ServiceStatus from "../../components/service/ServiceStatus.vue";
 
 export default {
-  components: {ServiceTitle, BeanAmount, Empty, Pagination},
+  components: {ServiceStatus, ServiceTitle, BeanAmount, Empty, Pagination},
   data () {
     return {
       loading: false,
@@ -248,46 +252,48 @@ export default {
         margin-bottom: 15px;
         padding-right: 220px;
       }
-      & > p {
-        font-size: var(--font-size-mini);
-        margin-top: 5px;
-      }
       & > .introduce {
         margin-bottom: 10px;
         font-size: var(--font-size);
+      }
+      & > .info {
+        font-size: var(--font-size-mini);
+        margin-bottom: 5px;
+        display: flex;
+        color: var(--color-gray);
       }
       & > .price-wrap {
         display: flex;
         align-items: center;
         margin-top: 10px;
-        em {
-          border-radius: 30px;
-          margin-right: 10px;
-          font-style: normal;
-          color: var(--primary-color-match-3);
-        }
         .bean-amount {
           margin-left: 10px;
         }
       }
       // 底部信息
       .footer-info {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-      // 用户信息
-      .user-profile {
-        display: flex;
-        align-items: center;
         margin-top: 10px;
-        color: var(--font-color);
-        img {
-          width: 30px;
-          height: 30px;
-          border-radius: 50%;
-          object-fit: contain;
+        display: flex;
+        align-items: center;
+        font-size: var(--font-size-mini);
+        & > * {
           margin-right: 10px;
+        }
+        & > span {
+          color: var(--color-gray);
+        }
+        // 用户信息
+        .user-profile {
+          display: flex;
+          align-items: center;
+          color: var(--font-color);
+          img {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            object-fit: contain;
+            margin-right: 10px;
+          }
         }
       }
       // 操作

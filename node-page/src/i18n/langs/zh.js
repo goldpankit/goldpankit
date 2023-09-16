@@ -219,8 +219,6 @@ export default {
     createService: '创建服务',
     createServiceFor1: '为空间',
     createServiceFor2: '创建服务',
-    serviceName: '服务标识符',
-    serviceLabel: '服务名称',
     mainService: '服务',
     commonService: '服务插件',
     selectProject: '请选择项目',
@@ -252,6 +250,7 @@ export default {
     },
     // 设置
     settings: {
+      name: '服务标识符',
       label: '服务名称',
       compile: '编译',
       cleanCompile: '反向编译',

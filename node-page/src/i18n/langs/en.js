@@ -218,8 +218,6 @@ export default {
     serviceCodeErrorTip: 'If this window appears, it means that the service code is unable to execute correctly. The following is the error stack information for the service code execution.',
     createService: 'Create Service',
     createServiceFor: 'Create service for space ',
-    serviceName: 'Service Name',
-    serviceLabel: 'Service Label',
     mainService: 'Main Service',
     commonService: 'Sub Service',
     selectProject: 'Please select a project first',
@@ -251,7 +249,8 @@ export default {
     },
     // 设置
     settings: {
-      label: 'Service Name',
+      name: 'Service Name',
+      label: 'Service Label',
       compile: 'Compile',
       cleanCompile: 'Decompile',
       publish: 'Publish',
