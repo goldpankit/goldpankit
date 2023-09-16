@@ -1,6 +1,6 @@
 <template>
   <div class="page">
-    <div class="wrap">
+    <div v-loading="loading" class="wrap">
       <ServiceInstaller
         v-if="space != null && service != null"
         :space="space.name"
@@ -29,6 +29,7 @@ export default {
   components: {ServiceInstaller},
   data () {
     return {
+      loading: true,
       // 路由信息
       route: {
         space: null,
@@ -57,6 +58,7 @@ export default {
     },
     // 查询服务信息
     fetchService () {
+      this.loading = true
       fetchServiceDetail({
         space: this.route.space,
         service: this.route.service,
@@ -67,6 +69,9 @@ export default {
         })
         .catch(e => {
           this.$tip.apiFailed(e)
+        })
+        .finally(() => {
+          this.loading = false
         })
     },
     // 切换项目

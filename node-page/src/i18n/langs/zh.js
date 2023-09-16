@@ -416,6 +416,6 @@ export default {
     noServiceInstalledTip1: '当前项目没有安装服务，请切换项目或前往',
     noServiceInstalledTip2: '为此项目安装服务！',
     subServiceSettings: '服务插件设置',
-    subServiceSettingsTip: '点击左侧的插件打开设置并安装。'
+    subServiceSettingsTip: '点击左侧的插件，打开插件设置面板即可一键安装插件。安装后如不需要可一键卸载。'
   }
 }

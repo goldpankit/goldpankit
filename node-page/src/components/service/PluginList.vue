@@ -15,7 +15,7 @@
         <span>{{$t('service.latestVersion')}}: v{{plugin.lastVersion}}</span>
         <span v-if="installed(plugin) === true">{{$t('service.installed')}}</span>
       </p>
-      <p>{{plugin.introduce}}</p>
+      <p class="introduce">{{plugin.introduce}}</p>
       <!-- 用户信息 -->
       <div v-if="plugin.user != null" class="user-profile">
         <img :src="getAccessUri(plugin.user.avatar, '/images/avatar/default.png')">
@@ -100,6 +100,13 @@ export default {
     p {
       color: var(--color-gray);
       font-size: var(--font-size-mini);
+    }
+    .introduce {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      -webkit-line-clamp: 2;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
     }
     .price-wrap {
       margin-top: 10px;

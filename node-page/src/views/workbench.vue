@@ -343,9 +343,9 @@ export default {
       })
         .then(data => {
           this.plugins = data
-          if (this.plugins.length > 0) {
-            this.selectPlugin(this.plugins[0])
-          }
+          // if (this.plugins.length > 0) {
+          //   this.selectPlugin(this.plugins[0])
+          // }
         })
         .catch(e => {
           console.log('searchPlugins', e)
