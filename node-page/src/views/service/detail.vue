@@ -69,7 +69,7 @@
                   service: service.name
                 }
               })"
-            >{{$t('service.createNewService')}}</el-button>
+            >{{$t('plugin.create')}}</el-button>
 <!--            <el-button-->
 <!--              type="primary"-->
 <!--              size="large"-->

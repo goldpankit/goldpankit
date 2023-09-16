@@ -12,12 +12,12 @@
       </section>
       <el-form ref="form" :model="form" :rules="getRules()">
         <el-form-item :label="$t('plugin.label')" prop="label" required>
-          <el-input v-model="form.label" @input="handleLabelInput"/>
+          <el-input ref="labelInput" v-model="form.label" @input="handleLabelInput"/>
           <FormItemTip content="插件名称将展示给使用者，方便使用者更好的理解您的用意。"/>
         </el-form-item>
         <el-form-item :label="$t('plugin.name')" prop="name" required>
-          <el-input v-model="form.name"/>
-          <FormItemTip content="插件标识符会在使用者安装您的插件后记录在项目配置文件中，且标识符在服务中是唯一的，一旦确认将不可修改。"/>
+          <el-input class="follow-input" v-model="form.name"/>
+          <FormItemTip content="插件标识符会在使用者安装您的插件后记录在项目配置文件中，且标识符在同一个服务中是唯一的，一旦确认将不可修改。"/>
         </el-form-item>
       </el-form>
       <div class="opera">
@@ -99,6 +99,11 @@ export default {
   created () {
     this.space = this.$route.query.space
     this.service = this.$route.query.service
+    this.$nextTick(() => {
+      setTimeout(() => {
+        this.$refs.labelInput.focus()
+      }, 100)
+    })
   }
 }
 </script>
@@ -122,7 +127,7 @@ export default {
   // 提示
   .tip {
     padding: 20px;
-    background: var(--primary-color-match-2);
+    background: var(--color-success);
     color: var(--color-light);
     display: flex;
     align-items: center;

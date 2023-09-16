@@ -10,19 +10,15 @@
           {{$t('service.createServiceFor1')}}<em>{{space}}</em>{{$t('service.createServiceFor2')}}。
         </template>
       </section>
-      <el-form ref="form" :model="form" :rules="rules">
+      <el-form ref="form" :model="form" :rules="getRules()">
+        <el-form-item :label="$t('service.serviceLabel')" prop="label" required>
+          <el-input ref="labelInput" v-model="form.label" @input="handleLabelInput"/>
+          <FormItemTip content="服务名称将展示给使用者，方便使用者更好的理解您的用意。"/>
+        </el-form-item>
         <el-form-item :label="$t('service.serviceName')" prop="name" required>
-          <el-input v-model="form.name"/>
+          <el-input class="follow-input" v-model="form.name"/>
+          <FormItemTip content="服务标识符会在使用者安装您的服务后记录在项目配置文件中，且标识符在同一个服务空间中是唯一的，一旦确认将不可修改。"/>
         </el-form-item>
-        <el-form-item :label="$t('service.serviceType')" prop="type" required>
-          <ServiceTypeSelect v-model="form.type"/>
-        </el-form-item>
-        <!-- 为子服务时需选择跟随服务 -->
-        <template v-if="form.type !== 'MAIN'">
-          <el-form-item :label="$t('service.mainService')" prop="mainServiceName" required>
-            <MainServiceSelect v-model="form.mainServiceName" :space="space" />
-          </el-form-item>
-        </template>
       </el-form>
       <div class="opera">
         <el-button type="primary" size="large" @click="create">{{$t('service.createService')}}</el-button>
@@ -32,16 +28,19 @@
 </template>
 
 <script>
-import I18nInput from "../../../components/common/I18nInput.vue";
-import SpaceSelect from "../../../components/space/SpaceSelect.vue";
-import CompilerSelect from "../../../components/common/CompilerSelect.vue";
-import ServiceTypeSelect from "../../../components/service/ServiceTypeSelect.vue";
-import VersionSelect from "../../../components/common/VersionSelect.vue";
-import MainServiceSelect from "../../../components/service/MainServiceSelect.vue";
-import { create } from "../../../api/user.service";
+import I18nInput from "@/components/common/I18nInput.vue";
+import SpaceSelect from "@/components/space/SpaceSelect.vue";
+import CompilerSelect from "@/components/common/CompilerSelect.vue";
+import ServiceTypeSelect from "@/components/service/ServiceTypeSelect.vue";
+import VersionSelect from "@/components/common/VersionSelect.vue";
+import MainServiceSelect from "@/components/service/MainServiceSelect.vue";
+import FormItemTip from "@/components/common/FormItemTip.vue";
+import { create } from "@/api/user.service";
+import {pinyin} from "pinyin-pro";
 
 export default {
   components: {
+    FormItemTip,
     MainServiceSelect,
     VersionSelect, ServiceTypeSelect, CompilerSelect, SpaceSelect, I18nInput},
   data () {
@@ -49,22 +48,26 @@ export default {
       space: null,
       form: {
         name: '',
-        type: 'MAIN',
-        mainServiceName: null,
-        repository: '',
-        introduce: ''
-      },
-      rules: {
-        name: [
-          { required: true, message: 'Please input service name'}
-        ],
-        mainServiceName: [
-          { required: true, message: 'Please select main service'}
-        ],
+        label: ''
       }
     }
   },
   methods: {
+    // 处理名称输入
+    handleLabelInput (value) {
+      this.form.name = pinyin(value, { toneType: 'none', type: 'array' }).map(item => item.substr(0, 1)).join('')
+    },
+    // 获取表单验证规则
+    getRules () {
+      return {
+        name: [
+          { required: true, message: this.$t('form.isRequired', { value: this.$t('service.serviceName') })}
+        ],
+        label: [
+          { required: true, message: this.$t('form.isRequired', { value: this.$t('service.serviceLabel') })}
+        ]
+      }
+    },
     // 创建服务
     create () {
       this.$refs.form.validate((pass) => {
@@ -89,6 +92,11 @@ export default {
   },
   created () {
     this.space = this.$route.query.space
+    this.$nextTick(() => {
+      setTimeout(() => {
+        this.$refs.labelInput.focus()
+      }, 100)
+    })
   }
 }
 </script>
@@ -112,7 +120,7 @@ export default {
   // 提示
   .tip {
     padding: 20px;
-    background: var(--primary-color-match-2);
+    background: var(--color-success);
     color: var(--color-light);
     display: flex;
     align-items: center;

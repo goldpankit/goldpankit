@@ -11,8 +11,6 @@
           <ul class="dimensions">
             <li :class="{ selected: currentTab === 'readme' }" @click="currentTab = 'readme'">{{$t('common.readme')}}</li>
             <li :class="{ selected: currentTab === 'services' }" @click="currentTab = 'services'">{{$t('service.services2')}}</li>
-            <li class="disabled" :class="{ selected: currentTab === 'prices' }">{{$t('common.prices')}}</li>
-            <li class="disabled" :class="{ selected: currentTab === 'issues' }">{{$t('common.issues')}}</li>
           </ul>
           <div class="detail">
             <template v-if="currentTab === 'readme'">
@@ -67,16 +65,11 @@
           </div>
           <div class="install">
             <el-button
-              v-if="space.subServiceReceivable || (userInfo != null && userInfo.id === space.userId)"
               type="primary"
               size="large"
+              :disabled="userInfo == null || userInfo.id === space.userId"
               @click="$router.push({ name: 'CreateService', query: { space: spaceName } })"
             >{{$t('service.createNewService')}}</el-button>
-            <el-button
-              type="primary"
-              size="large"
-              disabled
-            >{{$t('issue.createNewIssue')}}</el-button>
           </div>
           <ul>
             <li>
@@ -239,11 +232,12 @@ export default {
         border-bottom: 3px solid;
         border-image: var(--border-colors);
         li {
-          flex-grow: 1;
           text-align: center;
           line-height: 40px;
           font-size: var(--font-size-middle);
           cursor: pointer;
+          width: 25%;
+          flex-shrink: 0;
           &.selected {
             background-image: linear-gradient(to right, var(--primary-color), var(--primary-color-5));
             color: var(--primary-color-reverse);

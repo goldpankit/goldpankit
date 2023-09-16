@@ -71,4 +71,10 @@ html {
       margin-right: 5px;
     }
   }
+  // 跟随输入的输入框
+  .el-input.follow-input {
+    .el-input__wrapper {
+      background: #eee;
+    }
+  }
 }

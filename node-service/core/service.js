@@ -188,6 +188,7 @@ module.exports = {
       space: dto.space,
       service: dto.service,
       plugin: dto.plugin,
+      label: serviceConfig.label,
       version: serviceConfig.version,
       withPrivate: serviceConfig.private,
       receivable: serviceConfig.receivable,
