@@ -31,6 +31,7 @@
             <ServiceTitle
               :space="service.space.name"
               :service="service.name"
+              :service-label="service.label"
             />
             <p>{{service.introduce}}</p>
             <p class="info">

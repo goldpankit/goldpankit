@@ -2,7 +2,7 @@
   <div v-loading="loading" class="page">
     <div v-if="space != null && service != null" class="wrap">
       <div class="header">
-        <ServiceTitle :space="space.name" :service="service.name"/>
+        <ServiceTitle :space="space.name" :service="service.name" :service-label="service.label"/>
         <div class="tech-stack-wrap">
           <em>{{ service.withPrivate ? $t('common.private') : $t('common.public') }}</em>
           <p>{{majorVersionDetail.subServices.length}} {{$t('service.plugins')}}</p>

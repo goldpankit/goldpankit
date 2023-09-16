@@ -22,7 +22,9 @@
             v-else
             :space="service.space.name"
             :service="service.mainService.name"
+            :service-label="service.mainService.label"
             :plugin="service.name"
+            :plugin-label="service.label"
             :with-type="true"
           />
           <p class="introduce">{{service.introduce}}</p>
