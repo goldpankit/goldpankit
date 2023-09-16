@@ -63,11 +63,10 @@
               {{space.user.introduce === '' || space.user.introduce == null ? 'No introduce' : space.user.introduce }}
             </p>
           </div>
-          <div class="install">
+          <div v-if="userInfo != null && userInfo.id === space.userId" class="opera-wrap">
             <el-button
               type="primary"
               size="large"
-              :disabled="userInfo == null || userInfo.id === space.userId"
               @click="$router.push({ name: 'CreateService', query: { space: spaceName } })"
             >{{$t('service.createNewService')}}</el-button>
           </div>
@@ -287,8 +286,8 @@ export default {
           font-size: var(--font-size-mini);
         }
       }
-      // 安装
-      .install {
+      // 操作
+      .opera-wrap {
         border-bottom: 2px solid;
         border-color: linear-gradient(to right, var(--primary-color), var(--primary-color-match-1)) 1;
         margin-bottom: 20px;
