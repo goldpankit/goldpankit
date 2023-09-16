@@ -184,6 +184,14 @@ export default {
         majorVersion
       })
         .then(data => {
+          // 未发布或已被删除
+          if (data == null) {
+            this.alert('该服务还未发布或已被删除')
+              .then(() => {
+                this.$router.push({ name: 'PublicServices' })
+              })
+            return
+          }
           this.service = data
           this.majorVersions = data.majorVersions
           this.currentMajorVersion = majorVersion || this.majorVersions[0]

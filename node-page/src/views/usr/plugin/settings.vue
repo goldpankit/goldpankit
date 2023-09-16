@@ -3,7 +3,12 @@
     <div class="wrap">
       <div class="header-wrap">
         <div class="header">
-          <h2>@{{plugin.space.name}}/{{plugin.service.name}}/{{plugin.name}}</h2>
+          <ServiceTitle
+            :space="plugin.space.name"
+            :service="plugin.service.name"
+            :plugin="plugin.name"
+            :with-new-page="true"
+          />
           <div v-if="initialized" class="opera">
             <el-popover
               placement="top-start"
@@ -107,9 +112,11 @@ import ServiceCodeErrorWindow from "@/components/service/ServiceCodeErrorWindow.
 import {fetchConfig, fetchProfile, saveConfig} from "@/api/plugin";
 import {cleanCompile, compile} from "@/api/service.compile";
 import SystemVariableTable from "@/components/service/settings/SystemVariableTable.vue";
+import ServiceTitle from "../../../components/service/ServiceTitle.vue";
 
 export default {
   components: {
+    ServiceTitle,
     SystemVariableTable,
     ServiceCodeErrorWindow,
     MarkdownEditor,
@@ -295,6 +302,9 @@ export default {
       flex-shrink: 0;
       display: flex;
       justify-content: space-between;
+      :deep(.service-title h3) {
+        font-size: var(--font-size-large);
+      }
     }
     .service-path {
       font-size: var(--font-size-mini)

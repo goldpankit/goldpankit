@@ -13,7 +13,7 @@
       <!-- 空间和服务 -->
       <template v-else-if="service != null && plugin == null">
         <template v-if="withPaths">
-          <router-link :to="{
+          <router-link :target="withNewPage ? '_blank': ''" :to="{
             name: 'SpaceDetail',
             params: {
               name: space
@@ -21,25 +21,25 @@
           }">@{{space}}</router-link>
           /
         </template>
-        <router-link :to="{
+        <router-link :target="withNewPage ? '_blank': ''" :to="{
           name: 'ServiceDetail',
           params: {
             spaceName: space,
             serviceName: service
           }
-        }">{{service}}</router-link>
+        }">{{serviceLabel || service}}</router-link>
       </template>
       <!-- 空间、服务和插件 -->
       <template v-else>
         <template v-if="withPaths">
-          <router-link :to="{
+          <router-link :target="withNewPage ? '_blank': ''" :to="{
             name: 'SpaceDetail',
             params: {
               name: space
             }
           }">@{{space}}</router-link>
           /
-          <router-link :to="{
+          <router-link :target="withNewPage ? '_blank': ''" :to="{
             name: 'ServiceDetail',
             params: {
               spaceName: space,
@@ -59,11 +59,17 @@
 export default {
   name: "ServiceTitle",
   props: {
+    // 包含类型标签
     withType: {
       default: false
     },
+    // 包含路径
     withPaths: {
       default: true
+    },
+    // 在新页面中打开
+    withNewPage: {
+      default: false
     },
     space: {
       required: true
@@ -71,7 +77,13 @@ export default {
     service: {
       required: false
     },
+    serviceLabel: {
+      required: false
+    },
     plugin: {
+      required: false
+    },
+    pluginLabel: {
       required: false
     }
   }
