@@ -16,21 +16,31 @@
                 />
                 · v{{service.version}}
               </div>
-              <el-button
-                v-if="latestMainService != null &&
-                  latestMainService.version !== service.version"
-                type="primary"
-                icon="Upload"
-                @click="$router.push({
-                  name: 'SpaceDetail',
-                  params: {
-                    name: space
-                  },
-                  query: {
-                    service: this.service.name
-                  }
-                })"
-              >{{$t('service.upgrade')}}</el-button>
+              <el-popover
+                v-if="latestMainService != null && latestMainService.version !== service.version"
+                :title="$t('service.upgradeTitle')"
+                :width="255"
+                trigger="hover"
+                popper-class="upgrade-popover"
+              >
+                <template #default>
+                  <pre>{{upgradeDescription}}</pre>
+                </template>
+                <template #reference>
+                  <el-button
+                    size="small"
+                    type="primary"
+                    icon="Upload"
+                    @click="$router.push({
+                      name: 'ServiceDetail',
+                      params: {
+                        space: space,
+                        service: this.service.name
+                      }
+                    })"
+                  >{{$t('service.upgrade')}}</el-button>
+                </template>
+              </el-popover>
             </div>
           </div>
           <div class="info">
@@ -230,6 +240,17 @@ export default {
     // 当前项目安装的服务(从1.3.0开始，服务安装调整至kit.json/service，原来为kit.json/main)
     installedService () {
       return this.project.service || this.project.main
+    },
+    // 升级说明
+    upgradeDescription () {
+      if (this.latestMainService == null) {
+        return ''
+      }
+      return this.$t('service.upgradeTip', {
+        currentVersion: this.service.version,
+        newVersion: this.latestMainService.version,
+        publishDescription: this.latestMainService.publishDescription
+      })
     }
   },
   methods: {
@@ -360,6 +381,15 @@ export default {
 }
 </script>
 
+<style lang="scss">
+.upgrade-popover {
+  pre {
+    word-break: break-word;
+    white-space: pre-wrap;
+    font-size: var(--font-size-mini);
+  }
+}
+</style>
 <style scoped lang="scss">
 .page {
   height: 100%;

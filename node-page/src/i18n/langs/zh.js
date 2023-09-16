@@ -170,6 +170,7 @@ export default {
   },
   // 服务
   service: {
+    service: '服务',
     relationList: '相关服务',
     searchPlaceholder: '输入关键字，搜索服务',
     searchEmpty: '未找到服务',
@@ -229,6 +230,8 @@ export default {
     missingGroupVariableValueTip: '「{groupName}」中缺少「{variable}」',
     settingsForSelectType: '深度设置',
     installTip: '服务安装后，代码将会自动写入您的当前项目中。如果您对服务代码不满意，可直接卸载。如果服务代码出现了BUG，修复后您可以通过一键升级的方式快速修复。',
+    upgradeTitle: '升级说明',
+    upgradeTip: '当前使用的服务版本为v{currentVersion}，升级后的版本为v{newVersion}，升级内容如下：\n\n{publishDescription}。',
     // 租赁类型
     leaseType: {
       freeLabel: '免费',
@@ -253,6 +256,8 @@ export default {
     settings: {
       name: '服务标识符',
       label: '服务名称',
+      nameTip: '服务标识符会在使用者安装您的服务后记录在项目配置文件中，且标识符在同一个服务空间中是唯一的，一旦确认将不可修改。',
+      labelTip: '服务名称将展示给使用者，方便使用者更好的理解您的用意。',
       compile: '编译',
       cleanCompile: '反向编译',
       publish: '发布',
@@ -343,12 +348,16 @@ export default {
   },
   // 插件
   plugin: {
+    plugin: '插件',
     create: '创建插件',
+    create2: '创建插件',
     name: '插件标识符',
     label: '插件名称',
+    nameTip: '插件标识符会在使用者安装您的插件后记录在项目配置文件中，且标识符在同一个服务中是唯一的，一旦确认将不可修改。',
+    labelTip: '插件名称将展示给使用者，方便使用者更好的理解您的用意。',
     createFor1: '为服务',
     createFor2: '创建插件',
-    settings: '插件设置'
+    settings: '插件设置',
   },
   // 问题
   issue: {

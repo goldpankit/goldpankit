@@ -24,11 +24,11 @@
               </template>
             </el-popover>
             <el-popover
-                placement="top-start"
-                :title="$t('service.settings.cleanCompileTipTitle')"
-                :width="200"
-                trigger="hover"
-                :content="cleanCompileTip"
+              placement="top-start"
+              :title="$t('service.settings.cleanCompileTipTitle')"
+              :width="200"
+              trigger="hover"
+              :content="cleanCompileTip"
             >
               <template #reference>
                 <el-button type="primary" :class="{ 'is-disabled': currentProject == null || isWorking.cleanCompile}" @click="cleanCompile">{{$t('service.settings.cleanCompile')}}</el-button>

@@ -13,11 +13,11 @@
       <el-form ref="form" :model="form" :rules="getRules()">
         <el-form-item :label="$t('service.settings.label')" prop="label" required>
           <el-input ref="labelInput" v-model="form.label" @input="handleLabelInput"/>
-          <FormItemTip content="服务名称将展示给使用者，方便使用者更好的理解您的用意。"/>
+          <FormItemTip :content="$t('service.settings.labelTip')"/>
         </el-form-item>
         <el-form-item :label="$t('service.settings.name')" prop="name" required>
           <el-input class="follow-input" v-model="form.name"/>
-          <FormItemTip content="服务标识符会在使用者安装您的服务后记录在项目配置文件中，且标识符在同一个服务空间中是唯一的，一旦确认将不可修改。"/>
+          <FormItemTip :content="$t('service.settings.nameTip')"/>
         </el-form-item>
       </el-form>
       <div class="opera">
@@ -61,7 +61,7 @@ export default {
     getRules () {
       return {
         name: [
-          { required: true, message: this.$t('form.isRequired', { value: this.$t('service.settings.ame') })}
+          { required: true, message: this.$t('form.isRequired', { value: this.$t('service.settings.name') })}
         ],
         label: [
           { required: true, message: this.$t('form.isRequired', { value: this.$t('service.settings.label') })}

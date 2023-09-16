@@ -170,6 +170,7 @@ export default {
   },
   // 服务
   service: {
+    service: 'Service',
     relationList: 'Related Services',
     searchPlaceholder: 'Enter keywords to search for services',
     searchEmpty: 'Service not found',
@@ -228,6 +229,8 @@ export default {
     missingGroupVariableValueTip: 'Missing「{variable}」In「{groupName}」',
     settingsForSelectType: ' Deep Settings',
     installTip: 'After the installation of the service, the code will be automatically written into your current project. If you are not satisfied with the service code, you can uninstall it directly. In case any bugs occur in the service code, you can quickly fix them by upgrading with just one click.',
+    upgradeTitle: 'Upgrade Instructions',
+    upgradeTip: 'The current version being used is v{currentVersion}, and the upgraded version will be v{newVersion}. The content of the upgrade is as follows: \n\n{publishDescription}.',
     // 租赁类型
     leaseType: {
       freeLabel: 'Free',
@@ -250,8 +253,10 @@ export default {
     },
     // 设置
     settings: {
-      name: 'Service Name',
-      label: 'Service Label',
+      name: 'Service Identifier',
+      label: 'Service Name',
+      nameTip: 'The service identifier will be recorded in the project configuration file after the service is installed by the user, and the identifier is unique within the same service space. Once confirmed, it cannot be modified.',
+      labelTip: 'The service name will be displayed to users, making it easier for them to understand your intention.',
       compile: 'Compile',
       cleanCompile: 'Decompile',
       publish: 'Publish',
@@ -334,6 +339,18 @@ export default {
         enableExpressHolder: `The expression is compiled using the current file compiler. It is considered enabled when the result is the string 'true' or when it is empty.`
       }
     }
+  },
+  // 插件
+  plugin: {
+    plugin: 'Plugin',
+    create: 'Create Plugin',
+    create2: 'Create New Plugin',
+    name: 'Plugin Identifier',
+    label: 'Plugin Name',
+    nameTip: 'The plugin identifier will be recorded in the project configuration file after the user installs your plugin, and the identifier is unique within the same service. Once confirmed, it cannot be modified.',
+    labelTip: 'The plugin name will be displayed to the users, making it easier for them to understand your intention.',
+    createFor: 'Create plugin for service ',
+    settings: 'Settings'
   },
   // 问题
   issue: {

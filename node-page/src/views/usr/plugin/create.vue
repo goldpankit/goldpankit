@@ -13,11 +13,11 @@
       <el-form ref="form" :model="form" :rules="getRules()">
         <el-form-item :label="$t('plugin.label')" prop="label" required>
           <el-input ref="labelInput" v-model="form.label" @input="handleLabelInput"/>
-          <FormItemTip content="插件名称将展示给使用者，方便使用者更好的理解您的用意。"/>
+          <FormItemTip :content="$t('plugin.nameTip')"/>
         </el-form-item>
         <el-form-item :label="$t('plugin.name')" prop="name" required>
           <el-input class="follow-input" v-model="form.name"/>
-          <FormItemTip content="插件标识符会在使用者安装您的插件后记录在项目配置文件中，且标识符在同一个服务中是唯一的，一旦确认将不可修改。"/>
+          <FormItemTip :content="$t('plugin.labelTip')"/>
         </el-form-item>
       </el-form>
       <div class="opera">

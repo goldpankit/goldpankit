@@ -4,7 +4,7 @@
       <div class="header">
         <ServiceTitle :space="space.name" :service="service.name" :service-label="service.label"/>
         <div class="tech-stack-wrap">
-          <em>{{ service.withPrivate ? $t('common.private') : $t('common.public') }}</em>
+          <ServiceStatus :with-private="service.withPrivate"/>
           <p>{{majorVersionDetail.subServices.length}} {{$t('service.plugins')}}</p>
           <BeanAmount :price="service.price.price" :type="service.price.leaseType"/>
         </div>
@@ -71,7 +71,7 @@
                   service: service.name
                 }
               })"
-            >{{$t('plugin.create')}}</el-button>
+            >{{$t('plugin.create2')}}</el-button>
 <!--            <el-button-->
 <!--              type="primary"-->
 <!--              size="large"-->
@@ -109,9 +109,12 @@ import {fetchList, fetchServiceDetail} from "@/api/service";
 import {fetchProfileByName} from "@/api/service.space";
 import VerticalServiceList from "../../components/service/VerticalServiceList.vue";
 import ServiceTitle from "../../components/service/ServiceTitle.vue";
+import ServiceStatus from "../../components/service/ServiceStatus.vue";
 
 export default {
-  components: {ServiceTitle, VerticalServiceList, BeanAmount, MarkdownEditor, PluginList, ServiceStructureView },
+  components: {
+    ServiceStatus,
+    ServiceTitle, VerticalServiceList, BeanAmount, MarkdownEditor, PluginList, ServiceStructureView },
   data () {
     return {
       loading: true,
@@ -260,10 +263,7 @@ export default {
       align-items: center;
       margin-top: 10px;
       em {
-        border-radius: 30px;
         margin-right: 10px;
-        font-style: normal;
-        color: var(--primary-color-match-3);
       }
       .bean-amount {
         margin-left: 10px;

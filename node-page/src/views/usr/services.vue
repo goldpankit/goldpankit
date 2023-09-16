@@ -14,7 +14,7 @@
             v-if="service.type === 'MAIN'"
             :space="service.space.name"
             :service="service.name"
-            :service-lable="service.label"
+            :service-label="service.label"
             :with-type="true"
           />
           <!-- 插件 -->

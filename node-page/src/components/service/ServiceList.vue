@@ -11,8 +11,9 @@
       />
       <p>{{service.introduce}}</p>
       <section class="infos">
-        <p>{{service.versionCount}} {{$t('service.versions')}}</p>
-        <p>{{$t('service.latestVersion')}}: {{service.lastVersion}}</p>
+        <span>{{service.pluginCount}} {{$t('service.plugins')}}</span>
+        <span>|</span>
+        <span>{{$t('service.latestVersion')}}: {{service.lastVersion}}</span>
       </section>
       <div class="price-wrap">
         <p class="text-info-1 text-mini">{{$t('service.lastPublish')}}: {{getDateOffsetText(service.lastPublish)}}</p>
@@ -50,7 +51,6 @@ export default {
     margin-right: 10px;
     border: 1px solid var(--border-default-color);
     padding: 20px;
-    cursor: pointer;
     margin-bottom: 15px;
     border-radius: 10px;
     transition: all ease .15s;
@@ -70,14 +70,15 @@ export default {
     }
     .infos {
       display: flex;
-      margin-top: 5px;
+      margin-top: 10px;
       font-size: var(--font-size-mini);
-      p {
+      span {
         margin-right: 10px;
+        color: var(--color-gray);
       }
     }
     .price-wrap {
-      margin-top: 10px;
+      margin-top: 5px;
       display: flex;
       justify-content: space-between;
     }

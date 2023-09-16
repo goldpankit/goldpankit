@@ -2,7 +2,7 @@
   <div class="service-title">
     <div v-if="withType" class="type-tag">
       <em :class="{service: service != null && plugin == null}">
-        {{ plugin != null ? '插件' : '服务' }}
+        {{ plugin != null ? $t('plugin.plugin') : $t('service.service') }}
       </em>
     </div>
     <h3 class="paths">
