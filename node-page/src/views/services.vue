@@ -21,24 +21,18 @@
         @size-change="handleSizeChange"
       />
       <ul v-if="loading || services.length > 0" v-loading="loading" class="service-list">
-        <li
-          v-for="service in services"
-          :key="service.id"
-          @click="$router.push({
-            name: 'ServiceDetail',
-            params: {
-              spaceName: service.space.name,
-              serviceName: service.name
-            }
-          })"
-        >
+        <li v-for="service in services" :key="service.id">
           <!-- 用户信息 -->
           <div v-if="service.user != null" class="user-profile">
             <img :src="getAccessUri(service.user.avatar, '/images/avatar/default.png')">
           </div>
           <!-- 服务信息 -->
           <div class="service-info">
-            <h3>@{{service.space.name}}/{{service.name}}</h3>
+            <h3>
+              <router-link :to="{ name: 'SpaceDetail', params: { name: service.space.name } }">@{{service.space.name}}</router-link>
+              /
+              <router-link :to="{ name: 'ServiceDetail', params: { spaceName: service.space.name, serviceName: service.name } }">{{service.name}}</router-link>
+            </h3>
             <p>{{service.introduce}}</p>
             <p class="info">
               <span>{{service.subServiceCount}} 个插件</span>
@@ -189,11 +183,6 @@ export default {
         justify-content: space-between;
         border-bottom: 2px solid var(--border-default-color);
         cursor: default;
-        &:hover {
-          h3 {
-            color: var(--primary-color-match-2);
-          }
-        }
       }
     }
     // 用户信息
@@ -215,7 +204,12 @@ export default {
         font-size: var(--font-size-middle);
         margin-bottom: 10px;
         transition: all ease .15s;
-        cursor: pointer;
+        & > a {
+          color: var(--color-service-name) !important;
+          &:hover {
+            color: var(--color-service-name-hover) !important;
+          }
+        }
       }
       & > p {
         color: var(--font-color);

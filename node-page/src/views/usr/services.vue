@@ -9,14 +9,30 @@
 <!--      </div>-->
       <ul v-loading="loading" v-if="services.length > 0" class="service-list">
         <li v-for="service in services" :key="service.id">
-          <h3 v-if="service.type === 'MAIN'">
-            <em :class="{ service: service.type === 'MAIN' }">服务</em>
-            <span>@{{service.space.name}}/{{service.name}}</span>
-          </h3>
-          <h3 v-else>
-            <em>插件</em>
-            <span>@{{service.space.name}}/{{service.mainService.name}}/{{service.name}}</span>
-          </h3>
+          <!-- 服务 -->
+          <div v-if="service.type === 'MAIN'" class="title">
+            <div class="tag">
+              <em :class="{ service: service.type === 'MAIN' }">服务</em>
+            </div>
+            <h3>
+              <router-link :to="{ name: 'SpaceDetail', params: { name: service.space.name } }">@{{service.space.name}}</router-link>
+              /
+              <router-link :to="{ name: 'ServiceDetail', params: { spaceName: service.space.name, serviceName: service.name } }">{{service.name}}</router-link>
+            </h3>
+          </div>
+          <!-- 插件 -->
+          <div v-else class="title">
+            <div class="tag">
+              <em>插件</em>
+            </div>
+            <h3 class="paths">
+              <router-link :to="{ name: 'SpaceDetail', params: { name: service.space.name } }">@{{service.space.name}}</router-link>
+              /
+              <router-link :to="{ name: 'ServiceDetail', params: { spaceName: service.space.name, serviceName: service.mainService.name } }">{{service.name}}</router-link>
+              /
+              <span>{{service.name}}</span>
+            </h3>
+          </div>
           <p class="introduce">{{service.introduce}}</p>
           <p>{{$t('service.codespace')}}: {{service.codespace}}</p>
           <p>{{$t('service.repository')}}: {{service.repository}}</p>
@@ -37,9 +53,6 @@
           </div>
           <!-- 只有自己的服务才存在操作 -->
           <ul v-if="service.user != null && userInfo.id === service.user.id" class="opera">
-            <li v-if="service.type === 'MAIN'">
-              <el-button v-if="service.type === 'MAIN'" @click="openDetail(service)">查看</el-button>
-            </li>
             <li>
               <el-button v-if="service.type === 'MAIN'" @click="openSettings(service)">
                 {{$t('service.serviceSettings')}}
@@ -236,20 +249,32 @@ export default {
       &:last-of-type {
         border-bottom: 0;
       }
-      & > h3 {
-        font-size: var(--font-size-middle);
+      & > .title {
         margin-bottom: 15px;
         padding-right: 220px;
         display: flex;
-        em {
-          background: var(--color-gray-2);
-          font-size: var(--font-size-mini);
-          padding: 2px 10px;
+        h3 {
+          flex-grow: 1;
+          font-size: var(--font-size-middle);
+          & > a {
+            color: var(--color-service-name) !important;
+            &:hover {
+              color: var(--color-service-name-hover) !important;
+            }
+          }
+        }
+        .tag {
+          flex-shrink: 0;
           margin-right: 5px;
-          border-radius: 5px;
-          font-style: normal;
-          &.service {
-            background: var(--primary-color-match-2-light);
+          em {
+            background: var(--color-gray-2);
+            font-size: var(--font-size-mini);
+            padding: 2px 10px;
+            border-radius: 5px;
+            font-style: normal;
+            &.service {
+              background: var(--primary-color-match-2-light);
+            }
           }
         }
       }
