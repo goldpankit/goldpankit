@@ -468,6 +468,7 @@ export default {
           h5 {
             position: relative;
             padding-right: 30px;
+            font-size: var(--font-size);
             .el-icon {
               position: absolute;
               top: 0;
