@@ -328,7 +328,7 @@ export default {
   .files {
     flex-grow: 1;
     background: var(--color-light);
-    height: 280px;
+    height: 150px;
     display: flex;
     flex-direction: column;
     ul {

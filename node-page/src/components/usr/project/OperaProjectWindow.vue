@@ -19,7 +19,7 @@
         <DirectorySelect v-if="ready" v-model="form.codespace"/>
       </el-form-item>
       <el-form-item :label="$t('common.remark')" prop="remark">
-        <el-input type="textarea" :rows="5" v-model="form.remark" maxlength="200"/>
+        <el-input type="textarea" :rows="2" v-model="form.remark" maxlength="200"/>
       </el-form-item>
     </el-form>
     <div class="opera">
