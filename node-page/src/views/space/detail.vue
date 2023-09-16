@@ -42,7 +42,7 @@
             <el-button
               type="primary"
               size="large"
-              @click="$router.push({ name: 'CreateService', query: { space: spaceName } })"
+              @click="$router.push({ name: 'CreateService', query: { space: space.name } })"
             >{{$t('service.createNewService')}}</el-button>
           </div>
           <ul>
@@ -211,7 +211,7 @@ export default {
       width: 255px;
       flex-shrink: 0;
       border-left: 1px solid var(--border-default-color);
-      padding: 0 30px;
+      padding: 0 0 0 30px;
       box-sizing: border-box;
       // 用户简介
       .user-profile {

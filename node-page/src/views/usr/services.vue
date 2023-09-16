@@ -10,29 +10,20 @@
       <ul v-loading="loading" v-if="services.length > 0" class="service-list">
         <li v-for="service in services" :key="service.id">
           <!-- 服务 -->
-          <div v-if="service.type === 'MAIN'" class="title">
-            <div class="tag">
-              <em :class="{ service: service.type === 'MAIN' }">服务</em>
-            </div>
-            <h3>
-              <router-link :to="{ name: 'SpaceDetail', params: { name: service.space.name } }">@{{service.space.name}}</router-link>
-              /
-              <router-link :to="{ name: 'ServiceDetail', params: { spaceName: service.space.name, serviceName: service.name } }">{{service.name}}</router-link>
-            </h3>
-          </div>
+          <ServiceTitle
+            v-if="service.type === 'MAIN'"
+            :space="service.space.name"
+            :service="service.name"
+            :with-type="true"
+          />
           <!-- 插件 -->
-          <div v-else class="title">
-            <div class="tag">
-              <em>插件</em>
-            </div>
-            <h3 class="paths">
-              <router-link :to="{ name: 'SpaceDetail', params: { name: service.space.name } }">@{{service.space.name}}</router-link>
-              /
-              <router-link :to="{ name: 'ServiceDetail', params: { spaceName: service.space.name, serviceName: service.mainService.name } }">{{service.name}}</router-link>
-              /
-              <span>{{service.name}}</span>
-            </h3>
-          </div>
+          <ServiceTitle
+            v-else
+            :space="service.space.name"
+            :service="service.mainService.name"
+            :plugin="service.name"
+            :with-type="true"
+          />
           <p class="introduce">{{service.introduce}}</p>
           <p>{{$t('service.codespace')}}: {{service.codespace}}</p>
           <p>{{$t('service.repository')}}: {{service.repository}}</p>
@@ -82,9 +73,10 @@ import {deleteService, fetchPage} from "../../api/user.service";
 import {fetchLocalServices} from "../../api/service";
 import {mapState} from "vuex";
 import BeanAmount from "../../components/common/BeanAmount.vue";
+import ServiceTitle from "../../components/service/ServiceTitle.vue";
 
 export default {
-  components: {BeanAmount, Empty, Pagination},
+  components: {ServiceTitle, BeanAmount, Empty, Pagination},
   data () {
     return {
       loading: false,
@@ -249,34 +241,9 @@ export default {
       &:last-of-type {
         border-bottom: 0;
       }
-      & > .title {
+      & > .service-title {
         margin-bottom: 15px;
         padding-right: 220px;
-        display: flex;
-        h3 {
-          flex-grow: 1;
-          font-size: var(--font-size-middle);
-          & > a {
-            color: var(--color-service-name) !important;
-            &:hover {
-              color: var(--color-service-name-hover) !important;
-            }
-          }
-        }
-        .tag {
-          flex-shrink: 0;
-          margin-right: 5px;
-          em {
-            background: var(--color-gray-2);
-            font-size: var(--font-size-mini);
-            padding: 2px 10px;
-            border-radius: 5px;
-            font-style: normal;
-            &.service {
-              background: var(--primary-color-match-2-light);
-            }
-          }
-        }
       }
       & > p {
         font-size: var(--font-size-mini);

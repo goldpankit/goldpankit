@@ -28,11 +28,10 @@
           </div>
           <!-- 服务信息 -->
           <div class="service-info">
-            <h3>
-              <router-link :to="{ name: 'SpaceDetail', params: { name: service.space.name } }">@{{service.space.name}}</router-link>
-              /
-              <router-link :to="{ name: 'ServiceDetail', params: { spaceName: service.space.name, serviceName: service.name } }">{{service.name}}</router-link>
-            </h3>
+            <ServiceTitle
+              :space="service.space.name"
+              :service="service.name"
+            />
             <p>{{service.introduce}}</p>
             <p class="info">
               <span><i class="iconfont icon-plugin"></i>{{service.subServiceCount}} 个插件</span>
@@ -58,9 +57,10 @@ import Pagination from "@/components/common/Pagination.vue";
 import Empty from "@/components/common/Empty.vue";
 import ServiceList from "@/components/service/ServiceList.vue";
 import {search} from "@/api/service";
+import ServiceTitle from "../components/service/ServiceTitle.vue";
 
 export default {
-  components: {ServiceList, Empty, Pagination},
+  components: {ServiceTitle, ServiceList, Empty, Pagination},
   data () {
     return {
       loading: false,

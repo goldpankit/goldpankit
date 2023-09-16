@@ -53,7 +53,7 @@
               @click="selectPlugin($event)"
             >
               <template #title="{plugin}">
-                {{plugin.name}}
+                {{plugin.label || plugin.name}}
                 <el-icon v-if="hasNewVersion(plugin)"><Upload /></el-icon>
                 <el-icon v-else-if="withInstalled(plugin)" class="installed-icon"><Check /></el-icon>
               </template>

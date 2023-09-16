@@ -8,7 +8,7 @@
     >
       <h5>
         <slot name="title" :plugin="plugin">
-          {{plugin.name}}
+          {{plugin.label || plugin.name}}
         </slot>
       </h5>
       <p class="latest-version">
@@ -22,7 +22,7 @@
         <span>{{plugin.user.username}}</span>
       </div>
       <div class="price-wrap">
-        <p class="text-info-1 text-mini">{{$t('service.lastPublish')}}: {{getDateOffsetText(plugin.lastPublishTime)}}</p>
+        <p class="text-info-1 text-mini">{{getDateOffsetText(plugin.lastPublishTime)}}</p>
         <em v-if="plugin.latestLease != null">
           {{getRemainingDay(plugin.latestLease.leaseEndTime)}} {{$t('common.days')}}
         </em>
@@ -108,7 +108,6 @@ export default {
       display: flex;
       justify-content: space-between;
       span:last-of-type {
-        font-weight: bold;
         color: var(--color-gray);
       }
     }
@@ -119,11 +118,11 @@ export default {
       margin-top: 10px;
       color: var(--font-color);
       img {
-        width: 30px;
-        height: 30px;
+        width: 20px;
+        height: 20px;
         border-radius: 50%;
         object-fit: contain;
-        margin-right: 10px;
+        margin-right: 5px;
       }
     }
   }

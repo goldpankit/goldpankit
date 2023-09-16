@@ -192,6 +192,11 @@ module.exports = {
     if (!this.exists(filepath)) {
       return null
     }
+    // 处理有文件但内容为空的情况
+    const fileContent = fs.readFileSync(filepath).toString()
+    if (fileContent.trim() === '') {
+      return {}
+    }
     return JSON.parse(fs.readFileSync(filepath).toString())
   },
   createDirectory(filepath, force = false) {

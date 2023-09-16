@@ -252,11 +252,12 @@ class Kit {
       return response.INSTALL.MISSING_PROJECT
     }
     // 没有安装过任何项目
-    if (project.main === undefined) {
+    const serviceObject = project.main || project.service
+    if (serviceObject === undefined) {
       return
     }
     // 验证当前项目是否安装了别的主服务，如果是，则做出提醒
-    if (project.space !== space || (project.main != null && project.main[service] == null)) {
+    if (project.space !== space || (serviceObject != null && serviceObject[service] == null)) {
       return response.INSTALL.PROJECT_NOT_ALLOWED
     }
   }

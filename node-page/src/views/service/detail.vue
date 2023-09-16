@@ -2,7 +2,7 @@
   <div v-loading="loading" class="page">
     <div v-if="space != null && service != null" class="wrap">
       <div class="header">
-        <h2>@{{space.name}}/{{service.name}}</h2>
+        <ServiceTitle :space="space.name" :service="service.name"/>
         <div class="tech-stack-wrap">
           <em>{{ service.withPrivate ? $t('common.private') : $t('common.public') }}</em>
           <p>{{majorVersionDetail.subServices.length}} {{$t('service.plugins')}}</p>
@@ -90,6 +90,10 @@
               <p v-else>None</p>
             </li>
           </ul>
+          <div class="relation-services-wrap">
+            <h4>相关服务</h4>
+            <VerticalServiceList :services="relationServices"/>
+          </div>
         </div>
       </div>
     </div>
@@ -97,18 +101,24 @@
 </template>
 
 <script>
-import ServiceStructureView from "../../components/space/ServiceStructureView.vue";
-import PluginList from "../../components/service/PluginList.vue";
-import MarkdownEditor from "../../components/common/MarkdownEditor.vue";
-import {fetchServiceDetail} from "../../api/service";
-import {fetchProfileByName} from "../../api/service.space";
-import BeanAmount from "../../components/common/BeanAmount.vue";
+import ServiceStructureView from "@/components/space/ServiceStructureView.vue";
+import PluginList from "@/components/service/PluginList.vue";
+import MarkdownEditor from "@/components/common/MarkdownEditor.vue";
+import BeanAmount from "@/components/common/BeanAmount.vue";
+import {fetchList, fetchServiceDetail} from "@/api/service";
+import {fetchProfileByName} from "@/api/service.space";
+import VerticalServiceList from "../../components/service/VerticalServiceList.vue";
+import ServiceTitle from "../../components/service/ServiceTitle.vue";
 
 export default {
-  components: {BeanAmount, MarkdownEditor, PluginList, ServiceStructureView },
+  components: {ServiceTitle, VerticalServiceList, BeanAmount, MarkdownEditor, PluginList, ServiceStructureView },
   data () {
     return {
       loading: true,
+      route: {
+        space: null,
+        service: null
+      },
       currentTab: 'readme',
       // 当前主版本
       currentMajorVersion: '',
@@ -121,10 +131,19 @@ export default {
       // 服务信息
       service: null,
       // 主版本详情
-      majorVersionDetail: null
+      majorVersionDetail: null,
+      // 相关服务
+      relationServices: []
     }
   },
   methods: {
+    // 初始化数据
+    initData () {
+      this.loading = true
+      this.fetchSpace()
+      this.fetchServices()
+      this.fetchDetail()
+    },
     // 切换主版本
     changeMajorVersion (majorVersion) {
       if (this.currentMajorVersion === majorVersion) {
@@ -135,9 +154,24 @@ export default {
     },
     // 查询空间
     fetchSpace() {
-      fetchProfileByName(this.$route.params.spaceName)
+      fetchProfileByName(this.route.space)
         .then(data => {
           this.space = data
+          console.log('this.space', this.space)
+        })
+        .catch(e => {
+          this.$tip.apiFailed(e)
+        })
+    },
+    // 查询空间下的服务
+    fetchServices () {
+      fetchList({
+        space: this.route.space,
+        withSpaceInfo: false,
+        withPublisher: false
+      })
+        .then(data => {
+          this.relationServices = data.filter(service => this.route.service !== service.name)
         })
         .catch(e => {
           this.$tip.apiFailed(e)
@@ -146,8 +180,7 @@ export default {
     // 查询详情
     fetchDetail (majorVersion) {
       fetchServiceDetail({
-        space: this.$route.params.spaceName,
-        service: this.$route.params.serviceName,
+        ...this.route,
         majorVersion
       })
         .then(data => {
@@ -168,9 +201,16 @@ export default {
         })
     }
   },
+  beforeRouteUpdate (to, from, next) {
+    this.route.space = to.params.spaceName
+    this.route.service = to.params.serviceName
+    this.initData()
+    next()
+  },
   created () {
-    this.fetchSpace()
-    this.fetchDetail()
+    this.route.space = this.$route.params.spaceName
+    this.route.service = this.$route.params.serviceName
+    this.initData()
   }
 }
 </script>
@@ -190,6 +230,15 @@ export default {
   }
   .header {
     position: relative;
+    :deep(.service-title h3){
+      font-size: var(--font-size-large) !important;
+      a {
+        color: var(--font-color) !important;
+        &:hover {
+          color: var(--color-gray-deep);
+        }
+      }
+    }
     // 技术栈
     .tech-stack-wrap {
       display: flex;
@@ -269,7 +318,7 @@ export default {
       width: 255px;
       flex-shrink: 0;
       border-left: 1px solid var(--border-default-color);
-      padding: 0 30px;
+      padding: 0 0 0 30px;
       box-sizing: border-box;
       // 用户简介
       .user-profile {
@@ -334,7 +383,14 @@ export default {
         }
       }
       // 相关服务
-      ul.relation-list {}
+      .relation-services-wrap {
+        & > h4 {
+          font-weight: normal;
+          font-size: var(--font-size);
+          margin-bottom: 10px;
+          color: var(--color-gray);
+        }
+      }
     }
     // 服务类型
     ul.service-types {

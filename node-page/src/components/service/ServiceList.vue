@@ -4,17 +4,11 @@
       v-for="service in services"
       :key="service.name"
     >
-      <h4>
-        <router-link :to="{
-          name: 'ServiceDetail',
-          params: {
-            spaceName: space,
-            serviceName: service.name
-          }
-        }">
-          {{service.name}}
-        </router-link>
-      </h4>
+      <ServiceTitle
+        :space="space"
+        :service="service.name"
+        :with-paths="false"
+      />
       <p>{{service.introduce}}</p>
       <section class="infos">
         <p>{{service.versionCount}} {{$t('service.versions')}}</p>
@@ -30,10 +24,11 @@
 
 <script>
 import BeanAmount from "../common/BeanAmount.vue";
+import ServiceTitle from "./ServiceTitle.vue";
 
 export default {
   name: "ServiceList",
-  components: {BeanAmount},
+  components: {ServiceTitle, BeanAmount},
   props: {
     space: {
       require: true
@@ -62,15 +57,8 @@ export default {
     &:nth-of-type(3n) {
       margin-right: 0;
     }
-    h4 {
-      font-size: var(--font-size-middle);
+    .service-title {
       margin-bottom: 10px;
-      & > a {
-        color: var(--color-service-name) !important;
-        &:hover {
-          color: var(--color-service-name-hover) !important;
-        }
-      }
     }
     & > p {
       font-size: var(--font-size);
