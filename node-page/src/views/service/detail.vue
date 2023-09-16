@@ -202,6 +202,13 @@ export default {
           }
         })
         .catch(e => {
+          if (e.code === 5110) {
+            this.alert(e.message)
+              .then(() => {
+                this.$router.push({ name: 'PublicServices' })
+              })
+            return
+          }
           this.$tip.apiFailed(e)
         })
         .finally(() => {
