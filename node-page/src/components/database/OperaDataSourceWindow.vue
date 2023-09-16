@@ -238,7 +238,7 @@ export default {
     // 提示
     & > .tip {
       padding: 20px;
-      background: var(--primary-color-match-2);
+      background: var(--background-color-tip);
       color: var(--color-light);
       display: flex;
       align-items: center;

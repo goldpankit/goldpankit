@@ -120,7 +120,7 @@ export default {
   // 提示
   .tip {
     padding: 20px;
-    background: var(--color-success);
+    background: var(--background-color-tip);
     color: var(--color-light);
     display: flex;
     align-items: center;

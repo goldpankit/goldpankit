@@ -7,67 +7,69 @@
 <!--      <div class="search-wrap">-->
 <!--        <el-input size="large" placeholder="type here and press enter."/>-->
 <!--      </div>-->
-      <ul v-loading="loading" v-if="services.length > 0" class="service-list">
-        <li v-for="service in services" :key="service.id">
-          <!-- 服务 -->
-          <ServiceTitle
-            v-if="service.type === 'MAIN'"
-            :space="service.space.name"
-            :service="service.name"
-            :service-label="service.label"
-            :with-type="true"
-          />
-          <!-- 插件 -->
-          <ServiceTitle
-            v-else
-            :space="service.space.name"
-            :service="service.mainService.name"
-            :service-label="service.mainService.label"
-            :plugin="service.name"
-            :plugin-label="service.label"
-            :with-type="true"
-          />
-          <p class="introduce">{{service.introduce}}</p>
-          <div class="info">
-            <label>{{$t('service.codespace')}}:</label>
-            <p>{{service.codespace}}</p>
-          </div>
-          <div class="info">
-            <label>{{$t('service.repository')}}:</label>
-            <p>{{service.repository}}</p>
-          </div>
-          <div class="footer-info">
-            <!-- 用户信息 -->
-            <div v-if="service.user != null" class="user-profile">
-              <img :src="getAccessUri(service.user.avatar, '/images/avatar/default.png')">
-              <span>{{service.user.username}}</span>
+      <div v-loading="loading" class="service-list-wrap">
+        <ul v-if="services.length > 0" class="service-list">
+          <li v-for="service in services" :key="service.id">
+            <!-- 服务 -->
+            <ServiceTitle
+              v-if="service.type === 'MAIN'"
+              :space="service.space.name"
+              :service="service.name"
+              :service-label="service.label"
+              :with-type="true"
+            />
+            <!-- 插件 -->
+            <ServiceTitle
+              v-else
+              :space="service.space.name"
+              :service="service.mainService.name"
+              :service-label="service.mainService.label"
+              :plugin="service.name"
+              :plugin-label="service.label"
+              :with-type="true"
+            />
+            <p class="introduce">{{service.introduce}}</p>
+            <div class="info">
+              <label>{{$t('service.codespace')}}:</label>
+              <p>{{service.codespace}}</p>
             </div>
-            <ServiceStatus :with-private="service.withPrivate"/>
-            <span>|</span>
-            <p class="text-info-1 text-mini">
-              {{service.lastPublish == null ? $t('service.unPublish') : getDateOffsetText(service.lastPublish)}}
-            </p>
-          </div>
-          <!-- 只有自己的服务才存在操作 -->
-          <ul v-if="service.user != null && userInfo.id === service.user.id" class="opera">
-            <li>
-              <el-button v-if="service.type === 'MAIN'" @click="openSettings(service)">
-                {{$t('service.serviceSettings')}}
-              </el-button>
-              <el-button v-else @click="openSettings(service)">
-                {{$t('plugin.settings')}}
-              </el-button>
-            </li>
-            <li><el-button text type="danger" @click="deleteService(service)">{{$t('common.delete')}}</el-button></li>
-          </ul>
-        </li>
-      </ul>
-      <Empty v-else :description="$t('service.noServices')"/>
-      <Pagination
-        :pagination="pagination"
-        @current-change="handleCurrentChange"
-        @size-change="handleSizeChange"
-      />
+            <div class="info">
+              <label>{{$t('service.repository')}}:</label>
+              <p>{{service.repository}}</p>
+            </div>
+            <div class="footer-info">
+              <!-- 用户信息 -->
+              <div v-if="service.user != null" class="user-profile">
+                <img :src="getAccessUri(service.user.avatar, '/images/avatar/default.png')">
+                <span>{{service.user.username}}</span>
+              </div>
+              <ServiceStatus :with-private="service.withPrivate"/>
+              <span>|</span>
+              <p class="text-info-1 text-mini">
+                {{service.lastPublish == null ? $t('service.unPublish') : getDateOffsetText(service.lastPublish)}}
+              </p>
+            </div>
+            <!-- 只有自己的服务才存在操作 -->
+            <ul v-if="service.user != null && userInfo.id === service.user.id" class="opera">
+              <li>
+                <el-button v-if="service.type === 'MAIN'" @click="openSettings(service)">
+                  {{$t('service.serviceSettings')}}
+                </el-button>
+                <el-button v-else @click="openSettings(service)">
+                  {{$t('plugin.settings')}}
+                </el-button>
+              </li>
+              <li><el-button text type="danger" @click="deleteService(service)">{{$t('common.delete')}}</el-button></li>
+            </ul>
+          </li>
+        </ul>
+        <Empty v-else :description="$t('service.noServices')"/>
+        <Pagination
+          :pagination="pagination"
+          @current-change="handleCurrentChange"
+          @size-change="handleSizeChange"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -89,7 +91,7 @@ export default {
       loading: false,
       pagination: {
         page: 1,
-        capacity: 15,
+        capacity: 5,
         total: 0
       },
       services: []
@@ -238,6 +240,9 @@ export default {
   }
   .pagination {
     margin: 15px 0;
+  }
+  .service-list-wrap {
+    min-height: 500px;
   }
   ul.service-list {
     & > li {
