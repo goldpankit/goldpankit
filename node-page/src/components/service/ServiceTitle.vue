@@ -45,10 +45,10 @@
               spaceName: space,
               serviceName: service
             }
-          }">{{service}}</router-link>
+          }">{{serviceLabel || service}}</router-link>
           /
         </template>
-        <span>{{plugin}}</span>
+        <span>{{pluginLabel || plugin}}</span>
       </template>
     </h3>
   </div>

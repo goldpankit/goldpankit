@@ -6,7 +6,9 @@
           <ServiceTitle
             :space="plugin.space.name"
             :service="plugin.service.name"
+            :service-label="plugin.service.label"
             :plugin="plugin.name"
+            :plugin-label="plugin.label"
             :with-new-page="true"
           />
           <div v-if="initialized" class="opera">
@@ -193,6 +195,8 @@ export default {
         .then(pluginConfig => {
           if (pluginConfig != null) {
             this.pluginConfig = pluginConfig
+            this.pluginConfig.label = this.pluginConfig.label || this.pluginConfig.name
+            this.plugin.label = this.pluginConfig.label
             this.plugin.description = pluginConfig.readme
           }
         })
@@ -304,6 +308,10 @@ export default {
       justify-content: space-between;
       :deep(.service-title h3) {
         font-size: var(--font-size-large);
+      }
+      .opera {
+        flex-shrink: 0;
+        margin-left: 30px;
       }
     }
     .service-path {

@@ -1,11 +1,16 @@
 <template>
-  <div class="page" :class="{ 'page-un-initialize': !initialized }" v-loading="loading" v-if="service != null">
-    <div class="wrap">
+  <div
+    class="page"
+    :class="{ 'page-un-initialize': !initialized }"
+    v-loading="loading"
+  >
+    <div v-if="service != null" class="wrap">
       <div class="header-wrap">
         <div class="header">
           <ServiceTitle
             :space="service.space.name"
             :service="service.name"
+            :service-label="service.label"
             :with-new-page="true"
           />
           <div v-if="initialized" class="opera">
@@ -21,11 +26,11 @@
               </template>
             </el-popover>
             <el-popover
-                placement="top-start"
-                :title="$t('service.settings.cleanCompileTipTitle')"
-                :width="200"
-                trigger="hover"
-                :content="cleanCompileTip"
+              placement="top-start"
+              :title="$t('service.settings.cleanCompileTipTitle')"
+              :width="200"
+              trigger="hover"
+              :content="cleanCompileTip"
             >
               <template #reference>
                 <el-button type="primary" :class="{ 'is-disabled': currentProject == null || isWorking.cleanCompile}" @click="cleanCompile">{{$t('service.settings.cleanCompile')}}</el-button>
@@ -127,6 +132,7 @@ export default {
     PublishWindow, BasicSetting, InitializeView, DirectorySelect, SettingFiles},
   data () {
     return {
+      loading: true,
       isWorking: {
         compile: false,
         cleanCompile: false
@@ -136,7 +142,6 @@ export default {
         space: '',
         service: ''
       },
-      loading: true,
       currentTab: 'basic',
       service: null,
       serviceConfig: null
@@ -195,7 +200,9 @@ export default {
         .then(serviceConfig => {
           if (serviceConfig != null) {
             this.serviceConfig = serviceConfig
-            this.service.description = serviceConfig.readme
+            this.serviceConfig.label = this.serviceConfig.label || this.serviceConfig.name
+            this.service.label = this.serviceConfig.label
+            this.service.description = this.serviceConfig.readme
           }
         })
         .catch(e => {
@@ -305,6 +312,10 @@ export default {
       justify-content: space-between;
       :deep(.service-title h3) {
         font-size: var(--font-size-large);
+      }
+      .opera {
+        flex-shrink: 0;
+        margin-left: 30px;
       }
     }
     .service-path {
