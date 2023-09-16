@@ -32,3 +32,9 @@ export function saveFileSetting (data) {
 export function saveVariables (data) {
   return request.post('/plugin/variables/save', data)
 }
+// 查询子服务列表
+export function fetchList (data) {
+  return request.post('/service/plugins', data, {
+    baseURL: import.meta.env.VITE_REMOTE_API_PREFIX
+  })
+}

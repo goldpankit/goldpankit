@@ -54,10 +54,10 @@
 </template>
 
 <script>
-import {searchMainServices} from "../api/service";
-import Pagination from "../components/common/Pagination.vue";
-import Empty from "../components/common/Empty.vue";
-import ServiceList from "../components/service/ServiceList.vue";
+import Pagination from "@/components/common/Pagination.vue";
+import Empty from "@/components/common/Empty.vue";
+import ServiceList from "@/components/service/ServiceList.vue";
+import {search} from "@/api/service";
 
 export default {
   components: {ServiceList, Empty, Pagination},
@@ -82,7 +82,7 @@ export default {
         return
       }
       this.loading = true
-      searchMainServices({
+      search({
         ...this.pagination,
         model: {
           keyword: this.keyword.trim()

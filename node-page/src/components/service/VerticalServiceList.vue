@@ -32,7 +32,7 @@
 import BeanAmount from "../common/BeanAmount.vue";
 
 export default {
-  name: "ServiceList",
+  name: "VerticalServiceList",
   components: {BeanAmount},
   props: {
     space: {

@@ -34,6 +34,7 @@
         </div>
         <!-- 右侧 -->
         <div class="info">
+          <!-- 用户信息 -->
           <div class="user-profile">
             <div class="user-info">
               <img :src="getAccessUri(service.user.avatar, '/images/avatar/default.png')">
@@ -43,6 +44,7 @@
               {{service.user.introduce === '' || service.user.introduce == null ? 'No introduce' : service.user.introduce }}
             </p>
           </div>
+          <!-- 安装服务 -->
           <div class="install">
             <el-button
               type="important"
@@ -76,7 +78,8 @@
 <!--              disabled-->
 <!--            >{{$t('issue.createNewIssue')}}</el-button>-->
           </div>
-          <ul>
+          <!-- 服务基础信息 -->
+          <ul class="info-list">
             <li>
               <label>{{$t('service.subServices')}}</label>
               <p>{{majorVersionDetail.subServices.length}}</p>
@@ -97,7 +100,7 @@
 import ServiceStructureView from "../../components/space/ServiceStructureView.vue";
 import PluginList from "../../components/service/PluginList.vue";
 import MarkdownEditor from "../../components/common/MarkdownEditor.vue";
-import {fetchMainServiceDetail} from "../../api/service";
+import {fetchServiceDetail} from "../../api/service";
 import {fetchProfileByName} from "../../api/service.space";
 import BeanAmount from "../../components/common/BeanAmount.vue";
 
@@ -142,7 +145,7 @@ export default {
     },
     // 查询详情
     fetchDetail (majorVersion) {
-      fetchMainServiceDetail({
+      fetchServiceDetail({
         space: this.$route.params.spaceName,
         service: this.$route.params.serviceName,
         majorVersion
@@ -309,7 +312,8 @@ export default {
           }
         }
       }
-      ul {
+      // 服务基础信息
+      ul.info-list {
         li {
           margin-bottom: 20px;
           display: flex;
@@ -329,6 +333,8 @@ export default {
           }
         }
       }
+      // 相关服务
+      ul.relation-list {}
     }
     // 服务类型
     ul.service-types {

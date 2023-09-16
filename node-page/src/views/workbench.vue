@@ -160,7 +160,7 @@
 <script>
 import {mapMutations, mapState} from 'vuex'
 import ServiceInstaller from "../components/space/ServiceInstaller.vue";
-import {fetchSubServices} from "../api/service";
+import {fetchList} from "../api/plugin";
 import {fetchById} from "../api/user.project";
 import MarkdownEditor from "../components/common/MarkdownEditor.vue";
 import Empty from "../components/common/Empty.vue";
@@ -300,7 +300,7 @@ export default {
     },
     // 查询插件
     searchPlugins () {
-      fetchSubServices({
+      fetchList({
         space: this.space,
         service: this.service.name,
         majorVersion: this.majorVersion

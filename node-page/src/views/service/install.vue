@@ -18,7 +18,7 @@
 
 <script>
 import ServiceInstaller from "@/components/space/ServiceInstaller.vue";
-import { fetchMainServiceDetail } from "@/api/service";
+import { fetchServiceDetail } from "@/api/service";
 import { fetchProfileByName } from "@/api/service.space";
 
 export default {
@@ -48,7 +48,7 @@ export default {
     },
     // 查询服务信息
     fetchService () {
-      fetchMainServiceDetail({
+      fetchServiceDetail({
         space: this.route.space,
         service: this.route.service,
         majorVersion: this.route.majorVersion

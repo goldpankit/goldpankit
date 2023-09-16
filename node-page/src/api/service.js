@@ -5,8 +5,8 @@ export function fetchLocalServices (data) {
   return request.get('/service/list')
 }
 // 搜索
-export function searchMainServices (data) {
-  return request.post('/service/main/search', data, {
+export function search (data) {
+  return request.post('/service/search', data, {
     baseURL: import.meta.env.VITE_REMOTE_API_PREFIX
   })
 }
@@ -21,14 +21,8 @@ export function initialize (data) {
   return request.post('/service/initialize', data)
 }
 // 查询主服务详情
-export function fetchMainServiceDetail (data) {
-  return request.post('/service/main/detail', data, {
-    baseURL: import.meta.env.VITE_REMOTE_API_PREFIX
-  })
-}
-// 查询子服务列表
-export function fetchSubServices (data) {
-  return request.post('/service/main/subs', data, {
+export function fetchServiceDetail (data) {
+  return request.post('/service/detail', data, {
     baseURL: import.meta.env.VITE_REMOTE_API_PREFIX
   })
 }

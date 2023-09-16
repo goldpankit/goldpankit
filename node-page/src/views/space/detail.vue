@@ -20,15 +20,9 @@
             </template>
             <template v-else-if="currentTab === 'services'">
               <ServiceList
-                v-if="space.services > 0"
+                v-if="space.services.length > 0"
+                :space="space.name"
                 :services="space.services"
-                @select="$router.push({
-                  name: 'ServiceDetail',
-                  params: {
-                    spaceName: space.name,
-                    serviceName: $event.name
-                  }
-                })"
               />
               <Empty v-else :description="$t('service.noServices')"/>
             </template>
@@ -74,19 +68,14 @@
 </template>
 
 <script>
-import MainServiceDetail from "../../components/space/MainServiceDetail.vue";
-import ServiceInstaller from "../../components/space/ServiceInstaller.vue";
-import {fetchByName} from "../../api/service.space";
-import {fetchList} from "../../api/service";
-import MarkdownEditor from "../../components/common/MarkdownEditor.vue";
-import Empty from "../../components/common/Empty.vue";
-import IssueListView from "../../components/space/IssueListView.vue";
-import ServiceListView from "../../components/space/ServiceListView.vue";
-import ServiceList from "../../components/service/ServiceList.vue";
 import {mapState} from "vuex";
+import MarkdownEditor from "@/components/common/MarkdownEditor.vue";
+import Empty from "@/components/common/Empty.vue";
+import ServiceList from "@/components/service/ServiceList.vue";
+import {fetchByName} from "@/api/service.space";
 
 export default {
-  components: {ServiceList, IssueListView, ServiceListView, Empty, MarkdownEditor, ServiceInstaller, MainServiceDetail},
+  components: {ServiceList, Empty, MarkdownEditor},
   data () {
     return {
       loading: true,
@@ -109,6 +98,7 @@ export default {
       fetchByName(this.route.space)
         .then(data => {
           this.space = data
+          console.log(this.space)
           if (this.space.description == null) {
             this.space.description = ''
           }
