@@ -1,6 +1,6 @@
 <template>
-  <div class="page" v-loading="loading">
-    <div v-if="!loading && project != null && service != null" class="wrap">
+  <div class="page" v-loading="loading.page">
+    <div v-if="!loading.page && project != null && service != null" class="wrap">
       <div>
         <div class="header">
           <div class="title">
@@ -44,11 +44,12 @@
           <!-- 服务 -->
           <div class="service-wrap">
             <!-- 搜索 -->
-            <div class="search-box">
-              <el-input size="large" :placeholder="$t('common.search')"/>
+            <div class="search-input-wrap">
+              <SearchInput :placeholder="$t('common.search')" v-model="keyword" @search="searchPlugins"/>
             </div>
             <!-- 插件列表 -->
             <PluginList
+              v-loading="loading.plugins"
               :plugins="plugins"
               :custom-class="(service) => {
                 return {selected: currentService != null && currentService.name === service.name}
@@ -175,17 +176,23 @@ import {fetchLatestVersion} from "@/api/service.version";
 import {fetchList} from "@/api/plugin";
 import {fetchById} from "@/api/user.project";
 import ServiceTitle from "../components/service/ServiceTitle.vue";
+import SearchInput from "../components/common/SearchInput.vue";
 
 export default {
-  components: {ServiceTitle, PluginList, BeanAmount, IssueListView, Empty, MarkdownEditor, ServiceInstaller},
+  components: {SearchInput, ServiceTitle, PluginList, BeanAmount, IssueListView, Empty, MarkdownEditor, ServiceInstaller},
   data () {
     return {
-      loading: true,
+      loading: {
+        page: true,
+        plugins: true
+      },
       isWorking: {
         install: false,
         uninstall: false
       },
       space: null,
+      // 插件搜索关键字
+      keyword: '',
       // 最新的服务信息
       latestMainService: null,
       // 项目安装的服务信息
@@ -245,11 +252,11 @@ export default {
     },
     // 查询项目信息
     fetchProject (withSubServices = false) {
-      this.loading = true
+      this.loading.page = true
       if (this.currentProject == null || this.currentProject === '') {
         this.project = null
         this.space = null
-        this.loading = false
+        this.loading.page = false
         return
       }
       this.refreshProject(withSubServices)
@@ -272,6 +279,7 @@ export default {
     },
     // 刷新项目信息
     refreshProject (withSubServices = false) {
+      this.loading.page = true
       fetchById(this.currentProject)
         .then(data => {
           this.project = data
@@ -279,7 +287,7 @@ export default {
           this.space = this.project.space
           // 获取服务信息
           if (this.installedService == null) {
-            this.loading = false
+            this.loading.page = false
             return
           }
           let serviceName = null
@@ -302,15 +310,17 @@ export default {
           this.$tip.apiFailed(e)
         })
         .finally(() => {
-          this.loading = false
+          this.loading.page = false
         })
     },
     // 查询插件
     searchPlugins () {
+      this.loading.plugins = true
       fetchList({
         space: this.space,
         service: this.service.name,
-        majorVersion: this.majorVersion
+        majorVersion: this.majorVersion,
+        keyword: this.keyword
       })
         .then(data => {
           this.plugins = data
@@ -321,6 +331,9 @@ export default {
         .catch(e => {
           console.log('searchPlugins', e)
           this.$tip.apiFailed(e)
+        })
+        .finally(() => {
+          this.loading.plugins = false
         })
     },
     // 选择插件
@@ -430,16 +443,10 @@ export default {
       display: flex;
       flex-direction: column;
       // 搜索
-      .search-box {
+      .search-input-wrap {
         flex-shrink: 0;
         margin-bottom: 15px;
         padding: 15px var(--gap-page-padding) 0 var(--gap-page-padding);
-        .el-input {
-          border-radius: 50px;
-          :deep(.el-input__wrapper) {
-            border-radius: 50px;
-          }
-        }
       }
       // 插件列表
       :deep(.plugin-list) {
