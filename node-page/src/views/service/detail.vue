@@ -1,5 +1,5 @@
 <template>
-  <div class="page">
+  <div v-loading="loading" class="page">
     <div v-if="space != null && service != null" class="wrap">
       <div class="header">
         <h2>@{{space.name}}/{{service.name}}</h2>
@@ -105,6 +105,7 @@ export default {
   components: {BeanAmount, MarkdownEditor, PluginList, ServiceStructureView },
   data () {
     return {
+      loading: true,
       currentTab: 'readme',
       // 当前主版本
       currentMajorVersion: '',
@@ -158,6 +159,9 @@ export default {
         })
         .catch(e => {
           this.$tip.apiFailed(e)
+        })
+        .finally(() => {
+          this.loading = false
         })
     }
   },

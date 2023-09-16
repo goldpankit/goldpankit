@@ -1,10 +1,10 @@
 <template>
-  <div v-if="space != null" class="page">
-    <div class="wrap">
+  <div v-loading="loading" class="page">
+    <div v-if="space != null" class="wrap" >
       <h2>{{ space.name }}</h2>
       <div class="tech-stack-wrap">
         <em>{{ space.withPrivate ? $t('common.private') : $t('common.public') }}</em>
-        <p class="tech-stack">{{space.serviceCount}} {{$t('service.services')}}</p>
+        <p class="tech-stack">{{space.services.length}} {{$t('service.services')}}</p>
       </div>
       <div class="content-wrap">
         <div class="dimension-wrap">
@@ -20,36 +20,17 @@
             </template>
             <template v-else-if="currentTab === 'services'">
               <ServiceList
-                v-if="currentMainService == null && mainServices.length > 0"
-                :services="mainServices"
-                @select="currentMainService = $event"
+                v-if="space.services > 0"
+                :services="space.services"
+                @select="$router.push({
+                  name: 'ServiceDetail',
+                  params: {
+                    spaceName: space.name,
+                    serviceName: $event.name
+                  }
+                })"
               />
-              <Empty v-else-if="currentMainService == null && mainServices.length === 0" :description="$t('service.noServices')"/>
-              <MainServiceDetail
-                v-if="currentMainService != null && currentMainServiceVersion == null"
-                :space="space.name"
-                :service="currentMainService.name"
-                @install="handleServiceInstall"
-                @back="currentMainService = null"
-              />
-              <ServiceInstaller
-                v-else-if="currentMainServiceVersion != null"
-                :space="space.name"
-                :service="currentMainService.name"
-                :service-price="currentMainService.price.price"
-                :service-lease="currentMainService.latestLease"
-                :version="currentMainServiceVersion"
-                :with-breadcrumbs="true"
-                :with-install-button="true"
-                @back="currentMainServiceVersion = null"
-                @installed="$router.push({name: 'Workbench'})"
-              />
-            </template>
-            <template v-else-if="currentTab === 'prices'">
-              <ServiceListView :services="[]" empty-description="No Price Services"/>
-            </template>
-            <template v-else-if="currentTab === 'issues'">
-              <IssueListView/>
+              <Empty v-else :description="$t('service.noServices')"/>
             </template>
           </div>
         </div>
@@ -78,11 +59,11 @@
             </li>
             <li>
               <label>{{$t('service.services2')}}</label>
-              <p>{{space.serviceCount}}</p>
+              <p>{{space.services.length}}</p>
             </li>
             <li>
               <label>{{$t('service.lastPublish')}}</label>
-              <p v-if="space.lastPublish != null">{{space.lastPublish}}</p>
+              <p v-if="space.lastPublish != null">{{getDateOffsetText(space.lastPublish)}}</p>
               <p v-else>None</p>
             </li>
           </ul>
@@ -108,15 +89,15 @@ export default {
   components: {ServiceList, IssueListView, ServiceListView, Empty, MarkdownEditor, ServiceInstaller, MainServiceDetail},
   data () {
     return {
-      spaceName: null,
+      loading: true,
+      // 路由信息
+      route: {
+        space: null
+      },
+      // 当前页签
       currentTab: 'readme',
-      // 当前选择的框架服务
-      currentMainService: null,
-      // 当前选择的框架服务版本
-      currentMainServiceVersion: null,
+      // 空间数据
       space: null,
-      // 框架服务列表
-      mainServices: []
     }
   },
   computed: {
@@ -125,46 +106,23 @@ export default {
   methods: {
     // 查询空间信息
     fetchSpace () {
-      fetchByName(this.spaceName)
+      fetchByName(this.route.space)
         .then(data => {
           this.space = data
           if (this.space.description == null) {
             this.space.description = ''
           }
-          this.fetchServiceList()
         })
         .catch(e => {
           this.$tip.apiFailed(e)
         })
-    },
-    // 查询服务列表
-    fetchServiceList () {
-      fetchList({
-        space: this.spaceName,
-        serviceType: 'MAIN'
-      })
-        .then(data => {
-          this.mainServices = data
-          // 从路由中获取service名称
-          const targetServiceName = this.$route.query.service
-          if (targetServiceName != null && targetServiceName !== '') {
-            this.currentMainService = this.mainServices.find(s => s.name === targetServiceName)
-            if (this.currentMainService != null) {
-              this.currentTab = 'services'
-            }
-          }
+        .finally(() => {
+          this.loading = false
         })
-        .catch(e => {
-          this.$tip.apiFailed(e)
-        })
-    },
-    // 服务安装
-    handleServiceInstall (version) {
-      this.currentMainServiceVersion = version
     }
   },
   created () {
-    this.spaceName = this.$route.params.name
+    this.route.space = this.$route.params.name
     this.fetchSpace()
   }
 }
