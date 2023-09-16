@@ -35,7 +35,7 @@
             />
             <p>{{service.introduce}}</p>
             <p class="info">
-              <span><i class="iconfont icon-plugin"></i>{{service.subServiceCount}} 个插件</span>
+              <span><i class="iconfont icon-plugin"></i>{{service.pluginCount}} 个插件</span>
               <span>|</span>
               <span><i class="iconfont icon-time"></i>{{getDateOffsetText(service.lastPublish)}}</span>
             </p>
