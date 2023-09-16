@@ -35,7 +35,7 @@
             />
             <p>{{service.introduce}}</p>
             <p class="info">
-              <span><i class="iconfont icon-plugin"></i>{{service.pluginCount}} 个插件</span>
+              <span><i class="iconfont icon-plugin"></i>{{service.pluginCount}} {{$t('service.plugins')}}</span>
               <span>|</span>
               <span><i class="iconfont icon-time"></i>{{getDateOffsetText(service.lastPublish)}}</span>
             </p>
@@ -202,16 +202,8 @@ export default {
     // 服务信息
     .service-info {
       flex-grow: 1;
-      & > h3 {
-        font-size: var(--font-size-middle);
+      :deep(.service-title) {
         margin-bottom: 10px;
-        transition: all ease .15s;
-        & > a {
-          color: var(--color-service-name) !important;
-          &:hover {
-            color: var(--color-service-name-hover) !important;
-          }
-        }
       }
       & > p {
         color: var(--font-color);

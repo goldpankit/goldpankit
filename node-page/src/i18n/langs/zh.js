@@ -170,6 +170,7 @@ export default {
   },
   // 服务
   service: {
+    relationList: '相关服务',
     searchPlaceholder: '输入关键字，搜索服务',
     searchEmpty: '未找到服务',
     publicServices: '公共服务',
@@ -196,7 +197,7 @@ export default {
     installSuccessfully: '安装成功',
     uninstallSuccessfully: '卸载完成',
     payInstall: '支付并安装',
-    noServices: '该空间下暂无服务',
+    noServices: '暂无服务',
     noSubServices: '该服务未扩展插件',
     serviceSettings: '服务设置',
     codespace: '本地位置',

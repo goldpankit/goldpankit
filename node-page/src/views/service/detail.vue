@@ -91,7 +91,7 @@
             </li>
           </ul>
           <div v-if="relationServices.length > 0" class="relation-services-wrap">
-            <h4>相关服务</h4>
+            <h4>{{$t('service.relationList')}}</h4>
             <VerticalServiceList :services="relationServices"/>
           </div>
         </div>

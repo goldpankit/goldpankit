@@ -5,6 +5,7 @@
         <div class="header">
           <div class="title">
             <h2>{{project.name}}</h2>
+            <p class="project-code-space"><el-icon><Folder /></el-icon>{{currentProjectDetail.codespace}}</p>
             <div class="service-info">
               <div class="service-title-wrap">
                 <ServiceTitle
@@ -14,9 +15,6 @@
                   :with-new-page="true"
                 />
                 · v{{service.version}}
-                <template v-if="latestMainService != null">
-                  · {{$t('service.latestVersion')}}: v{{latestMainService.version}}
-                </template>
               </div>
               <el-button
                 v-if="latestMainService != null &&
@@ -211,7 +209,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['currentProject']),
+    ...mapState(['currentProject', 'currentProjectDetail']),
     installed () {
       if (this.currentService == null) {
         return false
@@ -366,7 +364,7 @@ export default {
 .page {
   height: 100%;
   .wrap {
-    width: var(--page-width);
+    width: 1200px;
     height: 100%;
     margin: 0 auto;
     overflow: hidden;
@@ -378,24 +376,38 @@ export default {
       overflow: hidden;
       display: flex;
       flex-direction: column;
-      box-shadow: var(--page-shadow);
+      border: 10px solid var(--color-gray-3);
     }
   }
   // 头部
   .header {
-    padding: var(--gap-page-padding) var(--gap-page-padding) var(--gap-title) var(--gap-page-padding);
-    border-bottom: 1px solid var(--border-default-color);
+    padding: 10px 20px;
     display: flex;
+    background: var(--color-gray-3);
     .title {
       flex-grow: 1;
       h2 {
         flex-shrink: 0;
       }
+      // 项目目录
+      .project-code-space {
+        font-size: var(--font-size-mini);
+        color: var(--color-gray);
+        margin-top: 5px;
+        display: flex;
+        align-items: center;
+        border-bottom: 1px solid var(--color-gray-4);
+        padding-bottom: 10px;
+        margin-bottom: 10px;
+        .el-icon {
+          font-size: 14px;
+          margin-right: 5px;
+        }
+      }
       // 服务信息
       .service-info {
         display: flex;
         align-items: center;
-        margin-top: 10px;
         // 服务标题
         .service-title-wrap {
           :deep(.service-title) {
@@ -411,6 +423,7 @@ export default {
       }
     }
     .info {
+      margin-left: 30px;
       flex-shrink: 0;
       width: 100px;
       display: flex;
@@ -436,8 +449,9 @@ export default {
     flex-grow: 1;
     overflow: hidden;
     display: flex;
+    border-radius: 20px;
     .service-wrap {
-      width: 300px;
+      width: 275px;
       flex-shrink: 0;
       box-sizing: border-box;
       display: flex;
@@ -445,13 +459,12 @@ export default {
       // 搜索
       .search-input-wrap {
         flex-shrink: 0;
-        margin-bottom: 15px;
-        padding: 15px var(--gap-page-padding) 0 var(--gap-page-padding);
+        padding: 20px 20px 10px 20px;
       }
       // 插件列表
       :deep(.plugin-list) {
         li {
-          padding: 15px 30px;
+          padding: 10px 20px;
           h5 {
             position: relative;
             padding-right: 30px;

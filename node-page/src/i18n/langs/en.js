@@ -170,6 +170,7 @@ export default {
   },
   // 服务
   service: {
+    relationList: 'Related Services',
     searchPlaceholder: 'Enter keywords to search for services',
     searchEmpty: 'Service not found',
     publicServices: 'Public Services',
