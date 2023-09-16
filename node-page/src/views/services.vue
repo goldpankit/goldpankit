@@ -35,8 +35,9 @@
             </h3>
             <p>{{service.introduce}}</p>
             <p class="info">
-              <span>{{service.subServiceCount}} 个插件</span>
-              <span>{{getDateOffsetText(service.lastPublish)}}</span>
+              <span><i class="iconfont icon-plugin"></i>{{service.subServiceCount}} 个插件</span>
+              <span>|</span>
+              <span><i class="iconfont icon-time"></i>{{getDateOffsetText(service.lastPublish)}}</span>
             </p>
           </div>
         </li>
@@ -139,8 +140,8 @@ export default {
         position: relative;
         .el-icon {
           position: absolute;
-          top: 20px;
-          left: 30px;
+          top: 16px;
+          left: 25px;
           z-index: 9;
         }
         .el-input {
@@ -218,14 +219,19 @@ export default {
         -webkit-line-clamp: 2;
         display: -webkit-box;
         -webkit-box-orient: vertical;
-        line-height: 25px;
+        line-height: 1.5;
         margin: 0;
       }
       & > .info {
+        margin-top: 10px;
         color: var(--color-gray);
         font-size: var(--font-size-mini);
         span {
           margin-right: 15px;
+        }
+        .iconfont {
+          font-size: 12px;
+          margin-right: 5px;
         }
       }
     }
