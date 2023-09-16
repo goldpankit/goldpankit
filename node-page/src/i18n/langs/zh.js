@@ -346,6 +346,7 @@ export default {
     label: '插件名称',
     createFor1: '为服务',
     createFor2: '创建插件',
+    settings: '插件设置'
   },
   // 问题
   issue: {

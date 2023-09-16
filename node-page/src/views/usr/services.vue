@@ -9,10 +9,22 @@
 <!--      </div>-->
       <ul v-loading="loading" v-if="services.length > 0" class="service-list">
         <li v-for="service in services" :key="service.id">
-          <h3>@{{service.space.name}}/{{service.name}}</h3>
+          <h3 v-if="service.type === 'MAIN'">
+            <em :class="{ service: service.type === 'MAIN' }">服务</em>
+            <span>@{{service.space.name}}/{{service.name}}</span>
+          </h3>
+          <h3 v-else>
+            <em>插件</em>
+            <span>@{{service.space.name}}/{{service.mainService.name}}/{{service.name}}</span>
+          </h3>
           <p class="introduce">{{service.introduce}}</p>
           <p>{{$t('service.codespace')}}: {{service.codespace}}</p>
           <p>{{$t('service.repository')}}: {{service.repository}}</p>
+          <div class="price-wrap">
+            <em>{{ service.withPrivate ? $t('common.private') : $t('common.public') }}</em>
+<!--            <p>{{majorVersionDetail.subServices.length}} {{$t('service.plugins')}}</p>-->
+<!--            <BeanAmount :price="service.price.price" :type="service.price.leaseType"/>-->
+          </div>
           <div class="footer-info">
             <!-- 用户信息 -->
             <div v-if="service.user != null" class="user-profile">
@@ -25,7 +37,17 @@
           </div>
           <!-- 只有自己的服务才存在操作 -->
           <ul v-if="service.user != null && userInfo.id === service.user.id" class="opera">
-            <li><el-button @click="openSettings(service)">{{$t('service.serviceSettings')}}</el-button></li>
+            <li v-if="service.type === 'MAIN'">
+              <el-button v-if="service.type === 'MAIN'" @click="openDetail(service)">查看</el-button>
+            </li>
+            <li>
+              <el-button v-if="service.type === 'MAIN'" @click="openSettings(service)">
+                {{$t('service.serviceSettings')}}
+              </el-button>
+              <el-button v-else @click="openSettings(service)">
+                {{$t('plugin.settings')}}
+              </el-button>
+            </li>
             <li><el-button text type="danger" @click="deleteService(service)">{{$t('common.delete')}}</el-button></li>
           </ul>
         </li>
@@ -46,16 +68,17 @@ import Empty from "../../components/common/Empty.vue";
 import {deleteService, fetchPage} from "../../api/user.service";
 import {fetchLocalServices} from "../../api/service";
 import {mapState} from "vuex";
+import BeanAmount from "../../components/common/BeanAmount.vue";
 
 export default {
-  components: {Empty, Pagination},
+  components: {BeanAmount, Empty, Pagination},
   data () {
     return {
       loading: false,
       pagination: {
         page: 1,
-        capacity: 10,
-        total: 100
+        capacity: 15,
+        total: 0
       },
       services: []
     }
@@ -64,13 +87,37 @@ export default {
     ...mapState(['userInfo'])
   },
   methods: {
+    // 打开服务详情
+    openDetail (service) {
+      if (service.type === 'COMMON') {
+        return
+      }
+      this.$router.push({
+        name: 'ServiceDetail',
+        params: {
+          spaceName: service.space.name,
+          serviceName: service.name
+        }
+      })
+    },
     // 打开服务设置
     openSettings (service) {
+      if (service.type === 'MAIN') {
+        this.$router.push({
+          name: 'ServiceSettings',
+          query: {
+            space: service.space.name,
+            service: service.name
+          }
+        })
+        return
+      }
       this.$router.push({
-        name: 'ServiceSettings',
+        name: 'PluginSettings',
         query: {
           space: service.space.name,
-          service: service.name
+          service: service.mainService.name,
+          plugin: service.name,
         }
       })
     },
@@ -192,7 +239,19 @@ export default {
       & > h3 {
         font-size: var(--font-size-middle);
         margin-bottom: 15px;
-        padding-right: 200px;
+        padding-right: 220px;
+        display: flex;
+        em {
+          background: var(--color-gray-2);
+          font-size: var(--font-size-mini);
+          padding: 2px 10px;
+          margin-right: 5px;
+          border-radius: 5px;
+          font-style: normal;
+          &.service {
+            background: var(--primary-color-match-2-light);
+          }
+        }
       }
       & > p {
         font-size: var(--font-size-mini);
@@ -201,6 +260,20 @@ export default {
       & > .introduce {
         margin-bottom: 10px;
         font-size: var(--font-size);
+      }
+      & > .price-wrap {
+        display: flex;
+        align-items: center;
+        margin-top: 10px;
+        em {
+          border-radius: 30px;
+          margin-right: 10px;
+          font-style: normal;
+          color: var(--primary-color-match-3);
+        }
+        .bean-amount {
+          margin-left: 10px;
+        }
       }
       // 底部信息
       .footer-info {
@@ -233,6 +306,7 @@ export default {
         margin-left: 30px;
         .el-button {
           margin-right: 10px;
+          font-size: var(--font-size-mini);
         }
         li:last-of-type {
           .el-button {

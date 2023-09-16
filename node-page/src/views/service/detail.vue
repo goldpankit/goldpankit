@@ -8,7 +8,7 @@
           <p>{{majorVersionDetail.subServices.length}} {{$t('service.plugins')}}</p>
           <BeanAmount :price="service.price.price" :type="service.price.leaseType"/>
         </div>
-        <ul class="major-versions">
+        <ul v-if="majorVersions.length > 1" class="major-versions">
           <li
             v-for="version in majorVersions"
             :key="version"
