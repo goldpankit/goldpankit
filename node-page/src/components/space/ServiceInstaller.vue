@@ -443,43 +443,49 @@ export default {
           if (this.isPlugin) {
             // 从自身服务中获取
             const pluginProject = this.projectConfig.plugins || this.projectConfig.services
-            const plugin = pluginProject[this.plugin]
-            if (plugin != null) {
-              // 拿到最后一个变量（变量名可重复，后者覆盖前者）
-              const targetVar = plugin.variables.findLast(v => v.name === variable.name)
-              if (targetVar != null) {
-                value = targetVar.value
+            if (pluginProject != null) {
+              const plugin = pluginProject[this.plugin]
+              if (plugin != null) {
+                // 拿到最后一个变量（变量名可重复，后者覆盖前者）
+                const targetVar = plugin.variables.findLast(v => v.name === variable.name)
+                if (targetVar != null) {
+                  value = targetVar.value
+                }
               }
             }
             // 如果没有获取到值，则还可以从主服务中获取
             if (value == null) {
               const serviceObject = this.projectConfig.service || this.projectConfig.main
-              let service = null
-              for (const key in serviceObject) {
-                service = key
-                break
-              }
-              /**
-               * 此处存在漏洞，例如主服务中存在queryFields，子服务中也存在queryFields，但他们想要表达的不是同一层含义。
-               * 对比默认值和主服务中的值，如果类型不匹配，则不视为是同一层含义，此时将value置为null。
-               * 但这样依然可能存在类型相同但含义不同的情况，为少数情况，暂不做处理
-               */
-              const valueFromService = serviceObject[service].variables[variable.name]
-              value = valueFromService
-              if (valueFromService != null && valueFromService.constructor !== variable.defaultValue.constructor) {
-                value = null
+              if (serviceObject != null) {
+                let service = null
+                for (const key in serviceObject) {
+                  service = key
+                  break
+                }
+                /**
+                 * 此处存在漏洞，例如主服务中存在queryFields，子服务中也存在queryFields，但他们想要表达的不是同一层含义。
+                 * 对比默认值和主服务中的值，如果类型不匹配，则不视为是同一层含义，此时将value置为null。
+                 * 但这样依然可能存在类型相同但含义不同的情况，为少数情况，暂不做处理
+                 */
+                const valueFromService = serviceObject[service].variables[variable.name]
+                value = valueFromService
+                if (valueFromService != null && valueFromService.constructor !== variable.defaultValue.constructor) {
+                  value = null
+                }
               }
             }
           }
           // 安装的是服务
           else {
-            const serviceProject = this.projectConfig.service || this.projectConfig.main
-            const service = serviceProject[this.service]
-            if (service != null) {
-              // 拿到最后一个变量（变量名可重复，后者覆盖前者）
-              const targetVar = service.variables.findLast(v => v.name === variable.name)
-              if (targetVar != null) {
-                value = targetVar.value
+            const serviceObject = this.projectConfig.service || this.projectConfig.main
+            if (serviceObject != null) {
+              const service = serviceObject[this.service]
+              if (service != null) {
+                // 拿到最后一个变量（变量名可重复，后者覆盖前者）
+                const targetVar = service.variables.findLast(v => v.name === variable.name)
+                if (targetVar != null) {
+                  value = targetVar.value
+                }
               }
             }
           }
