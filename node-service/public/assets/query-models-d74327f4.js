@@ -1,0 +1,1 @@
+import{Q as e}from"./QueryModelView-889c43d8.js";import{_ as r,r as t,o as s,g as n}from"./index-c7362d92.js";import"./InnerRouterViewWindow-2c28559f.js";import"./form.check-189b470c.js";const c={components:{QueryModelView:e}};function p(a,_,i,m,d,l){const o=t("QueryModelView");return s(),n(o)}const Q=r(c,[["render",p]]);export{Q as default};
