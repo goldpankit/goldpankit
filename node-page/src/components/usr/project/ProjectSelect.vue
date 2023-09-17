@@ -1,6 +1,7 @@
 <template>
   <div class="project-select" :class="{ 'with-block': withBlock }">
     <el-select
+      popper-class="project-select-popper"
       :model-value="modelValue"
       @update:modelValue="$emit('update:modelValue', $event)"
       @change="handleChange"
@@ -11,7 +12,19 @@
         :value="item.id"
         :key="item.id"
         :label="item.name"
-      />
+      >
+        <template #default>
+          <div class="option-wrap">
+            <p class="name">
+              {{item.name}}
+              <template v-if="item.remark != null && item.remark.trim() !== ''">
+                ({{getLimitString(item.remark, 15)}})
+              </template>
+            </p>
+            <p class="codespace">{{item.codespace}}</p>
+          </div>
+        </template>
+      </el-option>
       <template v-if="withPrefix" #prefix>{{$t('common.currentProject')}}:</template>
     </el-select>
     <el-button class="button-icon" type="primary" icon="Plus" @click="$refs.operaProjectWindow.open()"></el-button>
@@ -20,11 +33,11 @@
 </template>
 
 <script>
-
-import {search} from "../../../api/user.project";
-import DirectorySelect from "../../common/DirectorySelect.vue";
+import {search} from "@/api/user.project";
+import DirectorySelect from "@/components/common/DirectorySelect.vue";
 import OperaProjectWindow from "./OperaProjectWindow.vue";
-import {mapMutations, mapState} from "vuex";
+import {mapMutations} from "vuex";
+import {getLimitString} from "@/utils/util";
 
 export default {
   name: "ProjectSelect",
@@ -45,6 +58,8 @@ export default {
   },
   methods: {
     ...mapMutations(['setCurrentProject', 'setCurrentProjectDetail']),
+    getLimitString,
+    // 查询项目
     fetchList () {
       search()
         .then(data => {
@@ -84,6 +99,21 @@ export default {
 }
 </script>
 
+<style lang="scss">
+.project-select-popper {
+  .el-select-dropdown__item {
+    height: auto;
+    line-height: 1.5;
+    padding: 8px 20px;
+    .option-wrap {
+      .codespace {
+        font-size: var(--font-size-mini);
+        color: var(--color-gray);
+      }
+    }
+  }
+}
+</style>
 <style scoped lang="scss">
 .project-select {
   display: flex;

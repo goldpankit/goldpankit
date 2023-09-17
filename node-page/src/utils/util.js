@@ -23,3 +23,17 @@ export function trim (data) {
   }
   return data
 }
+
+/**
+ * 获取限制字符串
+ * @param string 字符串
+ * @param limit 限制数
+ */
+// 获取省略字符串
+export function getLimitString (string, limit = 15) {
+  const letters = Array.from(string)
+  if (letters.length > limit) {
+    return letters.slice(0, limit).join('') + '...'
+  }
+  return string
+}
