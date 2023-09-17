@@ -58,9 +58,28 @@ class Kit {
               version: dto.version,
               variables: this.#getSimpleMainServiceVariables(dto.variables)
             }
+            /**
+             * 兼容2.0.0之前的services（插件配置列表）
+             * 如果是2.0.0之前使用的项目，配置文件中的services用于存放插件配置，而新配置plugins目前为空
+             * 此时将services赋值给plugins
+             */
+            if (projectConfig != null && projectConfig.services != null) {
+              config.plugins = projectConfig.services
+            }
           }
           // 安装的是插件
           else {
+            /**
+             * 兼容2.0.0之前的main（服务配置）
+             * 如果是2.0.0之前使用的项目，配置文件中的main用于存放服务配置，而新配置service目前为空
+             * 此时需要将main赋值给service，services赋值给plugins
+             */
+            if (projectConfig != null && projectConfig.main != null) {
+              config.service = projectConfig.main
+            }
+            if (projectConfig != null && projectConfig.services != null) {
+              config.plugins = projectConfig.services
+            }
             config.plugins[dto.plugin] = {
               version: dto.version,
               variables: this.#getSimpleMainServiceVariables(dto.variables)
