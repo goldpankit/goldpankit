@@ -1,5 +1,6 @@
 <template>
   <el-tree
+    v-loading="loading"
     class="service-structure-tree"
     :data="data"
   >
@@ -17,16 +18,25 @@
 
 <script>
 import {sortFiles} from "../../utils/file";
+import {fetchMajorVersionFiles} from "../../api/service.version";
 
 export default {
   name: "ServiceStructureView",
   props: {
-    nodes: {
+    space: {
+      required: true
+    },
+    service: {
+      required: true
+    },
+    majorVersion: {
       required: true
     }
   },
   data () {
     return {
+      loading: false,
+      nodes: []
     }
   },
   computed: {
@@ -100,6 +110,34 @@ export default {
       sortFiles(roots)
       return roots
     }
+  },
+  watch: {
+    majorVersion() {
+      this.fetchMajorVersionFiles()
+    }
+  },
+  methods: {
+    // 查询主版本文件
+    fetchMajorVersionFiles() {
+      this.loading = true
+      fetchMajorVersionFiles({
+        space: this.space,
+        service: this.service,
+        majorVersion: this.majorVersion
+      })
+        .then(data => {
+          this.nodes = data
+        })
+        .catch(e => {
+          this.$tip.apiFailed(e)
+        })
+        .finally(() => {
+          this.loading = false
+        })
+    }
+  },
+  created () {
+    this.fetchMajorVersionFiles()
   }
 }
 </script>
@@ -135,6 +173,11 @@ export default {
       width: 200px;
       word-break: break-all;
       white-space: initial;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      -webkit-line-clamp: 2;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
     }
     .publish-time {
       width: 100px;

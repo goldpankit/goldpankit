@@ -23,13 +23,18 @@
           <ul class="dimensions">
             <li :class="{ selected: currentTab === 'readme' }" @click="currentTab = 'readme'">{{$t('common.readme')}}</li>
             <li :class="{ selected: currentTab === 'extends' }" @click="currentTab = 'extends'">{{$t('service.subServices')}}</li>
-<!--            <li class="disabled" :class="{ selected: currentTab === 'prices' }">{{$t('common.prices')}}</li>-->
+            <li :class="{ selected: currentTab === 'structure' }" @click="currentTab = 'structure'">{{$t('service.structure')}}</li>
 <!--            <li class="disabled" :class="{ selected: currentTab === 'issues' }">{{$t('common.issues')}}</li>-->
           </ul>
           <div v-if="majorVersionDetail != null" class="detail">
             <MarkdownEditor v-show="currentTab === 'readme'" v-model="majorVersionDetail.description" :readonly="true" :without-padding="true"/>
             <PluginList v-show="currentTab === 'extends'" :plugins="majorVersionDetail.subServices"/>
-            <ServiceStructureView v-show="currentTab === 'structure'" :nodes="majorVersionDetail.structure"/>
+            <ServiceStructureView
+              v-show="currentTab === 'structure'"
+              :space="route.space"
+              :service="route.service"
+              :major-version="currentMajorVersion"
+            />
           </div>
         </div>
         <!-- 右侧 -->
