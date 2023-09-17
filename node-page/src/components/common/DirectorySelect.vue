@@ -322,6 +322,9 @@ export default {
   flex-direction: column;
   box-shadow: var(--form-shadow);
   border-radius: var(--radius-page);
+  & * {
+    user-select: none;
+  }
   .header {
     display: flex;
     justify-content: space-between;
@@ -337,7 +340,7 @@ export default {
   }
   .selected-tip {
     background: var(--background-color);
-    padding: 5px 10px;
+    padding: 8px 10px;
     display: flex;
     align-items: center;
     line-height: 15px;
@@ -352,6 +355,7 @@ export default {
       word-break: break-all;
       text-overflow: ellipsis;
       white-space: nowrap;
+      user-select: text;
     }
   }
   .error-tip {
@@ -441,22 +445,20 @@ export default {
           cursor: default;
           &:hover {
             color: var(--color-gray-1);
+            background-color: transparent;
           }
         }
         &.selected {
-          background: var(--color-service-name-hover);
-          color: var(--color-light);
-          border-bottom: 0;
+          background: var(--color-gray-selected);
           &:hover {
-            background: var(--color-service-name-hover);
-            color: var(--color-light);
+            background: var(--color-gray-selected);
           }
         }
         &:last-of-type {
           border-bottom: 0;
         }
         &:hover {
-          color: var(--color-service-name-hover);
+          background-color: var(--color-gray-selected);
         }
         .el-icon {
           margin-right: 10px;
