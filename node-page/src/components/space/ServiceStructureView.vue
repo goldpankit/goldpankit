@@ -172,7 +172,7 @@ export default {
     }
     .filename {
       flex-grow: 1;
-      color: #005980;
+      color: var(--color-service-name);
       word-break: break-all;
     }
     .description {

@@ -126,16 +126,22 @@ export default {
     },
     // 选中的绝对地址，用于展示
     selectedAbsolutePathLabel () {
-      let prefix = ''
       let paths = JSON.parse(JSON.stringify(this.paths))
       if (this.selectedFile != null) {
         paths.push(this.selectedFile.path)
       }
-      if (paths.length > 3) {
-        prefix = '...'
-        paths = paths.splice(paths.length - 3)
+      if (paths.length <= 7) {
+        return path.join(paths)
       }
-      return prefix + path.join(paths)
+      let prefix = path.join(paths.slice(0, 3))
+      if (path.getOS() !== 'windows') {
+        prefix += '/'
+      }
+      let suffix = path.join(paths.slice(paths.length - 3), 3)
+      if (path.getOS() === 'windows') {
+        suffix = '\\' + suffix
+      }
+      return prefix + '...' + suffix
     }
   },
   watch: {
@@ -227,6 +233,7 @@ export default {
     // 修改路径
     changePath (index) {
       if (index === this.paths.length - 1) {
+        this.selectedFile = null
         return
       }
       this.selectedFile = null
@@ -335,16 +342,16 @@ export default {
     align-items: center;
     line-height: 15px;
     border: 1px solid var(--border-default-color);
-    font-size: var(--font-size-mini);
     label {
       color: var(--color-gray);
       flex-shrink: 0;
     }
     p {
-      color: var(--color-service-name);
       flex-grow: 1;
       overflow: hidden;
       word-break: break-all;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
   }
   .error-tip {
@@ -393,10 +400,12 @@ export default {
       line-height: 20px;
       span {
         background: var(--background-color);
-        padding: 5px 8px;
+        padding: 2px 8px;
         border-radius: 5px;
         transition: all ease .15s;
         cursor: pointer;
+        color: var(--color-service-name);
+        font-weight: bold;
       }
       em {
         font-style: normal;
@@ -405,7 +414,7 @@ export default {
       }
       &:hover {
         span {
-          color: var(--primary-color-match-2);
+          color: var(--color-service-name-hover);
         }
       }
     }
@@ -435,11 +444,11 @@ export default {
           }
         }
         &.selected {
-          background: var(--primary-color-match-2);
+          background: var(--color-service-name-hover);
           color: var(--color-light);
           border-bottom: 0;
           &:hover {
-            background: var(--primary-color-match-2);
+            background: var(--color-service-name-hover);
             color: var(--color-light);
           }
         }
@@ -447,7 +456,7 @@ export default {
           border-bottom: 0;
         }
         &:hover {
-          color: var(--primary-color-match-2);
+          color: var(--color-service-name-hover);
         }
         .el-icon {
           margin-right: 10px;
