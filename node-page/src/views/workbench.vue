@@ -17,7 +17,7 @@
                 · v{{service.version}}
               </div>
               <el-popover
-                v-if="latestMainService != null && latestMainService.version !== service.version"
+                v-if="latestService != null && latestService.version !== service.version"
                 :title="$t('service.upgradeTitle')"
                 :width="255"
                 trigger="hover"
@@ -31,13 +31,7 @@
                     size="small"
                     type="primary"
                     icon="Upload"
-                    @click="$router.push({
-                      name: 'ServiceDetail',
-                      params: {
-                        space: space,
-                        service: this.service.name
-                      }
-                    })"
+                    @click="upgrade"
                   >{{$t('service.upgrade')}}</el-button>
                 </template>
               </el-popover>
@@ -202,20 +196,13 @@ export default {
       // 插件搜索关键字
       keyword: '',
       // 最新的服务信息
-      latestMainService: null,
+      latestService: null,
       // 项目安装的服务信息
       service: null,
       currentService: null,
       plugins: [],
       currentServiceDimension: 'readme',
       project: null
-    }
-  },
-  watch: {
-    currentProject () {
-      // 切换项目后，置空最新的服务信息，让方法重新获取当前项目的最新服务信息
-      this.latestMainService = null
-      this.fetchProject(true)
     }
   },
   computed: {
@@ -243,18 +230,29 @@ export default {
     },
     // 升级说明
     upgradeDescription () {
-      if (this.latestMainService == null) {
+      if (this.latestService == null) {
         return ''
       }
       return this.$t('service.upgradeTip', {
         currentVersion: this.service.version,
-        newVersion: this.latestMainService.version,
-        publishDescription: this.latestMainService.publishDescription
+        newVersion: this.latestService.version,
+        publishDescription: this.latestService.publishDescription
       })
+    }
+  },
+  watch: {
+    currentProject () {
+      // 切换项目后，置空最新的服务信息，让方法重新获取当前项目的最新服务信息
+      this.latestService = null
+      this.fetchProject(true)
     }
   },
   methods: {
     ...mapMutations(['setCurrentProject']),
+    // 升级
+    upgrade () {
+      window.open(`/space/${this.space}/${this.service.name}/install?major=${this.majorVersion}`)
+    },
     // 安装
     install () {
       this.currentServiceDimension = 'install'
@@ -282,15 +280,16 @@ export default {
     },
     // 查询最新的服务版本
     fetchLatestVersion () {
-      if (this.latestMainService != null) {
+      if (this.latestService != null) {
         return
       }
       fetchLatestVersion({
         space: this.space,
-        service: this.service.name
+        service: this.service.name,
+        majorVersion: this.majorVersion
       })
         .then(data => {
-          this.latestMainService = data
+          this.latestService = data
         })
         .catch(e => {
           this.$tip.apiFailed(e)
