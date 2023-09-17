@@ -98,7 +98,6 @@ export default {
       fetchByName(this.route.space)
         .then(data => {
           this.space = data
-          console.log(this.space)
           if (this.space.description == null) {
             this.space.description = ''
           }

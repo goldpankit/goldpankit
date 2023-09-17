@@ -16,7 +16,7 @@
         <el-input v-model="form.name"/>
       </el-form-item>
       <el-form-item :label="$t('project.codespace')" prop="codespace" required>
-        <DirectorySelect v-if="ready" v-model="form.codespace"/>
+        <DirectorySelect v-if="ready" v-model="form.codespace" @change-project="handleCodespaceChange"/>
       </el-form-item>
       <el-form-item :label="$t('common.remark')" prop="remark">
         <el-input type="textarea" :rows="2" v-model="form.remark" maxlength="200"/>
@@ -30,9 +30,10 @@
 </template>
 
 <script>
-import DirectorySelect from "../../common/DirectorySelect.vue";
-import {create, save} from "../../../api/user.project";
-import {strictCopy} from "../../../utils/object";
+import DirectorySelect from "@/components/common/DirectorySelect.vue";
+import {create, save} from "@/api/user.project";
+import {strictCopy} from "@/utils/object";
+import path from "@/utils/path";
 
 export default {
   name: "OperaProjectWindow",
@@ -80,6 +81,10 @@ export default {
           { required: true, message: this.$t('form.isSelectRequired', { value: this.$t('project.codespace') })},
         ],
       }
+    },
+    // 目录变更
+    handleCodespaceChange (absolutePath) {
+      this.form.name = path.split(absolutePath).pop()
     },
     // 确认创建
     confirm () {

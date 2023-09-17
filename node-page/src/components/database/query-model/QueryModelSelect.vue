@@ -109,7 +109,6 @@ export default {
         return
       }
       this.models = database.models
-      console.log('this.models', this.models)
       // 填充默认选中的模型
       if (this.modelValue != null) {
         this.selected = this.models.find(model => model.id === this.modelValue)

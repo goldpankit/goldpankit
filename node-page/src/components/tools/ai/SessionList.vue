@@ -185,7 +185,6 @@ export default {
             title: null,
             count: 0
           })
-          console.log('newSession', newSession)
           this.definedSessions.unshift(newSession)
           // 默认选中会话
           this.selectSession(newSession)

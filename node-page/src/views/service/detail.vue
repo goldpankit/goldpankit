@@ -165,7 +165,6 @@ export default {
       fetchProfileByName(this.route.space)
         .then(data => {
           this.space = data
-          console.log('this.space', this.space)
         })
         .catch(e => {
           this.$tip.apiFailed(e)

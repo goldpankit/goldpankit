@@ -139,9 +139,21 @@ export default {
     }
   },
   watch: {
-    selectedAbsolutePath () {
+    selectedAbsolutePath (newValue, oldValue) {
+      // 首次赋值
+      if (oldValue === '\\' || oldValue === '/') {
+        // 编辑，首次赋值时不触发change-project事件，避免直接修改项目名称
+        if (this.initData.selectedFilepath != null) {
+          this.$emit('update:modelValue', this.selectedAbsolutePath)
+          this.$emit('change', this.selectedAbsolutePath)
+          return
+        }
+      }
+      // 其他情况，触发修改和变更事件
       this.$emit('update:modelValue', this.selectedAbsolutePath)
       this.$emit('change', this.selectedAbsolutePath)
+      // 用于修改项目名称
+      this.$emit('change-project', this.selectedAbsolutePath)
     }
   },
   methods: {
