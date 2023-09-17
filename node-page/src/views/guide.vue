@@ -7,7 +7,7 @@
         <p>{{$t('guide.kitDescription')}}</p>
         <div class="opera">
           <el-button @click="$router.push({name: 'SignUp'})" type="important">{{$t('common.signUp')}}</el-button>
-          <el-button type="primary" @click="$router.push({name: 'PublicSpaces'})">{{$t('guide.goToServiceSpaces')}}</el-button>
+          <el-button type="primary" @click="$router.push({name: 'PublicServices'})">{{$t('guide.goToServices')}}</el-button>
         </div>
       </div>
       <span class="emb">G</span>
@@ -29,7 +29,7 @@
           </li>
         </ul>
         <div class="opera">
-          <el-button type="primary" size="large"  @click="$router.push({name: 'PublicSpaces'})">{{$t('guide.goToServiceSpaces')}}</el-button>
+          <el-button type="primary" size="large"  @click="$router.push({name: 'PublicServices'})">{{$t('guide.goToServices')}}</el-button>
         </div>
       </div>
     </div>

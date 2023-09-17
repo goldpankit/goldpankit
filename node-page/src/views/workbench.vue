@@ -166,7 +166,7 @@
     </div>
     <div v-else-if="service == null" class="incorrect-wrap">
       <div class="content">
-        <p>{{$t('workbench.noServiceInstalledTip1')}}<router-link :to="{name: 'PublicSpaces'}">{{$t('common.publicSpace')}}</router-link>{{$t('workbench.noServiceInstalledTip2')}}</p>
+        <p>{{$t('workbench.noServiceInstalledTip1')}}<router-link :to="{name: 'PublicServices'}">{{$t('service.publicServices')}}</router-link>{{$t('workbench.noServiceInstalledTip2')}}</p>
       </div>
     </div>
   </div>

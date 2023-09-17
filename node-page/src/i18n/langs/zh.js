@@ -119,7 +119,7 @@ export default {
     installService: '安装服务',
     installIntroduce: '在服务页点击「安装」按钮即可将服务代码安装到您的项目中。',
     completed: '开发完成',
-    goToServiceSpaces: '前往服务空间'
+    goToServices: '前往查看服务'
   },
   // 充值页
   topUp: {

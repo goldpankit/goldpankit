@@ -119,7 +119,7 @@ export default {
     installService: 'Install Service',
     installIntroduce: 'Click the 「INSTALL」 button on the service page to install the service code into your project.',
     completed: 'COMPLETED',
-    goToServiceSpaces: 'Go to the service space'
+    goToServices: 'Go to the service space'
   },
   // 充值页
   topUp: {
