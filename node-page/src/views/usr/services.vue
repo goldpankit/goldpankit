@@ -200,10 +200,20 @@ export default {
         .then(localServices => {
           this.services.forEach(service => {
             service.codespace = null
-            const localService = localServices.find(s => s.space === service.space.name && s.name === service.name)
-            if (localService != null) {
-              service.repository = localService.repository
-              service.codespace = localService.codespace
+            // 服务
+            if (service.type === 'MAIN') {
+              const localService = localServices.find(s => s.space === service.space.name && s.name === service.name)
+              if (localService != null) {
+                service.repository = localService.repository
+                service.codespace = localService.codespace
+              }
+              return
+            }
+            // 插件
+            const localPlugin = localServices.find(s => s.space === service.space.name && s.service === service.mainService.name && s.name === service.name)
+            if (localPlugin != null) {
+              service.repository = localPlugin.repository
+              service.codespace = localPlugin.codespace
             }
           })
         })

@@ -1,9 +1,5 @@
 import request from "../utils/request";
 
-// 查询本地插件
-export function fetchLocalPlugins () {
-  return request.get('/plugin/list')
-}
 // 初始化
 export function initialize (data) {
   return request.post('/plugin/initialize', data)

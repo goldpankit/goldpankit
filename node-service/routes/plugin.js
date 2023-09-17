@@ -1,13 +1,7 @@
 const request = require('../utils/request.define')
 const plugin = require('../core/plugin')
 
-// 获取所有本地服务
-request
-  .get('/plugin/list')
-  .data(req => {
-    return plugin.getLocalPlugins()
-  })
-// 初始化服务
+// 初始化插件
 request
   .post('/plugin/initialize')
   .data(req => {
@@ -16,8 +10,8 @@ request
 
 
 /**
- * 获取服务配置
- * 1. 存在spaceName和serviceName时读取本地服务配置后获取codespace再读取服务完整配置。
+ * 获取插件配置
+ * 1. 存在space、service和plugin时读取本地插件配置后获取codespace再读取服务完整配置。
  * 2. 存在codespace时直接根据codespace读取服务完整配置
  * req.body = {
  *   space: '',
