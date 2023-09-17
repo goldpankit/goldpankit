@@ -91,7 +91,7 @@ export default {
       loading: false,
       pagination: {
         page: 1,
-        capacity: 5,
+        capacity: 15,
         total: 0
       },
       services: []
