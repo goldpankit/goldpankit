@@ -2,9 +2,9 @@
   <div class="form">
     <div class="wrap">
       <h2>{{$t('database.databases')}}</h2>
-      <section class="tip">
+      <FormTip>
         {{$t('database.tip')}}
-      </section>
+      </FormTip>
       <div class="database-list-wrap">
         <ul class="toolbar">
           <li>
@@ -36,9 +36,11 @@ import {deleteById, search} from "../../api/database";
 import Empty from "../../components/common/Empty.vue";
 import Pagination from "../../components/common/Pagination.vue";
 import OperaDataSourceWindow from "../../components/database/OperaDataSourceWindow.vue";
+import FormTip from "../../components/common/FormTip.vue";
 
 export default {
   components: {
+    FormTip,
     OperaDataSourceWindow,
     Pagination, Empty, DatabaseView, InnerRouterViewWindow, InnerRouterView},
   data () {
@@ -102,23 +104,6 @@ export default {
   h2 {
     text-align: center;
     padding: 30px 0;
-  }
-  // 提示
-  .tip {
-    padding: 20px;
-    background: var(--background-color-tip);
-    color: var(--color-light);
-    display: flex;
-    align-items: center;
-    margin-bottom: 20px;
-    em {
-      background: rgba(0, 0, 0, .15);
-      padding: 3px 5px;
-      border-radius: 5px;
-      font-style: normal;
-      font-weight: bold;
-      margin: 0 5px;
-    }
   }
   // 数据库列表
   .database-list-wrap {

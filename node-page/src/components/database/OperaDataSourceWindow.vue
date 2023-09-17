@@ -8,9 +8,9 @@
     :close-on-click-modal="false"
     :close-on-press-escape="false"
   >
-    <section class="tip">
+    <FormTip>
       {{$t('database.tip')}}
-    </section>
+    </FormTip>
     <el-form ref="form" :model="form" :rules="getRules()">
       <el-form-item :label="$t('common.name')" prop="name" required>
         <el-input v-model="form.name"/>
@@ -59,10 +59,11 @@ import {testConnect} from "../../api/database.util";
 import {create, updateById} from "../../api/database";
 import {trim} from "../../utils/util";
 import {strictCopy} from "../../utils/object";
+import FormTip from "../common/FormTip.vue";
 
 export default {
   name: "OperaDataSourceWindow",
-  components: {DatabaseTypeSelect},
+  components: {FormTip, DatabaseTypeSelect},
   data () {
     return {
       visible: false,
@@ -235,23 +236,6 @@ export default {
   }
   .el-dialog__body {
     padding: 0;
-    // 提示
-    & > .tip {
-      padding: 20px;
-      background: var(--background-color-tip);
-      color: var(--color-light);
-      display: flex;
-      align-items: center;
-      margin-bottom: 20px;
-      em {
-        background: rgba(0, 0, 0, .15);
-        padding: 3px 5px;
-        border-radius: 5px;
-        font-style: normal;
-        font-weight: bold;
-        margin: 0 5px;
-      }
-    }
     & > .opera {
       display: flex;
       justify-content: flex-end;

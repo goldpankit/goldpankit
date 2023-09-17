@@ -2,14 +2,14 @@
   <div class="form">
     <div class="wrap">
       <h2>{{$t('service.createService')}}</h2>
-      <section class="tip" v-if="space != null">
+      <FormTip v-if="space != null">
         <template v-if="$i18n.locale === 'en'">
           {{$t('service.createServiceFor')}}<em>{{space}}</em>.
         </template>
         <template v-else>
           {{$t('service.createServiceFor1')}}<em>{{space}}</em>{{$t('service.createServiceFor2')}}。
         </template>
-      </section>
+      </FormTip>
       <el-form ref="form" :model="form" :rules="getRules()">
         <el-form-item :label="$t('service.settings.label')" prop="label" required>
           <el-input ref="labelInput" v-model="form.label" @input="handleLabelInput"/>
@@ -37,9 +37,11 @@ import MainServiceSelect from "@/components/service/MainServiceSelect.vue";
 import FormItemTip from "@/components/common/FormItemTip.vue";
 import { create } from "@/api/user.service";
 import {pinyin} from "pinyin-pro";
+import FormTip from "../../../components/common/FormTip.vue";
 
 export default {
   components: {
+    FormTip,
     FormItemTip,
     MainServiceSelect,
     VersionSelect, ServiceTypeSelect, CompilerSelect, SpaceSelect, I18nInput},
@@ -116,23 +118,6 @@ export default {
   h2 {
     text-align: center;
     padding: 30px 0;
-  }
-  // 提示
-  .tip {
-    padding: 20px;
-    background: var(--background-color-tip);
-    color: var(--color-light);
-    display: flex;
-    align-items: center;
-    margin-bottom: 20px;
-    em {
-      background: rgba(0, 0, 0, .15);
-      padding: 3px 5px;
-      border-radius: 5px;
-      font-style: normal;
-      font-weight: bold;
-      margin: 0 5px;
-    }
   }
   // 表单
   .el-form {

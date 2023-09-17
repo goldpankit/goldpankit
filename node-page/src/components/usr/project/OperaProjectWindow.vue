@@ -8,9 +8,9 @@
     :close-on-click-modal="false"
     :close-on-press-escape="false"
   >
-    <section class="tip">
+    <FormTip>
       {{ $t('project.createTip') }}
-    </section>
+    </FormTip>
     <el-form ref="form" :model="form" :rules="getRules()">
       <el-form-item :label="$t('project.codespace')" prop="codespace" required>
         <DirectorySelect v-if="ready" v-model="form.codespace" @change-project="handleCodespaceChange"/>
@@ -34,10 +34,11 @@ import DirectorySelect from "@/components/common/DirectorySelect.vue";
 import {create, save} from "@/api/user.project";
 import {strictCopy} from "@/utils/object";
 import path from "@/utils/path";
+import FormTip from "../../common/FormTip.vue";
 
 export default {
   name: "OperaProjectWindow",
-  components: {DirectorySelect},
+  components: {FormTip, DirectorySelect},
   data () {
     return {
       visible: false,
@@ -155,23 +156,6 @@ export default {
   }
   .el-dialog__body {
     padding: 0;
-    // 提示
-    & > .tip {
-      padding: 20px;
-      background: var(--background-color-tip);
-      color: var(--color-light);
-      display: flex;
-      align-items: center;
-      margin-bottom: 20px;
-      em {
-        background: rgba(0, 0, 0, .15);
-        padding: 3px 5px;
-        border-radius: 5px;
-        font-style: normal;
-        font-weight: bold;
-        margin: 0 5px;
-      }
-    }
     & > .opera {
       display: flex;
       justify-content: flex-end;
