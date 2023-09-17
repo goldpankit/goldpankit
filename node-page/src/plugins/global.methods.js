@@ -36,14 +36,19 @@ export default {
     })
   },
   // 弹窗提示
-  alert (message, title) {
+  alert (message, title, config) {
     title = title || '提示'
-    return ElMessageBox({
+    const defaultConfig = {
       title: title,
       message: message,
       showCancelButton: false,
+      cancelButtonText: '关闭',
       confirmButtonText: '知道了'
-    })
+    }
+    if (config != null) {
+      Object.assign(defaultConfig, config)
+    }
+    return ElMessageBox(defaultConfig)
   },
   // 确认安装
   installConfirm (price) {

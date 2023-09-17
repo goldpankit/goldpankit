@@ -54,7 +54,7 @@
               v-loading="loading.plugins"
               :plugins="plugins"
               :custom-class="(service) => {
-                return {selected: currentService != null && currentService.name === service.name}
+                return {selected: selectedPlugin != null && selectedPlugin.name === service.name}
               }"
               :installed="service => {
                 return withInstalled(service)
@@ -70,43 +70,43 @@
           </div>
           <!-- 服务信息 -->
           <div class="setting-wrap">
-            <template v-if="currentService != null">
-              <h3>{{currentService.label || currentService.name}}</h3>
+            <template v-if="selectedPlugin != null">
+              <h3>{{selectedPlugin.label || selectedPlugin.name}}</h3>
               <div class="main">
                 <ul class="service-dimensions">
-                  <li :class="{selected: currentServiceDimension === 'readme'}" @click="currentServiceDimension = 'readme'">{{$t('common.readme')}}</li>
-                  <li :class="{selected: currentServiceDimension === 'install'}" @click="currentServiceDimension = 'install'">{{$t('service.install2')}}</li>
-<!--                  <li class="disabled" :class="{selected: currentServiceDimension === 'issues'}">{{$t('common.issues')}}</li>-->
+                  <li :class="{selected: selectedPluginDimension === 'readme'}" @click="selectedPluginDimension = 'readme'">{{$t('common.readme')}}</li>
+                  <li :class="{selected: selectedPluginDimension === 'install'}" @click="selectedPluginDimension = 'install'">{{$t('service.install2')}}</li>
+<!--                  <li class="disabled" :class="{selected: selectedPluginDimension === 'issues'}">{{$t('common.issues')}}</li>-->
                 </ul>
                 <div class="dimension-content">
-                  <div v-show="currentServiceDimension === 'readme'">
-                    <MarkdownEditor v-model="currentService.description" readonly :without-padding="true"/>
+                  <div v-show="selectedPluginDimension === 'readme'">
+                    <MarkdownEditor v-model="selectedPlugin.description" readonly :without-padding="true"/>
                   </div>
                   <ServiceInstaller
                     ref="installer"
                     v-model:installing="isWorking.install"
                     v-model:uninstalling="isWorking.uninstall"
-                    v-show="currentServiceDimension === 'install'"
+                    v-show="selectedPluginDimension === 'install'"
                     :space="space"
                     :service="service.name"
-                    :plugin="currentService.name"
-                    :service-price="currentService.price.price"
-                    :service-lease="currentService.latestLease"
-                    :version="currentService.lastVersion"
+                    :plugin="selectedPlugin.name"
+                    :service-price="selectedPlugin.price.price"
+                    :service-lease="selectedPlugin.latestLease"
+                    :version="selectedPlugin.lastVersion"
                     :with-project="false"
                     :project-config="project"
                     @installed="refreshProject()"
                     @uninstalled="refreshProject()"
                   />
                   <div class="issue-wrap">
-                    <IssueListView v-show="currentServiceDimension === 'issues'"/>
+                    <IssueListView v-show="selectedPluginDimension === 'issues'"/>
                   </div>
                 </div>
               </div>
               <div class="opera">
                 <template v-if="installed">
                   <el-button
-                    v-if="hasNewVersion(currentService)"
+                    v-if="hasNewVersion(selectedPlugin)"
                     type="primary"
                     size="large"
                     icon="Upload"
@@ -199,19 +199,19 @@ export default {
       latestService: null,
       // 项目安装的服务信息
       service: null,
-      currentService: null,
+      selectedPlugin: null,
       plugins: [],
-      currentServiceDimension: 'readme',
+      selectedPluginDimension: 'readme',
       project: null
     }
   },
   computed: {
     ...mapState(['currentProject', 'currentProjectDetail']),
     installed () {
-      if (this.currentService == null) {
+      if (this.selectedPlugin == null) {
         return false
       }
-      return this.installedPlugins[this.currentService.name] != null
+      return this.installedPlugins[this.selectedPlugin.name] != null
     },
     // 服务主版本
     majorVersion () {
@@ -241,9 +241,12 @@ export default {
     }
   },
   watch: {
+    // 切换项目
     currentProject () {
-      // 切换项目后，置空最新的服务信息，让方法重新获取当前项目的最新服务信息
+      // 置空最新的服务信息，让方法重新获取当前项目的最新服务信息
       this.latestService = null
+      // 清空插件选择
+      this.selectedPlugin = null
       this.fetchProject(true)
     }
   },
@@ -255,12 +258,12 @@ export default {
     },
     // 安装
     install () {
-      this.currentServiceDimension = 'install'
+      this.selectedPluginDimension = 'install'
       this.$refs.installer.install()
     },
     // 卸载
     uninstall () {
-      this.currentServiceDimension = 'install'
+      this.selectedPluginDimension = 'install'
       this.$refs.installer.uninstall()
     },
     // 判断是否已安装
@@ -292,6 +295,17 @@ export default {
           this.latestService = data
         })
         .catch(e => {
+          // 找不到服务
+          if (e.code === 4002) {
+            this.alert('当前项目使用的服务可能已被更名或删除，您可以前往服务详情了解更多内容。', null, {
+              showCancelButton: true,
+              confirmButtonText: '查看服务详情'
+            })
+              .then(() => {
+                window.open(`/space/${this.space}/${this.service.name}`)
+              })
+            return
+          }
           this.$tip.apiFailed(e)
         })
     },
@@ -347,7 +361,10 @@ export default {
           // }
         })
         .catch(e => {
-          console.log('searchPlugins', e)
+          // 找不到服务
+          if (e.code === 4001) {
+            return
+          }
           this.$tip.apiFailed(e)
         })
         .finally(() => {
@@ -357,7 +374,7 @@ export default {
     // 选择插件
     selectPlugin (service) {
       if (this.plugins.length > 0) {
-        this.currentService = service
+        this.selectedPlugin = service
       }
     },
     // 是否可升级

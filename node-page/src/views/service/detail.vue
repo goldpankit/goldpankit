@@ -205,7 +205,8 @@ export default {
           }
         })
         .catch(e => {
-          if (e.code === 5110) {
+          // 无权访问
+          if (e.code === 5110 || e.code === 4002) {
             this.alert(e.message)
               .then(() => {
                 this.$router.push({ name: 'PublicServices' })
