@@ -299,7 +299,7 @@ export default {
       // 翻译器
       translator: {
         translator: '翻译器',
-        translatorTip: '提示：翻译器起到对服务代码批量替换的作用，可以快速的将服务代码转换成Freemarker或者其他编译器语言的代码。',
+        translatorTip: '提示：翻译器起到对服务或插件代码批量替换的作用，可以快速的将服务或插件代码转换成Freemarker或者其他编译器语言的代码。',
         translate: '翻译',
         path: '翻译文件路径',
         type: '类型',
@@ -308,8 +308,8 @@ export default {
       },
       // 构建
       build: {
-        buildTip: '提示：安装构建为安装服务后自动执行的脚本。',
-        unBuildTip: '提示：卸载构建为卸载服务后自动执行的脚本。',
+        buildTip: '提示：安装构建为安装服务或插件后自动执行的脚本。',
+        unBuildTip: '提示：卸载构建为卸载服务或插件后自动执行的脚本。',
         buildCommand: '请输入构建命令',
         input: '文本',
         file: '文件'
