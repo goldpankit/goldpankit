@@ -22,11 +22,17 @@ module.exports = {
   deleteService (dto) {
     return new Promise((resolve, reject) => {
       userServiceApi.deleteService({
-        spaceName: dto.space,
-        serviceName: dto.service
+        id: dto.id
       })
         .then(() => {
-          cache.services.remove(dto.space, dto.service)
+          // 删除插件
+          if (dto.plugin != null) {
+            cache.plugins.remove(dto.space, dto.service, dto.plugin)
+          }
+          // 删除服务
+          else {
+            cache.services.remove(dto.space, dto.service)
+          }
           resolve()
         })
         .catch(e => {

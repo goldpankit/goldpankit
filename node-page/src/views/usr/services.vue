@@ -91,7 +91,7 @@ export default {
       loading: false,
       pagination: {
         page: 1,
-        capacity: 15,
+        capacity: 10,
         total: 0
       },
       services: []
@@ -101,19 +101,6 @@ export default {
     ...mapState(['userInfo'])
   },
   methods: {
-    // 打开服务详情
-    openDetail (service) {
-      if (service.type === 'COMMON') {
-        return
-      }
-      this.$router.push({
-        name: 'ServiceDetail',
-        params: {
-          spaceName: service.space.name,
-          serviceName: service.name
-        }
-      })
-    },
     // 打开服务设置
     openSettings (service) {
       if (service.type === 'MAIN') {
@@ -135,13 +122,30 @@ export default {
         }
       })
     },
-    // 删除服务
+    // 删除服务或插件
     deleteService (service) {
+      let unique
+      // 删除服务
+      if (service.type === 'MAIN') {
+        unique = {
+          space: service.space.name,
+          service: service.name
+        }
+      }
+      // 删除插件
+      else {
+        unique = {
+          space: service.space.name,
+          service: service.mainService.name,
+          plugin: service.name
+        }
+      }
       this.deleteConfirm(this.$t('service.confirmDeleteTip'))
         .then(() => {
           deleteService({
-            space: service.space.name,
-            service: service.name
+            id: service.id,
+            // 用于删除本地数据
+            ...unique
           })
             .then(() => {
               // 剩下最后一条，page-1
