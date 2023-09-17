@@ -58,7 +58,7 @@ export default {
     ...mapMutations(['setCurrentProject', 'setCurrentProjectDetail']),
     getLimitString,
     // 查询项目
-    fetchList () {
+    fetchList (callback) {
       search()
         .then(data => {
           this.list = data
@@ -72,6 +72,7 @@ export default {
               this.handleChange(null)
             }
           }
+          callback && callback()
         })
         .catch(e => {
           this.$tip.apiFailed(e)
@@ -87,8 +88,9 @@ export default {
     },
     // 创建完成
     handleCreateSuccess (projectId) {
-      this.fetchList()
-      this.$emit('change', projectId)
+      this.fetchList(() => {
+        this.handleChange(projectId)
+      })
     }
   },
   created () {
