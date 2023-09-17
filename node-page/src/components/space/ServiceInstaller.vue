@@ -258,6 +258,8 @@ export default {
         variables
       })
         .then(installData => {
+          // 此处需要额外补充安装状态，否则无法触发installing属性的更新
+          this.isWorking.install = false
           this.$tip.success(this.$t('service.installSuccessfully'))
           this.setInstallData(installData)
           this.refreshBalance()
@@ -308,6 +310,8 @@ export default {
         variables: this.__getInstallVariables(this.variables)
       })
         .then(installData => {
+          // 此处需要补充卸载状态，否则无法触发uninstalling状态修改
+          this.isWorking.uninstall = false
           this.$tip.success(this.$t('service.uninstallSuccessfully'))
           this.setInstallData(installData)
           this.$emit('uninstalled')

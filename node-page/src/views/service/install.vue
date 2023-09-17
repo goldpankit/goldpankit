@@ -76,6 +76,9 @@ export default {
     },
     // 切换项目
     handleProjectChange (projectId) {
+      if (projectId == null) {
+        return
+      }
       fetchById(projectId)
         .then(data => {
           this.project = data
