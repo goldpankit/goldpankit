@@ -327,6 +327,12 @@ export default {
           this.project = data
           // 获取空间信息
           this.space = this.project.space
+          // 项目没有安装服务
+          if (this.space == null) {
+            this.service = null
+            this.loading.page = false
+            return
+          }
           // 获取服务信息
           if (this.installedService == null) {
             this.loading.page = false
