@@ -7,6 +7,7 @@
       <ServiceTitle
         :space="space"
         :service="service.name"
+        :service-label="service.label"
         :with-paths="false"
       />
       <p>{{service.introduce}}</p>
