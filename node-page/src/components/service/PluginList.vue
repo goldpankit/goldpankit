@@ -112,6 +112,10 @@ export default {
       margin-top: 10px;
       display: flex;
       justify-content: space-between;
+      & > em {
+        font-size: var(--font-size-mini);
+        font-style: normal;
+      }
     }
     .latest-version {
       margin-top: 10px;
