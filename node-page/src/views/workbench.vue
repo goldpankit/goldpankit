@@ -257,7 +257,7 @@ export default {
       this.latestService = null
       // 清空插件选择
       this.selectedPlugin = null
-      this.fetchProject(true)
+      this.fetchProject()
     }
   },
   methods: {
@@ -281,7 +281,7 @@ export default {
       return this.installedPlugins[service.name] != null
     },
     // 查询项目信息
-    fetchProject (withSubServices = false) {
+    fetchProject () {
       this.loading.page = true
       if (this.currentProject == null || this.currentProject === '') {
         this.project = null
@@ -289,7 +289,7 @@ export default {
         this.loading.page = false
         return
       }
-      this.refreshProject(withSubServices)
+      this.refreshProject(true)
     },
     // 查询最新的服务版本
     fetchLatestVersion () {
@@ -408,7 +408,7 @@ export default {
       this.setCurrentProject(projectId)
       this.$router.replace({ name: 'Workbench'})
     }
-    this.fetchProject(true)
+    this.fetchProject()
   }
 }
 </script>
