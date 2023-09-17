@@ -112,10 +112,13 @@ export default {
       // 整体排序
       sortFiles(roots)
       return roots
+    },
+    factor () {
+      return [this.space, this.service, this.plugin, this.version]
     }
   },
   watch: {
-    version() {
+    factor() {
       this.fetchVersionFiles()
     }
   },
