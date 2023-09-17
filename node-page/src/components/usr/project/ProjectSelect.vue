@@ -13,17 +13,15 @@
         :key="item.id"
         :label="item.name"
       >
-        <template #default>
-          <div class="option-wrap">
-            <p class="name">
-              {{item.name}}
-              <template v-if="item.remark != null && item.remark.trim() !== ''">
-                ({{getLimitString(item.remark, 15)}})
-              </template>
-            </p>
-            <p class="codespace">{{item.codespace}}</p>
-          </div>
-        </template>
+        <div class="option-wrap">
+          <p class="name">
+            {{item.name}}
+            <template v-if="item.remark != null && item.remark.trim() !== ''">
+              ({{getLimitString(item.remark, 15)}})
+            </template>
+          </p>
+          <p class="codespace">{{item.codespace}}</p>
+        </div>
       </el-option>
       <template v-if="withPrefix" #prefix>{{$t('common.currentProject')}}:</template>
     </el-select>
@@ -105,7 +103,13 @@ export default {
     height: auto;
     line-height: 1.5;
     padding: 8px 20px;
+    &.selected {
+      background-color: var(--primary-color-match-1-light);
+    }
     .option-wrap {
+      .name {
+        color: var(--color-service-name);
+      }
       .codespace {
         font-size: var(--font-size-mini);
         color: var(--color-gray);
@@ -133,6 +137,10 @@ export default {
     width: 225px;
     .el-input__wrapper {
       box-shadow: none !important;
+      .el-input__inner {
+        color: var(--color-service-name) !important;
+        font-weight: bold;
+      }
     }
     .el-input__prefix-inner {
       color: var(--font-color);

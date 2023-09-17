@@ -1,6 +1,7 @@
 <template>
   <div class="data-source-select" :class="{ 'with-block': withBlock }">
     <el-select
+      popper-class="data-source-select-popper"
       :model-value="modelValue"
       @update:modelValue="handleChange"
       clearable
@@ -10,7 +11,16 @@
         :value="item.id"
         :key="item.id"
         :label="item.name"
-      />
+      >
+        <div class="option-wrap">
+          <p class="name">
+            {{item.name}}
+          </p>
+          <p class="url">
+            {{item.host}}:{{item.port}}/{{item.schema}}
+          </p>
+        </div>
+      </el-option>
       <template v-if="withPrefix" #prefix>
         <template v-if="prefix == null">{{$t('common.currentDataSource')}}</template>
         <template v-else>{{prefix}}</template>:
@@ -87,6 +97,27 @@ export default {
 }
 </script>
 
+<style lang="scss">
+.data-source-select-popper {
+  .el-select-dropdown__item {
+    height: auto;
+    line-height: 1.5;
+    padding: 8px 20px;
+    &.selected {
+      background-color: var(--primary-color-match-1-light);
+    }
+    .option-wrap {
+      .name {
+        color: var(--color-service-name);
+      }
+      .url {
+        font-size: var(--font-size-mini);
+        color: var(--color-gray);
+      }
+    }
+  }
+}
+</style>
 <style scoped lang="scss">
 .data-source-select {
   display: flex;
@@ -106,6 +137,10 @@ export default {
     width: 225px;
     .el-input__wrapper {
       box-shadow: none !important;
+      .el-input__inner {
+        color: var(--color-service-name) !important;
+        font-weight: bold;
+      }
     }
     .el-input__prefix-inner {
       color: var(--font-color);
