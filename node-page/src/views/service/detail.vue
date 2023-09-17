@@ -33,7 +33,7 @@
               v-show="currentTab === 'structure'"
               :space="route.space"
               :service="route.service"
-              :major-version="currentMajorVersion"
+              :version="currentVersion"
             />
           </div>
         </div>

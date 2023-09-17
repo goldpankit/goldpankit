@@ -1,7 +1,7 @@
 <template>
   <AppLayout class="default-layout">
     <header>
-      <div class="logo-wrap" @click="go2home">
+      <div class="logo-wrap" @click="$router.push({ name: 'PublicServices' })">
         <h1>Gold Pan Kit</h1>
         <div class="decoration">
           <em></em>
@@ -25,11 +25,9 @@ import { mapState} from 'vuex'
 import ProjectSelect from "../components/usr/project/ProjectSelect.vue";
 import AppLayout from "./AppLayout.vue";
 import LoginView from "../components/header/LoginView.vue";
-import BaseLayout from "./BaseLayout.vue";
 
 export default {
   name: 'DefaultLayout',
-  extends: BaseLayout,
   components: {LoginView, AppLayout, ProjectSelect },
   computed: {
     ...mapState(['userInfo'])

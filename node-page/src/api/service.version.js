@@ -19,8 +19,8 @@ export function fetchVersion (data) {
   })
 }
 // 获取主版本文件
-export function fetchMajorVersionFiles (data) {
-  return request.post('/service/version/major/files', data, {
+export function fetchVersionFiles (data) {
+  return request.post('/service/version/files', data, {
     baseURL: import.meta.env.VITE_REMOTE_API_PREFIX
   })
 }

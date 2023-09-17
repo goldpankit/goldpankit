@@ -17,8 +17,8 @@
 </template>
 
 <script>
-import {sortFiles} from "../../utils/file";
-import {fetchMajorVersionFiles} from "../../api/service.version";
+import {sortFiles} from "@/utils/file";
+import {fetchVersionFiles} from "@/api/service.version";
 
 export default {
   name: "ServiceStructureView",
@@ -29,7 +29,10 @@ export default {
     service: {
       required: true
     },
-    majorVersion: {
+    plugin: {
+      required: false
+    },
+    version: {
       required: true
     }
   },
@@ -112,18 +115,19 @@ export default {
     }
   },
   watch: {
-    majorVersion() {
-      this.fetchMajorVersionFiles()
+    version() {
+      this.fetchVersionFiles()
     }
   },
   methods: {
     // 查询主版本文件
-    fetchMajorVersionFiles() {
+    fetchVersionFiles() {
       this.loading = true
-      fetchMajorVersionFiles({
+      fetchVersionFiles({
         space: this.space,
         service: this.service,
-        majorVersion: this.majorVersion
+        plugin: this.plugin,
+        version: this.version
       })
         .then(data => {
           this.nodes = data
@@ -137,7 +141,7 @@ export default {
     }
   },
   created () {
-    this.fetchMajorVersionFiles()
+    this.fetchVersionFiles()
   }
 }
 </script>
