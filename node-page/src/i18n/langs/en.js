@@ -352,7 +352,9 @@ export default {
     nameTip: 'The plugin identifier will be recorded in the project configuration file after the user installs your plugin, and the identifier is unique within the same service. Once confirmed, it cannot be modified.',
     labelTip: 'The plugin name will be displayed to the users, making it easier for them to understand your intention.',
     createFor: 'Create plugin for service ',
-    settings: 'Settings'
+    settings: 'Settings',
+    settings2: 'Plugin',
+    readme: 'Readme'
   },
   // 问题
   issue: {

@@ -360,6 +360,8 @@ export default {
     createFor1: '为服务',
     createFor2: '创建插件',
     settings: '插件设置',
+    settings2: '插件设置',
+    readme: '插件描述'
   },
   // 问题
   issue: {

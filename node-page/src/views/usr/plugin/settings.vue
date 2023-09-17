@@ -45,8 +45,8 @@
       <div class="main">
         <template v-if="initialized">
           <ul class="tabs">
-            <li :class="{ selected: currentTab === 'basic' }" @click="currentTab = 'basic'">{{$t('service.settings.service')}}</li>
-            <li :class="{ selected: currentTab === 'readme' }" @click="currentTab = 'readme'">{{$t('service.settings.readme')}}</li>
+            <li :class="{ selected: currentTab === 'basic' }" @click="currentTab = 'basic'">{{$t('plugin.settings2')}}</li>
+            <li :class="{ selected: currentTab === 'readme' }" @click="currentTab = 'readme'">{{$t('plugin.readme')}}</li>
             <li :class="{ selected: currentTab === 'variables' }" @click="currentTab = 'variables'">{{$t('service.settings.variables')}}</li>
             <li :class="{ selected: currentTab === 'files' }" @click="currentTab = 'files'">{{$t('service.settings.files')}}</li>
             <li :class="{ selected: currentTab === 'system_variables' }" @click="currentTab = 'system_variables'">{{$t('service.settings.systemVariables')}}</li>
