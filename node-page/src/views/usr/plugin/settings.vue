@@ -290,7 +290,7 @@ export default {
   }
   .wrap {
     height: 100%;
-    width: var(--page-width);
+    width: 1200px;
     margin: 0 auto;
     box-shadow: var(--page-shadow);
     background: var(--color-light);

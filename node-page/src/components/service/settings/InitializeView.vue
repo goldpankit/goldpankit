@@ -122,7 +122,7 @@ export default {
 <style scoped lang="scss">
 // 初始化
 .initialize-wrap {
-  width: 650px;
+  width: 750px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;

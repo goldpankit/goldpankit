@@ -322,7 +322,7 @@ export default {
 <style scoped lang="scss">
 .basic-setting {
   .wrap {
-    width: 650px;
+    width: 750px;
     margin: 0 auto;
     padding: 30px 0;
     :deep(.el-form) {

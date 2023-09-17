@@ -7,9 +7,16 @@
         <el-button icon="Plus" @click="createDirectory">{{$t('component.createNewFolder')}}</el-button>
       </div>
     </div>
-    <div v-if="initData.isNotExists" class="error-tip">
+    <div class="selected-tip">
+      <label>当前选择：</label>
+      <p>{{selectedAbsolutePathLabel}}</p>
+    </div>
+    <div v-if="initData.isNotExists && initData.visibleError" class="error-tip">
       <el-icon><WarningFilled /></el-icon>
       <p>{{$t('component.pathNotExistsTip', { path: initData.selectedFilepath })}}</p>
+      <span class="close-button" @click="initData.visibleError = false">
+        <el-icon><CloseBold /></el-icon>
+      </span>
     </div>
     <ul class="paths">
       <li
@@ -22,11 +29,11 @@
       </li>
     </ul>
     <div class="files" :style="{height: height}">
-      <ul>
+      <ul v-if="files.length > 0">
         <li
           v-for="(file,index) in files"
           :key="file.id"
-          :class="{ 'is-file': file.type !== 'DIRECTORY', selected: selectedFilepath === file.path }"
+          :class="{ 'is-file': file.type !== 'DIRECTORY', selected: selectedFile === file }"
           @click="select(file)"
           @dblclick="fetchSubFiles(file)"
         >
@@ -38,6 +45,7 @@
                   v-model="file.path"
                   placeholder="unknown directory"
                   @input="checkFilename(file)"
+                  @keypress.enter="confirmCreateDirectory(file)"
                 />
                 <el-button type="primary" class="button-icon" icon="Select" :disabled="!file.__creatable || file.__working_create" @click="confirmCreateDirectory(file)"></el-button>
                 <el-button icon="Close" class="button-icon" @click="cancelCreateDirectory(index)"></el-button>
@@ -57,6 +65,7 @@
           </template>
         </li>
       </ul>
+      <Empty v-else description="当前目录下无内容"/>
     </div>
   </div>
 </template>
@@ -66,9 +75,11 @@ import path from "../../utils/path"
 import {fetchFiles, fetchRuntimeRoot, createDirectory} from "../../api/local.file";
 import {sortFiles} from "../../utils/file";
 import { generateId } from '../../utils/generator'
+import Empty from "./Empty.vue";
 
 export default {
   name: "DirectorySelect",
+  components: {Empty},
   props: {
     modelValue: {},
     title: {
@@ -80,7 +91,7 @@ export default {
     },
     // 文件部分高度
     height: {
-      default: '150px'
+      default: '180px'
     }
   },
   data () {
@@ -91,9 +102,10 @@ export default {
       // 初始化数据，例如编辑项目时当前项目的路径，当前项目路径是否存在等，用于给予用户路径不存在提醒
       initData: {
         selectedFilepath: null,
-        isNotExists: false
+        isNotExists: false,
+        visibleError: true
       },
-      selectedFilepath: null
+      selectedFile: null
     }
   },
   computed: {
@@ -102,14 +114,34 @@ export default {
         return '\\'
       }
       return '/'
+    },
+    // 选中的绝对地址
+    selectedAbsolutePath () {
+      if (this.selectedFile == null) {
+        return this.__getAbsolutePath()
+      }
+      const paths = JSON.parse(JSON.stringify(this.paths))
+      paths.push(this.selectedFile.path)
+      return this.__getAbsolutePath(paths)
+    },
+    // 选中的绝对地址，用于展示
+    selectedAbsolutePathLabel () {
+      let prefix = ''
+      let paths = JSON.parse(JSON.stringify(this.paths))
+      if (this.selectedFile != null) {
+        paths.push(this.selectedFile.path)
+      }
+      if (paths.length > 3) {
+        prefix = '...'
+        paths = paths.splice(paths.length - 3)
+      }
+      return prefix + path.join(paths)
     }
   },
   watch: {
-    selectedFilepath () {
-      if (this.selectedFilepath == null) {
-        this.$emit('update:modelValue', '')
-        this.$emit('change', '')
-      }
+    selectedAbsolutePath () {
+      this.$emit('update:modelValue', this.selectedAbsolutePath)
+      this.$emit('change', this.selectedAbsolutePath)
     }
   },
   methods: {
@@ -118,14 +150,10 @@ export default {
       if (file.__creating || file.type !== 'DIRECTORY') {
         return
       }
-      if (this.selectedFilepath === file.path) {
+      if (this.selectedFile === file.path) {
         return
       }
-      this.selectedFilepath = file.path
-      const paths = JSON.parse(JSON.stringify(this.paths))
-      paths.push(this.selectedFilepath)
-      this.$emit('update:modelValue', this.__getAbsolutePath(paths))
-      this.$emit('change', this.__getAbsolutePath(paths))
+      this.selectedFile = file
     },
     // 检查目录名称
     checkFilename (file) {
@@ -149,7 +177,9 @@ export default {
         __creating: true,
         __check_message: ''
       })
+      // 排序
       sortFiles(this.files)
+      // 自动聚焦
       this.$nextTick(() => {
         this.$refs[`input_${fileId}`] &&
           this.$refs[`input_${fileId}`][0] &&
@@ -167,7 +197,9 @@ export default {
       createDirectory(this.__getAbsolutePath(paths))
         .then(() => {
           file.__creating = false
+          // 文件排序
           sortFiles(this.files)
+          this.selectedFile = file
         })
         .catch(e => {
           this.$tip.apiFailed(e)
@@ -185,7 +217,7 @@ export default {
       if (index === this.paths.length - 1) {
         return
       }
-      this.selectedFilepath = null
+      this.selectedFile = null
       const paths = this.paths.slice(0, index + 1)
       this.__fetchFiles(paths, () => {
         this.paths.splice(index + 1)
@@ -202,7 +234,7 @@ export default {
       const paths = JSON.parse(JSON.stringify(this.paths))
       paths.push(file.path)
       this.__fetchFiles(paths, () => {
-        this.selectedFilepath = null
+        this.selectedFile = null
         this.paths.push(file.path)
       })
     },
@@ -256,12 +288,8 @@ export default {
     }
     // 编辑
     this.initData.selectedFilepath = this.modelValue
-    this.paths = path.split(this.modelValue).filter(item => item !== '')
-    this.selectedFilepath = this.paths.pop()
-    this.__fetchFiles(this.paths, files => {
-      // 查看初始化路径是否存在
-      this.initData.isNotExists = files.find(f => f.path === this.selectedFilepath) == null
-    })
+    this.paths = path.split(this.modelValue)
+    this.__fetchFiles(this.paths)
   }
 }
 </script>
@@ -279,7 +307,6 @@ export default {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid var(--border-default-color);
     padding-bottom: 15px;
     h4 {
       flex-shrink: 0;
@@ -289,15 +316,57 @@ export default {
       flex-shrink: 0;
     }
   }
+  .selected-tip {
+    background: var(--background-color);
+    padding: 5px 10px;
+    display: flex;
+    align-items: center;
+    line-height: 15px;
+    border: 1px solid var(--border-default-color);
+    font-size: var(--font-size-mini);
+    label {
+      color: var(--color-gray);
+      flex-shrink: 0;
+    }
+    p {
+      color: var(--color-service-name);
+      flex-grow: 1;
+      overflow: hidden;
+      word-break: break-all;
+    }
+  }
   .error-tip {
     background: rgba(255, 0, 0, .1);
     padding: 5px 20px;
     display: flex;
     align-items: center;
     line-height: 15px;
-    .el-icon {
+    font-size: var(--font-size-mini);
+    & > p {
+      flex-grow: 1;
+      word-break: break-all;
+    }
+    & > .el-icon {
+      flex-shrink: 0;
       margin-right: 5px;
       color: var(--color-danger);
+    }
+    & > .close-button {
+      margin-left: 10px;
+      flex-shrink: 0;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, .15);
+      transition: all ease .15s;
+      &:hover {
+        background: rgba(0, 0, 0, .3);
+        color: var(--color-light);
+        cursor: default;
+      }
     }
   }
   .paths {
