@@ -21,7 +21,7 @@
         <em v-if="index < paths.length - 1">{{separator}}</em>
       </li>
     </ul>
-    <div class="files">
+    <div class="files" :style="{height: height}">
       <ul>
         <li
           v-for="(file,index) in files"
@@ -77,6 +77,10 @@ export default {
     // 选择类型
     type: {
       default: 'DIR'
+    },
+    // 文件部分高度
+    height: {
+      default: '150px'
     }
   },
   data () {
@@ -328,7 +332,6 @@ export default {
   .files {
     flex-grow: 1;
     background: var(--color-light);
-    height: 150px;
     display: flex;
     flex-direction: column;
     ul {

@@ -13,11 +13,11 @@
       <el-form ref="form" :model="form" :rules="getRules()">
         <el-form-item :label="$t('plugin.label')" prop="label" required>
           <el-input ref="labelInput" v-model="form.label" @input="handleLabelInput"/>
-          <FormItemTip :content="$t('plugin.nameTip')"/>
+          <FormItemTip :content="$t('plugin.labelTip')"/>
         </el-form-item>
         <el-form-item :label="$t('plugin.name')" prop="name" required>
           <el-input class="follow-input" v-model="form.name"/>
-          <FormItemTip :content="$t('plugin.labelTip')"/>
+          <FormItemTip :content="$t('plugin.nameTip')"/>
         </el-form-item>
       </el-form>
       <div class="opera">

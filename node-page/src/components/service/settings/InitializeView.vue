@@ -8,6 +8,7 @@
       <DirectorySelect
         v-model="form.codespace"
         :title="$t('service.settings.initialize.selectServiceCodespace')"
+        height="235px"
         @change="fetchConfig"
       />
     </div>
