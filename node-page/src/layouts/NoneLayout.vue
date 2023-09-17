@@ -1,7 +1,7 @@
 <template>
   <AppLayout class="none-layout">
     <header>
-      <div class="logo-wrap" @click="$router.push({ name: 'PublicServices' })">
+      <div class="logo-wrap" @click="go2home">
         <h1>Gold Pan Kit</h1>
         <div class="decoration">
           <em></em>
@@ -24,9 +24,11 @@
 import AppLayout from "./AppLayout.vue";
 import LoginView from "../components/header/LoginView.vue";
 import I18nLangSelect from "../components/common/I18nLangSelect.vue";
+import BaseLayout from "./BaseLayout.vue";
 
 export default {
   name: 'NoneLayout',
+  extends: BaseLayout,
   components: {I18nLangSelect, LoginView, AppLayout }
 }
 </script>

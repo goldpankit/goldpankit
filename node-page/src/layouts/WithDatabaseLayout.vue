@@ -1,7 +1,7 @@
 <template>
   <AppLayout class="workbench-layout">
     <header>
-      <div class="logo-wrap" @click="$router.push({ name: 'PublicServices' })">
+      <div class="logo-wrap" @click="go2home">
         <h1>Gold Pan Kit</h1>
         <div class="decoration">
           <em></em>
@@ -29,9 +29,11 @@ import DataSourceSelect from "../components/database/DataSourceSelect.vue";
 import ProjectSelect from "../components/usr/project/ProjectSelect.vue";
 import AppLayout from "./AppLayout.vue";
 import LoginView from "../components/header/LoginView.vue";
+import BaseLayout from "./BaseLayout.vue";
 
 export default {
   name: 'WorkbenchLayout',
+  extends: BaseLayout,
   components: {LoginView, AppLayout, ProjectSelect, DataSourceSelect },
   computed: {
     ...mapState(['currentDatabase', 'userInfo'])
