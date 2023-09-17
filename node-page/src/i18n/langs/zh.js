@@ -42,6 +42,7 @@ export default {
     confirmUpdate: '确认保存',
     confirmCreate: '确认创建',
     confirmAdd: '确认添加',
+    currentSelect: '当前选择',
     // 模态框
     modal: {
       confirmDelete: '确认删除',
@@ -407,7 +408,7 @@ export default {
     editProject: '编辑项目',
     noProjects: '暂无项目',
     createTip: '项目信息仅存储在您的当前设备上。',
-    codespace: '代码空间',
+    codespace: '项目目录',
     deleteTip: '您确定要删除名为{value}的项目吗？'
   },
   // 工作台

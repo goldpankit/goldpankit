@@ -8,7 +8,7 @@
       </div>
     </div>
     <div class="selected-tip">
-      <label>当前选择：</label>
+      <label>{{$t('common.currentSelect')}}：</label>
       <p>{{selectedAbsolutePathLabel}}</p>
     </div>
     <div v-if="initData.isNotExists && initData.visibleError" class="error-tip">

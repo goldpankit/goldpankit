@@ -42,6 +42,7 @@ export default {
     confirmUpdate: 'Save',
     confirmCreate: 'Create',
     confirmAdd: 'Add',
+    currentSelect: 'Selected Directory',
     // 模态框
     modal: {
       confirmDelete: 'Confirm Delete',
@@ -400,7 +401,7 @@ export default {
     editProject: 'Edit Project',
     noProjects: 'No Projects',
     createTip: 'The project information will only be saved on your current device.',
-    codespace: 'Code Space',
+    codespace: 'Project Directory',
     deleteTip: 'Are you sure you want to delete the project named {value}？'
   },
   // 工作台

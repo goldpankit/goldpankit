@@ -12,11 +12,11 @@
       {{ $t('project.createTip') }}
     </section>
     <el-form ref="form" :model="form" :rules="getRules()">
-      <el-form-item :label="$t('project.name')" prop="name" required>
-        <el-input v-model="form.name"/>
-      </el-form-item>
       <el-form-item :label="$t('project.codespace')" prop="codespace" required>
         <DirectorySelect v-if="ready" v-model="form.codespace" @change-project="handleCodespaceChange"/>
+      </el-form-item>
+      <el-form-item :label="$t('project.name')" prop="name" required>
+        <el-input v-model="form.name"/>
       </el-form-item>
       <el-form-item :label="$t('common.remark')" prop="remark">
         <el-input type="textarea" :rows="2" v-model="form.remark" maxlength="200"/>
