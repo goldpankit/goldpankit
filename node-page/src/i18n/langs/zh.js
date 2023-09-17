@@ -349,6 +349,7 @@ export default {
   // 插件
   plugin: {
     plugin: '插件',
+    install: '安装插件',
     create: '创建插件',
     create2: '创建插件',
     name: '插件标识符',

@@ -343,6 +343,7 @@ export default {
   // 插件
   plugin: {
     plugin: 'Plugin',
+    install: 'Install',
     create: 'Create Plugin',
     create2: 'Create New Plugin',
     name: 'Plugin Identifier',

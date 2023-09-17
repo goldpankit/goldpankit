@@ -75,18 +75,20 @@
               <div class="main">
                 <ul class="service-dimensions">
                   <li :class="{selected: selectedPluginDimension === 'readme'}" @click="selectedPluginDimension = 'readme'">{{$t('common.readme')}}</li>
-                  <li :class="{selected: selectedPluginDimension === 'install'}" @click="selectedPluginDimension = 'install'">{{$t('service.install2')}}</li>
-<!--                  <li class="disabled" :class="{selected: selectedPluginDimension === 'issues'}">{{$t('common.issues')}}</li>-->
+                  <li :class="{selected: selectedPluginDimension === 'install'}" @click="selectedPluginDimension = 'install'">{{$t('plugin.install')}}</li>
+                  <li :class="{selected: selectedPluginDimension === 'structure'}" @click="selectedPluginDimension = 'structure'">{{$t('service.structure')}}</li>
                 </ul>
                 <div class="dimension-content">
+                  <!-- readme -->
                   <div v-show="selectedPluginDimension === 'readme'">
                     <MarkdownEditor v-model="selectedPlugin.description" readonly :without-padding="true"/>
                   </div>
+                  <!-- 安装 -->
                   <ServiceInstaller
+                    v-show="selectedPluginDimension === 'install'"
                     ref="installer"
                     v-model:installing="isWorking.install"
                     v-model:uninstalling="isWorking.uninstall"
-                    v-show="selectedPluginDimension === 'install'"
                     :space="space"
                     :service="service.name"
                     :plugin="selectedPlugin.name"
@@ -98,9 +100,14 @@
                     @installed="refreshProject()"
                     @uninstalled="refreshProject()"
                   />
-                  <div class="issue-wrap">
-                    <IssueListView v-show="selectedPluginDimension === 'issues'"/>
-                  </div>
+                  <!-- 插件代码结构 -->
+                  <ServiceStructureView
+                    v-show="selectedPluginDimension === 'structure'"
+                    :space="space"
+                    :service="service.name"
+                    :plugin="selectedPlugin.name"
+                    :version="selectedPlugin.lastVersion"
+                  />
                 </div>
               </div>
               <div class="opera">
@@ -179,9 +186,12 @@ import {fetchList} from "@/api/plugin";
 import {fetchById} from "@/api/user.project";
 import ServiceTitle from "../components/service/ServiceTitle.vue";
 import SearchInput from "../components/common/SearchInput.vue";
+import ServiceStructureView from "../components/space/ServiceStructureView.vue";
 
 export default {
-  components: {SearchInput, ServiceTitle, PluginList, BeanAmount, IssueListView, Empty, MarkdownEditor, ServiceInstaller},
+  components: {
+    ServiceStructureView,
+    SearchInput, ServiceTitle, PluginList, BeanAmount, IssueListView, Empty, MarkdownEditor, ServiceInstaller},
   data () {
     return {
       loading: {
