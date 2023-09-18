@@ -22,7 +22,7 @@
               :content="compileTip"
             >
               <template #reference>
-                <el-button type="primary" :class="{ 'is-disabled': currentProject == null || isWorking.compile}" @click="compile">{{$t('service.settings.compile')}}</el-button>
+                <el-button type="primary" :class="{ 'is-disabled': currentProject == null || isWorking.compile}" :loading="isWorking.compile" @click="compile">{{$t('service.settings.compile')}}</el-button>
               </template>
             </el-popover>
             <el-popover
@@ -33,7 +33,7 @@
               :content="cleanCompileTip"
             >
               <template #reference>
-                <el-button type="primary" :class="{ 'is-disabled': currentProject == null || isWorking.cleanCompile}" @click="cleanCompile">{{$t('service.settings.cleanCompile')}}</el-button>
+                <el-button type="primary" :class="{ 'is-disabled': currentProject == null || isWorking.cleanCompile}" :loading="isWorking.cleanCompile" @click="cleanCompile">{{$t('service.settings.cleanCompile')}}</el-button>
               </template>
             </el-popover>
             <el-button type="important" @click="$refs.publishWindow.open(route.space, route.service)">{{$t('service.settings.publish')}}</el-button>
@@ -65,6 +65,7 @@
               :service="route.service"
               :service-type="service.type"
               :service-config="serviceConfig"
+              @clone-success="fetchProfile"
             />
             <MarkdownEditor
               v-if="service.description != null"

@@ -77,4 +77,10 @@ html {
       background: #eee;
     }
   }
+  // 消息弹窗
+  .el-overlay-message-box {
+    .el-message-box__message p {
+      word-break: break-all;
+    }
+  }
 }

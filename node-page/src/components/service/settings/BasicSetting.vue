@@ -30,7 +30,22 @@
           <DatabaseTypeSelect v-model="form.supportedDatabases" @change="saveConfig"/>
         </el-form-item>
         <el-form-item :label="$t('service.settings.repository')" prop="repository">
-          <el-input v-model="form.repository" @input="saveConfig"/>
+          <div class="repository-input-wrap">
+            <el-input class="repository-input" v-model="form.repository" @input="saveConfig"/>
+            <span>/</span>
+            <el-input
+              class="branch-input"
+              v-model="form.branch"
+              placeholder="Tag/Branch"
+              @input="handleBranchInput"
+            />
+            <el-button
+              type="primary"
+              :disabled="isWorking.clone || !clonable"
+              :loading="isWorking.clone"
+              @click="clone"
+            >克隆</el-button>
+          </div>
         </el-form-item>
         <el-form-item :label="$t('service.settings.introduce')" prop="introduce" required>
           <el-input type="textarea" :rows="5" v-model="form.introduce" @input="saveConfig"/>
@@ -105,6 +120,8 @@ import {
   initialize as initPlugin,
   saveConfig as savePluginConfig
 } from "@/api/plugin";
+import {gitClone} from "../../../api/service";
+import {checkVersionNumber} from "../../../utils/form.check";
 
 export default {
   name: "BasicSetting",
@@ -123,6 +140,9 @@ export default {
   },
   data () {
     return {
+      isWorking: {
+        clone: false
+      },
       newCodespace: {
         changing: false,
         value: ''
@@ -137,7 +157,10 @@ export default {
         receivable: false,
         compiler: '',
         introduce: '',
+        // 仓库地址
         repository: '',
+        // 仓库标签
+        branch: '',
         supportedDatabases: [],
         tableFieldDefinitions: [],
         builds: [],
@@ -160,6 +183,10 @@ export default {
     // 是否为插件
     isPlugin () {
       return this.plugin != null
+    },
+    // 是否可克隆
+    clonable () {
+      return this.form.repository.trim() !== '' && this.form.branch.trim() !== ''
     }
   },
   methods: {
@@ -200,6 +227,58 @@ export default {
         .catch(e => {
           this.$tip.apiFailed(e)
         })
+    },
+    // 处理分支输入
+    handleBranchInput (value) {
+      console.log('value', value)
+      if (value.startsWith('v') || value.startsWith('V')) {
+        value = value.substring(1)
+      }
+      checkVersionNumber(null, value, (err) => {
+        if (!err) {
+          this.form.version = value
+        }
+        this.saveConfig()
+      })
+    },
+    // 克隆仓库
+    clone () {
+      if (this.isWorking.clone) {
+        return
+      }
+      this.alert(
+        `克隆操作将会删除本地服务代码，全部更换为仓库中的代码，确认操作吗？`,
+        '重要提示',
+        {
+          showCancelButton: true,
+          cancelButtonText: '取消',
+          confirmButtonText: '删除并克隆',
+          confirmButtonClass: 'danger-button'
+        }
+      )
+        .then(() => {
+          this.isWorking.clone = true
+          gitClone({
+            space: this.space,
+            service: this.service,
+            plugin: this.plugin
+          })
+            .then(() => {
+              this.alert('克隆成功')
+                .then(() => {
+                  window.location.reload()
+                  // this.$emit('clone-success')
+                })
+                .catch(() => {})
+            })
+            .catch(e => {
+              this.alert(`错误信息：${e.message}，请检查仓库地址等信息是否有误。`, '克隆失败').catch(() => {})
+            })
+            .finally(() => {
+              this.isWorking.clone = false
+            })
+        })
+        .catch(() => {})
     },
     // 切换价格类型
     changePriceType (value) {
@@ -356,6 +435,27 @@ export default {
         .el-form-item__content {
           flex-direction: column;
           align-items: flex-start;
+        }
+      }
+      // 代码仓库
+      .repository-input-wrap {
+        width: 100%;
+        display: flex;
+        & > span {
+          flex-shrink: 0;
+          margin: 0 5px;
+        }
+        .branch-input {
+          flex-shrink: 0;
+          width: 95px;
+        }
+        .repository-input {
+          flex-shrink: initial;
+          flex-grow: 1;
+        }
+        .el-button {
+          flex-shrink: 0;
+          margin-left: 10px;
         }
       }
     }

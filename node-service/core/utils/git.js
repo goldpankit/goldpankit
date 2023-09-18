@@ -11,7 +11,6 @@ module.exports = {
    * @returns {Promise<unknown>}
    */
   clone (dto) {
-    console.log('clone', dto)
     return new Promise((resolve, reject) => {
       gitClone(dto.url, dto.targetDir, { checkout: dto.branch }, (err) => {
         if (err) {

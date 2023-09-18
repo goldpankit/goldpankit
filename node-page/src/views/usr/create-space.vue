@@ -14,9 +14,6 @@
           <el-form-item :label="$t('space.homePage')" prop="homepage">
             <el-input v-model="form.homepage" />
           </el-form-item>
-          <el-form-item :label="$t('space.introduce')" prop="introduce" required>
-            <el-input v-model="form.introduce" type="textarea" :rows="3" maxlength="200"/>
-          </el-form-item>
           <el-form-item :label="$t('space.otherSettings')" class="item-other-settings">
             <div>
               <el-checkbox v-model="form.withPrivate" :label="$t('space.isPrivateServiceTip')"/>

@@ -1,5 +1,11 @@
 import request from "../utils/request";
 
+
+// 从GIT中克隆服务代码
+export function gitClone (data) {
+  return request.post('/service/git/clone', data)
+}
+
 // 查询本地服务
 export function fetchLocalServices (data) {
   return request.get('/service/list')

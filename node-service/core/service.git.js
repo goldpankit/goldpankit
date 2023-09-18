@@ -32,7 +32,6 @@ module.exports = {
               serviceConfig.introduce = result.content.substring(0, 200)
             }
           }
-          console.log('服务克隆完成')
           resolve()
         })
         .catch(e => {
