@@ -1,6 +1,14 @@
 const request = require('../utils/request.define')
 const service = require('../core/service')
+const serviceGit = require('../core/service.git')
 const serviceTranslator = require('../core/service.translator')
+
+// 获取所有本地服务
+request
+  .post('/service/git/clone')
+  .data(req => {
+    return serviceGit.clone(req.body)
+  })
 
 // 获取所有本地服务
 request

@@ -9,6 +9,15 @@ module.exports = {
   getRuntimeRoot() {
     return root
   },
+  // 重命名
+  rename (oldPath, newPath) {
+    fs.renameSync(oldPath, newPath)
+  },
+  // 清空目录
+  clearDir (dir) {
+    this.deleteDirectory(dir, true)
+    this.createDirectory(dir)
+  },
   // 获取文件列表
   getFiles (dir) {
     dir = path.normalize(dir)

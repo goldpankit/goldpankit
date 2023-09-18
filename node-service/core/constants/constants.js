@@ -14,6 +14,7 @@ module.exports = {
     receivable: false, // 是否接收服务
     compiler: 'static', // 编译器
     repository: '', // 仓库
+    branch: '', // 仓库分支
     supportedDatabases: [], // 支持的数据库列表
     prices: [ // 价格定义
       {

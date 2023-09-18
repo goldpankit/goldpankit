@@ -11,10 +11,7 @@ module.exports = {
       if (plugin == null) {
         return null
       }
-      return {
-        ...this.__getServiceConfig(plugin.codespace),
-        repository: plugin.repository
-      }
+      return this.__getServiceConfig(plugin.codespace)
     }
     // 获取服务配置信息
     if (dto.space != null && dto.service != null) {
@@ -22,10 +19,7 @@ module.exports = {
       if (service == null) {
         return null
       }
-      return {
-        ...this.__getServiceConfig(service.codespace),
-        repository: service.repository
-      }
+      return this.__getServiceConfig(service.codespace)
     }
     if (dto.codespace != null) {
       return this.__getServiceConfig(dto.codespace)
