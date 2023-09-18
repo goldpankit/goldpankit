@@ -43,6 +43,7 @@ export default {
     confirmCreate: 'Create',
     confirmAdd: 'Add',
     currentSelect: 'Selected Directory',
+    importantTip: 'Important Reminder',
     // 模态框
     modal: {
       confirmDelete: 'Confirm Delete',
@@ -355,6 +356,16 @@ export default {
     settings: 'Settings',
     settings2: 'Plugin',
     readme: 'Readme'
+  },
+  // git克隆
+  gitClone: {
+    clone: 'Clone',
+    branch: 'Tag/Branch',
+    cloneTip: 'Are you sure you want to proceed with the clone operation? It will delete all local service code and replace it with the code from the repository.',
+    confirm: 'Delete and Clone',
+    cloneSuccess: 'Clone successful. Repository files have been written to the directory of your local service dir.',
+    cloneFailedTitle: 'Clone failed',
+    cloneFailed: 'Error message: {message}. Please check if the repository address and other information are correct.'
   },
   // 问题
   issue: {

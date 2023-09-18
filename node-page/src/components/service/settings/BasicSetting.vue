@@ -36,7 +36,7 @@
             <el-input
               class="branch-input"
               v-model="form.branch"
-              placeholder="Tag/Branch"
+              :placeholder="$t('gitClone.branch')"
               @input="handleBranchInput"
             />
             <el-button
@@ -44,7 +44,7 @@
               :disabled="isWorking.clone || !clonable"
               :loading="isWorking.clone"
               @click="clone"
-            >克隆</el-button>
+            >{{$t('gitClone.clone')}}</el-button>
           </div>
         </el-form-item>
         <el-form-item :label="$t('service.settings.introduce')" prop="introduce" required>
@@ -247,12 +247,12 @@ export default {
         return
       }
       this.alert(
-        `克隆操作将会删除本地服务代码，全部更换为仓库中的代码，确认操作吗？`,
-        '重要提示',
+        this.$t('gitClone.cloneTip'),
+        this.$t('common.importantTip'),
         {
           showCancelButton: true,
-          cancelButtonText: '取消',
-          confirmButtonText: '删除并克隆',
+          cancelButtonText: this.$t('common.cancel'),
+          confirmButtonText: this.$t('gitClone.confirm'),
           confirmButtonClass: 'danger-button'
         }
       )
@@ -264,7 +264,7 @@ export default {
             plugin: this.plugin
           })
             .then(() => {
-              this.alert('克隆成功')
+              this.alert(this.$t('gitClone.cloneSuccess'))
                 .then(() => {
                   window.location.reload()
                   // this.$emit('clone-success')
@@ -272,7 +272,7 @@ export default {
                 .catch(() => {})
             })
             .catch(e => {
-              this.alert(`错误信息：${e.message}，请检查仓库地址等信息是否有误。`, '克隆失败').catch(() => {})
+              this.alert(this.$t('gitClone.cloneFailed', {message: e.message}), this.$t('gitClone.cloneFailedTitle')).catch(() => {})
             })
             .finally(() => {
               this.isWorking.clone = false

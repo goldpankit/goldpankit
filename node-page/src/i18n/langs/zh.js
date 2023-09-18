@@ -43,6 +43,7 @@ export default {
     confirmCreate: '确认创建',
     confirmAdd: '确认添加',
     currentSelect: '当前选择',
+    importantTip: '重要提示',
     // 模态框
     modal: {
       confirmDelete: '确认删除',
@@ -362,6 +363,16 @@ export default {
     settings: '插件设置',
     settings2: '插件设置',
     readme: '插件描述'
+  },
+  // git克隆
+  gitClone: {
+    clone: '克隆',
+    branch: '标签/分支',
+    cloneTip: '克隆操作将会删除本地服务代码，全部更换为仓库中的代码，确认操作吗？',
+    confirm: '删除并克隆',
+    cloneSuccess: '克隆成功，仓库文件已写入您的本地服务代码位置目录下。',
+    cloneFailedTitle: '克隆失败',
+    cloneFailed: '错误信息：{message}，请检查仓库地址等信息是否有误。'
   },
   // 问题
   issue: {
