@@ -91,6 +91,11 @@
               <p>{{majorVersionDetail.subServices.length}}</p>
             </li>
             <li>
+              <label>{{$t('service.repository')}}</label>
+              <a v-if="service.repository != null && service.repository !== ''" :href="service.repository" target="_blank">{{service.repository}}</a>
+              <p v-else>{{$t('common.none')}}</p>
+            </li>
+            <li>
               <label>{{$t('service.lastPublish')}}</label>
               <p v-if="service.lastPublish != null">{{getDateOffsetText(service.lastPublish)}}</p>
               <p v-else>None</p>
