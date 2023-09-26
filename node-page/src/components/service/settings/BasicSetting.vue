@@ -230,7 +230,6 @@ export default {
     },
     // 处理分支输入
     handleBranchInput (value) {
-      console.log('value', value)
       if (value.startsWith('v') || value.startsWith('V')) {
         value = value.substring(1)
       }

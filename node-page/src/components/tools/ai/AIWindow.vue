@@ -303,7 +303,6 @@ export default {
     },
     // 监听自动滚动
     handleScrollEnd (e) {
-      console.log(Math.abs(e.target.scrollTop + e.target.offsetHeight - e.target.scrollHeight))
       if (Math.abs(e.target.scrollTop + e.target.offsetHeight - e.target.scrollHeight) < 10) {
         this.config.autoScroll = true
       }

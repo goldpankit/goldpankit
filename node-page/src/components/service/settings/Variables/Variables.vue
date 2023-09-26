@@ -259,10 +259,6 @@ export default {
       }
       this.timeout.save = setTimeout(() => {
         // 请求保存
-        console.log({
-          ...this.unique,
-          variables: this.getVariables()
-        })
         this.saveVariablesApi({
           ...this.unique,
           variables: this.getVariables()
