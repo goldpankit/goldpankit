@@ -32,18 +32,27 @@
         </el-tree>
       </div>
       <div class="content-preview">
-        <DeletedFileView
-          v-if="currentFile != null && currentFile.operaType === 'DELETED'"
-          :original-text="localContent"
-        />
-        <MergeTextView
-          v-else-if="currentFile != null && currentFile.contentEncode === 'utf-8' && currentFile.operaType !== 'DELETED'"
-          :original-text="localContent"
-          v-model:new-text="currentFile.content"
-        />
-        <div v-else class="file-change-tip">
-          <p>{{$t('service.mergeUnPreview')}}</p>
-        </div>
+        <template v-if="currentFile != null">
+          <!-- 已删除文件 -->
+          <template v-if="currentFile.operaType === 'DELETED'">
+            <DeletedTextFileView
+              v-if="currentFile.contentEncode === 'utf-8'"
+              :original-text="localContent"
+            />
+            <DeletedFileView
+              v-else
+              :file="currentFile"
+            />
+          </template>
+          <MergeTextView
+            v-else-if="currentFile.contentEncode === 'utf-8' && currentFile.operaType !== 'DELETED'"
+            :original-text="localContent"
+            v-model:new-text="currentFile.content"
+          />
+          <div v-else class="file-change-tip">
+            <p>{{$t('service.mergeUnPreview')}}</p>
+          </div>
+        </template>
       </div>
     </div>
     <div class="opera">
@@ -64,9 +73,10 @@ import path from '@/utils/path'
 import MarkdownEditor from "../../../common/MarkdownEditor.vue";
 import MergeTextView from "./MergeTextView.vue";
 import DeletedFileView from "./DeletedFileView.vue";
+import DeletedTextFileView from "./DeletedTextFileView.vue";
 export default {
   name: "MergeWindow",
-  components: {DeletedFileView, MergeTextView, MarkdownEditor},
+  components: {DeletedFileView, DeletedTextFileView, MergeTextView, MarkdownEditor},
   data () {
     return {
       visible: false,
@@ -234,6 +244,7 @@ export default {
         // 添加文件
         children.push({
           ...diffFile,
+          operaType: this.__getOperaType(diffFile),
           type: diffFile.filetype,
           label: filename,
           suffix: filename.lastIndexOf('.') === -1 ? '' : filename.substring(filename.lastIndexOf('.') + 1)
@@ -247,6 +258,18 @@ export default {
         }
       }
       this.__ns(this.files)
+      console.log('this.files', this.files)
+    },
+    // 获取操作类型
+    __getOperaType (diffFile) {
+      if (diffFile.operaType === 'DELETED') {
+        return 'DELETED'
+      }
+      // 没有本地文件，肯定是新增
+      if (diffFile.localContent == null) {
+        return 'ADD'
+      }
+      return 'UPDATE'
     },
     // 浓缩目录
     __ns (nodes) {
@@ -321,7 +344,12 @@ export default {
           display: flex;
           align-items: center;
           &.file {
-            color: var(--primary-color-match-2);
+            &.ADD {
+              color: var(--primary-color-match-2);
+            }
+            &.UPDATE {
+              color: var(--color-success);
+            }
           }
           .el-icon {
             font-size: 16px;

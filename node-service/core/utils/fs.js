@@ -76,6 +76,8 @@ module.exports = {
    * @param versionPath 安装的版本路径，如[1.0.0, 1.0.1]
    */
   writeFiles (files, project, service = null, versionPath = []) {
+    const currentFiles = this.getFiles(project.codespace)
+    const hasFile = currentFiles.filter(file => file !== 'kit.json').length > 0
     log.debug(`${project.name}: preparing to process ${files.length} files.`)
     const diffFiles = []
     let fileCount = 0
@@ -102,12 +104,12 @@ module.exports = {
         continue
       }
       // 如果为二进制文件，直接覆盖写入
-      if (file.contentEncode === 'base64') {
-        content = Buffer.from(content, 'base64')
-        this.createFile(filepath, content, true)
-        fileCount++
-        continue
-      }
+      // if (file.contentEncode === 'base64') {
+      //   content = Buffer.from(content, 'base64')
+      //   this.createFile(filepath, content, true)
+      //   fileCount++
+      //   continue
+      // }
       // 如果文件内容为空，且本地存在该文件，加入删除队列
       if (content.trim() === '') {
         if (this.exists(filepath)) {
@@ -119,13 +121,19 @@ module.exports = {
         }
         continue
       }
-      // 如果文件不存在，则直接写入
+      // 如果文件不存在
       if (!this.exists(filepath)) {
+        // 项目中存在文件，则加入差异队列
+        if (hasFile) {
+          diffFiles.push(file)
+          continue
+        }
+        // 项目中没有文件，则直接写入
         this.createFile(filepath, content, true)
         fileCount++
         continue
       }
-      // 如果为差异表达式，合并内容
+      // 如果文件存在，且为差异表达式，合并内容
       const fileInfo = this.readFile(filepath)
       let localFileContent = fileInfo.content
       if (diffExp.isDiffEllipsis(content)) {
@@ -140,7 +148,7 @@ module.exports = {
       }
       file.content = content
       file.localContent = localFileContent
-      // 如果本地内容 != 编译后的内容，则加入差异列表
+      // 如果文件存在，且本地内容 != 编译后的内容，则加入差异列表
       if (file.localContent !== file.content) {
         diffFiles.push(file)
       }

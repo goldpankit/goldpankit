@@ -217,7 +217,7 @@ export default {
     overwriteAll: '合并所有',
     mergeTip: '提示：左侧为本地文件的内容，右侧为合并好后即将覆盖写入文件的新内容',
     deleteFileTip: '重要提示：该文件在当前版本中已不需要，合并后将在您当前设备上删除该文件，为了避免服务间文件重名，您应该仔细核对该文件是否真的需要被删除！',
-    mergeUnPreview: '该文件发生了变化，但不支持预览该文件的内容差异。',
+    mergeUnPreview: '（暂不支持预览该文件类型）',
     serviceCodeErrorTitle: '服务代码错误',
     serviceCodeErrorTip: '出现该窗口，说明服务的代码无法正确执行，以下是服务代码执行的错误栈信息。',
     createService: '创建服务',

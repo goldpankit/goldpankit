@@ -1,72 +1,39 @@
 <template>
-  <div class="deleted-file-view" :class="{loading}">
+  <div class="deleted-file-view">
     <div class="deleted-file-view__wrap">
       <div class="tip">
         <p>{{$t('service.deleteFileTip')}}</p>
       </div>
-      <div class="container"></div>
+      <div class="container">
+        <img v-if="isImage" :src="'data:image/png;base64,' + file.localContent" alt="">
+        <div v-else class="file">
+          <i class="iconfont icon-wenjian"></i>
+          <label>{{file.filepath}}</label>
+          <p>{{$t('service.mergeUnPreview')}}</p>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import * as monaco from 'monaco-editor'
-let diffEditor
+const imageSuffixList = ['jpg', 'jpeg', 'png', 'gif', 'bmp']
 export default {
-  name: "DeletedFileView",
+  name: "DeletedImageView",
   props: {
-    // 原始内容（要删除的本地文件内容）
-    originalText: {
+    // 文件
+    file: {
       required: true
     }
   },
-  data () {
-    return {
-      loading: true
-    }
-  },
-  watch: {
-    originalText () {
-      if (diffEditor == null) {
-        return
-      }
-      this.refreshContent()
+  computed: {
+    isImage () {
+      return imageSuffixList.find(suffix => suffix === this.file.suffix.toLowerCase())
     }
   },
   methods: {
-    // 刷新内容
-    refreshContent () {
-      this.loading = true
-      this.$nextTick(() => {
-        if (diffEditor != null) {
-          diffEditor.setValue(this.originalText)
-        }
-        this.__loadSuccess()
-      })
-    },
-    // 初始化
-    init () {
-      diffEditor = monaco.editor.create(
-        this.$el.querySelector(".container"),
-        {
-          value: this.originalText,
-          language: 'text/plain',
-          automaticLayout: true,
-          readOnly: true
-        }
-      )
-      this.__loadSuccess()
-    },
-    __loadSuccess () {
-      setTimeout(() => {
-        this.loading = false
-      }, 300)
-    }
   },
   mounted () {
-    this.$nextTick(() => {
-      this.init()
-    })
   }
 }
 </script>
@@ -97,7 +64,30 @@ export default {
   .container {
     flex-grow: 1;
     opacity: 1;
-    transition: all ease .15s
+    transition: all ease .15s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    img {
+      height: 60%;
+      object-fit: contain;
+    }
+    .file {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      label {
+        font-weight: bold;
+        margin-top: 5px;
+      }
+      p {
+        margin-top: 10px;
+        color: var(--color-gray);
+      }
+      i {
+        font-size: 50px;
+      }
+    }
   }
 }
 </style>

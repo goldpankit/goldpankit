@@ -33,8 +33,13 @@ export default {
       loading: true
     }
   },
+  computed: {
+    factor () {
+      return [this.originalText, this.newText]
+    }
+  },
   watch: {
-    originalText () {
+    factor () {
       if (diffEditor == null) {
         return
       }
@@ -47,10 +52,10 @@ export default {
       this.loading = true
       this.$nextTick(() => {
         if (originalModel != null) {
-          originalModel.setValue(this.originalText)
+          originalModel.setValue(this.originalText || '')
         }
         if (modifiedModel != null) {
-          modifiedModel.setValue(this.newText)
+          modifiedModel.setValue(this.newText || '')
         }
         this.__loadSuccess()
       })

@@ -217,7 +217,7 @@ export default {
     overwriteAll: 'Merge All',
     mergeTip: 'Tips: The left side is the content of the local file, and the right side is the newly merged content that will be overwritten and written into the file.',
     deleteFileTip: 'Important Reminder: This file is no longer required in the current version and will be deleted from your current device after merging. To avoid file name conflicts between services, please carefully verify if this file truly needs to be deleted!',
-    mergeUnPreview: 'The content of this file has changed, but previewing the content differences for this file format is not supported.',
+    mergeUnPreview: 'Preview of this file type is not supported at the moment.',
     serviceCodeErrorTitle: 'Service Code Error',
     serviceCodeErrorTip: 'If this window appears, it means that the service code is unable to execute correctly. The following is the error stack information for the service code execution.',
     createService: 'Create Service',
