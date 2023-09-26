@@ -549,9 +549,11 @@ export default {
        * 变量组，给子变量的value赋值为默认值
        */
       if (variable.type === 'group') {
-        variable.children.forEach(item => {
-          item.value = item.defaultValue
-        })
+        if (variable.children != null) {
+          variable.children.forEach(item => {
+            item.value = item.defaultValue
+          })
+        }
         return variable
       }
       variable.value = value
