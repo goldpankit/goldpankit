@@ -8,6 +8,7 @@
         :service-price="service.price.price"
         :service-lease="service.latestLease"
         :version="service.defaultMajorVersion.version"
+        :versions="service.defaultMajorVersion.versions"
         :project-config="project"
         :with-title="true"
         :with-install-button="true"

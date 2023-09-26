@@ -2,7 +2,14 @@
   <div class="service-installer">
     <div v-if="withTitle" class="nav">
       <div class="title">
-        <h4>@{{space}}/{{service}}{{version == null ? '' : ' · ' + version.toUpperCase()}} · {{$t('service.install2')}}</h4>
+        <h4>@{{space}}/{{service}} · {{$t('service.install2')}} · </h4>
+        <el-select v-model="selectedVersion">
+          <el-option
+            v-for="version in versions"
+            :key="version"
+            :value="version"
+          >{{version}}</el-option>
+        </el-select>
       </div>
       <div v-if="withInstallButton" class="install">
         <el-button type="important" @click="install" :disabled="isWorking.install">
@@ -96,7 +103,8 @@ export default {
     MergeWindow,
     ProjectSelect,
     DirectorySelect,
-    FieldSetting, MySqlFieldSelect, VariableInput, InstallRadio, InstallInput, InstallCheckbox},
+    FieldSetting, MySqlFieldSelect, VariableInput, InstallRadio, InstallInput, InstallCheckbox
+  },
   props: {
     installing: {},
     uninstalling: {},
@@ -115,8 +123,16 @@ export default {
     serviceLease: {
       required: false
     },
+    // 默认选中版本
     version: {
       required: true
+    },
+    // 可选版本
+    versions: {
+      required: false,
+      default () {
+        return []
+      }
     },
     // 是否包含项目信息
     withProject: {
@@ -140,7 +156,9 @@ export default {
       // 安装的版本信息
       versionData: null,
       // 变量
-      variables: []
+      variables: [],
+      // 已选版本
+      selectedVersion: null,
     }
   },
   computed: {
@@ -161,10 +179,16 @@ export default {
       return 'padding-top: 0; border-top: 0;margin-top: 0;'
     },
     unique () {
-      return [this.space, this.service, this.version]
+      return [this.space, this.service, this.selectedVersion]
     }
   },
   watch: {
+    version: {
+      immediate: true,
+      handler (newValue) {
+        this.selectedVersion = newValue
+      }
+    },
     unique () {
       this.fetchVersion()
     },
@@ -192,7 +216,7 @@ export default {
         space: this.space,
         service: this.service,
         plugin: this.plugin,
-        version: this.version
+        version: this.selectedVersion
       })
         .then(data => {
           this.versionData = data
@@ -254,7 +278,7 @@ export default {
         space: this.space,
         service: this.service,
         plugin: this.plugin,
-        version: this.version,
+        version: this.selectedVersion,
         variables
       })
         .then(installData => {
@@ -306,7 +330,7 @@ export default {
         space: this.space,
         service: this.service,
         plugin: this.plugin,
-        version: this.version,
+        version: this.selectedVersion,
         variables: this.__getInstallVariables(this.variables)
       })
         .then(installData => {
@@ -577,6 +601,19 @@ export default {
       display: flex;
       h4 {
         font-size: var(--font-size-title);
+      }
+      :deep(.el-select) {
+        width: 100px;
+        position: relative;
+        left: -3px;
+        .el-input__wrapper {
+          box-shadow: none !important;
+        }
+        .el-input__inner {
+          color: var(--color-service-name);
+          font-size: var(--font-size-title);
+          font-weight: bold;
+        }
       }
     }
     // 安装按钮
