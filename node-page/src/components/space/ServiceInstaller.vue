@@ -537,8 +537,10 @@ export default {
        */
       if (variable.inputType === 'table' || variable.inputType === 'query_model') {
         // 表和模型的下一级为字段变量组，对于字段变量组需要给定value值
-        for (const group of variable.children) {
-          group.value = group.defaultValue
+        if (variable.children != null) {
+          for (const group of variable.children) {
+            group.value = group.defaultValue
+          }
         }
         variable.value = value
         return variable
