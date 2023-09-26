@@ -30,6 +30,7 @@
             <MarkdownEditor v-show="currentTab === 'readme'" v-model="majorVersionDetail.description" :readonly="true" :without-padding="true"/>
             <PluginList v-show="currentTab === 'extends'" :plugins="majorVersionDetail.subServices"/>
             <ServiceStructureView
+              v-if="currentVersion != null"
               v-show="currentTab === 'structure'"
               :space="route.space"
               :service="route.service"
@@ -131,7 +132,7 @@ export default {
       // 当前主版本
       currentMajorVersion: '',
       // 当前版本号
-      currentVersion: '',
+      currentVersion: null,
       // 主版本列表
       majorVersions: [],
       // 空间信息
@@ -148,6 +149,11 @@ export default {
     // 初始化数据
     initData () {
       this.loading = true
+      // 清空数据
+      this.space = null
+      this.service = null
+      this.currentVersion = null
+      // 重新初始化
       this.fetchSpace()
       this.fetchServices()
       this.fetchDetail()
