@@ -216,6 +216,7 @@ export default {
     overwrite: '确认合并',
     overwriteAll: '合并所有',
     mergeTip: '提示：左侧为本地文件的内容，右侧为合并好后即将覆盖写入文件的新内容',
+    addFileTip: '下面是新增文件的内容，您应该仔细核对该内容是否为您所需，如不是，请忽略。',
     deleteFileTip: '重要提示：该文件在当前版本中已不需要，合并后将在您当前设备上删除该文件，为了避免服务间文件重名，您应该仔细核对该文件是否真的需要被删除！',
     mergeUnPreview: '（暂不支持预览该文件类型）',
     serviceCodeErrorTitle: '服务代码错误',

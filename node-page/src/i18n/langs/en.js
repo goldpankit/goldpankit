@@ -216,6 +216,7 @@ export default {
     overwrite: 'Confirm Merge',
     overwriteAll: 'Merge All',
     mergeTip: 'Tips: The left side is the content of the local file, and the right side is the newly merged content that will be overwritten and written into the file.',
+    addFileTip: '下面是新增文件的内容，您应该仔细核对该内容是否为您所需，如不是，请忽略。',
     deleteFileTip: 'Important Reminder: This file is no longer required in the current version and will be deleted from your current device after merging. To avoid file name conflicts between services, please carefully verify if this file truly needs to be deleted!',
     mergeUnPreview: 'Preview of this file type is not supported at the moment.',
     serviceCodeErrorTitle: 'Service Code Error',

@@ -33,7 +33,7 @@
       </div>
       <div class="content-preview">
         <template v-if="currentFile != null">
-          <!-- 已删除文件 -->
+          <!-- 删除文件 -->
           <template v-if="currentFile.operaType === 'DELETED'">
             <DeletedTextFileView
               v-if="currentFile.contentEncode === 'utf-8'"
@@ -43,6 +43,14 @@
               v-else
               :file="currentFile"
             />
+          </template>
+          <!-- 新增文件 -->
+          <template v-else-if="currentFile.operaType === 'ADD'">
+            <AddTextFileView
+              v-if="currentFile.contentEncode === 'utf-8'"
+              :text="currentFile.content"
+            />
+            <AddFileView v-else :file="currentFile"/>
           </template>
           <MergeTextView
             v-else-if="currentFile.contentEncode === 'utf-8' && currentFile.operaType !== 'DELETED'"
@@ -74,9 +82,11 @@ import MarkdownEditor from "../../../common/MarkdownEditor.vue";
 import MergeTextView from "./MergeTextView.vue";
 import DeletedFileView from "./DeletedFileView.vue";
 import DeletedTextFileView from "./DeletedTextFileView.vue";
+import AddTextFileView from "./AddTextFileView.vue";
+import AddFileView from "./AddFileView.vue";
 export default {
   name: "MergeWindow",
-  components: {DeletedFileView, DeletedTextFileView, MergeTextView, MarkdownEditor},
+  components: {AddFileView, AddTextFileView, DeletedFileView, DeletedTextFileView, MergeTextView, MarkdownEditor},
   data () {
     return {
       visible: false,
