@@ -46,7 +46,12 @@ module.exports = {
         continue
       }
       // 创建文件
-      fs.createFile(filepath, file.content, true)
+      if (file.contentEncode === 'base64') {
+        const content = Buffer.from(file.content, 'base64')
+        fs.createFile(filepath, content, true)
+      } else {
+        fs.createFile(filepath, file.content, true)
+      }
       mergeCount++
     }
     // 给出文件写入提醒

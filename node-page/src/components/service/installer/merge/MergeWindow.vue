@@ -52,14 +52,15 @@
             />
             <AddFileView v-else :file="currentFile"/>
           </template>
-          <MergeTextView
-            v-else-if="currentFile.contentEncode === 'utf-8' && currentFile.operaType !== 'DELETED'"
-            :original-text="localContent"
-            v-model:new-text="currentFile.content"
-          />
-          <div v-else class="file-change-tip">
-            <p>{{$t('service.mergeUnPreview')}}</p>
-          </div>
+          <!-- 合并文件 -->
+          <template v-else>
+            <MergeTextFileView
+              v-if="currentFile.contentEncode === 'utf-8'"
+              :original-text="localContent"
+              v-model:new-text="currentFile.content"
+            />
+            <MergeFileView v-else :file="currentFile"/>
+          </template>
         </template>
       </div>
     </div>
@@ -79,14 +80,17 @@ import {mapState} from 'vuex'
 import {merge} from '@/api/service.compile.js'
 import path from '@/utils/path'
 import MarkdownEditor from "../../../common/MarkdownEditor.vue";
-import MergeTextView from "./MergeTextView.vue";
+import MergeTextFileView from "./MergeTextFileView.vue";
 import DeletedFileView from "./DeletedFileView.vue";
 import DeletedTextFileView from "./DeletedTextFileView.vue";
 import AddTextFileView from "./AddTextFileView.vue";
 import AddFileView from "./AddFileView.vue";
+import MergeFileView from "./MergeFileView.vue";
 export default {
   name: "MergeWindow",
-  components: {AddFileView, AddTextFileView, DeletedFileView, DeletedTextFileView, MergeTextView, MarkdownEditor},
+  components: {
+    MergeFileView,
+    AddFileView, AddTextFileView, DeletedFileView, DeletedTextFileView, MergeTextFileView, MarkdownEditor},
   data () {
     return {
       visible: false,
@@ -268,7 +272,6 @@ export default {
         }
       }
       this.__ns(this.files)
-      console.log('this.files', this.files)
     },
     // 获取操作类型
     __getOperaType (diffFile) {

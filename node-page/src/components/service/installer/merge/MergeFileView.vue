@@ -1,11 +1,14 @@
 <template>
-  <div class="add-file-view">
-    <div class="add-file-view__wrap">
+  <div class="merge-file-view">
+    <div class="merge-file-view__wrap">
       <div class="tip">
-        <p>{{$t('service.addFileTip')}}</p>
+        <p>{{$t('service.mergeTip')}}</p>
       </div>
       <div class="container">
-        <img v-if="isImage" :src="'data:image/png;base64,' + file.content" alt="">
+        <ul v-if="isImage" class="image-compare">
+          <li><img :src="'data:image/png;base64,' + file.localContent" alt=""></li>
+          <li><img :src="'data:image/png;base64,' + file.content" alt=""></li>
+        </ul>
         <div v-else class="file">
           <i class="iconfont icon-wenjian"></i>
           <label>{{file.filepath}}</label>
@@ -19,7 +22,7 @@
 <script>
 const imageSuffixList = ['jpg', 'jpeg', 'png', 'gif', 'bmp']
 export default {
-  name: "AddFileView",
+  name: "MergeFileView",
   props: {
     // 文件
     file: {
@@ -35,7 +38,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.add-file-view {
+.merge-file-view {
   width: 100%;
   height: 100%;
   box-sizing: border-box;
@@ -44,7 +47,7 @@ export default {
       opacity: 0;
     }
   }
-  .add-file-view__wrap {
+  .merge-file-view__wrap {
     height: 100%;
     width: 100%;
     margin: 0 auto;
@@ -62,9 +65,26 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
-    img {
-      height: 60%;
-      object-fit: contain;
+    // 图片对比
+    .image-compare {
+      display: flex;
+      width: 100%;
+      height: 100%;
+      padding: 0 20px 20px 20px;
+      li {
+        width: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: var(--background-color);
+        &:first-of-type {
+          margin-right: 20px;
+        }
+      }
+      img {
+        height: 60%;
+        object-fit: contain;
+      }
     }
     .file {
       display: flex;

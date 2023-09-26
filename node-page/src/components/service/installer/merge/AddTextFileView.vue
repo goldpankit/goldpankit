@@ -1,6 +1,6 @@
 <template>
-  <div class="deleted-file-view" :class="{loading}">
-    <div class="deleted-file-view__wrap">
+  <div class="add-file-view" :class="{loading}">
+    <div class="add-file-view__wrap">
       <div class="tip">
         <p>{{$t('service.addFileTip')}}</p>
       </div>
@@ -72,7 +72,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.deleted-file-view {
+.add-file-view {
   width: 100%;
   height: 100%;
   box-sizing: border-box;
@@ -81,7 +81,7 @@ export default {
       opacity: 0;
     }
   }
-  .deleted-file-view__wrap {
+  .add-file-view__wrap {
     height: 100%;
     width: 100%;
     margin: 0 auto;

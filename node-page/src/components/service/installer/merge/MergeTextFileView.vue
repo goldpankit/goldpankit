@@ -1,8 +1,8 @@
 <template>
-  <div class="merge-editor-view" :class="{loading}">
+  <div class="merge-file-view" :class="{loading}">
     <div class="toolbar">
       <p>{{$t('service.mergeTip')}}</p>
-      <div class="merge-editor__opera">
+      <div class="merge-file-view__opera">
         <el-button @click="prev" icon="Top">Prev</el-button>
         <el-button @click="next" icon="Bottom">Next</el-button>
       </div>
@@ -118,7 +118,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.merge-editor-view {
+.merge-file-view {
   width: 100%;
   height: 100%;
   display: flex;
@@ -134,7 +134,7 @@ export default {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    .merge-editor__opera {
+    .merge-file-view__opera {
       flex-shrink: 0;
       width: 200px;
       margin-left: 30px;
