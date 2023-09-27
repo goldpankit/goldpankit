@@ -421,7 +421,7 @@ export default {
           continue
         }
         // 普通变量
-        if (isEmptyValue(variable.value)) {
+        if (variable.required && isEmptyValue(variable.value)) {
           this.__tipEmptyVariable(variable, groupName)
           return false
         }
