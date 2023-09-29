@@ -357,6 +357,14 @@ export default {
       for (const variable of variables) {
         // 查询模型 & 表
         if (variable.inputType === 'query_model' || variable.inputType === 'table') {
+          // 必填且未选择值
+          if (variable.required && (variable.value == null || variable.value === '')) {
+            this.__tipEmptyVariable(variable, groupName)
+            return false
+          }
+          if (variable.children == null || variable.children.length === 0) {
+            continue
+          }
           // 字段变量组
           for (const fieldGroup of variable.children) {
             const fieldGroupValue = fieldGroup.value
