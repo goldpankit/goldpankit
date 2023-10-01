@@ -1,7 +1,7 @@
 {
   "name": "goldpankit",
-  "version": "2.3.2",
-  "description": "",
+  "version": "2.3.3",
+  "description": "GoldPanKit is a brand new development kit designed to explore revolutionary ways to enhance development efficiency.",
   "main": "app.js",
   "keywords": [
     "goldpankit",
@@ -20,6 +20,9 @@
   },
   "author": "Caesar Liu",
   "license": "ISC",
+  "repository": {
+    "url": "https://github.com/goldpankit/goldpankit"
+  },
   "dependencies": {
     "axios": "^1.4.0",
     "colors-console": "^1.0.3",
