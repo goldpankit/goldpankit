@@ -103,13 +103,6 @@ module.exports = {
         }
         continue
       }
-      // 如果为二进制文件，直接覆盖写入
-      // if (file.contentEncode === 'base64') {
-      //   content = Buffer.from(content, 'base64')
-      //   this.createFile(filepath, content, true)
-      //   fileCount++
-      //   continue
-      // }
       // 如果文件内容为空，且本地存在该文件，加入删除队列
       if (content.trim() === '') {
         if (this.exists(filepath)) {
@@ -123,12 +116,19 @@ module.exports = {
       }
       // 如果文件不存在
       if (!this.exists(filepath)) {
-        // 项目中存在文件，则加入差异队列
+        // - 项目中存在文件，则加入差异队列
         if (hasFile) {
           diffFiles.push(file)
           continue
         }
-        // 项目中没有文件，则直接写入
+        // - 项目中不存在文件，且为二进制文件
+        if (file.contentEncode === 'base64') {
+          content = Buffer.from(content, 'base64')
+          this.createFile(filepath, content, true)
+          fileCount++
+          continue
+        }
+        // - 项目中不存在文件，且为文本文件
         this.createFile(filepath, content, true)
         fileCount++
         continue
