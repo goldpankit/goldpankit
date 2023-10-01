@@ -56,6 +56,7 @@
           <template v-else>
             <MergeTextFileView
               v-if="currentFile.contentEncode === 'utf-8'"
+              :filepath="currentFile.filepath"
               :original-text="localContent"
               v-model:new-text="currentFile.content"
             />

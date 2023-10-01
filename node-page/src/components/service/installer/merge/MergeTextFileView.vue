@@ -15,8 +15,13 @@
 import * as monaco from 'monaco-editor'
 let diffEditor,diffNavi,originalModel,modifiedModel
 export default {
-  name: "MergeTextView",
+  name: "MergeTextFileView",
   props: {
+    // 文件路径
+    filepath: {
+      type: String,
+      required: true
+    },
     // 原始内容
     originalText: {
       type: String,
@@ -35,7 +40,7 @@ export default {
   },
   computed: {
     factor () {
-      return [this.originalText, this.newText]
+      return [this.filepath]
     }
   },
   watch: {
