@@ -41,8 +41,16 @@ module.exports = {
         })
     })
   },
-  // 获取build列表
-  getBuildDetails(project, builds, compiler, vars) {
+  /**
+   * 获取build列表
+   * @param project 项目
+   * @param builds 构建列表
+   * @param diffFiles 安装&编译/卸载&清除编译的结果文件
+   * @param compiler 编译器
+   * @param vars 变量
+   * @returns {Promise<unknown>}
+   */
+  getBuildDetails(project, builds, diffFiles, compiler, vars) {
     return new Promise((resolve, reject) => {
       if (builds.length === 0) {
         resolve(builds)
@@ -63,10 +71,19 @@ module.exports = {
             let content = build.content
             if (build.contentType === 'file') {
               const buildFilePath = path.join(project.codespace, build.content)
-              if (fs.exists(buildFilePath)) {
+              // 编译和安装的情况：从安装或变异的文件中查找构建文件
+              if (diffFiles != null && diffFiles.length > 0) {
+                const targetFile = diffFiles.find(file => file.filepath === build.content.substring(1))
+                if (targetFile != null) {
+                  content = targetFile.content
+                }
+              }
+              // 卸载和清除编译的情况：从项目代码中查找文件
+              else if (fs.exists(buildFilePath)) {
                 content = fs.readFile(buildFilePath).content
               } else {
                 content = ''
+
               }
             }
             if (content.trim() !== '') {

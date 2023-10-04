@@ -88,7 +88,7 @@ class Kit {
           fs.createFile(userProject.getConfigPath(project.id), fs.toJSONFileString(config), true)
           // 获取构建详情并返回
           const builds = data.version.builds == null || data.version.builds === '' ? [] : JSON.parse(data.version.builds)
-          serviceBuild.getBuildDetails(project, builds, data.version.compiler, variables)
+          serviceBuild.getBuildDetails(project, builds, diffFiles, data.version.compiler, variables)
             .then(builds => {
               // 返回构建信息
               const result = {
@@ -135,7 +135,7 @@ class Kit {
         .then(({ data, project, database, variables}) => {
           // 获取构建详情并返回
           const unbuilds = data.version.unbuilds == null || data.version.unbuilds === '' ? [] : JSON.parse(data.version.unbuilds)
-          serviceBuild.getBuildDetails(project, unbuilds, data.version.compiler, variables)
+          serviceBuild.getBuildDetails(project, unbuilds, null, data.version.compiler, variables)
             .then(builds => {
               // 删除文件
               const diffFiles = fs.deleteFiles(data.files, project)
@@ -185,7 +185,7 @@ class Kit {
             // 写入文件
             const diffFiles = fs.writeFiles(data.files, data.project)
             // 获取构建详情并返回
-            serviceBuild.getBuildDetails(data.project, data.serviceConfig.builds, data.serviceConfig.compiler, data.variables)
+            serviceBuild.getBuildDetails(data.project, data.serviceConfig.builds, diffFiles, data.serviceConfig.compiler, data.variables)
               .then(builds => {
                 // 返回构建信息
                 const result = {
@@ -224,7 +224,7 @@ class Kit {
       this.#compile(dto)
         .then(data => {
           // 获取构建详情并返回
-          serviceBuild.getBuildDetails(data.project, data.serviceConfig.unbuilds, data.serviceConfig.compiler, data.variables)
+          serviceBuild.getBuildDetails(data.project, data.serviceConfig.unbuilds, null, data.serviceConfig.compiler, data.variables)
             .then(builds => {
               // 删除文件
               const diffFiles = fs.deleteFiles(data.files, data.project)
