@@ -728,31 +728,33 @@ class Kit {
            * 所有字段增加sql，表示字段的sql语句
            * 对于虚拟字段，补充聚合信息
            */
-          const tables = [value.mainTable, ...value.subTables]
-          for (const field of value[group.name]) {
-            /**
-             * 非虚拟字段
-             */
-            if (!field.isVirtual) {
-              field.statements = `${field.name} AS ${field.alias}`
-              continue
-            }
-            /**
-             * 为字段补充SQL语句
-             * 拿到聚合信息。。。。
-             */
-            const agg = model.aggregates.find(agg => agg.field === field.name)
-            if (agg != null) {
-              const targetTable = tables.find(t => t.id === agg.targetTable)
-              const targetField = targetTable.fields.find(f => f.name === agg.targetField)
-              // 补充聚合信息
-              field.aggregate = {
-                table: targetTable,
-                field: targetField,
-                function: agg.function
+          if (model != null) {
+            const tables = [value.mainTable, ...value.subTables]
+            for (const field of value[group.name]) {
+              /**
+               * 非虚拟字段
+               */
+              if (!field.isVirtual) {
+                field.statements = `${field.name} AS ${field.alias}`
+                continue
               }
-              // 补充字段SQL
-              field.statements = this.#getAggregateSQL(field, field.aggregate, model.joins)
+              /**
+               * 为字段补充SQL语句
+               * 拿到聚合信息。。。。
+               */
+              const agg = model.aggregates.find(agg => agg.field === field.name)
+              if (agg != null) {
+                const targetTable = tables.find(t => t.id === agg.targetTable)
+                const targetField = targetTable.fields.find(f => f.name === agg.targetField)
+                // 补充聚合信息
+                field.aggregate = {
+                  table: targetTable,
+                  field: targetField,
+                  function: agg.function
+                }
+                // 补充字段SQL
+                field.statements = this.#getAggregateSQL(field, field.aggregate, model.joins)
+              }
             }
           }
           resolve({
