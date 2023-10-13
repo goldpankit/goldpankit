@@ -92,7 +92,7 @@ export default {
     },
     tableNameConfig () {
       return {
-        text: this.table.name,
+        text: this.table.alias,
         x: 10,
         y: 8,
         fontSize: 15,
