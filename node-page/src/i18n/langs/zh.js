@@ -19,6 +19,7 @@ export default {
     cancel: '取消',
     confirm: '确认',
     copy: '复制',
+    copySuccessfully: '复制成功',
     execute: '执行',
     or: '或',
     introduce: '简介',

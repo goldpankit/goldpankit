@@ -45,7 +45,7 @@ export default {
       // 当前表的字段
       for (const field of this.table.fields) {
         field.table = this.table
-        field.alias = field.name
+        field.alias = field.alias || field.name
         fields.add(field)
       }
       // join表字段
@@ -57,7 +57,7 @@ export default {
         // 拿到join的表
         for (const field of join.targetTable.fields) {
           field.table = join.targetTable
-          field.alias = field.name
+          field.alias = field.alias || field.name
           fields.add(field)
         }
       }
@@ -74,7 +74,7 @@ export default {
           return navigator.clipboard.writeText(sql)
         })
         .then(() => {
-          this.$tip.success('Copy successfully.')
+          this.$tip.success(this.$t('common.copySuccessfully'))
         })
         .catch(e => {
           this.$tip.apiFailed(e)
@@ -111,18 +111,18 @@ export default {
         if (agg != null) {
           sqlLines.push('(SELECT')
           sqlLines.push(`${agg.function}(${agg.targetTable.alias}.${agg.targetField.name})`)
-          sqlLines.push(`FROM ${agg.targetTable.name} AS ${agg.targetTable.alias}`)
+          sqlLines.push(`FROM \`${agg.targetTable.name}\` AS \`${agg.targetTable.alias}\``)
           sqlLines = sqlLines.concat(this.__getJoinSql(agg.targetTable, this.joins))
-          sqlLines.push(`) AS ${agg.field.name},`)
+          sqlLines.push(`) AS \`${agg.field.alias}\`,`)
         } else {
-          sqlLines.push(`${field.table.alias}.${field.name} AS ${field.alias},`)
+          sqlLines.push(`\`${field.table.alias}\`.\`${field.name}\` AS \`${field.alias}\`,`)
         }
       }
       // 最后一个字段去掉逗号
       sqlLines[sqlLines.length - 1] = sqlLines[sqlLines.length - 1].substring(0, sqlLines[sqlLines.length - 1].length - 1)
       // from 表
       if (!this.table.isVirtual) {
-        sqlLines.push(`FROM ${this.table.name} AS ${this.table.alias}`)
+        sqlLines.push(`FROM \`${this.table.name}\` AS \`${this.table.alias}\``)
       }
       // join关系
       sqlLines = sqlLines.concat(this.__getJoinSql(this.table, this.joins))
@@ -133,11 +133,11 @@ export default {
       const joinLines = []
       const currentTableJoins = joins.filter(join => join.table.id === table.id)
       for (const join of currentTableJoins) {
-        joinLines.push(`${join.joinType} ${join.targetTable.name} ${join.targetTable.alias}`)
+        joinLines.push(`${join.joinType} \`${join.targetTable.name}\` \`${join.targetTable.alias}\``)
         for (let i = 0; i < join.ons.length; i++) {
           const on = join.ons[i]
           let relationText = i === 0 ? 'ON ': `${on.relation} `
-          joinLines.push(`${relationText}${join.targetTable.alias}.${on.targetField.name} = ${join.table.alias}.${on.field.name}`)
+          joinLines.push(`${relationText}\`${join.targetTable.alias}\`.\`${on.targetField.name}\` = \`${join.table.alias}\`.\`${on.field.name}\``)
         }
       }
       return joinLines

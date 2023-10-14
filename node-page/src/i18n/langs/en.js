@@ -19,6 +19,7 @@ export default {
     cancel: 'Cancel',
     confirm: 'Confirm',
     copy: 'Copy',
+    copySuccessfully: 'Copy successfully',
     execute: 'Execute',
     or: 'OR',
     introduce: 'Introduce',
