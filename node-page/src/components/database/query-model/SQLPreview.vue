@@ -1,11 +1,12 @@
 <template>
   <el-dialog
     custom-class="sql-preview"
-    title="Query Result"
+    :title="$t('database.queryResult')"
+    width="1000px"
     v-model="visible"
     append-to-body
   >
-    <el-table :data="result">
+    <el-table v-loading="loading" :data="rows">
       <el-table-column
         v-for="column in columns"
         :key="column"
@@ -23,38 +24,24 @@ export default {
   name: "SQLPreview",
   data () {
     return {
+      loading: false,
       visible: false,
-      result: []
-    }
-  },
-  computed: {
-    columns () {
-      if (this.result.length === 0) {
-        return []
-      }
-      const keys = []
-      for (const key in this.result[0]) {
-        keys.push(key)
-      }
-      return keys
-    },
-    rows () {
-      return this.result
-      // const rows = []
-      // for (const row of this.result) {
-      //   const newRow = {}
-      //   for (const column of this.columns) {
-      //     newRow[column] = row[column]
-      //   }
-      //   rows.push(newRow)
-      // }
-      // return rows
+      columns: [],
+      rows: []
     }
   },
   methods: {
-    open (result) {
+    open (fields) {
       this.visible = true
-      this.result = result
+      this.loading = true
+      this.$nextTick(() => {
+        this.columns = fields.map(item => item.substring(1, item.length - 1))
+        this.rows = []
+      })
+    },
+    result (rows) {
+      this.rows = rows
+      this.loading = false
     },
     getColumnWidth (columnName) {
       return columnName.length * 15

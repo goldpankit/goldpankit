@@ -405,7 +405,8 @@ export default {
     dataSourceConnectFailedTip: 'Data source connection failed',
     editDataSourceInfoTip: 'Edit data source information',
     queryModelEmptyTipTitle: 'No query models available for the current data source',
-    queryModelEmptyTip: 'With query models, you can quickly establish relationships between tables in a relational database, supporting aggregate functions and JOIN operations. By using services that support query models, project code can be generated quickly for you.'
+    queryModelEmptyTip: 'With query models, you can quickly establish relationships between tables in a relational database, supporting aggregate functions and JOIN operations. By using services that support query models, project code can be generated quickly for you.',
+    queryResult: 'Query Result'
   },
   // 项目
   project: {

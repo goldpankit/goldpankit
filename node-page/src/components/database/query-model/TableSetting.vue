@@ -68,7 +68,7 @@ export default {
     // 拷贝语句
     copy () {
       formatSql({
-        sql: this.__getSql()
+        sql: this.__getSql().sql
       })
         .then(sql => {
           return navigator.clipboard.writeText(sql)
@@ -83,12 +83,13 @@ export default {
     // 执行语句
     execute () {
       const sql = this.__getSql()
+      this.$refs.sqlPreview.open(sql.fields, [])
       execSql({
         database: this.currentDatabase,
-        sql
+        sql: sql.sql
       })
-        .then(data => {
-          this.$refs.sqlPreview.open(data)
+        .then(result => {
+          this.$refs.sqlPreview.result(result)
         })
         .catch(e => {
           this.$tip.apiFailed(e)
@@ -101,6 +102,7 @@ export default {
     // 获取sql语句
     __getSql () {
       let sqlLines = []
+      const fields = []
       sqlLines.push('SELECT')
       // 字段列表
       for (const field of this.visibleFields) {
@@ -114,8 +116,10 @@ export default {
           sqlLines.push(`FROM \`${agg.targetTable.name}\` AS \`${agg.targetTable.alias}\``)
           sqlLines = sqlLines.concat(this.__getJoinSql(agg.targetTable, this.joins))
           sqlLines.push(`) AS \`${agg.field.alias}\`,`)
+          fields.push(`\`${agg.field.alias}\``)
         } else {
           sqlLines.push(`\`${field.table.alias}\`.\`${field.name}\` AS \`${field.alias}\`,`)
+          fields.push(`\`${field.alias}\``)
         }
       }
       // 最后一个字段去掉逗号
@@ -126,7 +130,10 @@ export default {
       }
       // join关系
       sqlLines = sqlLines.concat(this.__getJoinSql(this.table, this.joins))
-      return sqlLines.join('\n')
+      return {
+        fields,
+        sql: sqlLines.join('\n')
+      }
     },
     // 获取JOIN语句
     __getJoinSql (table, joins) {

@@ -413,6 +413,7 @@ export default {
     editDataSourceInfoTip: '修改数据源信息',
     queryModelEmptyTipTitle: '当前数据源下暂无查询模型',
     queryModelEmptyTip: '通过查询模型，您可以快速建立起关系型数据库中表之间的联系，支持聚合函数和JOIN操作。使用支持查询模型的服务，可以快速为您构建出项目代码。',
+    queryResult: '查询结果'
   },
   // 项目相关
   project: {
