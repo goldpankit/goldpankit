@@ -61,14 +61,19 @@
     <div class="block table-list-wrap">
       <div class="header">
         <h4>{{$t('database.tables')}}</h4>
+        <el-button
+          class="button-icon"
+          type="primary"
+          icon="Refresh"
+          @click="$emit('tables:refresh')"
+        ></el-button>
       </div>
-      <ul class="table-list">
+      <ul class="table-list" v-loading="tablesLoading">
         <li
           v-for="table in tables"
           :key="table.name"
-          :name="table.name"
           draggable="true"
-          @dragstart="handleDragStart"
+          @dragstart="handleDragStart(table.name)"
         >
           <label>{{table.name}}</label>
           <p>{{table.comment}}</p>
@@ -79,12 +84,12 @@
 </template>
 
 <script>
-import InnerRouterViewWindow from "../../common/InnerRouterView/InnerRouterViewWindow.vue";
-import InnerRouterView from "../../common/InnerRouterView/InnerRouterView.vue";
 import {mapState} from "vuex";
-import {createModel, deleteModel, updateModel} from "../../../api/database";
-import {checkTableName} from '../../../utils/form.check'
-import Empty from "../../common/Empty.vue";
+import InnerRouterViewWindow from "@/components/common/InnerRouterView/InnerRouterViewWindow.vue";
+import InnerRouterView from "@/components/common/InnerRouterView/InnerRouterView.vue";
+import Empty from "@/components/common/Empty.vue";
+import {createModel, deleteModel, updateModel} from "@/api/database";
+import {checkTableName} from '@/utils/form.check'
 
 export default {
   name: "TableLibrary",
@@ -94,7 +99,11 @@ export default {
       required: true
     },
     tables: {},
-    currentModel: {}
+    // 是否正在加载表
+    tablesLoading: {
+      required: true
+    },
+    currentModel: {},
   },
   data () {
     return {
@@ -123,8 +132,8 @@ export default {
     },
     checkTableName,
     // 开始拖动表放置在设计器中
-    handleDragStart (e) {
-      this.$emit('table:drag', e.target.getAttribute('name'))
+    handleDragStart (name) {
+      this.$emit('table:drag', name)
     },
     // 创建查询模型
     createQueryModel () {

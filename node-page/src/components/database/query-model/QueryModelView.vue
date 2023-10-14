@@ -17,8 +17,10 @@
       <TableLibrary
         :query-models="queryModels"
         :tables="tables"
+        :tables-loading="loading.tables"
         @table:drag="handleDragStart"
         v-model:current-model="currentModel"
+        @tables:refresh="fetchTables(false)"
         @deleted="handleModelDeleted"
       />
       <div class="designer-wrap">
@@ -70,8 +72,8 @@ import TableLibrary from "./TableLibrary.vue";
 import RelationLine from "./RelationLine.vue";
 import Table from "./Table.vue";
 import {mapState} from "vuex";
-import {search, updateModel} from "../../../api/database";
-import {fetchTables} from "../../../api/database.util";
+import {search, updateModel} from "@/api/database";
+import {fetchTables} from "@/api/database.util";
 import DataSourceSelect from "../DataSourceSelect.vue";
 import OperaDataSourceWindow from "../OperaDataSourceWindow.vue";
 
@@ -88,6 +90,9 @@ export default {
   },
   data () {
     return {
+      loading: {
+        tables: false
+      },
       // 字段高度
       fieldHeight: 30,
       // 查询模型
@@ -184,11 +189,12 @@ export default {
       })
     },
     // 查询数据库表
-    fetchTables () {
+    fetchTables (withModels = true) {
       this.currentDataSource = this.databases.find(db => db.id === this.currentDatabase)
       if (this.currentDataSource == null) {
         return
       }
+      this.loading.tables = true
       fetchTables ({
         host: this.currentDataSource.host,
         port: this.currentDataSource.port,
@@ -211,10 +217,15 @@ export default {
             }
           })
           // 查询模型
-          this.fetchModels()
+          if (withModels) {
+            this.fetchModels()
+          }
         })
         .catch(e => {
           this.connectError = e.message
+        })
+        .finally(() => {
+          this.loading.tables = false
         })
     },
     // 查询模型
