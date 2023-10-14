@@ -7,7 +7,7 @@
     <div class="wrap" v-if="table != null">
       <SQL :aggregates="aggregates" :joins="joins" :table="table" @field:change="handleChange"/>
     </div>
-    <SQLPreview ref="sqlPreview"/>
+    <QueryResultPreview ref="queryResultPreview"/>
   </div>
 </template>
 
@@ -16,13 +16,13 @@ import {mapState} from "vuex";
 import SQLLine from "./SQLLine.vue";
 import DynamicWidthInput from "../../common/DynamicWidthInput.vue";
 import SQLLineKeywordSelect from "./SQLLineKeywordSelect.vue";
-import SQLPreview from "./SQLPreview.vue";
-import {execSql, formatSql} from "../../../api/database.util";
+import QueryResultPreview from "./QueryResultPreview.vue";
 import SQL from "./SQL.vue";
+import {formatSql} from "@/api/database.util";
 
 export default {
   name: "TableSetting",
-  components: {SQL, SQLPreview, SQLLineKeywordSelect, DynamicWidthInput, SQLLine},
+  components: {SQL, QueryResultPreview, SQLLineKeywordSelect, DynamicWidthInput, SQLLine},
   props: {
     // 表
     table: {
@@ -83,17 +83,7 @@ export default {
     // 执行语句
     execute () {
       const sql = this.__getSql()
-      this.$refs.sqlPreview.open(sql.fields, [])
-      execSql({
-        database: this.currentDatabase,
-        sql: sql.sql
-      })
-        .then(result => {
-          this.$refs.sqlPreview.result(result)
-        })
-        .catch(e => {
-          this.$tip.apiFailed(e)
-        })
+      this.$refs.queryResultPreview.open(sql.fields, sql.sql, [])
     },
     // 修改设置
     handleChange () {
