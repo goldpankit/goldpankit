@@ -125,7 +125,7 @@ export default {
       // 当前表的字段
       for (const field of this.table.fields) {
         field.table = this.table
-        field.alias = field.name
+        field.alias = field.alias || field.name
         fields.add(field)
       }
       // join表字段
@@ -137,7 +137,7 @@ export default {
         // 拿到join的表
         for (const field of join.targetTable.fields) {
           field.table = join.targetTable
-          field.alias = field.name
+          field.alias = field.alias || field.name
           fields.add(field)
         }
       }

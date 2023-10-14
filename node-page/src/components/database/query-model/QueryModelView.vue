@@ -262,6 +262,7 @@ export default {
       if (this.queryModels.length > 0) {
         this.currentModel = this.queryModels[0]
       }
+      console.log('this.queryModels', this.queryModels)
       // 过滤掉无效的模型（不存在表的模型）
       // this.queryModels = this.queryModels.filter(m => m != null)
     },
