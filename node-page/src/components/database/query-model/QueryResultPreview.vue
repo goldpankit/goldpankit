@@ -7,12 +7,11 @@
     append-to-body
   >
     <div class="toolbar">
-      共 {{pagination.total}} 条记录
       <el-pagination
         background
         :page-sizes="[10, 20, 50, 100, 200, 500]"
         :default-page-size="100"
-        layout="prev, pager, next, sizes"
+        layout="total, prev, pager, next, sizes"
         :total="pagination.total"
         @current-change="handleCurrentChange"
         @size-change="handleSizeChange"
