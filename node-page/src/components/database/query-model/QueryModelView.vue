@@ -224,12 +224,14 @@ export default {
           if (dbTable == null && !table.isVirtual) {
             return null
           }
-          // 获取字段信息
+          // 同步字段信息
           let fields = table.fields
           if (dbTable != null) {
-            fields = fields.map(f => {
-              const dbField = dbTable.fields.find(dbField => dbField.name === f.name)
-              return this.__modelField2field(f, dbField)
+            fields = dbTable.fields
+            // 同步模型字段信息
+            fields = fields.map(dbField => {
+              const modelField = table.fields.find(mf => mf.name === dbField.name)
+              return this.__modelField2field(modelField, dbField)
             })
             // 过滤掉已删除的字段（为null的字段）
             fields = fields.filter(f => f != null)
@@ -262,7 +264,6 @@ export default {
       if (this.queryModels.length > 0) {
         this.currentModel = this.queryModels[0]
       }
-      console.log('this.queryModels', this.queryModels)
       // 过滤掉无效的模型（不存在表的模型）
       // this.queryModels = this.queryModels.filter(m => m != null)
     },
@@ -334,7 +335,7 @@ export default {
       if (dbField != null && modelField == null) {
         return {
           ...dbField,
-          visible: false,
+          visible: true,
           alias: dbField.name,
           isVirtual: false
         }
