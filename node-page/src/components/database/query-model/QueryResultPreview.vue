@@ -7,9 +7,15 @@
     append-to-body
   >
     <div class="toolbar">
+      共 {{pagination.total}} 条记录
       <el-pagination
-        layout="prev, pager, next"
+        background
+        :page-sizes="[10, 20, 50, 100, 200, 500]"
+        :default-page-size="100"
+        layout="prev, pager, next, sizes"
         :total="pagination.total"
+        @current-change="handleCurrentChange"
+        @size-change="handleSizeChange"
       />
     </div>
     <el-table v-loading="loading" :data="result" border>
@@ -38,9 +44,11 @@ export default {
       // 分页数据
       pagination: {
         page: 1,
-        capacity: 10,
+        capacity: 100,
         total: 0
       },
+      // 查询语句
+      sql: '',
       // 列
       columns: [],
       // 查询结果
@@ -56,15 +64,20 @@ export default {
       this.loading = true
       this.columns = fields.map(item => item.substring(1, item.length - 1))
       this.result = []
+      this.sql = sql
+      this.fetchList()
+    },
+    // 查询数据
+    fetchList () {
       execSql({
         database: this.currentDatabase,
-        sql: this.__getCountSql(sql)
+        sql: this.__getCountSql()
       })
         .then(result => {
           this.pagination.total = result[0].total
           return execSql({
             database: this.currentDatabase,
-            sql: this.__getPaginationSql(sql)
+            sql: this.__getPaginationSql()
           })
         })
         .then(result => {
@@ -93,15 +106,25 @@ export default {
       // 获取最终宽度（选取最大的宽度）
       return Math.max(columnWidth, valueWidth)
     },
+    // 处理分页
+    handleCurrentChange (page) {
+      this.pagination.page = page
+      this.fetchList()
+    },
+    // 处理修改页容量
+    handleSizeChange (size) {
+      this.pagination.capacity = size
+      this.fetchList()
+    },
     // 获取分页语句
-    __getPaginationSql (sql) {
+    __getPaginationSql () {
       let start = (this.pagination.page - 1) * this.pagination.capacity
       // console.log('execute', `${sql} LIMIT ${start}, ${this.pagination.capacity}`)
-      return `${sql} LIMIT ${start}, ${this.pagination.capacity}`
+      return `${this.sql} LIMIT ${start}, ${this.pagination.capacity}`
     },
     // 获取统计语句
-    __getCountSql (sql) {
-      return `SELECT COUNT(*) AS total FROM (${sql}) _count`
+    __getCountSql () {
+      return `SELECT COUNT(*) AS total FROM (${this.sql}) _count`
     }
   }
 }
@@ -113,9 +136,14 @@ export default {
     padding-top: 0;
   }
   .toolbar {
-    padding: 10px 20px;
+    padding: 10px 0;
     margin-bottom: 10px;
     border-bottom: 1px solid var(--border-default-color);
+    display: flex;
+    align-items: center;
+    .el-pagination {
+      margin-left: 20px;
+    }
   }
   .el-table {
     .el-table__cell {
