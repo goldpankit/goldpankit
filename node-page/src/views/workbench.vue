@@ -110,7 +110,7 @@
                   />
                 </div>
               </div>
-              <div class="opera">
+              <div v-if="selectedPluginDimension === 'install'" class="opera">
                 <template v-if="installed">
                   <el-button
                     v-if="hasNewVersion(selectedPlugin)"
@@ -147,7 +147,7 @@
                   {{ isWorking.install ? $t('service.installing') : $t('service.install')}}
                 </el-button>
               </div>
-              <div class="opera-tip">
+              <div v-if="selectedPluginDimension === 'install'" class="opera-tip">
                 <el-icon><InfoFilled /></el-icon>
                 <p>{{$t('service.installTip')}}</p>
               </div>
