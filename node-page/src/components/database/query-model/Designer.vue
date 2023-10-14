@@ -432,6 +432,7 @@ export default {
             if (agg.targetTable.id === this.model.selectedTableId) {
               return false
             }
+            return true
           })
           // 删除table
           this.model.tables.splice(tableIndex, 1)

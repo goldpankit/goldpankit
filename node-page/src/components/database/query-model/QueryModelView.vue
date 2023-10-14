@@ -81,7 +81,11 @@ export default {
     OperaDataSourceWindow,
     DataSourceSelect,
     TableLibrary,
-    QueryModelDesigner, TableSetting, RelationLine, Table},
+    QueryModelDesigner,
+    TableSetting,
+    RelationLine,
+    Table
+  },
   data () {
     return {
       // 字段高度
@@ -217,12 +221,14 @@ export default {
     fetchModels () {
       const database = this.databases.find(db => db.id === this.currentDatabase)
       const models = database.models
+      const deletedTables = []
       this.queryModels = models.map(model => {
         model.tables = model.tables.map(table => {
           const dbTable = this.tables.find(tb => tb.name.toLowerCase() === table.name.toLowerCase())
           // 如果表不存在 && 不是虚拟表，则返回null（表已被删除）
           if (dbTable == null && !table.isVirtual) {
-            return null
+            deletedTables.push(table)
+            return table
           }
           // 同步字段信息
           let fields = table.fields
@@ -238,17 +244,45 @@ export default {
           }
           return {
             ...table,
-            fields,
-            // 添加joins，用于存放join关系
-            // joins: []
+            fields
           }
         })
-        // 过滤掉不存在的表
-        model.tables = model.tables.filter(t => t != null)
-        // // 如果模型中不存在表，则返回null
-        // if (model.tables.length === 0) {
-        //   return model
-        // }
+        // 删除了主表
+        if (deletedTables.find(t => t.type === 'MAIN') != null) {
+          model.tables = []
+          model.joins = []
+          model.aggregates = []
+        }
+        // 子表不存在
+        else {
+          for (const table of deletedTables) {
+            // 删除join关系
+            model.joins = model.joins.filter(join => {
+              if (join.table === table.id) {
+                return false
+              }
+              if (join.targetTable === table.id) {
+                return false
+              }
+              return true
+            })
+            // 删除聚合关系
+            model.aggregates = model.aggregates.filter(agg => {
+              if (agg.table === table.id) {
+                return false
+              }
+              if (agg.targetTable === table.id) {
+                return false
+              }
+              return true
+            })
+            // 删除表
+            const index = model.tables.findIndex(t => t.id === table.id)
+            if (index !== -1) {
+              model.tables.splice(index, 1)
+            }
+          }
+        }
         // join处理
         model.joins.map(join => {
           return this.__modelJoin2join(model, join)
