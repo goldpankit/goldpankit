@@ -27,7 +27,7 @@
           <div class="table__fields-wrap">
             <el-scrollbar>
               <div class="table-fields">
-                <el-checkbox-group :model-value="modelValue" @change="handleInput">
+                <el-checkbox-group :model-value="modelValue" @change="handleInput(table, $event)">
                   <el-checkbox
                     v-for="field in table.fields"
                     :label="`${table.id}.${field.name}`"
@@ -75,17 +75,24 @@ export default {
   methods: {
     // 全选
     handleCheckAllChange (table, checkedAll) {
+      // 当前表选中的字段
       let tableSelectedFields = []
       if (checkedAll) {
         tableSelectedFields = table.fields.map(f => `${table.id}.${f.name}`)
       }
+      // 当前已选中的全部字段
       let values = JSON.parse(JSON.stringify(this.modelValue))
+      // 排除掉当前表选中的字段
       values = values.filter(value => !value.startsWith(`${table.id}.`))
+      // 拼接上最新的当前表选中的字段
       values = values.concat(tableSelectedFields)
-      this.handleInput(values)
+      // 出发input事件
+      this.handleInput(table, values)
     },
     // 处理输入
-    handleInput (fieldNames) {
+    handleInput (table, fieldNames) {
+      const tableSelectedFields = fieldNames.filter(f => f.startsWith(`${table.id}.`))
+      table.checkedAll = tableSelectedFields.length === table.fields.length
       this.$emit('update:modelValue', fieldNames)
       this.$emit('fields:change', fieldNames
         // 找到field对象并填充table字段
