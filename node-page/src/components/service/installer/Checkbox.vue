@@ -87,6 +87,7 @@ export default {
 
 <style scoped lang="scss">
 .installer-checkbox {
+  --color-value: var(--primary-color-match-1);
   display: flex;
   flex-wrap: wrap;
   line-height: initial;
@@ -98,8 +99,8 @@ export default {
     border: 1px solid var(--background-color);
     border-radius: 5px;
     &.selected {
+      color: var(--font-color);
       background: var(--color-value);
-      color: var(--color-light);
       font-weight: bold;
       border-color: var(--color-value);
       &:hover {

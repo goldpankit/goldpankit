@@ -25,7 +25,7 @@
         v-model="optionSettingData.visible"
         :title="`${currentOption.label}${$t('service.settingsForSelectType')}`"
         :append-to-body="true"
-      >å
+      >
         <el-form>
           <el-form-item
             v-for="setting in currentOption.settings"

@@ -66,7 +66,6 @@ export default {
     // 初始化字段选择
     initSelectedFields () {
       this.selectedFields = []
-      console.log('初始化字段选择', this.group[this.valueKey])
       const fields = this.group[this.valueKey]
       if (fields != null && fields.length > 0) {
         this.selectedFields = fields.map(f => `${f.table.id}.${f.name}`)
@@ -103,8 +102,6 @@ export default {
   },
   created () {
     this.initSelectedFields()
-    console.log('children', this.group.children)
-    console.log('选中值', this.group[this.valueKey])
   }
 }
 </script>

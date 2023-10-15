@@ -166,6 +166,9 @@ export default {
       if (this.rootVariable.inputType === 'query_model' || this.rootVariable.inputType === 'table') {
         // 根变量的children为字段变量组
         for (const fieldGroup of this.rootVariable.children) {
+          if (fieldGroup.defaultValue == null) {
+            continue
+          }
           // 循环修改所有已选中的字段的当前变量值
           for (const field of fieldGroup.defaultValue) {
             field[this.variable.name] = this.variable.defaultValue

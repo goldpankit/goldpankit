@@ -251,9 +251,8 @@ export default {
         return
       }
       this.variables = JSON.parse(this.versionData.variables).map(item => {
-        return this.__initVariableValue(item)
+        return this.__initVariableValue(item, null)
       })
-      console.log('this.variables', this.variables)
     },
     __install () {
       if (this.isWorking.install) {
@@ -352,7 +351,13 @@ export default {
           this.isWorking.uninstall = false
         })
     },
-    // 检查变量
+    /**
+     * 检查变量填写情况
+     * @param variables 变量集
+     * @param groupName 组名，根变量无需填写
+     * @returns {boolean}
+     * @private
+     */
     __checkVariables (variables, groupName) {
       // 开始验证
       for (const variable of variables) {
@@ -467,9 +472,16 @@ export default {
         return variable
       })
     },
-    // 获取默认值
-    __initVariableValue (variable, value) {
-      if (value == null) {
+    /**
+     * 获取默认值
+     * @param variable 变量
+     * @param value 变量值，根变量无需传
+     * @param isRootVariable 是否为根变量，默认为true，为true时且value为null时才会从项目配置中读取已有变量数据
+     * @returns {*}
+     * @private
+     */
+    __initVariableValue (variable, value, isRootVariable = true) {
+      if (value == null && isRootVariable) {
         // 项目已安装，则从项目已安装信息中获取
         if (this.projectConfig != null) {
           // 安装的是插件
@@ -545,14 +557,73 @@ export default {
             if (targetGroup == null) {
               continue
             }
+            /**
+             * 获取组变量值，如”查询字段列表“，是一个字段数组，且数组中的字段包括了各个自定义字段的值
+             * 基本结构如下
+             * [
+             *   { ...字段基础信息, ...自定义字段信息 }
+             * ]
+             * e.g，如下name字段包括输入模式inputType（字典选择）和输入模式的配置inputTypeSettings，其中inputTypeSettings.dictName表示进一步配置的字典名称
+             * [
+             *   { name: 'NAME', alias: 'name', inputType: 'dict', inputTypeSettings: { dictName: 'genders' } }
+             * ]
+             */
+            let selectedFields = value.settings[groupName]
+            /**
+             * targetGroup.children为自定义变量的信息
+             * e.g
+             * [
+             *   {
+             *     defaultValue: '',
+             *     type: 'variable',
+             *     inputType: 'select', // 变量输入类型
+             *     options: [], // 配置的变量选项，为checkbox，radio或select时就需要配置选项
+             *     ...
+             *   }
+             * ]
+             */
+            for (const fieldVariable of targetGroup.children) {
+              // 对于字段，仅需要处理select类型变量
+              if (fieldVariable.inputType !== 'select') {
+                continue
+              }
+              /**
+               * 循环字段，逐一处理。
+               * 对于表或查询模型中的字段变量，配置文件中记录的格式是
+               * {
+               *   inputType: 'select',
+               *   inputTypeSettings: {
+               *     dictName: 'genders'
+               *   }
+               * }
+               * 但select组件需要的格式如下
+               * {
+               *   inputType: {
+               *     value: 'select',
+               *     settings: {
+               *       dictName: 'genders'
+               *     }
+               *   }
+               * }
+               * 此处做一个格式转换即可
+               */
+              for (const field of selectedFields) {
+                field[fieldVariable.name] = {
+                  value: field[fieldVariable.name],
+                  settings: field[`${fieldVariable.name}Settings`]
+                }
+                delete field[`${fieldVariable.name}Settings`]
+              }
+            }
             targetGroup.value = value.settings[groupName]
           }
           variable.value = value.value
           return variable
         }
+        // 变量组
         if (variable.type === 'group') {
           variable.children.forEach(item => {
-            return this.__initVariableValue(item, value[item.name])
+            return this.__initVariableValue(item, value[item.name], false)
           })
           return variable
         }

@@ -19,7 +19,6 @@ export default {
             if (newIndex === oldIndex) {
               return
             }
-            console.log('datalist', JSON.stringify(datalist))
             const originRow = datalist[oldIndex]
             // 从上拖到下
             if (newIndex > oldIndex) {
