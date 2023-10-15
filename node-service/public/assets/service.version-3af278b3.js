@@ -1,1 +1,0 @@
-import{y as s}from"./index-9ab2e6bc.js";function t(e){return s.post("/service/version/publish",e)}function i(e){return s.post("/service/version/latest",e,{baseURL:"/remote-api"})}function o(e){return s.post("/service/version",e,{baseURL:"/remote-api"})}function n(e){return s.post("/service/version/files",e,{baseURL:"/remote-api"})}export{n as a,o as b,i as f,t as p};
