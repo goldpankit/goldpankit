@@ -34,6 +34,7 @@ export default {
 
 <style scoped lang="scss">
 .installer-radio {
+  --color-value: var(--primary-color-match-1);
   display: flex;
   flex-wrap: wrap;
   line-height: initial;
@@ -46,7 +47,6 @@ export default {
     border-radius: 5px;
     &.selected {
       background: var(--color-value);
-      color: var(--color-light);
       font-weight: bold;
       border-color: var(--color-value);
       &:hover {

@@ -5,10 +5,25 @@
       popper-class="model-field-select-popper"
       :hide-after="0"
       :persistent="false"
+      @hide="close"
     >
       <template #reference>
-        <ul class="selected-preview">
-          <li v-for="field of selectedFields" :key="field.name">{{field.tableAlias}}.{{field.name}}</li>
+        <ul
+          class="selected-preview"
+          v-sortable:config="{
+            data: selectedFields,
+            onChange: handleFieldSorted
+          }">
+          <li
+            v-for="field of selectedFields"
+            :key="field.name"
+            :class="{ 'field-light': currentHoverTable != null && field.table.id === currentHoverTable.id }"
+            @mouseenter="handleFieldEnter(field)"
+            @mouseleave="handleFieldLeave"
+          >
+            <p>{{field.table.alias}}.{{field.name}}</p>
+            <p v-if="field.comment != null && field.comment !== ''">{{field.comment}}</p>
+          </li>
         </ul>
       </template>
       <div class="field-select__tables">
@@ -17,13 +32,16 @@
           :key="table.alias"
           class="field-select__table"
           :class="{'table-main': table.type === 'MAIN'}"
+          @mouseenter="handleTableEnter(table)"
+          @mouseleave="handleTableLeave"
         >
           <div class="table__header">
             <el-checkbox
               v-model="table.checkedAll"
               @change="handleCheckAllChange(table, $event)"
-            ></el-checkbox>
-            <h4>{{table.name}} AS {{table.alias}}</h4>
+            >
+              <h4>{{table.name}} AS {{table.alias}}</h4>
+            </el-checkbox>
           </div>
           <div class="table__fields-wrap">
             <el-scrollbar>
@@ -62,24 +80,13 @@ export default {
   data () {
     return {
       // 表
-      tables: []
-    }
-  },
-  computed: {
-    // 已选中的字段
-    selectedFields () {
-      let selectedFields = []
-      for (const table of this.tables) {
-        const tableFields = this.modelValue.filter(f => f.startsWith(`${table.id}.`))
-        selectedFields = selectedFields.concat(tableFields.map(f => {
-          const targetField = table.fields.find(tableField => tableField.name === f.split('.')[1])
-          return {
-            tableAlias: table.alias,
-            ...targetField
-          }
-        }))
-      }
-      return selectedFields
+      tables: [],
+      // 已选中的字段
+      selectedFields: [],
+      // 当前悬浮的表
+      currentHoverTable: null,
+      // 当前悬浮的字段
+      currentHoverField: null
     }
   },
   watch: {
@@ -91,6 +98,16 @@ export default {
     }
   },
   methods: {
+    // 处理字段排序
+    handleFieldSorted (sortedFields) {
+      this.$emit('update:modelValue', this.selectedFields.map(field => {
+        return `${field.table.id}.${field.name}`
+      }))
+      console.log(this.selectedFields.map(field => {
+        return `${field.table.id}.${field.name}`
+      }))
+      this.$emit('fields:change', this.selectedFields)
+    },
     // 全选
     handleCheckAllChange (table, checkedAll) {
       // 当前表选中的字段
@@ -109,10 +126,11 @@ export default {
     },
     // 处理输入
     handleInput (table, fieldNames) {
+      // 处理选中全部
       const tableSelectedFields = fieldNames.filter(f => f.startsWith(`${table.id}.`))
       table.checkedAll = tableSelectedFields.length === table.fields.length
-      this.$emit('update:modelValue', fieldNames)
-      this.$emit('fields:change', fieldNames
+      // 获取所有选中的字段
+      let selectedFields = fieldNames
         // 找到field对象并填充table字段
         .map(name => {
           // 选中的value值类似为xxxx.NAME，其中xxxx为表ID，NAME为字段名称
@@ -129,7 +147,35 @@ export default {
           return field
         })
         // 过滤掉未找到的对象
-        .filter(field => field != null))
+        .filter(field => field != null)
+      // 此处给this.selectedFields赋值，不能修改引用地址，否则排序后无法获取到最新排序内容
+      this.selectedFields.splice(0, this.selectedFields.length)
+      this.selectedFields.push.apply(this.selectedFields, selectedFields)
+      // 触发事件
+      this.$emit('update:modelValue', fieldNames)
+      this.$emit('fields:change', this.selectedFields)
+    },
+    // 鼠标悬浮字段
+    handleFieldEnter (field) {
+      this.currentHoverField = field
+    },
+    // 鼠标离开表
+    handleFieldLeave () {
+      this.currentHoverField = null
+    },
+    // 鼠标悬浮在表
+    handleTableEnter (table) {
+      console.log('悬浮table', table)
+      this.currentHoverTable = table
+    },
+    // 鼠标离开表
+    handleTableLeave () {
+      this.currentHoverTable = null
+    },
+    // 关闭选择
+    close () {
+      this.handleTableLeave()
+      this.handleFieldLeave()
     },
     // 获取表数据
     __handleTables () {
@@ -165,11 +211,33 @@ export default {
     li {
       height: initial;
       line-height: initial;
-      padding: 5px;
-      background-color: #eee;
+      padding: 5px 10px;
+      background-color: var(--primary-color-match-1);
       margin-right: 5px;
       margin-bottom: 5px;
       border-radius: 5px;
+      font-size: var(--font-size-mini);
+      cursor: default;
+      &:hover {
+        background-color: var(--primary-color-match-1-transition);
+      }
+      // 字段悬浮
+      &.field-light {
+        transition: all ease .15s;
+        animation: shine 0.3s 3;
+        background-color: var(--primary-color-match-1-transition);
+      }
+    }
+  }
+  @keyframes shine {
+    0% {
+      background-color: var(--primary-color-match-1-transition);
+    }
+    50% {
+      background-color: var(--primary-color-match-1);
+    }
+    100% {
+      background-color: var(--primary-color-match-1-transition);
     }
   }
 }
@@ -208,18 +276,36 @@ export default {
       // 主表
       &.table-main .table__header{
         background-color: var(--primary-color-match-2);
+        &:hover {
+          background-color: var(--primary-color-match-2-transition);
+        }
       }
       // 表头
       .table__header {
         flex-shrink: 0;
         display: flex;
         align-items: center;
-        padding: 5px 10px;
+        padding: 8px 10px;
         background-color: #666;
         color: var(--color-light);
+        &:hover {
+          background-color: var(--primary-color);
+        }
+        .el-checkbox {
+          width: 100%;
+          margin-right: 0;
+          .el-checkbox__input {
+            flex-shrink: 0;
+          }
+          .el-checkbox__label {
+            flex-grow: 1;
+            overflow: hidden;
+            white-space: initial;
+          }
+        }
         h4 {
-          margin-left: 10px;
           font-size: var(--font-size-mini);
+          color: var(--color-light);
         }
       }
       // 表字段
