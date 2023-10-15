@@ -73,42 +73,44 @@
             <template v-if="selectedPlugin != null">
               <h3>{{selectedPlugin.label || selectedPlugin.name}}</h3>
               <div class="main">
-                <ul class="service-dimensions">
-                  <li :class="{selected: selectedPluginDimension === 'readme'}" @click="selectedPluginDimension = 'readme'">{{$t('common.readme')}}</li>
-                  <li :class="{selected: selectedPluginDimension === 'install'}" @click="selectedPluginDimension = 'install'">{{$t('plugin.install')}}</li>
-                  <li :class="{selected: selectedPluginDimension === 'structure'}" @click="selectedPluginDimension = 'structure'">{{$t('service.structure')}}</li>
-                </ul>
-                <div class="dimension-content">
-                  <!-- readme -->
-                  <div v-show="selectedPluginDimension === 'readme'">
-                    <MarkdownEditor v-model="selectedPlugin.description" readonly :without-padding="true"/>
-                  </div>
-                  <!-- 安装 -->
-                  <ServiceInstaller
-                    v-show="selectedPluginDimension === 'install'"
-                    ref="installer"
-                    v-model:installing="isWorking.install"
-                    v-model:uninstalling="isWorking.uninstall"
-                    :space="space"
-                    :service="service.name"
-                    :plugin="selectedPlugin.name"
-                    :service-price="selectedPlugin.price.price"
-                    :service-lease="selectedPlugin.latestLease"
-                    :version="selectedPlugin.lastVersion"
-                    :with-project="false"
-                    :project-config="project"
-                    @installed="refreshProject()"
-                    @uninstalled="refreshProject()"
-                  />
-                  <!-- 插件代码结构 -->
-                  <ServiceStructureView
+                <el-scrollbar>
+                  <ul class="service-dimensions">
+                    <li :class="{selected: selectedPluginDimension === 'readme'}" @click="selectedPluginDimension = 'readme'">{{$t('common.readme')}}</li>
+                    <li :class="{selected: selectedPluginDimension === 'install'}" @click="selectedPluginDimension = 'install'">{{$t('plugin.install')}}</li>
+                    <li :class="{selected: selectedPluginDimension === 'structure'}" @click="selectedPluginDimension = 'structure'">{{$t('service.structure')}}</li>
+                  </ul>
+                  <div class="dimension-content">
+                    <!-- readme -->
+                    <div v-show="selectedPluginDimension === 'readme'">
+                      <MarkdownEditor v-model="selectedPlugin.description" readonly :without-padding="true"/>
+                    </div>
+                    <!-- 安装 -->
+                    <ServiceInstaller
+                      v-show="selectedPluginDimension === 'install'"
+                      ref="installer"
+                      v-model:installing="isWorking.install"
+                      v-model:uninstalling="isWorking.uninstall"
+                      :space="space"
+                      :service="service.name"
+                      :plugin="selectedPlugin.name"
+                      :service-price="selectedPlugin.price.price"
+                      :service-lease="selectedPlugin.latestLease"
+                      :version="selectedPlugin.lastVersion"
+                      :with-project="false"
+                      :project-config="project"
+                      @installed="refreshProject()"
+                      @uninstalled="refreshProject()"
+                    />
+                    <!-- 插件代码结构 -->
+                    <ServiceStructureView
                     v-show="selectedPluginDimension === 'structure'"
                     :space="space"
                     :service="service.name"
                     :plugin="selectedPlugin.name"
                     :version="selectedPlugin.lastVersion"
                   />
-                </div>
+                  </div>
+                </el-scrollbar>
               </div>
               <div v-if="selectedPluginDimension === 'install'" class="opera">
                 <template v-if="installed">
@@ -567,8 +569,8 @@ export default {
       }
       .main {
         flex-grow: 1;
-        overflow-y: auto;
         padding: 0 30px;
+        overflow: hidden;
         .el-input {
           height: 40px;
         }

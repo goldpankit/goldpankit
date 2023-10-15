@@ -1,6 +1,7 @@
 <template>
   <div class="page">
-    <div class="warp">
+    <el-scrollbar>
+      <div class="warp">
       <div class="search-wrap">
         <div class="input-wrap">
           <el-icon size="20"><Search/></el-icon>
@@ -50,6 +51,7 @@
         @size-change="handleSizeChange"
       />
     </div>
+    </el-scrollbar>
   </div>
 </template>
 
@@ -119,7 +121,6 @@ export default {
 <style scoped lang="scss">
 .page {
   height: 100%;
-  overflow-y: auto;
   .warp {
     width: var(--page-width);
     margin: 30px auto 0 auto;
