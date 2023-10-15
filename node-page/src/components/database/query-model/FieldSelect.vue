@@ -8,6 +8,7 @@
     >
       <template #reference>
         <ul class="selected-preview">
+          <li v-for="field of selectedFields" :key="field.name">{{field.tableAlias}}.{{field.name}}</li>
         </ul>
       </template>
       <div class="field-select__tables">
@@ -64,6 +65,23 @@ export default {
       tables: []
     }
   },
+  computed: {
+    // 已选中的字段
+    selectedFields () {
+      let selectedFields = []
+      for (const table of this.tables) {
+        const tableFields = this.modelValue.filter(f => f.startsWith(`${table.id}.`))
+        selectedFields = selectedFields.concat(tableFields.map(f => {
+          const targetField = table.fields.find(tableField => tableField.name === f.split('.')[1])
+          return {
+            tableAlias: table.alias,
+            ...targetField
+          }
+        }))
+      }
+      return selectedFields
+    }
+  },
   watch: {
     model: {
       immediate: true,
@@ -81,12 +99,12 @@ export default {
         tableSelectedFields = table.fields.map(f => `${table.id}.${f.name}`)
       }
       // 当前已选中的全部字段
-      let values = JSON.parse(JSON.stringify(this.modelValue))
+      let values = this.modelValue
       // 排除掉当前表选中的字段
       values = values.filter(value => !value.startsWith(`${table.id}.`))
       // 拼接上最新的当前表选中的字段
       values = values.concat(tableSelectedFields)
-      // 出发input事件
+      // 触发input事件
       this.handleInput(table, values)
     },
     // 处理输入
@@ -137,10 +155,22 @@ export default {
 <style scoped lang="scss">
 .model-field-select {
   .selected-preview {
-    height: 32px;
+    min-height: 32px;
     border-radius: 5px;
     border: 1px solid #eee;
     background-color: var(--color-light);
+    display: flex;
+    flex-wrap: wrap;
+    padding: 5px 5px 0 5px;
+    li {
+      height: initial;
+      line-height: initial;
+      padding: 5px;
+      background-color: #eee;
+      margin-right: 5px;
+      margin-bottom: 5px;
+      border-radius: 5px;
+    }
   }
 }
 </style>
@@ -229,24 +259,6 @@ export default {
               }
             }
           }
-          //li {
-          //  display: flex;
-          //  padding: 5px 15px 5px 10px;
-          //  align-items: center;
-          //  font-size: var(--font-size-mini);
-          //  background-color: var(--color-light);
-          //  border-top: 1px solid var(--border-default-color);
-          //  .el-checkbox {
-          //    margin-right: 10px;
-          //  }
-          //  & > div {
-          //    height: auto;
-          //    line-height: initial;
-          //  }
-          //  &:hover {
-          //    background-color: var(--border-default-color);
-          //  }
-          //}
         }
       }
     }

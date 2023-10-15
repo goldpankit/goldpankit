@@ -9,7 +9,8 @@
   <el-table v-if="group.children.length > 0" size="small" :data="group[valueKey]">
     <el-table-column label="字段名" width="150px" prop="name" fixed>
       <template #default="{row}">
-        {{row.table.alias}}.{{row.name}}
+        <p>{{row.table.alias}}.{{row.name}}</p>
+        <p>{{row.comment}}</p>
       </template>
     </el-table-column>
     <el-table-column
