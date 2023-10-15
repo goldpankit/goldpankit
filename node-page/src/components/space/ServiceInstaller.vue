@@ -253,6 +253,7 @@ export default {
       this.variables = JSON.parse(this.versionData.variables).map(item => {
         return this.__initVariableValue(item)
       })
+      console.log('this.variables', this.variables)
     },
     __install () {
       if (this.isWorking.install) {

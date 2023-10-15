@@ -95,15 +95,18 @@ export default {
       handler () {
         this.__handleTables()
       }
-    }
+    },
+    modelValue: {
+      immediate: true,
+      handler () {
+        this.selectedFields = this.__getSelectedFieldsObjects(this.modelValue)
+      }
+    },
   },
   methods: {
     // 处理字段排序
-    handleFieldSorted (sortedFields) {
+    handleFieldSorted () {
       this.$emit('update:modelValue', this.selectedFields.map(field => {
-        return `${field.table.id}.${field.name}`
-      }))
-      console.log(this.selectedFields.map(field => {
         return `${field.table.id}.${field.name}`
       }))
       this.$emit('fields:change', this.selectedFields)
@@ -130,24 +133,7 @@ export default {
       const tableSelectedFields = fieldNames.filter(f => f.startsWith(`${table.id}.`))
       table.checkedAll = tableSelectedFields.length === table.fields.length
       // 获取所有选中的字段
-      let selectedFields = fieldNames
-        // 找到field对象并填充table字段
-        .map(name => {
-          // 选中的value值类似为xxxx.NAME，其中xxxx为表ID，NAME为字段名称
-          const tableId = name.split('.')[0]
-          const fieldName = name.split('.')[1]
-          // 找到字段所在的表
-          const table = this.model.tables.find(t => t.id === tableId)
-          const tableDump = JSON.parse(JSON.stringify(table))
-          // 找到字段
-          const field = table.fields.find(field => field.name === fieldName)
-          // 填充表信息（表信息中不要再包含字段信息，避免数据循环依赖）
-          delete tableDump.fields
-          field.table = tableDump
-          return field
-        })
-        // 过滤掉未找到的对象
-        .filter(field => field != null)
+      let selectedFields = this.__getSelectedFieldsObjects(fieldNames)
       // 此处给this.selectedFields赋值，不能修改引用地址，否则排序后无法获取到最新排序内容
       this.selectedFields.splice(0, this.selectedFields.length)
       this.selectedFields.push.apply(this.selectedFields, selectedFields)
@@ -165,7 +151,6 @@ export default {
     },
     // 鼠标悬浮在表
     handleTableEnter (table) {
-      console.log('悬浮table', table)
       this.currentHoverTable = table
     },
     // 鼠标离开表
@@ -193,6 +178,27 @@ export default {
           })
         }
       }
+    },
+    // 获取选中的字段对象
+    __getSelectedFieldsObjects (fieldNames) {
+      return fieldNames
+        // 找到field对象并填充table字段
+        .map(name => {
+          // 选中的value值类似为xxxx.NAME，其中xxxx为表ID，NAME为字段名称
+          const tableId = name.split('.')[0]
+          const fieldName = name.split('.')[1]
+          // 找到字段所在的表
+          const table = this.model.tables.find(t => t.id === tableId)
+          const tableDump = JSON.parse(JSON.stringify(table))
+          // 找到字段
+          const field = table.fields.find(field => field.name === fieldName)
+          // 填充表信息（表信息中不要再包含字段信息，避免数据循环依赖）
+          delete tableDump.fields
+          field.table = tableDump
+          return field
+        })
+        // 过滤掉未找到的对象
+        .filter(field => field != null)
     }
   }
 }

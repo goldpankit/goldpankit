@@ -57,7 +57,22 @@ export default {
       selectedFields: []
     }
   },
+  watch: {
+    model () {
+      this.initSelectedFields()
+    }
+  },
   methods: {
+    // 初始化字段选择
+    initSelectedFields () {
+      this.selectedFields = []
+      console.log('初始化字段选择', this.group[this.valueKey])
+      const fields = this.group[this.valueKey]
+      if (fields != null && fields.length > 0) {
+        this.selectedFields = fields.map(f => `${f.table.id}.${f.name}`)
+      }
+    },
+    // 字段选择
     handleSelect (fields) {
       for (const field of fields) {
         // 增加字段原始信息
@@ -75,6 +90,7 @@ export default {
       this.group[this.valueKey] = fields
       this.emitChange()
     },
+    // 出发变更事件
     emitChange () {
       this.$emit('change')
     },
@@ -84,6 +100,11 @@ export default {
       }
       return '120px'
     }
+  },
+  created () {
+    this.initSelectedFields()
+    console.log('children', this.group.children)
+    console.log('选中值', this.group[this.valueKey])
   }
 }
 </script>
