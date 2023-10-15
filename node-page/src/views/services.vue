@@ -89,7 +89,13 @@ export default {
         ...this.pagination,
         model: {
           keyword: this.keyword.trim()
-        }
+        },
+        sorts: [
+          {
+            property: 'service.pluginCount',
+            direction: 'DESC'
+          }
+        ]
       })
         .then(data => {
           this.pagination.total = data.total
