@@ -512,12 +512,16 @@ export default {
     overflow: hidden;
     display: flex;
     border-radius: 20px;
+    background-color: var(--background-color);
+    border-top: 3px solid;
+    border-image: var(--border-colors);
     .service-wrap {
       width: 275px;
       flex-shrink: 0;
       box-sizing: border-box;
       display: flex;
       flex-direction: column;
+      background-color: var(--color-light);
       // 搜索
       .search-input-wrap {
         flex-shrink: 0;
@@ -525,6 +529,7 @@ export default {
       }
       // 插件列表
       :deep(.plugin-list) {
+        flex-grow: 1;
         li {
           padding: 10px 20px;
           h5 {
@@ -610,8 +615,8 @@ export default {
       .opera {
         flex-shrink: 0;
         padding: 15px 15px 0 15px;
-        border-top: 10px solid;
-        border-image: linear-gradient(to right, var(--primary-color-match-1), var(--primary-color-match-2), var(--primary-color)) 1;
+        border-top: 3px solid;
+        border-image: var(--border-colors);
         display: flex;
         justify-content: center;
         .el-button {

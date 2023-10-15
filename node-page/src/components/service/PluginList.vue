@@ -1,44 +1,46 @@
 <template>
-  <ul v-if="plugins.length > 0" class="plugin-list">
-    <li
-      v-for="plugin in plugins"
-      :key="plugin.id"
-      :class="{...customClass(plugin), 'plugin-installed': installed(plugin) === true}"
-      @click.stop="$emit('click', plugin)"
-    >
-      <h5>
-        <slot name="title" :plugin="plugin">
-          {{plugin.label || plugin.name}}
-        </slot>
-      </h5>
-      <p class="latest-version">
-        <span>{{$t('service.latestVersion')}}: v{{plugin.lastVersion}}</span>
-        <span v-if="installed(plugin) === true">{{$t('service.installed')}}</span>
-      </p>
-      <p class="introduce">{{plugin.introduce}}</p>
-      <!-- 用户信息 -->
-      <div v-if="plugin.user != null" class="user-profile">
-        <img :src="getAccessUri(plugin.user.avatar, '/images/avatar/default.png')">
-        <span>{{plugin.user.username}}</span>
-      </div>
-      <div class="price-wrap">
-        <p class="text-info-1 text-mini">
-          <ServiceStatus :with-private="plugin.withPrivate"/>
-          |
-          {{getDateOffsetText(plugin.lastPublishTime)}}
+  <el-scrollbar>
+    <ul v-if="plugins.length > 0" class="plugin-list">
+      <li
+        v-for="plugin in plugins"
+        :key="plugin.id"
+        :class="{...customClass(plugin), 'plugin-installed': installed(plugin) === true}"
+        @click.stop="$emit('click', plugin)"
+      >
+        <h5>
+          <slot name="title" :plugin="plugin">
+            {{plugin.label || plugin.name}}
+          </slot>
+        </h5>
+        <p class="latest-version">
+          <span>{{$t('service.latestVersion')}}: v{{plugin.lastVersion}}</span>
+          <span v-if="installed(plugin) === true">{{$t('service.installed')}}</span>
         </p>
-        <em v-if="plugin.latestLease != null">
-          {{getRemainingDay(plugin.latestLease.leaseEndTime)}} {{$t('common.days')}}
-        </em>
-        <BeanAmount
-          v-else
-          :price="plugin.price.price"
-          :type="plugin.price.leaseType"
-        />
-      </div>
-    </li>
-  </ul>
-  <Empty v-else :description="$t('service.noSubServices')"/>
+        <p class="introduce">{{plugin.introduce}}</p>
+        <!-- 用户信息 -->
+        <div v-if="plugin.user != null" class="user-profile">
+          <img :src="getAccessUri(plugin.user.avatar, '/images/avatar/default.png')">
+          <span>{{plugin.user.username}}</span>
+        </div>
+        <div class="price-wrap">
+          <p class="text-info-1 text-mini">
+            <ServiceStatus :with-private="plugin.withPrivate"/>
+            |
+            {{getDateOffsetText(plugin.lastPublishTime)}}
+          </p>
+          <em v-if="plugin.latestLease != null">
+            {{getRemainingDay(plugin.latestLease.leaseEndTime)}} {{$t('common.days')}}
+          </em>
+          <BeanAmount
+            v-else
+            :price="plugin.price.price"
+            :type="plugin.price.leaseType"
+          />
+        </div>
+      </li>
+    </ul>
+    <Empty v-else :description="$t('service.noSubServices')"/>
+  </el-scrollbar>
 </template>
 
 <script>
@@ -74,7 +76,6 @@ export default {
 <style scoped lang="scss">
 .plugin-list {
   background-color: var(--color-light);
-  overflow-y: auto;
   li {
     border-top: 1px solid var(--border-default-color);
     padding: 15px 0;
