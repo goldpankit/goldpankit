@@ -1,10 +1,10 @@
 <template>
   <h5>{{group.label}}</h5>
   <QueryModelFieldSelect
+    v-model="selectedFields"
     :model="model"
-    :model-value="group[valueKey]"
     placeholder="Select fields"
-    @update:modelValue="handleSelect"
+    @fields:change="handleSelect"
   />
   <el-table v-if="group.children.length > 0" size="small" :data="group[valueKey]">
     <el-table-column label="字段名" width="150px" prop="name" fixed>
@@ -49,6 +49,11 @@ export default {
     },
     group: {
       required: true
+    }
+  },
+  data () {
+    return {
+      selectedFields: []
     }
   },
   methods: {

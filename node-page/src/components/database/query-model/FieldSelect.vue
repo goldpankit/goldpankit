@@ -12,61 +12,38 @@
       </template>
       <div class="field-select__tables">
         <div
-          v-for="fieldGroup in fieldGroups"
-          :key="fieldGroup.alias"
+          v-for="table in tables"
+          :key="table.alias"
           class="field-select__table"
-          :class="{'table-main': fieldGroup.type === 'MAIN'}"
+          :class="{'table-main': table.type === 'MAIN'}"
         >
           <div class="table__header">
-            <el-checkbox></el-checkbox>
-            <h4>{{fieldGroup.name}} AS {{fieldGroup.alias}}</h4>
+            <el-checkbox
+              v-model="table.checkedAll"
+              @change="handleCheckAllChange(table, $event)"
+            ></el-checkbox>
+            <h4>{{table.name}} AS {{table.alias}}</h4>
           </div>
           <div class="table__fields-wrap">
             <el-scrollbar>
-              <ul class="table-fields">
-                <li
-                  v-for="field in fieldGroup.options"
-                  :key="field.name"
-                >
-                  <el-checkbox></el-checkbox>
-                  <div>
+              <div class="table-fields">
+                <el-checkbox-group :model-value="modelValue" @change="handleInput">
+                  <el-checkbox
+                    v-for="field in table.fields"
+                    :label="`${table.id}.${field.name}`"
+                    :key="field.name"
+                  >
                     <p>{{field.name}}</p>
                     <p v-if="field.comment !== ''" class="text-info-1">{{field.comment}}</p>
-                  </div>
-                </li>
-              </ul>
+                  </el-checkbox>
+                </el-checkbox-group>
+              </div>
             </el-scrollbar>
           </div>
         </div>
       </div>
     </el-popover>
-
   </div>
-<!--  <el-select-->
-<!--    class="mysql-field-select"-->
-<!--    popper-class="mysql-field-select__popper"-->
-<!--    clearable-->
-<!--    :multiple="multiple"-->
-<!--    :model-value="modelValue == null ? [] : modelValue.map(f => f.table.alias + '.' + f.name)"-->
-<!--    @update:modelValue="handleInput"-->
-<!--  >-->
-<!--    <el-option-group-->
-<!--      v-for="fieldGroup in fieldGroups"-->
-<!--      :key="fieldGroup.alias"-->
-<!--      :label="`${fieldGroup.name} AS ${fieldGroup.alias}`"-->
-<!--    >-->
-<!--      <el-option-->
-<!--        v-for="field in fieldGroup.options"-->
-<!--        :value="fieldGroup.alias + '.' + field.name"-->
-<!--        :label="fieldGroup.alias + '.' + field.name"-->
-<!--      >-->
-<!--        <p class="option-content">-->
-<!--          <span>{{fieldGroup.alias}}.{{ field.name }}</span>-->
-<!--          <span class="text-info-1">{{ field.comment }}</span>-->
-<!--        </p>-->
-<!--      </el-option>-->
-<!--    </el-option-group>-->
-<!--  </el-select>-->
 </template>
 
 <script>
@@ -81,52 +58,70 @@ export default {
       default: true
     }
   },
-  computed: {
-    fieldGroups () {
-      let fieldGroups = []
-      for (const table of this.model.tables) {
-        const visibleFields = table.fields.filter(f => f.visible)
-        if (visibleFields.length > 0) {
-          fieldGroups.push({
-            type: table.type,
-            name: table.name,
-            alias: table.alias,
-            options: visibleFields
-          })
-        }
+  data () {
+    return {
+      // 表
+      tables: []
+    }
+  },
+  watch: {
+    model: {
+      immediate: true,
+      handler () {
+        this.__handleTables()
       }
-      return fieldGroups
-    },
-    fields () {
-      let fields = []
-      for (const table of this.model.tables) {
-        fields = fields.concat(table.fields)
-      }
-      return fields
     }
   },
   methods: {
+    // 全选
+    handleCheckAllChange (table, checkedAll) {
+      let tableSelectedFields = []
+      if (checkedAll) {
+        tableSelectedFields = table.fields.map(f => `${table.id}.${f.name}`)
+      }
+      let values = JSON.parse(JSON.stringify(this.modelValue))
+      values = values.filter(value => !value.startsWith(`${table.id}.`))
+      values = values.concat(tableSelectedFields)
+      this.handleInput(values)
+    },
+    // 处理输入
     handleInput (fieldNames) {
-      this.$emit('update:modelValue',
-        fieldNames
-          // 找到field对象并填充table字段
-          .map(name => {
-            // 选中的value值类似为xxxx.NAME，其中xxxx为表名，NAME为字段名称
-            const tableName = name.split('.')[0]
-            const fieldName = name.split('.')[1]
-            // 找到字段所在的表
-            const table = this.model.tables.find(t => t.alias === tableName)
-            const tableDump = JSON.parse(JSON.stringify(table))
-            // 找到字段
-            const field = table.fields.find(field => field.name === fieldName)
-            // 填充表信息（表信息中不要再包含字段信息，避免数据循环依赖）
-            delete tableDump.fields
-            field.table = tableDump
-            return field
+      this.$emit('update:modelValue', fieldNames)
+      this.$emit('fields:change', fieldNames
+        // 找到field对象并填充table字段
+        .map(name => {
+          // 选中的value值类似为xxxx.NAME，其中xxxx为表ID，NAME为字段名称
+          const tableId = name.split('.')[0]
+          const fieldName = name.split('.')[1]
+          // 找到字段所在的表
+          const table = this.model.tables.find(t => t.id === tableId)
+          const tableDump = JSON.parse(JSON.stringify(table))
+          // 找到字段
+          const field = table.fields.find(field => field.name === fieldName)
+          // 填充表信息（表信息中不要再包含字段信息，避免数据循环依赖）
+          delete tableDump.fields
+          field.table = tableDump
+          return field
+        })
+        // 过滤掉未找到的对象
+        .filter(field => field != null))
+    },
+    // 获取表数据
+    __handleTables () {
+      this.tables = []
+      for (const table of this.model.tables) {
+        const visibleFields = table.fields.filter(f => f.visible)
+        if (visibleFields.length > 0) {
+          this.tables.push({
+            id: table.id,
+            type: table.type,
+            name: table.name,
+            alias: table.alias,
+            fields: visibleFields,
+            checkedAll: false
           })
-          // 过滤掉未找到的对象
-          .filter(field => field != null)
-      )
+        }
+      }
     }
   }
 }
@@ -195,20 +190,56 @@ export default {
         flex-grow: 1;
         overflow: hidden;
         .table-fields {
-          li {
+          .el-checkbox-group {
             display: flex;
-            padding: 5px 15px 5px 10px;
-            align-items: center;
-            font-size: var(--font-size-mini);
-            background-color: var(--color-light);
-            border-top: 1px solid var(--border-default-color);
+            flex-direction: column;
             .el-checkbox {
-              margin-right: 10px;
-            }
-            &:hover {
-              background-color: var(--border-default-color);
+              width: 100%;
+              height: auto;
+              padding: 5px 15px 5px 10px;
+              margin-right: 0;
+              background-color: var(--color-light);
+              border-top: 1px solid var(--border-default-color);
+              &:hover {
+                background-color: var(--border-default-color);
+              }
+              .el-checkbox__input {
+                flex-shrink: 0;
+              }
+              .el-checkbox__label {
+                flex-grow: 1;
+                overflow: hidden;
+                p {
+                  white-space: initial;
+                  font-weight: normal;
+                  font-size: var(--font-size-mini);
+                  color: var(--font-color);
+                  &:last-of-type {
+                    margin-top: 3px;
+                    color: var(--color-gray);
+                  }
+                }
+              }
             }
           }
+          //li {
+          //  display: flex;
+          //  padding: 5px 15px 5px 10px;
+          //  align-items: center;
+          //  font-size: var(--font-size-mini);
+          //  background-color: var(--color-light);
+          //  border-top: 1px solid var(--border-default-color);
+          //  .el-checkbox {
+          //    margin-right: 10px;
+          //  }
+          //  & > div {
+          //    height: auto;
+          //    line-height: initial;
+          //  }
+          //  &:hover {
+          //    background-color: var(--border-default-color);
+          //  }
+          //}
         }
       }
     }
