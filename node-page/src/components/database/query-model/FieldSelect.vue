@@ -31,7 +31,10 @@
           v-for="table in tables"
           :key="table.alias"
           class="field-select__table"
-          :class="{'table-main': table.type === 'MAIN'}"
+          :class="{
+            'table-main': table.type === 'MAIN',
+            'table-light': currentHoverField != null && table.id === currentHoverField.table.id
+          }"
           @mouseenter="handleTableEnter(table)"
           @mouseleave="handleTableLeave"
         >
@@ -86,7 +89,9 @@ export default {
       // 当前悬浮的表
       currentHoverTable: null,
       // 当前悬浮的字段
-      currentHoverField: null
+      currentHoverField: null,
+      // 离开字段时计时器，防止
+      leaveFieldTimeout: null
     }
   },
   watch: {
@@ -143,11 +148,16 @@ export default {
     },
     // 鼠标悬浮字段
     handleFieldEnter (field) {
+      if (this.leaveFieldTimeout != null) {
+        clearTimeout(this.leaveFieldTimeout)
+      }
       this.currentHoverField = field
     },
     // 鼠标离开表
     handleFieldLeave () {
-      this.currentHoverField = null
+      this.leaveFieldTimeout = setTimeout(() => {
+        this.currentHoverField = null
+      }, 500)
     },
     // 鼠标悬浮在表
     handleTableEnter (table) {
@@ -280,10 +290,26 @@ export default {
         margin-right: 0;
       }
       // 主表
-      &.table-main .table__header{
-        background-color: var(--primary-color-match-2);
-        &:hover {
-          background-color: var(--primary-color-match-2-transition);
+      &.table-main {
+        .table__header{
+          background-color: var(--primary-color-match-2);
+          &:hover {
+            background-color: var(--primary-color-match-2-transition);
+          }
+        }
+        // 高亮表
+        &.table-light {
+          .table__header {
+            animation: shineMainTable .3s 3;
+            background-color: var(--primary-color-match-2-transition);
+          }
+        }
+      }
+      // 高亮表
+      &.table-light {
+        .table__header {
+          animation: shineSubTable .3s 3;
+          background-color: var(--primary-color);
         }
       }
       // 表头
@@ -353,6 +379,30 @@ export default {
           }
         }
       }
+    }
+  }
+  // 子表提示动画
+  @keyframes shineSubTable {
+    0% {
+      background-color: var(--primary-color);
+    }
+    50% {
+      background-color: #666;
+    }
+    100% {
+      background-color: var(--primary-color);
+    }
+  }
+  // 主表提示动画
+  @keyframes shineMainTable {
+    0% {
+      background-color: var(--primary-color-match-2);
+    }
+    50% {
+      background-color: var(--primary-color-match-2-transition);
+    }
+    100% {
+      background-color: var(--primary-color-match-2);
     }
   }
 }
