@@ -253,6 +253,7 @@ export default {
     // 处理选项排序
     handleOptionSorted (newOptions) {
       this.variable.options = []
+      // 重新渲染，避免数据紊乱
       this.$nextTick(() => {
         this.variable.options = newOptions
         this.handleChange()

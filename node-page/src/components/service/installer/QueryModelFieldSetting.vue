@@ -6,10 +6,29 @@
     placeholder="Select fields"
     @fields:change="handleSelect"
   />
-  <el-table v-if="group.children.length > 0" size="small" :data="group[valueKey]">
+  <el-table
+    v-if="group.children.length > 0"
+    size="small"
+    :data="group[valueKey]"
+    :row-key="row => {
+      return `${row.table.id}.${row.name}@${row.alias}`
+    }"
+    v-sortable:config="{
+      data: group[valueKey],
+      onChange: handleSort
+    }"
+  >
+    <el-table-column width="25px" fixed>
+      <SortableButton/>
+    </el-table-column>
     <el-table-column label="字段名" width="150px" prop="name" fixed>
       <template #default="{row}">
-        <p>{{row.table.alias}}.{{row.name}}</p>
+        <p>
+          {{row.table.alias}}.{{row.name}}
+          <template v-if="row.alias !== row.name">
+            <em>AS</em> <b>{{row.alias}}</b>
+          </template>
+        </p>
         <p>{{row.comment}}</p>
       </template>
     </el-table-column>
@@ -35,12 +54,13 @@
 
 <script>
 import TableFieldVariableInput from "./TableFieldVariableInput.vue";
-import QueryModelFieldSelect from "../../database/query-model/FieldSelect.vue";
-import {getDefaultEmptyValue, isEmptyValue} from '../../../utils/variable'
+import QueryModelFieldSelect from "@/components/database/query-model/FieldSelect.vue";
+import SortableButton from "@/components/common/SortableButton.vue";
+import {getDefaultEmptyValue, isEmptyValue} from '@/utils/variable'
 
 export default {
   name: "QueryModelFieldSetting",
-  components: {QueryModelFieldSelect, TableFieldVariableInput },
+  components: {SortableButton, QueryModelFieldSelect, TableFieldVariableInput },
   props: {
     valueKey: {
       default: 'value'
@@ -63,6 +83,11 @@ export default {
     }
   },
   methods: {
+    // 处理排序
+    handleSort () {
+      this.initSelectedFields()
+      this.emitChange()
+    },
     // 初始化字段选择
     initSelectedFields () {
       this.selectedFields = []
@@ -117,6 +142,12 @@ h5 {
   :deep(.required) {
     color: var(--el-color-danger);
     margin-right: 2px;
+    font-style: normal;
+  }
+  // 关键字
+  :deep(em) {
+    color: var(--primary-color-match-2);
+    font-weight: bold;
     font-style: normal;
   }
 }
