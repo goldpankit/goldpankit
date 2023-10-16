@@ -30,8 +30,6 @@ export default {
               datalist.splice(oldIndex, 1)
               datalist.splice(newIndex, 0, originRow)
             }
-            // console.log('datalist', datalist)
-            // const newList = datalist.slice(0)
             params.value.onChange(datalist)
           }
         })

@@ -104,7 +104,9 @@ export default {
     modelValue: {
       immediate: true,
       handler () {
-        this.selectedFields = this.__getSelectedFieldsObjects(this.modelValue)
+        // 此处给this.selectedFields赋值，不能修改引用地址，否则排序后无法获取到最新排序内容
+        this.selectedFields.splice(0, this.selectedFields.length)
+        this.selectedFields.push.apply(this.selectedFields, this.__getSelectedFieldsObjects(this.modelValue))
       }
     },
   },
@@ -114,6 +116,7 @@ export default {
       this.$emit('update:modelValue', this.selectedFields.map(field => {
         return `${field.table.id}.${field.name}`
       }))
+      console.log('排序后', JSON.parse(JSON.stringify(this.selectedFields)))
       this.$emit('fields:change', this.selectedFields)
     },
     // 全选
