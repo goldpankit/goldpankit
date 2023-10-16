@@ -777,7 +777,7 @@ class Kit {
    */
   #getQueryModelStatement (variable, model, mainTable, joins) {
     const statement = {
-      from: `FROM ${mainTable.name} ${mainTable.alias}`,
+      from: `FROM \`${mainTable.name}\` \`${mainTable.alias}\``,
       joins: this.#getJoinSQL(mainTable, joins, ''),
     }
     // 虚拟表from语句为空
