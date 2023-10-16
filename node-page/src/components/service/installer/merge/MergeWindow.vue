@@ -5,6 +5,7 @@
     v-model="visible"
     fullscreen
     append-to-body
+    :destroy-on-close="true"
     :close-on-press-escape="false"
     :show-close="false"
   >
