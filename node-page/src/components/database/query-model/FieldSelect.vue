@@ -10,18 +10,28 @@
       <template #reference>
         <ul
           class="selected-preview"
+          :class="{'is-focus': focused}"
           v-sortable:config="{
             data: selectedFields,
             onChange: handleFieldSorted
-          }">
+          }"
+          @click="focus"
+        >
+          <li v-if="selectedFields.length === 0" class="placeholder">请选择</li>
           <li
+            v-else
             v-for="field of selectedFields"
             :key="field.name"
             :class="{ 'field-light': currentHoverTable != null && field.table.id === currentHoverTable.id }"
             @mouseenter="handleFieldEnter(field)"
             @mouseleave="handleFieldLeave"
           >
-            <p>{{field.table.alias}}.{{field.name}}</p>
+            <p>
+              {{field.table.alias}}.{{field.name}}
+              <template v-if="field.alias !== field.name">
+                <em>AS</em> <b>{{field.alias}}</b>
+              </template>
+            </p>
             <p v-if="field.comment != null && field.comment !== ''">{{field.comment}}</p>
           </li>
         </ul>
@@ -55,7 +65,12 @@
                     :label="`${table.id}.${field.name}`"
                     :key="field.name"
                   >
-                    <p>{{field.name}}</p>
+                    <p>
+                      {{field.name}}
+                      <template v-if="field.alias !== field.name">
+                        <em>AS</em> <b>{{field.alias}}</b>
+                      </template>
+                    </p>
                     <p v-if="field.comment !== ''" class="text-info-1">{{field.comment}}</p>
                   </el-checkbox>
                 </el-checkbox-group>
@@ -82,6 +97,8 @@ export default {
   },
   data () {
     return {
+      // 是否聚焦
+      focused: false,
       // 表
       tables: [],
       // 已选中的字段
@@ -111,12 +128,15 @@ export default {
     },
   },
   methods: {
+    // 聚焦选择
+    focus () {
+      this.focused = true
+    },
     // 处理字段排序
     handleFieldSorted () {
       this.$emit('update:modelValue', this.selectedFields.map(field => {
         return `${field.table.id}.${field.name}`
       }))
-      console.log('排序后', JSON.parse(JSON.stringify(this.selectedFields)))
       this.$emit('fields:change', this.selectedFields)
     },
     // 全选
@@ -172,6 +192,7 @@ export default {
     },
     // 关闭选择
     close () {
+      this.focused = false
       this.handleTableLeave()
       this.handleFieldLeave()
     },
@@ -226,7 +247,14 @@ export default {
     background-color: var(--color-light);
     display: flex;
     flex-wrap: wrap;
-    padding: 5px 5px 0 5px;
+    padding: 5px 10px 0 10px;
+    transition: border-color ease .15s;
+    &:hover {
+      border-color: var(--input-border-hover-color);
+    }
+    &.is-focus {
+      border-color: var(--input-border-color);
+    }
     li {
       height: initial;
       line-height: initial;
@@ -240,11 +268,24 @@ export default {
       &:hover {
         background-color: var(--primary-color-match-1-transition);
       }
+      // 占位字符
+      &.placeholder {
+        color: var(--color-gray);
+        background-color: transparent;
+        padding: 5px 0;
+        font-size: var(--font-size);
+      }
       // 字段悬浮
       &.field-light {
         transition: all ease .15s;
         animation: shine 0.3s 3;
         background-color: var(--primary-color-match-1-transition);
+      }
+      // 关键字
+      em {
+        color: var(--primary-color-match-2);
+        font-weight: bold;
+        font-style: normal;
       }
     }
   }
@@ -376,6 +417,11 @@ export default {
                     margin-top: 3px;
                     color: var(--color-gray);
                   }
+                }
+                em {
+                  color: var(--primary-color-match-2);
+                  font-weight: bold;
+                  font-style: normal;
                 }
               }
             }
