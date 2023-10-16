@@ -331,7 +331,8 @@ export default {
         defaultValue: 'Default Value',
         required: 'Required',
         hidden: 'Hidden',
-        compiler: 'Compiler'
+        compiler: 'Compiler',
+        optionSettings: 'Option Settings'
       },
       file: {
         filterKeyword: 'Filter keyword',

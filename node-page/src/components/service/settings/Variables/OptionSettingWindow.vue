@@ -1,25 +1,25 @@
 <template>
   <el-dialog
     v-model="visible"
-    title="Option Settings"
+    :title="$t('service.settings.variable.optionSettings')"
     append-to-body
     custom-class="option-setting-window"
   >
     <div class="toolbar">
-      <el-button icon="Plus" type="primary" @click="add">Add</el-button>
+      <el-button icon="Plus" type="primary" @click="add">{{$t('common.add')}}</el-button>
     </div>
     <el-table :data="option.settings">
-      <el-table-column prop="label" label="Label">
+      <el-table-column prop="label" :label="$t('service.settings.variable.label')">
         <template #default="{row}">
           <el-input v-model="row.label" @input="emitChange"/>
         </template>
       </el-table-column>
-      <el-table-column prop="name" label="Name">
+      <el-table-column prop="name" :label="$t('service.settings.variable.name')">
         <template #default="{row}">
           <el-input v-model="row.name" @input="emitChange"/>
         </template>
       </el-table-column>
-      <el-table-column prop="inputType" label="Input Type">
+      <el-table-column prop="inputType" :label="$t('service.settings.variable.inputType')">
         <template #default="{row}">
           <el-select v-model="row.inputType" @change="emitChange">
             <el-option value="input" label="Input"/>
@@ -28,12 +28,12 @@
           </el-select>
         </template>
       </el-table-column>
-      <el-table-column prop="required" label="Input Type">
+      <el-table-column prop="required" :label="$t('service.settings.variable.required')">
         <template #default="{row}">
           <el-switch v-model="row.required"></el-switch>
         </template>
       </el-table-column>
-      <el-table-column prop="defaultValue" label="Default Value">
+      <el-table-column prop="defaultValue" :label="$t('service.settings.variable.defaultValue')">
         <template #default="{row}">
           <OptionValueInput :option-setting="row" v-model="row.defaultValue" @input="emitChange"/>
         </template>

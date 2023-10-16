@@ -336,7 +336,8 @@ export default {
         defaultValue: '默认值',
         required: '是否必填',
         hidden: '是否隐藏',
-        compiler: '编译器'
+        compiler: '编译器',
+        optionSettings: '选项设置'
       },
       // 文件
       file: {
