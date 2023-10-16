@@ -33,7 +33,7 @@
             :label="setting.label"
             :required="setting.required"
           >
-            <OptionValueInput v-model="setting.value" :option-setting="setting" @input="$emit('change')"/>
+            <OptionValueInput v-model="modelValue.settings[setting.name]" :option-setting="setting" @input="$emit('change')"/>
           </el-form-item>
         </el-form>
       </el-dialog>

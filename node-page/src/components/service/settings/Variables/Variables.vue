@@ -485,7 +485,7 @@ export default {
         copyVariable.options.forEach(option => {
           option.settings = option.settings.filter(sett => sett.name.trim() !== '' && sett.label.trim() !== '')
         })
-        // 3. settings中的每一项选项配置都存在value字段，用于存储正式用户填充的配置值，当此处作为选项存储，无需存储value字段，所以在此需要进行删除
+        // 3. settings中的每一项选项配置都存在value字段，用于存储正式用户填充的配置值，但此处作为选项存储，无需存储value字段，所以在此需要进行删除
         copyVariable.options.forEach(option => {
           option.settings.forEach(sett => {
             delete sett.value
