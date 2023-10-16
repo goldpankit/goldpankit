@@ -110,6 +110,7 @@ export default {
           { name: 'statement', enRemark: '', zhRemark: '各个部分的SQL语句', demo: '' },
           { name: 'statement.joins', enRemark: '', zhRemark: '查询模型的join语句', demo: '<#list myModel.statement.joins as joinLine>\n${joinLine}\n</#list>\n => INNER JOIN USER `user` ON `user`.`id` = `test.`field`\nINNER JOIN USER `user` ON `test`.`field` = `test2.`field2`' },
           { name: 'statement.from', enRemark: '', zhRemark: '查询模型的from语句', demo: '${myModel.statement.from}\n => FROM USER `user`' },
+          { name: 'statement.字段变量组', enRemark: '', zhRemark: '查询模型的字段变量组选中的字段语句', demo: '例如为模型添加了"查询条件"字段变量组"queryFields"，则可以使用\n<#list myModel.statement.queryFields as statement>\n  ${statement}\n</#list>\n来读取字段语句' },
           { name: 'joins', enRemark: '', zhRemark: '关联信息', demo: '<#list myModel.joins as join>\n${join.joinType}\n</#list>' },
           { name: 'joins.table', enRemark: '', zhRemark: '左表', demo: '<#list myModel.joins as join>\n${join.table.alias}\n</#list>' },
           { name: 'joins.targetTable', enRemark: '', zhRemark: '右表', demo: '<#list myModel.joins as join>\n${join.targetTable.alias}\n</#list>' },
