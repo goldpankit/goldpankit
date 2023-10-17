@@ -87,7 +87,7 @@
     <DynamicWidthInput v-model="table.alias" @change="handleChange"/>
   </SQLLine>
   <!-- JOIN语句 -->
-  <SQLJoin :joins="joins" :table="table"/>
+  <SQLJoin :joins="joins" :table="table" @change="handleChange"/>
 </template>
 
 <script>

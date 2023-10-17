@@ -78,7 +78,7 @@ export default {
   methods: {
     // 修改设置
     handleChange () {
-      this.$emit('field:change')
+      this.$emit('change')
     },
   }
 }

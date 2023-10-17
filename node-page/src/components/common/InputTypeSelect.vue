@@ -6,6 +6,7 @@
     <el-option value="select" label="Select"/>
     <el-option value="checkbox" label="Checkbox"/>
     <el-option value="radio" label="Radio"/>
+    <el-option value="switch" label="Switch"/>
     <template v-if="!withGroup">
       <el-option value="datasource" label="Data Source"/>
       <el-option value="table" label="Table"/>

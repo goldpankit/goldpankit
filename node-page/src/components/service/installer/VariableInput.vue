@@ -6,7 +6,7 @@
       @input="$emit('change', $event)"
     />
     <InstallNumberInput
-      v-if="variable.inputType === 'number_input'"
+      v-else-if="variable.inputType === 'number_input'"
       v-model="variable[valueKey]"
       @input="$emit('change', $event)"
     />
@@ -33,6 +33,11 @@
       v-model="variable[valueKey]"
       :options="variable.options"
       @change="$emit('change', $event)"
+    />
+    <InstallSwitch
+      v-else-if="variable.inputType === 'switch'"
+      v-model="variable[valueKey]"
+      @input="$emit('change', $event)"
     />
     <DataSourceSelect
       v-else-if="variable.inputType === 'datasource'"
@@ -67,12 +72,21 @@ import QueryModelSelect from "../../database/query-model/QueryModelSelect.vue";
 import DataSourceSelect from "../../database/DataSourceSelect.vue";
 import InstallSelect from "./Select.vue";
 import InstallNumberInput from "./NumberInput.vue";
+import InstallSwitch from "./Switch.vue";
 
 export default {
   name: "VariableInput",
   components: {
     InstallNumberInput,
-    InstallSelect, DataSourceSelect, QueryModelSelect, TableSelect, InstallCheckbox, InstallRadio, InstallInput},
+    InstallSelect,
+    DataSourceSelect,
+    QueryModelSelect,
+    TableSelect,
+    InstallCheckbox,
+    InstallRadio,
+    InstallInput,
+    InstallSwitch
+  },
   props: {
     // 当前变量
     variable: {

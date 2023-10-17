@@ -40,6 +40,12 @@
     @update:modelValue="$emit('update:modelValue', $event)"
     @change="$emit('change', $event)"
   />
+  <InstallSwitch
+    v-else-if="variable.inputType === 'switch'"
+    :model-value="modelValue"
+    @update:modelValue="$emit('update:modelValue', $event)"
+    @change="$emit('change', $event)"
+  />
 </template>
 
 <script>
@@ -48,10 +54,18 @@ import InstallRadio from "./Radio.vue";
 import InstallCheckbox from "./Checkbox.vue";
 import InstallSelect from "./Select.vue";
 import InstallNumberInput from "./NumberInput.vue";
+import InstallSwitch from "@/components/service/installer/Switch.vue";
 
 export default {
   name: "TableFieldVariableInput",
-  components: {InstallNumberInput, InstallSelect, InstallCheckbox, InstallRadio, InstallInput},
+  components: {
+    InstallSwitch,
+    InstallNumberInput,
+    InstallSelect,
+    InstallCheckbox,
+    InstallRadio,
+    InstallInput
+  },
   props: {
     modelValue: {},
     variable: {
