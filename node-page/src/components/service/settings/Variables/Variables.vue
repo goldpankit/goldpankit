@@ -161,7 +161,7 @@ export default {
         this.currentGroup = null
         this.currentRootVariable = null
         /**
-         * 填充当前根变量和组
+         * 选中字段变量：填充当前根变量和组
          * 当层级大于2时，根变量只可能是查询模型或表变量，此时选中节点的上一级为组，上上级为根变量
          */
         if (node.level > 2) {
@@ -177,12 +177,10 @@ export default {
          */
         else if (node.level > 1) {
           this.currentRootVariable = node.parent.data
-          if (node.parent.data.type === 'group') {
-            this.currentGroup = node.parent.data
-          }
+          this.currentGroup = node.parent.data
         }
         /**
-         * 填充当前根变量和组
+         * 填充当前根变量
          * 只有一级时，当前这级为根变量，不存在组
          */
         else {
@@ -200,12 +198,12 @@ export default {
       }
       // 为查询模型添加模型字段作用域变量
       if (variable.inputType === 'query_model') {
-        this.createGroup(variable,'query_model_field')
+        this.createGroup(variable, [])
         return
       }
       // 为表添加表字段作用域变量
       if (variable.inputType === 'table') {
-        this.createGroup(variable,'table_field')
+        this.createGroup(variable, [])
       }
     },
     // 添加变量
@@ -232,14 +230,15 @@ export default {
       this.saveVariables()
     },
     // 添加变量组
-    createGroup (variable) {
+    createGroup (variable, defaultValue) {
       const groupName = this.__generateGroupName()
       const newGroup = {
         id: generateId(),
         type: 'group',
         name: groupName,
         label: groupName,
-        children: []
+        children: [],
+        defaultValue
       }
       if (variable == null) {
         this.variables.push(newGroup)
@@ -306,8 +305,11 @@ export default {
            * 需要将字段变量组的默认值中的字段变量值给删除
            */
           if (this.currentRootVariable !== this.currentVariable &&
-            (this.currentRootVariable.inputType === 'query_model' ||
-              this.currentRootVariable.inputType === 'table')
+            (
+              this.currentRootVariable.inputType === 'query_model' ||
+              this.currentRootVariable.inputType === 'table'
+            ) &&
+            this.currentGroup != null
           ) {
             // 将变量从组中移除
             const index = this.currentGroup.children.findIndex(v => v.id === this.currentVariable.id)
@@ -356,7 +358,11 @@ export default {
           this.currentVariable = null
           this.saveVariables()
         })
-        .catch(() => {})
+        .catch(e => {
+          if (e !== 'cancel') {
+            throw new Error(e)
+          }
+        })
     },
     handleDragStart (node) {
       this.dragData.target = node.data
