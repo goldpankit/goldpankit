@@ -223,13 +223,18 @@ export default {
           const fieldName = name.split('.')[1]
           // 找到字段所在的表
           const table = this.model.tables.find(t => t.id === tableId)
-          const tableDump = JSON.parse(JSON.stringify(table))
           // 找到字段
           const field = table.fields.find(field => field.name === fieldName)
+          if (field == null) {
+            return null
+          }
+          // 拷贝表和字段（此处需保证每次选择的都是独立的字段和表信息，防止数据污染导致莫名其妙的BUG）
+          const tableDump = JSON.parse(JSON.stringify(table))
+          const fieldDump = JSON.parse(JSON.stringify(field))
           // 填充表信息（表信息中不要再包含字段信息，避免数据循环依赖）
           delete tableDump.fields
-          field.table = tableDump
-          return field
+          fieldDump.table = tableDump
+          return fieldDump
         })
         // 过滤掉未找到的对象
         .filter(field => field != null)

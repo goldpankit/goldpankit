@@ -98,6 +98,8 @@ export default {
     },
     // 字段选择
     handleSelect (fields) {
+      // 补充好信息后的字段列表，注意此处不能直接使用fields，否则会丢失补充的信息
+      const paddingFields = []
       for (const field of fields) {
         // 增加字段原始信息
         if (field.origin == null) {
@@ -110,8 +112,11 @@ export default {
             field[variable.name] = getDefaultEmptyValue(variable.inputType)
           }
         }
+        paddingFields.push(field)
       }
-      this.group[this.valueKey] = fields
+      // 此处不能直接复制，需要保留引用，避免排序不生效
+      this.group[this.valueKey].splice(0, this.group[this.valueKey].length)
+      this.group[this.valueKey].push.apply(this.group[this.valueKey], paddingFields)
       this.emitChange()
     },
     // 出发变更事件
