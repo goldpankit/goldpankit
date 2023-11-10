@@ -347,6 +347,11 @@ export default {
           }
           // 获取指令
           const directive = getDirective(data.answer)
+          if (directive == null) {
+            chatMessage.content = `暂时无法理解您的需求`
+            this.output(chatMessage)
+            return
+          }
           console.log('AI获取指令回答', data.answer)
           console.log('获取到指令', directive)
           chatMessage.content = `执行指令 ${directive.title}`

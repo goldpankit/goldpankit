@@ -6,12 +6,14 @@ import store from '../../store/index.js'
 /**
  * 创建项目
  */
-export function createProject ({ projectName, projectRemark }) {
+export function exec ({ projectName, projectRemark }) {
   return fetchRuntimeRoot()
     .then(data => {
+      const codespacePaths = path.split(data).filter(item => item !== '')
+      codespacePaths.push(projectName)
       const newProject = {
         name: projectName,
-        codespace: path.join(path.split(data).filter(item => item !== '')),
+        codespace: path.join(codespacePaths),
         remark: projectRemark
       }
       return create(newProject)
