@@ -34,7 +34,7 @@
 import {search} from "@/api/user.project";
 import DirectorySelect from "@/components/common/DirectorySelect.vue";
 import OperaProjectWindow from "./OperaProjectWindow.vue";
-import {mapMutations} from "vuex";
+import {mapMutations, mapState} from "vuex";
 import {getLimitString} from "@/utils/util";
 
 export default {
@@ -52,6 +52,14 @@ export default {
   data () {
     return {
       list: []
+    }
+  },
+  computed: {
+    ...mapState(['currentProject'])
+  },
+  watch: {
+    currentProject () {
+      this.fetchList()
     }
   },
   methods: {
