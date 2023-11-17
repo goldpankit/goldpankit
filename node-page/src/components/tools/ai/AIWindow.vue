@@ -78,15 +78,6 @@
         </li>
       </ul>
       <div class="input-wrap">
-        <div class="mode-select">
-          <el-switch
-            v-model="mode"
-            inactive-value="qa"
-            active-value="helper"
-            inactive-text="问答模式"
-            active-text="助手模式"
-          />
-        </div>
         <el-input ref="messageInput" v-model="message" type="textarea" :rows="5" @keydown="handleKeydown" :placeholder="$t('tool.ai.inputTip')"/>
         <el-button v-if="userInfo == null" type="primary" @click="navigateToLogin">请登录</el-button>
         <el-button
@@ -110,7 +101,6 @@ import SessionList from "./SessionList.vue";
 import ParameterSettings from "./ParameterSettings.vue";
 import dayjs from "dayjs";
 import MarkdownEditor from "../../common/MarkdownEditor.vue";
-import {getDirective, exec, generateDirectiveQuestion} from "@/ai";
 
 export default {
   name: "AIWindow",
@@ -121,8 +111,6 @@ export default {
       message: '',
       currentTitle: '',
       messages: [],
-      // 模式
-      mode: 'helper',
       // 当前会话
       currentSession: null,
       // 配置
@@ -204,13 +192,31 @@ export default {
       this.__scrollToBottom()
       // 调用AI
       this.message = ''
-      // 问答模式
-      if (this.mode === 'qa') {
-        this.__AskAiByQA(session, chatMessage, message)
-        return
-      }
-      // 助手模式
-      this.__AskAiByHelper(session, chatMessage, message)
+      askAi({
+        ...this.aiParam,
+        sessionId: session.id,
+        sessionDate: session.id == null ? session.title : null,
+        message
+      })
+        .then(data => {
+          chatMessage.loading = false
+          // 失败
+          if (!data.success) {
+            chatMessage.content = data.errorMessage + '\n' + this.$t('tool.ai.errorDeductedTip')
+            this.output(chatMessage)
+            return
+          }
+          // 成功
+          chatMessage.content = data.answer
+          this.output(chatMessage)
+          this.refreshBalance()
+          session.count ++
+        })
+        .catch(e => {
+          chatMessage.loading = false
+          chatMessage.content = e.message + '\n' + this.$t('tool.ai.errorDeductedTip')
+          this.output(chatMessage)
+        })
     },
     // 处理会话切换
     handleSessionChange (session) {
@@ -298,111 +304,6 @@ export default {
         this.config.autoScroll = false
       }
     },
-    // 问答模式
-    __AskAiByQA (session, chatMessage, message) {
-      askAi({
-        ...this.aiParam,
-        sessionId: session.id,
-        sessionDate: session.id == null ? session.title : null,
-        message: message
-      })
-        .then(data => {
-          chatMessage.loading = false
-          // 失败
-          if (!data.success) {
-            chatMessage.content = data.errorMessage + '\n' + this.$t('tool.ai.errorDeductedTip')
-            this.output(chatMessage)
-            return
-          }
-          // 成功
-          chatMessage.content = data.answer
-          this.output(chatMessage)
-          this.refreshBalance()
-          session.count ++
-        })
-        .catch(e => {
-          chatMessage.loading = false
-          chatMessage.content = e.message + '\n' + this.$t('tool.ai.errorDeductedTip')
-          this.output(chatMessage)
-        })
-    },
-    // 助手模式
-    __AskAiByHelper (session, chatMessage, message) {
-      askAi({
-        mode: 'gpt-3.5-turbo',
-        temperature: 0.2,
-        frequencyPenalty: 0.8,
-        presencePenalty: 0.6,
-        sessionId: session.id,
-        sessionDate: session.id == null ? session.title : null,
-        message: generateDirectiveQuestion(message)
-      })
-        .then(data => {
-          chatMessage.loading = false
-          // 失败
-          if (!data.success) {
-            chatMessage.content = data.errorMessage + '\n' + this.$t('tool.ai.errorDeductedTip')
-            this.output(chatMessage)
-            return
-          }
-          // 获取指令
-          const directive = getDirective(data.answer)
-          if (directive == null) {
-            chatMessage.content = `暂时无法理解您的需求`
-            this.output(chatMessage)
-            return
-          }
-          console.log('AI获取指令回答', data.answer)
-          console.log('获取到指令', directive)
-          chatMessage.content = `执行指令 ${directive.title}`
-          this.output(chatMessage)
-          // 有参指令
-          if (directive.getParamsQuestion) {
-            askAi({
-              mode: 'gpt-3.5-turbo',
-              temperature: 0.2,
-              frequencyPenalty: 0.8,
-              presencePenalty: 0.6,
-              sessionId: session.id,
-              sessionDate: session.id == null ? session.title : null,
-              message: `${directive.getParamsQuestion}"${message}"`
-            })
-              .then(res => {
-                chatMessage.content = `获取到${directive.title}参数：${res.answer}`
-                directive.params = directive.answerHandler(res.answer)
-                if (directive.params == null) {
-                  chatMessage.content = `我无法为您${directive.title}，您提供的信息不全。您可以进一步详细说明，如"${directive.eg}"。`
-                  this.output(chatMessage)
-                  return
-                }
-                exec(directive)
-                  .then(msg => {
-                    chatMessage.content = msg
-                    this.output(chatMessage)
-                  })
-              })
-              .catch(e => {
-                this.$tip.apiFailed(e)
-              })
-          }
-          // 指令无参数
-          else {
-            directive.params = {}
-            exec(directive)
-             .then(msg => {
-                chatMessage.content = msg
-                this.output(chatMessage)
-              })
-          }
-          this.refreshBalance()
-          session.count ++
-        })
-        .catch(e => {
-          chatMessage.loading = false
-          chatMessage.content = e.message + '\n' + this.$t('tool.ai.errorDeductedTip')
-          this.output(chatMessage)
-        })
-    },
     // 滚动到底部
     __scrollToBottom () {
       if (this.config.autoScroll) {
@@ -462,7 +363,7 @@ export default {
   overflow: hidden;
   &.editable {
     .message-list {
-      padding-bottom: 210px;
+      padding-bottom: 180px;
     }
     .input-wrap {
       display: block;

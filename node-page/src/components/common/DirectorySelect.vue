@@ -46,6 +46,7 @@
                   placeholder="unknown directory"
                   @input="checkFilename(file)"
                   @keypress.enter="confirmCreateDirectory(file)"
+                  @change.native="stopPropagation"
                 />
                 <el-button type="primary" class="button-icon" icon="Select" :disabled="!file.__creatable || file.__working_create" @click="confirmCreateDirectory(file)"></el-button>
                 <el-button icon="Close" class="button-icon" @click="cancelCreateDirectory(index)"></el-button>
@@ -65,7 +66,7 @@
           </template>
         </li>
       </ul>
-      <Empty v-else description="当前目录下无内容"/>
+      <Empty v-else :description="$t('common.emptyDirTip')"/>
     </div>
   </div>
 </template>
@@ -256,6 +257,10 @@ export default {
         this.selectedFile = null
         this.paths.push(file.path)
       })
+    },
+    // 阻止input触发change事件
+    stopPropagation () {
+      window.event.stopPropagation()
     },
     // 获取文件列表
     __fetchFiles (paths, callback) {

@@ -97,6 +97,7 @@ export default {
       let promise
       // 获取插件配置
       if (this.isInitPlugin) {
+        console.log('查询插件配置', codespace)
         promise = fetchPluginConfig({codespace})
       }
       // 获取服务配置

@@ -45,6 +45,7 @@ export default {
     confirmAdd: '确认添加',
     currentSelect: '当前选择',
     importantTip: '重要提示',
+    emptyDirTip: '当前目录下无内容',
     // 模态框
     modal: {
       confirmDelete: '确认删除',
