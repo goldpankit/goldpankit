@@ -23,7 +23,7 @@ module.exports = {
             port: database.port,
             user: database.username,
             password: database.password,
-            database: database.schema
+            //database: database.schema
           }, build.content)
         }
         // 执行Node命令

@@ -243,9 +243,6 @@ module.exports = {
       if (ignoreInstance.ignores(file)) {
         return
       }
-      if (fullpath.indexOf('target') !== -1) {
-        console.log(file + '忽略否？' + ignoreInstance.ignores(file + "/"))
-      }
       // 获取文件配置
       const relativePath = fs.getRelativePath(fullpath, fileStoragePath)
       const fileSettings = this.getFileSetting(codespace, relativePath)
