@@ -46,6 +46,7 @@ export default {
     currentSelect: '当前选择',
     importantTip: '重要提示',
     emptyDirTip: '当前目录下无内容',
+    compileSuccessfully: '编译成功',
     // 模态框
     modal: {
       confirmDelete: '确认删除',

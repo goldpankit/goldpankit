@@ -100,8 +100,8 @@ module.exports = {
   TRANSLATOR: {
     DEFAULT_OUTPUT_PATH: path.join(`.${PROJECT_NAME}`, 'translated')
   },
-  // 监听、推送服务文件时忽略的目录
-  IGNORE_DIRS: ['.kit', '.DS_Store',`.${PROJECT_NAME}`, '.idea', '.vscode', 'node_modules', '.git', '.github'],
+  // 读取文件时忽略掉的文件和目录，除此之外，还会进一步忽略项目中.gitignore中的文件配置
+  IGNORE_FILES: ['.DS_Store',`.${PROJECT_NAME}`, '.idea', '.vscode', 'node_modules', '.git', '.github'],
   // 文件类型映射
   FILE_TYPE_MAP: {
     '.jpeg': 'IMAGE',

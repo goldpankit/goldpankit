@@ -2,6 +2,8 @@ const serviceConf = require('./service.config')
 const serviceFile = require('./service.file')
 const fs = require("./utils/fs");
 const path = require('path')
+const ignore = require("ignore");
+const Const = require("./constants/constants");
 
 class Translator {
     constructor() {
@@ -24,7 +26,9 @@ class Translator {
         }
         const translators = serviceConfig.translator.settings
         const targetDirectory = path.join(serviceConfig.codespace, serviceConfig.translator.output)
-        const files = fs.getFilesWithChildren(serviceConfig.codespace)
+        const ignoreInstance = ignore().add(fs.getIgnoreFileConfig(serviceConfig.codespace))
+        const files = fs.getFilesWithChildren(serviceConfig.codespace, ignoreInstance)
+        console.log('翻译files', files)
         // 删除已翻译目录
         fs.deleteDirectory(targetDirectory, true)
         // 循环文件逐个翻译

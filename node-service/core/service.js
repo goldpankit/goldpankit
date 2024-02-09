@@ -169,6 +169,7 @@ module.exports = {
       serviceTranslator.translate({ space: dto.space, service: dto.service, plugin: dto.plugin })
     }
     // 获取文件
+    const ignoreInstance = ignore().add(fs.getIgnoreFileConfig(serviceConfig.codespace))
     let files = fs.getFilesWithChildren(fileStoragePath, fileStoragePath)
     // 验证文件数量
     if (files.length > env.limitFiles) {
@@ -229,13 +230,22 @@ module.exports = {
   __getFileTree (directoryPath, fileStoragePath, codespace) {
     let filePool = []
     const files = fs.getFiles(directoryPath)
-    const ignoreInstance = ignore().add(Const.IGNORE_DIRS)
+    const ignoreInstance = ignore().add(fs.getIgnoreFileConfig(codespace))
     files.forEach(file => {
+      const fullpath = path.join(directoryPath, file)
+      // 忽略目录，目录需要在路径后增加'/'
+      if (fs.isDirectory(fullpath)) {
+        if (ignoreInstance.ignores(file + '/')) {
+          return
+        }
+      }
       // 忽略文件
       if (ignoreInstance.ignores(file)) {
         return
       }
-      const fullpath = path.join(directoryPath, file)
+      if (fullpath.indexOf('target') !== -1) {
+        console.log(file + '忽略否？' + ignoreInstance.ignores(file + "/"))
+      }
       // 获取文件配置
       const relativePath = fs.getRelativePath(fullpath, fileStoragePath)
       const fileSettings = this.getFileSetting(codespace, relativePath)

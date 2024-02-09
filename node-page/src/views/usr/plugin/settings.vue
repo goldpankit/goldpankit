@@ -224,7 +224,7 @@ export default {
       })
         .then((installData) => {
           this.setInstallData(installData)
-          this.$tip.success('Compile successfully.')
+          this.$tip.success(this.$t('common.compileSuccessfully'))
         })
         .catch(e => {
           if (e.code === 6000) {

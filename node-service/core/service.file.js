@@ -57,7 +57,12 @@ module.exports = {
     // 给出文件写入提醒
     log.success(`diff: merge ${mergeCount} files, deleted ${deletedCount} files.`)
   },
-  // 获取文件设置
+  /**
+   * 获取文件设置
+   * @param codespace 代码空间
+   * @param fileRelativePath 文件相对路径
+   * @returns {any}
+   */
   getFileSetting (codespace, fileRelativePath) {
     const configPath = serviceConf.__getConfigPath(codespace)
     const config = fs.readJSONFile(configPath)
@@ -89,5 +94,5 @@ module.exports = {
       }
     }
     return setting
-  },
+  }
 }

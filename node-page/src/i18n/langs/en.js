@@ -46,6 +46,7 @@ export default {
     currentSelect: 'Selected Directory',
     importantTip: 'Important Reminder',
     emptyDirTip: 'The current directory is empty.',
+    compileSuccessfully: 'Compile successfully.',
     // 模态框
     modal: {
       confirmDelete: 'Confirm Delete',

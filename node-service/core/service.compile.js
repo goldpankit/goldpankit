@@ -11,6 +11,7 @@ const serviceBuild = require("./service.build");
 const mysql = require("./utils/db/mysql");
 const serviceTranslator = require('./service.translator')
 const path = require('path')
+const ignore = require("ignore");
 const env = require('../env').getConfig()
 
 class Kit {
@@ -453,13 +454,16 @@ class Kit {
     let fileStoragePath = serviceConfig.codespace
     if (serviceConfig.translator.settings.length > 0) {
       fileStoragePath = path.join(fileStoragePath, serviceConfig.translator.output)
+      if (!fs.exists(fileStoragePath)) {
+        fs.createDirectory(fileStoragePath, true)
+      }
     }
-    const fullpaths = fs.getFilesWithChildren(fileStoragePath)
+    const ignoreInstance = ignore().add(fs.getIgnoreFileConfig(serviceConfig.codespace))
+    const fullpaths = fs.getFilesWithChildren(fileStoragePath, ignoreInstance)
     const configs = []
     for (const fullpath of fullpaths) {
       // 获取文件配置
       const relativePath = fs.getRelativePath(fullpath, fileStoragePath)
-      // 获取问及爱你配置，需使用service配置中的codespace
       const fileSettings = service.getFileSetting(serviceConfig.codespace, relativePath)
       // 构建文件对象
       const isDirectory = fs.isDirectory(fullpath)

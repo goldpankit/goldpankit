@@ -159,22 +159,39 @@ module.exports = {
     }
     return diffFiles
   },
-  // 获取文件和子文件
-  getFilesWithChildren (absolutePath) {
+  /**
+   * 获取文件和子文件
+   * @param absolutePath 绝对路径
+   * @param ignoreInstance 文件忽略处理对象
+   * @returns {*[]}
+   */
+  getFilesWithChildren (absolutePath, ignoreInstance = null) {
     let filePool = [];
     const files = fs.readdirSync(absolutePath);
-    const ignoreInstance = ignore().add(Const.IGNORE_DIRS)
     files.forEach(file => {
+      const fullpath = path.join(absolutePath, file)
+      const fixedIgnoreInstance = ignore().add(Const.IGNORE_FILES)
+      // 忽略目录，目录需要在路径后增加'/'
+      if (this.isDirectory(fullpath)) {
+        if (fixedIgnoreInstance.ignores(file + '/')) {
+          return
+        }
+        if (ignoreInstance != null && ignoreInstance.ignores(file + '/')) {
+          return
+        }
+      }
       // 忽略文件
-      if (ignoreInstance.ignores(file)) {
+      if (fixedIgnoreInstance.ignores(file)) {
+        return
+      }
+      if (ignoreInstance != null && ignoreInstance.ignores(file)) {
         return
       }
       // 全路径
-      const fullpath = path.join(absolutePath, file)
       filePool.push(fullpath);
       if (this.isDirectory(fullpath)) {
-        const subfiles = this.getFilesWithChildren(fullpath);
-        filePool = filePool.concat(subfiles);
+        const subFiles = this.getFilesWithChildren(fullpath, ignoreInstance);
+        filePool = filePool.concat(subFiles);
       }
     })
     return filePool
@@ -286,5 +303,17 @@ module.exports = {
   // 转换为linux路径风格
   toLinuxPath (path) {
     return path.replace(/\\/g, '/')
+  },
+  /**
+   * 获取忽略文件列表
+   * @param codespace 代码空间
+   */
+  getIgnoreFileConfig (codespace) {
+    // 直接读取.gitignore文件路径
+    const ignoreFileConfigPath = path.join(codespace, '.gitignore')
+    if (this.exists(ignoreFileConfigPath)) {
+      return this.readFile(ignoreFileConfigPath).content
+    }
+    return ''
   }
 }
