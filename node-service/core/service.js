@@ -170,7 +170,7 @@ module.exports = {
     }
     // 获取文件
     const ignoreInstance = ignore().add(fs.getIgnoreFileConfig(serviceConfig.codespace))
-    let files = fs.getFilesWithChildren(fileStoragePath, fileStoragePath)
+    let files = fs.getFilesWithChildren(fileStoragePath, ignoreInstance)
     // 验证文件数量
     if (files.length > env.limitFiles) {
       return Promise.reject(`The number of files exceeds the limit of ${env.limitFiles}.`)

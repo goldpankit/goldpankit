@@ -120,8 +120,8 @@ import {
   initialize as initPlugin,
   saveConfig as savePluginConfig
 } from "@/api/plugin";
-import {gitClone} from "../../../api/service";
-import {checkVersionNumber} from "../../../utils/form.check";
+import {gitClone} from "@/api/service";
+import {checkVersionNumber} from "@/utils/form.check";
 
 export default {
   name: "BasicSetting",

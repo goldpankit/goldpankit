@@ -214,6 +214,10 @@ export default {
         font-weight: bold;
         color: var(--primary-color-match-2);
         margin-right: 10px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        word-wrap: break-word;
+        white-space: nowrap;
       }
       .type {
         width: 100px;
