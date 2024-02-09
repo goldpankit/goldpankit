@@ -480,6 +480,9 @@ export default {
       h4 {
         margin-bottom: 10px;
       }
+      .el-button {
+        margin-top: 10px;
+      }
     }
   }
   .table-library {

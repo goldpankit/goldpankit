@@ -24,14 +24,15 @@
       <el-form-item :label="$t('database.port')" prop="port" required>
         <el-input v-model="form.port"/>
       </el-form-item>
-      <el-form-item :label="$t('database.schema')" prop="schema" required>
-        <el-input v-model="form.schema"/>
-      </el-form-item>
       <el-form-item :label="$t('database.username')" prop="username" required>
         <el-input v-model="form.username"/>
       </el-form-item>
       <el-form-item :label="$t('database.password')" prop="password" required>
         <el-input type="password" v-model="form.password" show-password/>
+      </el-form-item>
+      <el-form-item :label="$t('database.schema')" prop="schema" required>
+        <el-input v-model="form.schema"/>
+        <FormItemTip content="测试连接时不会验证库是否存在！" />
       </el-form-item>
       <el-form-item v-if="form.type === 'mysql'" label="URL" class="item-url">
         <template #label>
@@ -55,15 +56,16 @@
 
 <script>
 import DatabaseTypeSelect from "./DatabaseTypeSelect.vue";
-import {testConnect} from "../../api/database.util";
-import {create, updateById} from "../../api/database";
-import {trim} from "../../utils/util";
-import {strictCopy} from "../../utils/object";
-import FormTip from "../common/FormTip.vue";
+import FormTip from "@/components/common/FormTip.vue";
+import {testConnect} from "@/api/database.util";
+import {create, updateById} from "@/api/database";
+import {trim} from "@/utils/util";
+import {strictCopy} from "@/utils/object";
+import FormItemTip from "@/components/common/FormItemTip.vue";
 
 export default {
   name: "OperaDataSourceWindow",
-  components: {FormTip, DatabaseTypeSelect},
+  components: {FormItemTip, FormTip, DatabaseTypeSelect},
   data () {
     return {
       visible: false,
@@ -179,8 +181,7 @@ export default {
         host: form.host,
         port: form.port,
         user: form.username,
-        password: form.password,
-        database: form.schema
+        password: form.password
       })
         .then(() => {
           this.connectResult.withError = false
