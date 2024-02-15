@@ -233,7 +233,7 @@ module.exports = {
       const fullpath = path.join(directoryPath, file)
       const fixedIgnoreInstance = ignore().add(Const.IGNORE_FILES)
       // 忽略目录，目录需要在路径后增加'/'
-      if (this.isDirectory(fullpath)) {
+      if (fs.isDirectory(fullpath)) {
         if (fixedIgnoreInstance.ignores(file + '/')) {
           return
         }
