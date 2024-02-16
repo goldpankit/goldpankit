@@ -23,7 +23,8 @@ module.exports = {
             port: database.port,
             user: database.username,
             password: database.password,
-            //database: database.schema
+            // 不指定数据库，以允许脚本创建数据库
+            // database: database.schema
           }, build.content)
         }
         // 执行Node命令
