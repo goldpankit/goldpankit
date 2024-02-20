@@ -87,11 +87,19 @@ class DiffExpress {
       const normalizedExpress = this.#normalizeExpress(express)
       // 如果内容为空，视为合并失败，返回表达式本身
       if (content == null || content === '') {
-        return normalizedExpress
+        return {
+          success: false,
+          errorExpress: normalizedExpress,
+          content: normalizedExpress
+        }
       }
       // 如果不是正确的表达式，视为不应合并，返回内容本身
       if (!this.isDiffEllipsis(normalizedExpress)) {
-        return content
+        return {
+          success: false,
+          errorExpress: normalizedExpress,
+          content
+        }
       }
       const normalizedContent = this.#normalizeContent(content)
       const contentLines = this.#getLines(normalizedContent)
@@ -143,7 +151,7 @@ class DiffExpress {
         content: this.#linesToText(contentLines)
       }
     } catch (e) {
-      console.log('merge diff throw an exception', e)
+      console.log('合并文件失败', e)
       throw e
     }
   }
@@ -265,7 +273,15 @@ class DiffExpress {
      */
     const expressGroups = []
     let expressLines = []
-    for (const line of totalExpressLines) {
+    for (let line of totalExpressLines) {
+      // 表达式结束，不做处理
+      if (line.startsWith('.../')) {
+        continue
+      }
+      // /...改成...
+      if (line.startsWith('/...')) {
+        line = line.substring(1)
+      }
       if (line.startsWith('...')) {
         expressLines = []
         expressGroups.push({
