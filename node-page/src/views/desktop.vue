@@ -16,13 +16,13 @@
         </a>
       </div>
       <div class="line gap-top">
-        <router-link class="module private-services" :to="{ name: 'UserServices' }">
-          <h2>{{$t('user.leasedAndPrivateServices')}}</h2>
-          <p>{{$t('user.leasedAndPrivateServiceIntroduce')}}</p>
-        </router-link>
         <router-link class="module workbench" :to="{ name: 'Workbench' }">
           <h2>{{$t('space.workbench')}}</h2>
           <p>{{$t('space.workbenchIntroduce')}}</p>
+        </router-link>
+        <router-link :to="{ name: 'Databases' }" class="module database">
+          <h2>{{$t('database.databases')}}</h2>
+          <p>{{$t('database.databaseIntroduce')}}</p>
         </router-link>
       </div>
       <div class="line gap-top">
@@ -30,9 +30,9 @@
           <h2>{{$t('space.createNewSpace')}}</h2>
           <p>{{$t('space.createNewSpaceIntroduce')}}</p>
         </router-link>
-        <router-link :to="{ name: 'Databases' }" class="module database">
-          <h2>{{$t('database.databases')}}</h2>
-          <p>{{$t('database.databaseIntroduce')}}</p>
+        <router-link class="module private-services" :to="{ name: 'UserServices' }">
+          <h2>{{$t('user.leasedAndPrivateServices')}}</h2>
+          <p>{{$t('user.leasedAndPrivateServiceIntroduce')}}</p>
         </router-link>
       </div>
       <div class="project-wrap">
@@ -177,8 +177,7 @@ export default {
   }
   // 创建新空间
   .new-space {
-    width: 380px;
-    flex-shrink: 0;
+    flex-grow: 1;
     h2 {
       font-size: 35px;
       color: #1861ff;

@@ -23,10 +23,6 @@
       />
       <ul v-if="loading || services.length > 0" v-loading="loading" class="service-list">
         <li v-for="service in services" :key="service.id">
-          <!-- 用户信息 -->
-          <div v-if="service.user != null" class="user-profile">
-            <img :src="getAccessUri(service.user.avatar, '/images/avatar/default.png')">
-          </div>
           <!-- 服务信息 -->
           <div class="service-info">
             <ServiceTitle
@@ -185,7 +181,7 @@ export default {
       width: 100%;
       min-height: 300px;
       & > li {
-        padding: 15px 30px;
+        padding: 50px 30px;
         box-sizing: border-box;
         background-color: var(--color-light);
         display: flex;
