@@ -81,6 +81,7 @@ export default {
         return
       }
       this.loading = true
+      this.pagination.pageIndex = 1
       search({
         ...this.pagination,
         model: {
