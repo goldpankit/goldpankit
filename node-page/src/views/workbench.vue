@@ -68,7 +68,7 @@
               </template>
             </PluginList>
           </div>
-          <!-- 服务信息 -->
+          <!-- 插件信息 -->
           <div class="setting-wrap">
             <template v-if="selectedPlugin != null">
               <h3>{{selectedPlugin.label || selectedPlugin.name}}</h3>
@@ -103,25 +103,50 @@
                     />
                     <!-- 插件代码结构 -->
                     <ServiceStructureView
-                    v-show="selectedPluginDimension === 'structure'"
-                    :space="space"
-                    :service="service.name"
-                    :plugin="selectedPlugin.name"
-                    :version="selectedPlugin.lastVersion"
-                  />
+                      v-show="selectedPluginDimension === 'structure'"
+                      :space="space"
+                      :service="service.name"
+                      :plugin="selectedPlugin.name"
+                      :version="selectedPlugin.lastVersion"
+                    />
                   </div>
                 </el-scrollbar>
               </div>
               <div v-if="selectedPluginDimension === 'install'" class="opera">
-                <template v-if="installed">
+                <template v-if="userInfo == null">
                   <el-button
-                    v-if="hasNewVersion(selectedPlugin)"
                     type="primary"
                     size="large"
-                    icon="Upload"
-                    :disabled="isWorking.install"
-                    @click="install"
-                  >{{$t('service.upgrade')}}</el-button>
+                    @click="$router.push({ name: 'SignIn' })"
+                  >登录后可安装插件</el-button>
+                </template>
+                <template v-else>
+                  <template v-if="installed">
+                    <el-button
+                      v-if="hasNewVersion(selectedPlugin)"
+                      type="primary"
+                      size="large"
+                      icon="Upload"
+                      :disabled="isWorking.install"
+                      @click="install"
+                    >{{$t('service.upgrade')}}</el-button>
+                    <el-button
+                      v-else
+                      type="primary"
+                      size="large"
+                      :disabled="isWorking.install"
+                      @click="install"
+                    >
+                      {{ isWorking.install ? $t('service.installing') : $t('service.reinstall')}}
+                    </el-button>
+                    <el-button
+                      size="large"
+                      :disabled="isWorking.uninstall"
+                      @click="uninstall"
+                    >
+                      {{ isWorking.uninstall ? $t('service.uninstalling') : $t('service.uninstall')}}
+                    </el-button>
+                  </template>
                   <el-button
                     v-else
                     type="primary"
@@ -129,25 +154,9 @@
                     :disabled="isWorking.install"
                     @click="install"
                   >
-                    {{ isWorking.install ? $t('service.installing') : $t('service.reinstall')}}
-                  </el-button>
-                  <el-button
-                    size="large"
-                    :disabled="isWorking.uninstall"
-                    @click="uninstall"
-                  >
-                    {{ isWorking.uninstall ? $t('service.uninstalling') : $t('service.uninstall')}}
+                    {{ isWorking.install ? $t('service.installing') : $t('service.install')}}
                   </el-button>
                 </template>
-                <el-button
-                  v-else
-                  type="primary"
-                  size="large"
-                  :disabled="isWorking.install"
-                  @click="install"
-                >
-                  {{ isWorking.install ? $t('service.installing') : $t('service.install')}}
-                </el-button>
               </div>
               <div v-if="selectedPluginDimension === 'install'" class="opera-tip">
                 <el-icon><InfoFilled /></el-icon>
@@ -218,7 +227,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['currentProject', 'currentProjectDetail']),
+    ...mapState(['userInfo', 'currentProject', 'currentProjectDetail']),
     installed () {
       if (this.selectedPlugin == null) {
         return false

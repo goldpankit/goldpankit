@@ -17,25 +17,10 @@
           <span v-if="installed(plugin) === true">{{$t('service.installed')}}</span>
         </p>
         <p class="introduce">{{plugin.introduce}}</p>
-        <!-- 用户信息 -->
-        <div v-if="plugin.user != null" class="user-profile">
-          <img :src="getAccessUri(plugin.user.avatar, '/images/avatar/default.png')">
-          <span>{{plugin.user.username}}</span>
-        </div>
         <div class="price-wrap">
           <p class="text-info-1 text-mini">
-            <ServiceStatus :with-private="plugin.withPrivate"/>
-            |
             {{getDateOffsetText(plugin.lastPublishTime)}}
           </p>
-          <em v-if="plugin.latestLease != null">
-            {{getRemainingDay(plugin.latestLease.leaseEndTime)}} {{$t('common.days')}}
-          </em>
-          <BeanAmount
-            v-else
-            :price="plugin.price.price"
-            :type="plugin.price.leaseType"
-          />
         </div>
       </li>
     </ul>
