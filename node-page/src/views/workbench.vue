@@ -59,7 +59,7 @@
               :installed="service => {
                 return withInstalled(service)
               }"
-              @click="selectPlugin($event)"
+              @select="selectPlugin($event)"
             >
               <template #title="{plugin}">
                 {{plugin.label || plugin.name}}

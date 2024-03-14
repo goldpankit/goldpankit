@@ -5,7 +5,7 @@
         v-for="plugin in plugins"
         :key="plugin.id"
         :class="{...customClass(plugin), 'plugin-installed': installed(plugin) === true}"
-        @click.stop="$emit('click', plugin)"
+        @click.stop="$emit('select', plugin)"
       >
         <h5>
           <slot name="title" :plugin="plugin">
