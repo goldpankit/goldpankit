@@ -13,7 +13,7 @@ request
 request
   .get('/client/lang')
   .data(() => {
-    return 'zh'
+    return cache.lang.get()
   })
 
 // 修改语言

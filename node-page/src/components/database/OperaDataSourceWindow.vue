@@ -132,6 +132,7 @@ export default {
         ],
         schema: [
           { required: true, message: this.$t('form.isRequired', { value: this.$t('database.schema') }), trigger: 'blur'},
+          { pattern: /^[a-zA-Z0-9_]+$/, message: '数据库名称只能包含字母、数字和下划线', trigger: 'blur' }
         ],
         username: [
           { required: true, message: this.$t('form.isRequired', { value: this.$t('database.username') })},
