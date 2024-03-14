@@ -1,5 +1,4 @@
 <template>
-  <I18nLangSelect/>
   <template v-if="userInfo == null">
     <el-button @click="$router.push({ name: 'SignIn' })">{{$t('common.signIn')}}</el-button>
     <el-button type="important" @click="$router.push({ name: 'SignUp' })">{{$t('common.signUp')}}</el-button>

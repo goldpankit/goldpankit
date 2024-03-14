@@ -10,9 +10,6 @@
       </div>
       <ul class="opera">
         <li>
-          <DataSourceSelect :model-value="currentDatabase" @change="setCurrentDatabase"/>
-        </li>
-        <li>
           <LoginView/>
         </li>
       </ul>

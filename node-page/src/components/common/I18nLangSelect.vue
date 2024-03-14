@@ -7,7 +7,7 @@
 
 <script>
 
-import {fetchLang, saveLang} from "../../api/client";
+import {fetchLang, saveLang} from '@/api/client'
 
 export default {
   name: "I18nLangSelect",

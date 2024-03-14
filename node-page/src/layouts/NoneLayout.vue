@@ -8,11 +8,6 @@
           <em></em>
         </div>
       </div>
-      <ul class="opera">
-        <li>
-          <I18nLangSelect/>
-        </li>
-      </ul>
     </header>
     <main>
       <router-view/>
