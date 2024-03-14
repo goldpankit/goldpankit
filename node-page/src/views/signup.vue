@@ -2,42 +2,17 @@
   <div class="signup">
     <div class="wrap">
       <h2>{{ $t('common.signUp') }}</h2>
-      <el-form ref="form" :model="form" :rules="getRules()" @submit.stop>
-        <el-form-item :label="$t('user.username')" prop="username" required>
-          <el-input v-model="form.username" type="text" size="large"/>
-        </el-form-item>
-        <el-form-item :label="$t('user.password')" prop="password" required>
-          <el-input v-model="form.password" type="password" size="large"/>
-        </el-form-item>
-        <el-form-item :label="$t('user.email')" prop="otpElement" required>
-          <el-input v-model="form.otpElement" type="text" size="large">
-<!--            <template #prepend>-->
-<!--              <span>+86</span>-->
-<!--            </template>-->
-          </el-input>
-        </el-form-item>
-        <el-form-item :label="$t('user.otpCode')" prop="otpCode" required class="otp-code">
-          <div>
-            <el-input type="text" v-model="form.otpCode" size="large" maxlength="8"/>
-            <el-button
-              size="large"
-              type="primary"
-              :disabled="sendOtpCodeData.isWorking || sendOtpCodeData.timeout !== 0"
-              @click="sendOtpCode"
-            >
-              <template v-if="sendOtpCodeData.isWorking">{{$t('common.otp.sending')}}</template>
-              <template v-else-if="sendOtpCodeData.timeout === 0 && !sendOtpCodeData.sended">{{$t('common.otp.send')}}</template>
-              <template v-else-if="sendOtpCodeData.timeout === 0 && sendOtpCodeData.sended">{{$t('common.otp.resend')}}</template>
-              <template v-else>{{sendOtpCodeData.timeout}}s</template>
-            </el-button>
-          </div>
-          <p v-if="sendOtpCodeData.sended">{{$t('common.otp.sendTip', { email: form.otpElement })}}</p>
-        </el-form-item>
-      </el-form>
-      <div class="login-box">
-        <div>
-          <el-button type="important" @click="regis" :disabled="regisData.isWorking">{{$t('user.createAccount')}}</el-button>
-        </div>
+      <h3>GoldPanKit账号需要购买，请添加下方微信，我们的客服人员会为您开通账号！</h3>
+      <div class="wechat-wrap">
+        <img src="/images/wechat.png"/>
+        <span>小艺</span>
+      </div>
+      <div class="price-wrap">
+        <h4>价格套餐</h4>
+        <el-table :data="priceTableData">
+          <el-table-column align="center" prop="dayCount" label="时长"/>
+          <el-table-column align="center" prop="price" class-name="price" label="价格"/>
+        </el-table>
       </div>
     </div>
     <div class="have-an-account">
@@ -68,7 +43,12 @@ export default {
       },
       regisData: {
         isWorking: false
-      }
+      },
+      // 价格表
+      priceTableData: [
+        { dayCount: '90天', price: '299元' },
+        { dayCount: '365天', price: '799元' }
+      ]
     }
   },
   methods: {
@@ -169,35 +149,37 @@ export default {
     font-size: 30px;
     text-align: center;
   }
-  // 表单
-  .el-form {
-    .otp-code {
-      :deep(.el-form-item__content > div) {
-        width: 100%;
-        display: flex;
-      }
-      .el-button {
-        margin-left: 10px;
-        width: 145px;
-      }
-      p {
-        line-height: 20px;
-        margin-top: 5px;
-        em {
-          font-style: normal;
+  // 提示
+  h3 {
+    font-weight: normal;
+  }
+  // 微信图片
+  .wechat-wrap {
+    margin: 20px 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    img {
+      width: 255px;
+    }
+  }
+  // 价格套操
+  .price-wrap {
+    h4 {
+      text-align: center;
+      font-size: 16px;
+    }
+    ::v-deep(.el-table) {
+      tbody {
+        .cell {
+          font-size: 20px;
+        }
+        .price {
+          color: var(--primary-color-match-2);
           font-weight: bold;
         }
       }
-    }
-  }
-  .login-box {
-    margin-top: 50px;
-    .el-button {
-      width: 100%;
-      height: 55px;
-      border: 0;
-      font-weight: bold;
-      font-size: 20px;
     }
   }
 }
