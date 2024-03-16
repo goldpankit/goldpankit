@@ -29,11 +29,10 @@
           <h2>{{currentTitle}}</h2>
           <h4>{{$t('tool.ai.tipTitle')}}</h4>
           <ul>
-            <li>{{$t('tool.ai.tip1')}}</li>
             <li>{{$t('tool.ai.tip2')}}</li>
+            <li>{{$t('tool.ai.tip5')}}</li>
             <li>{{$t('tool.ai.tip3')}}</li>
             <li>{{$t('tool.ai.tip4')}}</li>
-            <li>{{$t('tool.ai.tip5')}}</li>
             <li>{{$t('tool.ai.tip7')}}</li>
           </ul>
         </li>
@@ -202,7 +201,7 @@ export default {
           chatMessage.loading = false
           // 失败
           if (!data.success) {
-            chatMessage.content = data.errorMessage + '\n' + this.$t('tool.ai.errorDeductedTip')
+            chatMessage.content = data.errorMessage
             this.output(chatMessage)
             return
           }
@@ -214,7 +213,7 @@ export default {
         })
         .catch(e => {
           chatMessage.loading = false
-          chatMessage.content = e.message + '\n' + this.$t('tool.ai.errorDeductedTip')
+          chatMessage.content = e.message
           this.output(chatMessage)
         })
     },

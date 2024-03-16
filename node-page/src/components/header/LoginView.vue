@@ -10,10 +10,6 @@
     </div>
   </template>
   <template v-else>
-    <div class="bean-wrap" @click="$router.push({ name: 'TopUpBean' })">
-      <img src="/images/bean.png">
-      <em>{{userInfo.balance.total}}</em>
-    </div>
     <div class="user-info" @click="$router.push({ name: 'Desktop'})">
       <img :src="getAccessUri(userInfo.avatar, '/images/avatar/default.png')" class="avatar"/>
     </div>
@@ -71,22 +67,8 @@ export default {
     }
   }
 }
-.bean-wrap {
-  margin-left: 30px;
-  margin-right: 30px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  img {
-    width: 20px;
-  }
-  em {
-    font-style: normal;
-    font-weight: bold;
-    margin-left: 2px;
-  }
-}
 .user-info {
+  margin-left: 30px;
   display: flex;
   flex-direction: column;
   align-items: center;
