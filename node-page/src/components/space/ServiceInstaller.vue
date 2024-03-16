@@ -684,7 +684,7 @@ export default {
         font-size: var(--font-size-title);
       }
       :deep(.el-select) {
-        width: 100px;
+        width: 135px;
         position: relative;
         left: -3px;
         .el-input__wrapper {

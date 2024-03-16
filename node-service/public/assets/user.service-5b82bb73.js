@@ -1,0 +1,1 @@
+import{y as r}from"./index-99dec0ae.js";function s(e){return r.post("/usr/service/page",e,{baseURL:"/remote-api"})}function a(e){return r.post("/usr/service/create",e,{baseURL:"/remote-api"})}function c(e){return r.post("/usr/service/delete",e)}export{a as c,c as d,s as f};

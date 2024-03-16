@@ -84,6 +84,7 @@ export default {
       img {
         height: 60%;
         object-fit: contain;
+        overflow: hidden;
       }
     }
     .file {
