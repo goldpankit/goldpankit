@@ -294,15 +294,10 @@ class Kit {
   #compile(dto) {
     return new Promise((resolve, reject) => {
       try {
-        // 获取文件列表
-        const files = this.#getFileConfigList(dto.space, dto.service, dto.plugin)
-        if (files.length > env.limitFiles) {
-          return reject(`The number of files exceeds the limit of ${env.limitFiles}.`)
-        }
         // 获取项目信息
         const project = userProject.findDetailById(dto.projectId)
         if (project == null) {
-          reject(new Error('Please select a project.'))
+          reject(new Error('请选择代码编译后输出的目标项目！'))
           return
         }
         // 获取服务信息
@@ -310,6 +305,11 @@ class Kit {
         // 如果存在翻译器，则先进行翻译
         if (serviceConfig.translator.settings.length > 0) {
           serviceTranslator.translate({space: dto.space, service: dto.service, plugin: dto.plugin})
+        }
+        // 获取文件列表
+        const files = this.#getFileConfigList(dto.space, dto.service, dto.plugin)
+        if (files.length > env.limitFiles) {
+          return reject(`编译失败，代码文件不能超过${env.limitFiles}个！`)
         }
         // 获取数据库信息
         const database = cache.datasources.get(dto.database)
