@@ -196,18 +196,27 @@ export default {
     },
     // 覆盖所有
     overwriteAll () {
-      this.overwriteAllConfirm()
+      this.$messageBox.confirm('确认合并所有文件吗？', '重要提示', {
+        confirmButtonText: '合并所有',
+        cancelButtonText: '取消',
+        confirmButtonClass: 'button-danger',
+        type: 'warning'
+      })
         .then(() => {
-          merge({
-            projectId: this.projectId,
-            diffFiles: this.diffFiles
-          })
+          this.overwriteAllConfirm()
             .then(() => {
-              this.ignoreAllFiles()
+              merge({
+                projectId: this.projectId,
+                diffFiles: this.diffFiles
+              })
+                .then(() => {
+                  this.ignoreAllFiles()
+                })
+                .catch(e => {
+                  this.$tip.apiFailed(e)
+                })
             })
-            .catch(e => {
-              this.$tip.apiFailed(e)
-            })
+            .catch(() => {})
         })
         .catch(() => {})
     },
