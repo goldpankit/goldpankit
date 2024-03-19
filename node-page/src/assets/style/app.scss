@@ -82,6 +82,13 @@ html {
     .el-message-box__message p {
       word-break: break-all;
     }
+    // 操作按钮
+    .el-message-box__btns {
+      .button-danger {
+        background: var(--color-danger);
+        border-color: var(--color-danger);
+      }
+    }
   }
   // 排序
   .sortable-ghost {

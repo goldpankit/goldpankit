@@ -113,46 +113,64 @@ export default {
     },
     // 执行构建
     execute (item) {
-      // 数据库构建，但没选中数据库
-      if (item.type === 'MySQL' && (this.installData.build.dataSourceId == null || this.installData.build.dataSourceId === '')) {
-        this.$tip.warning(this.$t('service.noneDataSourceTip'))
-        return
-      }
-      if (item.__executing) {
-        return
-      }
-      item.__executing = true
-      const index = this.builds.find(b => b === item)
-      build({
-        ...this.installData.build,
-        builds: [item]
+      this.$messageBox.confirm('执行脚本前请认真查看脚本内容，避免删库和重复执行等问题，确认执行脚本吗？', '重要提示', {
+        confirmButtonText: '已确认脚本准确无误，立即执行',
+        cancelButtonText: '再检查一遍',
+        confirmButtonClass: 'button-danger',
+        type: 'warning'
       })
         .then(() => {
-          this.dialogData.visible = false
-          this.installData.build.builds.splice(index, 1)
-          this.$tip.success(`「${item.name}」${this.$t('service.build.completed')}`)
+          // 数据库构建，但没选中数据库
+          if (item.type === 'MySQL' && (this.installData.build.dataSourceId == null || this.installData.build.dataSourceId === '')) {
+            this.$tip.warning(this.$t('service.noneDataSourceTip'))
+            return
+          }
+          if (item.__executing) {
+            return
+          }
+          item.__executing = true
+          const index = this.builds.find(b => b === item)
+          build({
+            ...this.installData.build,
+            builds: [item]
+          })
+            .then(() => {
+              this.dialogData.visible = false
+              this.installData.build.builds.splice(index, 1)
+              this.$tip.success(`「${item.name}」${this.$t('service.build.completed')}`)
+            })
+            .catch(e => {
+              this.$tip.apiFailed(e)
+            })
+            .finally(() => {
+              item.__executing = false
+            })
         })
-        .catch(e => {
-          this.$tip.apiFailed(e)
-        })
-        .finally(() => {
-          item.__executing = false
-        })
+        .catch(() => {})
     },
     // 执行构建
     executeAll () {
-      build({
-        ...this.installData.build,
-        builds: this.builds
+      this.$messageBox.confirm('脚本中可能存在删库、删表等操作，执行前请务必认真检查脚本内容，确认执行脚本吗？', '重要提示', {
+        confirmButtonText: '已确认脚本准确无误，立即执行',
+        cancelButtonText: '复查脚本',
+        confirmButtonClass: 'button-danger',
+        type: 'warning'
       })
         .then(() => {
-          this.dialogData.visible = false
-          this.installData.build.builds.splice(0, this.builds.length)
-          this.$tip.success(`Build successfully`)
+          build({
+            ...this.installData.build,
+            builds: this.builds
+          })
+            .then(() => {
+              this.dialogData.visible = false
+              this.installData.build.builds.splice(0, this.builds.length)
+              this.$tip.success(`Build successfully`)
+            })
+            .catch(e => {
+              this.$tip.apiFailed(e)
+            })
         })
-        .catch(e => {
-          this.$tip.apiFailed(e)
-        })
+        .catch(() => {})
     }
   }
 }
