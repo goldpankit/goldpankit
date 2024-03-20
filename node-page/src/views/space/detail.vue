@@ -32,7 +32,7 @@
           <div class="user-profile">
             <div class="user-info">
               <img :src="getImageUri(space.user.avatar, '/images/avatar/default.png')">
-              <h4>{{space.user.username}}</h4>
+              <h4>{{getUserDisplayName(space.user)}}</h4>
             </div>
             <p class="introduce">
               {{space.user.introduce === '' || space.user.introduce == null ? 'No introduce' : space.user.introduce }}

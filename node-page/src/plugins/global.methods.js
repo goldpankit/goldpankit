@@ -139,13 +139,17 @@ export default {
     offset = offset <= 0 ? 0 : offset / 1000
     return Math.ceil(offset / (3600 * 24))
   },
+  // 获取展示名称
+  getUserDisplayName (user) {
+    if (user.nickname != null && user.nickname !== '') {
+      return user.nickname
+    }
+    return user.username
+  },
   // 获取图片文件访问路径
   getImageUri (fileKey, defaultValue) {
     if (fileKey == null || fileKey === '') {
       return defaultValue
-    }
-    if (fileKey.startsWith('/resource')) {
-      return import.meta.env.VITE_REMOTE_API_PREFIX + fileKey
     }
     return import.meta.env.VITE_IMAGE_PREFIX + fileKey
   }

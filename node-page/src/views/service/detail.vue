@@ -44,7 +44,7 @@
           <div class="user-profile">
             <div class="user-info">
               <img :src="getImageUri(service.user.avatar, '/images/avatar/default.png')">
-              <h4>{{service.user.username}}</h4>
+              <h4>{{getUserDisplayName(service.user)}}</h4>
             </div>
             <p class="introduce">
               {{service.user.introduce === '' || service.user.introduce == null ? 'No introduce' : service.user.introduce }}

@@ -163,7 +163,7 @@ export default {
     createNewSpace: '创建新的空间',
     createNewSpaceIntroduce: '点击此处可创建一个新的空间，您可以自由选择是私有空间或公共空间。',
     workbench: '工作台',
-    workbenchIntroduce: '工作台是项目开发常用的界面，点击进入后您可以为项目安装更多服务。',
+    workbenchIntroduce: '点击此处进入项目工作台，您可以在工作台页面为项目安装插件。',
     createSpace: '创建服务空间',
     spaceName: '空间名称',
     introduce: '简介',
@@ -387,7 +387,7 @@ export default {
   database: {
     databases: '数据源',
     tip: '数据源信息仅会保存在您的当前设备上。',
-    databaseIntroduce: '保存您的数据源信息到您的当前设备上，服务可以更方便的为您安装代码。',
+    databaseIntroduce: '保存您的数据源信息到您的当前设备上，可以更方便的为您安装代码。',
     databaseType: '数据源类型',
     host: 'Host',
     port: '端口',

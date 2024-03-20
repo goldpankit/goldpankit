@@ -3,12 +3,16 @@
     <div v-if="copyUserInfo != null" class="wrap">
       <div class="avatar-wrap">
         <AvatarUploader v-model="copyUserInfo.avatar"/>
-        <h2>{{copyUserInfo.username}}</h2>
+        <h2>{{getUserDisplayName(copyUserInfo)}}</h2>
       </div>
-      <div class="introduce-wrap">
-        <label>{{$t('common.introduce')}}</label>
-        <el-input v-model="copyUserInfo.introduce" type="textarea" :rows="5"/>
-      </div>
+      <el-form ref="form" :model="copyUserInfo" :rules="rules">
+        <el-form-item label="昵称" prop="nickname" required>
+          <el-input v-model="copyUserInfo.nickname" maxlength="20"/>
+        </el-form-item>
+        <el-form-item :label="$t('common.introduce')" prop="introduce">
+          <el-input v-model="copyUserInfo.introduce" type="textarea" :rows="5"/>
+        </el-form-item>
+      </el-form>
       <div class="opera">
         <el-button type="primary" size="large" :disabled="isWorking" @click="save">{{$t('common.save')}}</el-button>
       </div>
@@ -29,7 +33,12 @@ export default {
   data () {
     return {
       copyUserInfo: null,
-      isWorking: false
+      isWorking: false,
+      rules: {
+        nickname: [
+          {required: true, message: '请输入昵称', trigger: 'blur'}
+        ]
+      }
     }
   },
   watch: {
@@ -47,18 +56,23 @@ export default {
       if (this.isWorking) {
         return
       }
-      this.isWorking = true
-      saveProfile(this.copyUserInfo)
-        .then(()  => {
-          this.setUserInfo(this.copyUserInfo)
-          this.$tip.success(this.$t('common.saveSuccessfully'))
-        })
-        .catch(e => {
-          this.$tip.apiFailed(e)
-        })
-        .finally(() => {
-          this.isWorking = false
-        })
+      this.$refs.form.validate((pass) => {
+        if (!pass) {
+          return
+        }
+        this.isWorking = true
+        saveProfile(this.copyUserInfo)
+          .then(()  => {
+            this.setUserInfo(this.copyUserInfo)
+            this.$tip.success(this.$t('common.saveSuccessfully'))
+          })
+          .catch(e => {
+            this.$tip.apiFailed(e)
+          })
+          .finally(() => {
+            this.isWorking = false
+          })
+      })
     }
   }
 }

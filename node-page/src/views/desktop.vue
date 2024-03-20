@@ -7,12 +7,20 @@
           <p>{{$t('service.publicServiceIntroduce')}}</p>
         </router-link>
         <a @click="toUserProfile" class="module profile">
-          <h2 v-if="userInfo == null">{{$t('user.account')}}</h2>
-          <h2 v-else>{{userInfo.username}}</h2>
-          <ul v-if="userInfo != null">
-            <li><el-button @click.stop="$router.push({ name: 'UserProfile' })" icon="UserFilled">{{$t('user.profile')}}</el-button></li>
-            <li><el-button @click.stop="doLogout" :disabled="logoutData.isWorking">{{$t('user.logout')}}</el-button></li>
-          </ul>
+          <template v-if="userInfo == null">
+            <h2 v-if="userInfo == null">{{$t('user.account')}}</h2>
+          </template>
+          <template v-else>
+            <h2>{{ getUserDisplayName(userInfo) }}</h2>
+            <p v-if="getRemainingDay(userInfo.vipExpiredTime) === 0" class="remaining-tip">
+              账号已过期
+            </p>
+            <p v-else class="remaining-tip">账号剩余 <em>{{ getRemainingDay(userInfo.vipExpiredTime) }}</em> 天</p>
+            <ul v-if="userInfo != null">
+              <li><el-button @click.stop="$router.push({ name: 'UserProfile' })" icon="UserFilled">{{$t('user.profile')}}</el-button></li>
+              <li><el-button @click.stop="doLogout" :disabled="logoutData.isWorking">{{$t('user.logout')}}</el-button></li>
+            </ul>
+          </template>
         </a>
       </div>
       <div class="line gap-top">
@@ -143,6 +151,15 @@ export default {
       overflow: hidden;
       text-overflow: ellipsis
     }
+    // 剩余天数提示
+    .remaining-tip {
+      em {
+        font-weight: bold;
+        color: var(--primary-color-match-2);
+        font-style: normal;
+      }
+    }
+    // 按钮
     ul {
       display: flex;
       margin-top: 10px;

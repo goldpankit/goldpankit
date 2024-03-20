@@ -26,7 +26,7 @@ export default {
         this.$tip.apiFailed(res)
         return
       }
-      this.$emit('update:modelValue', res.data.accessUri)
+      this.$emit('update:modelValue', res.data.fileKey)
     },
     beforeAvatarUpload (rawFile) {
       if (rawFile.size / 1024 / 1024 > 2) {
