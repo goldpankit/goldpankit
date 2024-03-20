@@ -32,6 +32,15 @@ app.use(env.remoteApiPrefix, createProxyMiddleware({
     [`^${env.remoteApiPrefix}`]: '',
   }
 }));
+// 开启远程接口代理
+app.use('/resource', createProxyMiddleware({
+  target: env.remoteApi + '/resource',
+  changeOrigin: true,
+  logLevel,
+  pathRewrite: {
+    ['^/resource']: '',
+  }
+}));
 // 设置请求参数大小
 app.use(express.json({limit: '100mb'}));
 app.use(express.urlencoded({ extended: false }));

@@ -1,5 +1,6 @@
 const axios = require('axios')
 const cache = require('../core/utils/cache')
+const userToken = require('../core/user.token')
 const env = require('../env').getConfig()
 
 // 默认配置
@@ -20,6 +21,10 @@ axiosInstance.interceptors.request.use(config => {
       cookie: headers.cookie
     }
     cache.remove('request_headers')
+  }
+  const token = userToken.getToken()
+  if (token != null) {
+    config.headers['x-kit-token'] = token.value
   }
   return config
 }, function (error) {
