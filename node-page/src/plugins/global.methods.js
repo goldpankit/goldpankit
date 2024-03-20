@@ -144,6 +144,9 @@ export default {
     if (fileKey == null || fileKey === '') {
       return defaultValue
     }
+    if (fileKey.startsWith('/resource')) {
+      return import.meta.env.VITE_REMOTE_API_PREFIX + fileKey
+    }
     return import.meta.env.VITE_IMAGE_PREFIX + fileKey
   }
 }

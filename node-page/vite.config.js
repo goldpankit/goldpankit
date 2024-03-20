@@ -40,6 +40,12 @@ export default ({ mode }) => {
           changeOrigin: true,
           rewrite: (path) => path.replace(new RegExp(`^${remoteApiPrefix}`), "")
         },
+        ['/resource']: {
+          target: 'http://localhost:10088/resource',
+          // target: 'http://112.74.58.58/resource',
+          changeOrigin: true,
+          rewrite: (path) => path.replace(new RegExp(`^/resource`), "")
+        }
       }
     }
   })
