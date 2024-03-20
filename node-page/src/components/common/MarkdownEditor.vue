@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import {uploadImage} from "../../api/common";
+import { uploadImage } from '@/api/common'
 
 export default {
   name: "MarkdownEditor",
@@ -63,7 +63,7 @@ export default {
         uploadImage(formData)
           .then((data) => {
             insertImage({
-              url: this.getAccessUri(data.accessUri),
+              url: this.getImageUri(data.fileKey),
               desc: file.name,
               width: 'auto',
               height: 'auto',

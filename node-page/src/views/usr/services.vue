@@ -40,7 +40,7 @@
             <div class="footer-info">
               <!-- 用户信息 -->
               <div v-if="service.user != null" class="user-profile">
-                <img :src="getAccessUri(service.user.avatar, '/images/avatar/default.png')">
+                <img :src="getImageUri(service.user.avatar, '/images/avatar/default.png')">
                 <span>{{service.user.username}}</span>
               </div>
               <ServiceStatus :with-private="service.withPrivate"/>

@@ -7,7 +7,7 @@
     :on-success="handleAvatarSuccess"
     :before-upload="beforeAvatarUpload"
   >
-    <img :src="getAccessUri(modelValue)" class="avatar" />
+    <img :src="getImageUri(modelValue)" class="avatar" />
   </el-upload>
 </template>
 

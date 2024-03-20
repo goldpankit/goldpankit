@@ -25,7 +25,8 @@
           <p>{{$t('database.databaseIntroduce')}}</p>
         </router-link>
       </div>
-      <div class="line gap-top">
+      <!-- 开发者可见 -->
+      <div v-if="userInfo != null && userInfo.isDeveloper" class="line gap-top">
         <router-link :to="{ name: 'CreateSpace' }" class="module new-space">
           <h2>{{$t('space.createNewSpace')}}</h2>
           <p>{{$t('space.createNewSpaceIntroduce')}}</p>

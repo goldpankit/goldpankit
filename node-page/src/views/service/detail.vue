@@ -43,7 +43,7 @@
           <!-- 用户信息 -->
           <div class="user-profile">
             <div class="user-info">
-              <img :src="getAccessUri(service.user.avatar, '/images/avatar/default.png')">
+              <img :src="getImageUri(service.user.avatar, '/images/avatar/default.png')">
               <h4>{{service.user.username}}</h4>
             </div>
             <p class="introduce">
@@ -69,6 +69,7 @@
               <i class="iconfont icon-code"></i>{{$t('service.install')}}
             </el-button>
             <el-button
+              v-if="userInfo != null && userInfo.isDeveloper"
               size="large"
               @click="$router.push({
                 name: 'CreatePlugin',
@@ -121,6 +122,7 @@ import {fetchProfileByName} from "@/api/service.space";
 import VerticalServiceList from "../../components/service/VerticalServiceList.vue";
 import ServiceTitle from "../../components/service/ServiceTitle.vue";
 import ServiceStatus from "../../components/service/ServiceStatus.vue";
+import {mapState} from "vuex";
 
 export default {
   components: {
@@ -149,6 +151,9 @@ export default {
       // 相关服务
       relationServices: []
     }
+  },
+  computed: {
+    ...mapState(['userInfo'])
   },
   methods: {
     // 初始化数据
