@@ -133,6 +133,9 @@ export default {
   },
   // 获取剩余天数
   getRemainingDay (dateText) {
+    if (dateText == null) {
+      return 0
+    }
     const timestamp = dayjs(dateText)
     const now = new Date().getTime()
     let offset = timestamp - now

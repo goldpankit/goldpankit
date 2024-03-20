@@ -76,6 +76,8 @@
     </div>
     <!-- 代码出错提示窗口 -->
     <ServiceCodeErrorWindow ref="serviceCodeErrorWindow"/>
+    <!-- 续费会员窗口 -->
+    <VipExpiredWindow ref="vipExpiredWindow"/>
   </div>
 </template>
 
@@ -89,16 +91,18 @@ import MySqlFieldSelect from "../database/MySqlFieldSelect.vue";
 import FieldSetting from "../service/installer/FieldSetting.vue";
 import DirectorySelect from "../common/DirectorySelect.vue";
 import ProjectSelect from "../usr/project/ProjectSelect.vue";
-import {install, uninstall} from "../../api/service.compile";
-import {fetchVersion} from "../../api/service.version";
-import {getDefaultEmptyValue, isEmptyValue} from "../../utils/variable";
+import {install, uninstall} from '@/api/service.compile'
+import {fetchVersion} from '@/api/service.version'
+import {getDefaultEmptyValue, isEmptyValue} from '@/utils/variable'
 import MergeWindow from "../service/installer/merge/MergeWindow.vue";
 import ServiceCodeErrorWindow from "../service/ServiceCodeErrorWindow.vue";
 import FormItemTip from "../common/FormItemTip.vue";
+import VipExpiredWindow from "@/components/usr/VipExpiredWindow.vue";
 
 export default {
   name: "ServiceInstaller",
   components: {
+    VipExpiredWindow,
     FormItemTip,
     ServiceCodeErrorWindow,
     MergeWindow,
@@ -293,6 +297,10 @@ export default {
         .catch(e => {
           if (e.code === 6000) {
             this.$refs.serviceCodeErrorWindow.open(e.errorData)
+            return
+          }
+          if (e.code === 6200) {
+            this.$refs.vipExpiredWindow.open()
             return
           }
           this.$tip.apiFailed(e)
