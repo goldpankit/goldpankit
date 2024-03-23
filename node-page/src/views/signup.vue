@@ -3,6 +3,7 @@
     <div class="wrap">
       <h2>{{ $t('common.signUp') }}</h2>
       <h3>GoldPanKit账号需要购买，请添加下方微信，我们的客服人员会为您开通账号！</h3>
+      <p>首次使用可扫码免费领取30天体验账号！</p>
       <div class="wechat-wrap">
         <img src="/images/wechat.png"/>
         <span>小艺</span>
@@ -46,6 +47,7 @@ export default {
       },
       // 价格表
       priceTableData: [
+        { dayCount: '30天（首次）', price: '免费领取' },
         { dayCount: '90天', price: '299元' },
         { dayCount: '365天', price: '799元' }
       ]
@@ -152,6 +154,14 @@ export default {
   // 提示
   h3 {
     font-weight: normal;
+  }
+  // 首次免费领取账号提醒
+  & > p {
+    background-color: var(--primary-color-match-2);
+    padding: 8px 15px;
+    border-radius: 20px;
+    color: #fff;
+    margin-top: 20px;
   }
   // 微信图片
   .wechat-wrap {
