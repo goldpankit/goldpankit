@@ -11,12 +11,22 @@
             <label>{{$t('user.password')}}</label>
 <!--            <router-link to="#">{{$t('user.forgotPassword')}}</router-link>-->
           </template>
-          <el-input v-model="form.password" show-password type="password" size="large" @keypress.enter.native="login"/>
+          <el-input
+            v-model="form.password"
+            show-password
+            type="password"
+            size="large"
+            @keypress.enter.native="login()"
+          />
         </el-form-item>
       </el-form>
       <div class="login-box">
         <div>
-          <el-button type="important" :disabled="loginData.isWorking" @click="login">{{$t('common.signIn')}}</el-button>
+          <el-button
+            type="important"
+            :disabled="loginData.isWorking"
+            @click="login()"
+          >{{$t('common.signIn')}}</el-button>
         </div>
       </div>
     </div>
@@ -57,7 +67,8 @@ export default {
       }
     },
     // 密码登录
-    login () {
+    login (force = false) {
+      console.log('force', force)
       this.$refs.form.validate()
         .then(() => {
           if (this.loginData.isWorking) {
@@ -66,7 +77,8 @@ export default {
           this.loginData.isWorking = true
           loginByPassword ({
             ...this.form,
-            username: this.form.username.trim()
+            username: this.form.username.trim(),
+            force
           })
             .then(token => {
               cookie.set('x-kit-token', token)
@@ -99,6 +111,18 @@ export default {
               }
             })
             .catch(e => {
+              // 账号在其他设备登录
+              if (e.code === 6201) {
+                this.alert('当前账号已登录，继续登录后其它设备将自动离线，确认要继续登录吗？如果您对当前登录状态存在疑问，建议您登录后尽快修改密码！', '重要提示', {
+                  showCancelButton: true,
+                  cancelButtonText: '暂不登录',
+                  confirmButtonText: '继续登录'
+                })
+                  .then(() => {
+                    this.login(true)
+                  })
+                return
+              }
               this.$tip.apiFailed(e)
             })
             .finally(() => {
