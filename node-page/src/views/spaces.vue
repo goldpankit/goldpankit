@@ -38,7 +38,7 @@
             />
             <!-- 用户信息 -->
             <div v-if="space.user != null" class="user-profile">
-              <img :src="getImageUri(space.user.avatar, '/images/avatar/default.png')">
+              <img :src="getAvatarUri(space.user.avatar)">
               <span>{{space.user.username}}</span>
             </div>
           </a>

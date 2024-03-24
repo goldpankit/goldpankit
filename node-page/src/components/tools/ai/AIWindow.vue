@@ -39,7 +39,7 @@
         <li v-for="message in messages" :key="message.id" class="message" :class="{'self-message': message.self}">
           <template v-if="message.self">
             <img v-if="userInfo == null" src="/images/avatar/default.png">
-            <img v-else :src="getImageUri(userInfo.avatar)">
+            <img v-else :src="getAvatarUri(userInfo.avatar)">
           </template>
           <div v-else class="message-opera">
             <svg width="41" height="41" viewBox="0 0 41 41" fill="none" xmlns="http://www.w3.org/2000/svg" strokewidth="2" class="scale-appear">

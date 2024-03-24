@@ -11,7 +11,7 @@
   </template>
   <template v-else>
     <div class="user-info" @click="$router.push({ name: 'Desktop'})">
-      <img :src="getImageUri(userInfo.avatar, '/images/avatar/default.png')" class="avatar"/>
+      <img :src="getAvatarUri(userInfo.avatar)" class="avatar"/>
     </div>
   </template>
 </template>

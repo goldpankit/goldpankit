@@ -48,9 +48,6 @@ export default new Vuex.Store({
       } else {
         Object.assign(state.userInfo, value)
       }
-      if (state.userInfo != null && state.userInfo.avatar == null) {
-        state.userInfo.avatar = '/images/avatar/default.png'
-      }
     },
     setCurrentProject(state, project) {
       state.currentProject = project

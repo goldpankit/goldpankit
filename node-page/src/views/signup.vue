@@ -24,8 +24,8 @@
 </template>
 
 <script>
-import {regisByEmail, sendRegisByEmailOtpCode} from "../api/user.regis";
-import {checkEmail} from "../utils/form.check";
+import {regisByEmail, sendRegisByEmailOtpCode} from '@/api/user.regis'
+import {checkEmail} from '@/utils/form.check'
 
 export default {
   data () {

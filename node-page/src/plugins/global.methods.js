@@ -155,5 +155,15 @@ export default {
       return defaultValue
     }
     return import.meta.env.VITE_IMAGE_PREFIX + fileKey
+  },
+  // 获取图片文件访问路径
+  getAvatarUri (fileKey) {
+    if (fileKey === '/images/avatar/default.png') {
+      return '/images/avatar/default.png'
+    }
+    if (fileKey == null || fileKey === '') {
+      return '/images/avatar/default.png'
+    }
+    return import.meta.env.VITE_IMAGE_PREFIX + fileKey
   }
 }

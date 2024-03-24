@@ -43,7 +43,7 @@
           <!-- 用户信息 -->
           <div class="user-profile">
             <div class="user-info">
-              <img :src="getImageUri(service.user.avatar, '/images/avatar/default.png')">
+              <img :src="getAvatarUri(service.user.avatar)">
               <h4>{{getUserDisplayName(service.user)}}</h4>
             </div>
             <p class="introduce">

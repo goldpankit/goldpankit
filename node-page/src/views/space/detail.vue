@@ -31,7 +31,7 @@
         <div class="info">
           <div class="user-profile">
             <div class="user-info">
-              <img :src="getImageUri(space.user.avatar, '/images/avatar/default.png')">
+              <img :src="getAvatarUri(space.user.avatar)">
               <h4>{{getUserDisplayName(space.user)}}</h4>
             </div>
             <p class="introduce">
