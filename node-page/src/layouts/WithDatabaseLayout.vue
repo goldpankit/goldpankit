@@ -1,13 +1,7 @@
 <template>
   <AppLayout class="workbench-layout">
     <header>
-      <div class="logo-wrap" @click="go2home">
-        <h1>Gold Pan Kit</h1>
-        <div class="decoration">
-          <em></em>
-          <em></em>
-        </div>
-      </div>
+      <Logo/>
       <ul class="opera">
         <li>
           <LoginView/>
@@ -27,11 +21,12 @@ import ProjectSelect from "../components/usr/project/ProjectSelect.vue";
 import AppLayout from "./AppLayout.vue";
 import LoginView from "../components/header/LoginView.vue";
 import BaseLayout from "./BaseLayout.vue";
+import Logo from "@/components/common/Logo.vue";
 
 export default {
   name: 'WorkbenchLayout',
   extends: BaseLayout,
-  components: {LoginView, AppLayout, ProjectSelect, DataSourceSelect },
+  components: {Logo, LoginView, AppLayout, ProjectSelect, DataSourceSelect },
   computed: {
     ...mapState(['currentDatabase', 'userInfo'])
   },

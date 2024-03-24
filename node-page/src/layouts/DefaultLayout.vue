@@ -1,13 +1,7 @@
 <template>
   <AppLayout class="default-layout">
     <header>
-      <div class="logo-wrap" @click="$router.push({ name: 'PublicServices' })">
-        <h1>Gold Pan Kit</h1>
-        <div class="decoration">
-          <em></em>
-          <em></em>
-        </div>
-      </div>
+      <Logo/>
       <ul class="opera">
         <li>
           <LoginView/>
@@ -25,10 +19,13 @@ import { mapState} from 'vuex'
 import ProjectSelect from "../components/usr/project/ProjectSelect.vue";
 import AppLayout from "./AppLayout.vue";
 import LoginView from "../components/header/LoginView.vue";
+import BaseLayout from "@/layouts/BaseLayout.vue";
+import Logo from "@/components/common/Logo.vue";
 
 export default {
   name: 'DefaultLayout',
-  components: {LoginView, AppLayout, ProjectSelect },
+  extends: BaseLayout,
+  components: {Logo, LoginView, AppLayout, ProjectSelect },
   computed: {
     ...mapState(['userInfo'])
   }
@@ -47,39 +44,6 @@ header {
   justify-content: space-between;
   flex-shrink: 0;
   padding: 10px 30px;
-  .logo-wrap {
-    cursor: pointer;
-    width: 160px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    h1 {
-      font-size: var(--font-size-large);
-      font-style: italic;
-      display: inline-block;
-      position: relative;
-      padding: 0 10px;
-    }
-    .decoration {
-      width: 160px;
-      height: 15px;
-      background-color: var(--primary-color);
-      border: 1px solid var(--primary-color);
-      display: flex;
-      justify-content: space-between;
-      em {
-        width: 80px;
-        height: 100%;
-        //border: 1px solid var(--primary-color);
-        background-color: var(--primary-color-match-1);
-        box-sizing: border-box;
-        &:first-of-type {
-          width: 10px;
-        }
-      }
-    }
-  }
   .opera {
     display: flex;
     li {

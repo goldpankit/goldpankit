@@ -1,13 +1,7 @@
 <template>
   <AppLayout class="none-layout">
     <header>
-      <div class="logo-wrap" @click="go2home">
-        <h1>Gold Pan Kit</h1>
-        <div class="decoration">
-          <em></em>
-          <em></em>
-        </div>
-      </div>
+      <Logo/>
     </header>
     <main>
       <router-view/>
@@ -20,11 +14,12 @@ import AppLayout from "./AppLayout.vue";
 import LoginView from "../components/header/LoginView.vue";
 import I18nLangSelect from "../components/common/I18nLangSelect.vue";
 import BaseLayout from "./BaseLayout.vue";
+import Logo from "@/components/common/Logo.vue";
 
 export default {
   name: 'NoneLayout',
   extends: BaseLayout,
-  components: {I18nLangSelect, LoginView, AppLayout }
+  components: {Logo, I18nLangSelect, LoginView, AppLayout }
 }
 </script>
 
