@@ -76,6 +76,11 @@ const router = createRouter({
           component: () => import('@/views/workbench.vue')
         },
         {
+          path: '/usr/update-pwd',
+          name: 'UpdatePwd',
+          component: () => import('@/views/usr/update-pwd.vue')
+        },
+        {
           path: '/usr/bean/top-up',
           name: 'TopUpBean',
           component: () => import('@/views/usr/bean/top-up.vue')

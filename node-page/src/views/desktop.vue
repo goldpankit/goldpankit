@@ -17,8 +17,26 @@
             </p>
             <p v-else class="remaining-tip">账号剩余 <em>{{ getRemainingDay(userInfo.vipExpiredTime) }}</em> 天</p>
             <ul v-if="userInfo != null">
-              <li><el-button @click.stop="$router.push({ name: 'UserProfile' })" icon="UserFilled">{{$t('user.profile')}}</el-button></li>
-              <li><el-button @click.stop="doLogout" :disabled="logoutData.isWorking">{{$t('user.logout')}}</el-button></li>
+              <li>
+                <el-button
+                  icon="UserFilled"
+                  @click.stop="$router.push({ name: 'UserProfile' })"
+                >{{$t('user.profile')}}</el-button>
+              </li>
+              <li>
+                <el-button
+                  :disabled="logoutData.isWorking"
+                  @click.stop="$router.push({ name: 'UpdatePwd' })"
+                >修改密码</el-button>
+              </li>
+              <li>
+                <el-button
+                  icon=""
+                  :disabled="logoutData.isWorking"
+                  @click.stop="doLogout"
+                >{{$t('user.logout')}}</el-button>
+              </li>
+              <li></li>
             </ul>
           </template>
         </a>
@@ -162,14 +180,19 @@ export default {
     // 按钮
     ul {
       display: flex;
-      margin-top: 10px;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      margin-top: 5px;
       li {
-        margin-right: 10px;
+        margin-top: 5px;
         &:nth-of-type(1) .el-button {
           background: #cfe4ff;
         }
         &:nth-of-type(2) .el-button {
           background: #ffcfec;
+        }
+        &:nth-of-type(3) .el-button {
+          background: #ffcfcf;
         }
         .el-button {
           border: 0 !important;
