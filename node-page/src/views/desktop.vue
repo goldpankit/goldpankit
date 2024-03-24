@@ -9,6 +9,9 @@
         <a @click="toUserProfile" class="module profile">
           <template v-if="userInfo == null">
             <h2 v-if="userInfo == null">{{$t('user.account')}}</h2>
+            <p class="login-tip-wrap">
+              当前未登录，<em>去登录！</em>
+            </p>
           </template>
           <template v-else>
             <h2>{{ getUserDisplayName(userInfo) }}</h2>
@@ -29,15 +32,13 @@
                   @click.stop="$router.push({ name: 'UpdatePwd' })"
                 >修改密码</el-button>
               </li>
-              <li>
-                <el-button
-                  icon=""
-                  :disabled="logoutData.isWorking"
-                  @click.stop="doLogout"
-                >{{$t('user.logout')}}</el-button>
-              </li>
-              <li></li>
             </ul>
+            <el-button
+              class="button-logout"
+              :disabled="logoutData.isWorking"
+              link
+              @click.stop="doLogout"
+            >{{$t('user.logout')}}<el-icon><Right /></el-icon></el-button>
           </template>
         </a>
       </div>
@@ -162,12 +163,26 @@ export default {
   .profile {
     width: 255px;
     flex-shrink: 0;
+    position: relative;
+    padding-bottom: 45px;
+    box-shadow: none !important;
+    transform: none !important;
+    cursor: default !important;
     h2 {
       font-size: 35px;
       color: #555;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis
+    }
+    // 去登录提示
+    .login-tip-wrap {
+      em {
+        color: var(--primary-color-match-2);
+        font-style: normal;
+        font-weight: bold;
+        cursor: pointer;
+      }
     }
     // 剩余天数提示
     .remaining-tip {
@@ -198,6 +213,12 @@ export default {
           border: 0 !important;
         }
       }
+    }
+    // 退出登录
+    .button-logout {
+      position: absolute;
+      bottom: 15px;
+      right: 20px;
     }
   }
   // 公共空间
