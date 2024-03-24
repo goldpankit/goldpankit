@@ -120,9 +120,9 @@ export default {
     start: '开始使用',
     selectService: '选择服务',
     selectService2: '选择服务',
-    serviceIntroduce: '服务空间中包含了服务，这些服务可以是框架的搭建、项目的构建、模块的开发等。',
+    serviceIntroduce: 'KIT服务表示一套框架或项目基础工程。',
     installService: '安装服务',
-    installIntroduce: '在服务页点击「安装」按钮即可将服务代码安装到您的项目中。',
+    installIntroduce: '在服务详情页点击「立即安装」按钮即可将服务代码安装到您的项目中。',
     completed: '开发完成',
     goToServices: '前往查看服务'
   },

@@ -27,6 +27,10 @@
             <h4>ii. {{$t('guide.installService')}}</h4>
             <p>{{$t('guide.installIntroduce')}}</p>
           </li>
+          <li>
+            <h4>iii. 安装插件</h4>
+            <p>KIT插件表示框架或基础工程中的某一个功能模块或技术栈集成代码。可在工作台页面选择您需要的插件进行安装。</p>
+          </li>
         </ul>
         <div class="opera">
           <el-button type="primary" size="large"  @click="$router.push({name: 'PublicServices'})">{{$t('guide.goToServices')}}</el-button>
