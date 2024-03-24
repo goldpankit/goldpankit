@@ -33,6 +33,7 @@
           <el-button
             type="important"
             :disabled="isWorking.update"
+            @click="updatePwd"
           >确认修改</el-button>
         </div>
       </div>
@@ -41,6 +42,8 @@
 </template>
 
 <script>
+import { updatePwd } from '@/api/user'
+
 export default {
   data () {
     return {
@@ -57,15 +60,51 @@ export default {
           { required: true, message: '请输入原始密码' }
         ],
         newPassword: [
-          { required: true, message: '请输入新密码' }
+          { required: true, message: '请输入新密码' },
+          { min: 6, message: '密码长度不能小于6位' }
         ],
         confirmNewPassword: [
-          { required: true, message: '请再次输入新密码' }
+          { required: true, message: '请再次输入新密码' },
+          {
+            validator: (rule, value, callback) => {
+              if (value !== this.form.newPassword) {
+                callback(new Error('两次输入密码不一致'))
+              } else {
+                callback()
+              }
+            }
+          }
         ]
       }
     }
   },
   methods: {
+    // 修改密码
+    updatePwd () {
+      if (this.isWorking.update) {
+        return
+      }
+      this.$refs.form.validate(pass => {
+        if (!pass) {
+          return
+        }
+        this.isWorking.update = true
+        updatePwd (this.form)
+          .then(() => {
+            this.success('密码修改成功，请妥善保存新密码！', '修改成功')
+              .then(() => {
+                this.$router.push({ name: 'Desktop' })
+              })
+              .catch(() => {})
+          })
+          .catch(e => {
+            this.$tip.apiFailed(e)
+          })
+          .finally(() => {
+            this.isWorking.update = false
+          })
+      })
+    }
   }
 }
 </script>

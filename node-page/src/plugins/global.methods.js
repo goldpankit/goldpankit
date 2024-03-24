@@ -50,6 +50,21 @@ export default {
     }
     return ElMessageBox(defaultConfig)
   },
+  // 成功弹窗提示
+  success (message, title, config) {
+    title = title || '操作成功'
+    const defaultConfig = {
+      type: 'success',
+      title: title,
+      message: message,
+      showCancelButton: false,
+      confirmButtonText: '好的'
+    }
+    if (config != null) {
+      Object.assign(defaultConfig, config)
+    }
+    return ElMessageBox(defaultConfig)
+  },
   // 确认安装
   installConfirm (price) {
     const $t = this.$t
