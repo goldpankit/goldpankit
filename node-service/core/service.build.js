@@ -15,31 +15,28 @@ module.exports = {
         resolve()
         return
       }
-      Promise.all(builds.map(build => {
-        // 执行MySQL脚本
-        if (build.type === 'MySQL') {
-          return mysql.exec({
+      try {
+        // 获取所有MYSQL脚本，整合在一起执行
+        const sqlContent = builds.filter(b => b.type === 'MySQL').map(b => b.content).join('\n')
+        if (sqlContent != null && sqlContent !== '') {
+          mysql.exec({
             host: database.host,
             port: database.port,
             user: database.username,
             password: database.password,
             // 不指定数据库，以允许脚本创建数据库
             // database: database.schema
-          }, build.content)
+          }, sqlContent)
         }
-        // 执行Node命令
-        if (build.type === 'Node') {
-          return nc.exec(project.codespace, build.content)
+        // 获取所有Node脚本，整合在一起执行
+        const nodeContent = builds.filter(b => b.type === 'Node').map(b => b.content).join('\n')
+        if (nodeContent != null && nodeContent !== '') {
+          nc.exec(project.codespace, nodeContent)
         }
-        return Promise.resolve()
-      }))
-        .then(() => {
-          resolve()
-        })
-        .catch(e => {
-          console.log('build failed', e)
-          reject(e)
-        })
+        resolve()
+      } catch (e) {
+        reject(e)
+      }
     })
   },
   /**
