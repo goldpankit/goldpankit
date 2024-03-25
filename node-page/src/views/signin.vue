@@ -68,7 +68,6 @@ export default {
     },
     // 密码登录
     login (force = false) {
-      console.log('force', force)
       this.$refs.form.validate()
         .then(() => {
           if (this.loginData.isWorking) {
