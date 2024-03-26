@@ -98,6 +98,10 @@ module.exports = {
       // 如果为已删除文件，且本地存在该文件，加入删除队列，此时file.content为null
       if (file.operaType === 'DELETED') {
         if (this.exists(filepath)) {
+          // 虽然在此之前已经将目录类型的文件continue了，但已删除的文件接口中未能获取filetype，导致已删除的目录未得到处理，此处临时做处理
+          if (this.isDirectory(filepath)) {
+            continue
+          }
           file.localContent = this.readFile(filepath).content
           diffFiles.push(file)
         }
