@@ -187,6 +187,7 @@ module.exports = {
         content: fileInfo.content,
         compiler: fileSetting.compiler,
         variables: JSON.stringify(fileSetting.variables),
+        withoutIfNotExists: fileSetting.withoutIfNotExists,
         enableExpress: fileSetting.enableExpress
       }
     })
