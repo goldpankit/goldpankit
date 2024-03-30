@@ -26,6 +26,12 @@
           <el-form-item :label="$t('service.settings.file.compiler')">
             <CompilerSelect v-model="currentNode.compiler" :with-follow-service="true" @change="saveFileSetting"/>
           </el-form-item>
+          <el-form-item label="只有文件在项目中存在时才生效">
+            <el-switch
+              v-model="currentNode.withoutIfNotExists"
+              @change="saveFileSetting"
+            />
+          </el-form-item>
           <el-form-item :label="$t('service.settings.file.enableExpress')">
             <el-input
               v-model="currentNode.enableExpress"
@@ -116,7 +122,10 @@ export default {
     fetchFiles () {
       this.fetchFilesApi(this.unique)
         .then(data => {
-          this.files = data
+          this.files = data.map(file => {
+            file.withoutIfNotExists = file.withoutIfNotExists == null ? false : file.withoutIfNotExists
+            return file
+          })
           sortFiles(this.files)
         })
         .catch(e => {
@@ -135,6 +144,7 @@ export default {
           path: this.currentNode.path,
           relativePath: this.currentNode.relativePath,
           compiler: this.currentNode.compiler,
+          withoutIfNotExists: this.currentNode.withoutIfNotExists,
           enableExpress: this.currentNode.enableExpress,
           variables: this.currentNode.variables.filter(v => v.name.trim().length > 0)
         })
@@ -165,8 +175,9 @@ export default {
     // 是否为重点标记文件
     isFlagFile (node) {
       return (node.compiler != null && node.compiler !== '') ||
-        (node.enableExpress != null && node.enableExpress !== '') ||
-        (node.variables.length > 0)
+          (node.withoutIfNotExists != null && node.withoutIfNotExists !== false) ||
+          (node.enableExpress != null && node.enableExpress !== '') ||
+          (node.variables.length > 0)
     },
     // 排序后
     handleSorted (newVariables) {
