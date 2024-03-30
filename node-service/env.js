@@ -1,5 +1,5 @@
 const config = {
-  current: 'production',
+  current: 'develop',
   common: {
     debug: false,
     localApiPrefix: '/local-api',

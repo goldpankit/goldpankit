@@ -118,21 +118,30 @@ module.exports = {
         }
         continue
       }
-      // 如果文件不存在
+      // 如果文件在项目中不存在
       if (!this.exists(filepath)) {
-        // - 项目中存在文件，则加入差异队列
+        // - 如果项目中存在文件
         if (hasFile) {
+          // - 新内容是差异表达式，则不做处理（本地没有该文件，则不用再做差异合并）
+          if (diffExp.isDiffEllipsis(content)) {
+            continue
+          }
+          // - 如果文件必须要在本地中存在才生效，则不做处理
+          if (file.withoutIfNotExists === true) {
+            continue
+          }
+          // - 新内容不是差异表达式，则加入差异队列（写入新的文件时视为差异，避免用户对新增文件无感知）
           diffFiles.push(file)
           continue
         }
-        // - 项目中不存在文件，且为二进制文件
+        // - 项目中不存在文件，且为二进制文件，转换内容为二进制，并直接写入到项目中
         if (file.contentEncode === 'base64') {
           content = Buffer.from(content, 'base64')
           this.createFile(filepath, content, true)
           fileCount++
           continue
         }
-        // - 项目中不存在文件，且为文本文件
+        // - 项目中不存在文件，且为文本文件，直接写入到项目中
         this.createFile(filepath, content, true)
         fileCount++
         continue

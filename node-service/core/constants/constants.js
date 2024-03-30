@@ -39,6 +39,7 @@ module.exports = {
   SERVICE_FILE_CONFIG_CONTENT: {
     path: '',
     compiler: '',
+    withoutIfNotExists: false,
     enableExpress: '',
     variables: [] // 文件变量
   },

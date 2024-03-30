@@ -473,6 +473,7 @@ class Kit {
         content: fileInfo.content,
         contentEncode: fileInfo.encode,
         enableExpress: fileSettings.enableExpress,
+        withoutIfNotExists: fileSettings.withoutIfNotExists,
         compiler: fileSettings.compiler,
         filetype: isDirectory ? 'DIRECTORY' : 'FILE',
         variables: JSON.stringify(fileSettings.variables)
