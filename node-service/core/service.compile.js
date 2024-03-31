@@ -268,7 +268,7 @@ class Kit {
       // 项目中必须已安装服务
       const projectService = project.service == null ? {} : project.service
       if (projectService[service] == null) {
-        return '当前所选项目中没有相关服务，请安装服务后重试！'
+        return '当前所选项目中没有该插件对应的服务，请安装服务后重试！'
       }
       return
     }
