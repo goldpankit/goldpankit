@@ -303,6 +303,10 @@ export default {
             this.$refs.vipExpiredWindow.open()
             return
           }
+          if (e.code === 5111) {
+            this.error(`您当前项目服务版本过低，当前插件至少需要将项目服务升级到v${e.errorData}才可安装！`)
+            return
+          }
           this.$tip.apiFailed(e)
         })
         .finally(() => {

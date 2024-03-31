@@ -262,21 +262,26 @@ class Kit {
    * @param isPlugin 安装的是否为插件
    */
   #checkInstall (projectId, space, service, isPlugin) {
-    // 插件，不做验证
+    const project = userProject.findDetailById(projectId)
+    // 插件
     if (isPlugin) {
+      // 项目中必须已安装服务
+      const projectService = project.service == null ? {} : project.service
+      if (projectService[service] == null) {
+        return '当前所选项目中没有相关服务，请安装服务后重试！'
+      }
       return
     }
-    // 查询项目
-    const project = userProject.findDetailById(projectId)
+    // 服务
     if (project == null) {
       return response.INSTALL.MISSING_PROJECT
     }
-    // 没有安装过任何项目
+    // - 允许没有安装过任何服务
     const serviceObject = project.main || project.service
     if (serviceObject === undefined) {
       return
     }
-    // 验证当前项目是否安装了别的主服务，如果是，则做出提醒
+    // - 验证当前项目是否安装了别的主服务，如果是，则做出提醒
     if (project.space !== space || (serviceObject != null && serviceObject[service] == null)) {
       return response.INSTALL.PROJECT_NOT_ALLOWED
     }
@@ -288,6 +293,7 @@ class Kit {
    *   database: '', // 当前选择的数据库名称
    *   space: '',
    *   service: '',
+   *   plugin: '', // 如果存在，则为编译插件
    *   variables: []
    * }
    */
@@ -300,6 +306,8 @@ class Kit {
           reject(new Error('请选择代码编译后输出的目标项目！'))
           return
         }
+        // 获取项目安装的服务
+        const projectService = project.service[dto.service]
         // 获取服务信息
         const serviceConfig = service.getServiceConfig({space: dto.space, service: dto.service, plugin: dto.plugin})
         // 如果存在翻译器，则先进行翻译
@@ -318,6 +326,10 @@ class Kit {
         Promise.all(variables)
           .then(vars => {
             serviceApi.compile({
+              space: dto.space,
+              service: dto.service,
+              projectServiceVersion: projectService.version,
+              minServiceVersion: serviceConfig.minServiceVersion,
               defaultCompiler: serviceConfig.compiler,
               variables: vars,
               files
@@ -350,6 +362,7 @@ class Kit {
    *   database: '', // 当前选择的数据库名称
    *   space: '',
    *   service: '',
+   *   plugin: '', // 如果存在则为安装插件
    *   version: '',
    *   variables: []
    * }
@@ -362,6 +375,11 @@ class Kit {
       if (project == null) {
         return Promise.reject(response.INSTALL.MISSING_PROJECT)
       }
+      // 获取项目安装的服务
+      let projectService = null
+      if (project.service != null && project.service[dto.service] != null) {
+        projectService = project.service[dto.service]
+      }
       // 获取数据库信息
       const database = cache.datasources.get(dto.database)
       // 组装变量
@@ -373,9 +391,12 @@ class Kit {
           // 执行安装
           return serviceApi.install({
             space: dto.space,
+            // 安装的服务或者插件
             service: dto.service,
             plugin: dto.plugin,
             version: dto.version,
+            // 项目使用的服务版本，安装服务时应该为null
+            projectServiceVersion: projectService == null ? null : projectService.version,
             operaType: dto.operaType,
             variables: vars
           })
@@ -473,6 +494,7 @@ class Kit {
         content: fileInfo.content,
         contentEncode: fileInfo.encode,
         enableExpress: fileSettings.enableExpress,
+        withoutIfNotExists: fileSettings.withoutIfNotExists,
         compiler: fileSettings.compiler,
         filetype: isDirectory ? 'DIRECTORY' : 'FILE',
         variables: JSON.stringify(fileSettings.variables)

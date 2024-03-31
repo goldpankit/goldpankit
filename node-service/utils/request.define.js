@@ -59,7 +59,7 @@ class Request {
       message = e.message
       // 读取i18n消息
       if (message.withI18n === true) {
-        message = message[cache.get('request_lang')]
+        message = message['zh']
       }
     }
     log.error(message)

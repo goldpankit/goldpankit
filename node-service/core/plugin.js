@@ -45,7 +45,7 @@ module.exports = {
     // 获取配置文件路径
     const codespace = extConfig.codespace
     // 读取配置结构
-    const config = JSON.parse(JSON.stringify(Const.SERVICE_CONFIG_CONTENT))
+    const config = JSON.parse(JSON.stringify(Const.PLUGIN_CONFIG_CONTENT))
     config.translator.output = Const.TRANSLATOR.DEFAULT_OUTPUT_PATH
     const configPath = this.__getConfigPath(codespace)
     // 合并配置
@@ -96,7 +96,7 @@ module.exports = {
   savePluginConfig(dto) {
     const pluginConfig =  this.getPluginConfig({ space: dto.space, service: dto.service, plugin: dto.plugin })
     // 读取配置结构
-    const newConfig = JSON.parse(JSON.stringify(Const.SERVICE_CONFIG_CONTENT))
+    const newConfig = JSON.parse(JSON.stringify(Const.PLUGIN_CONFIG_CONTENT))
     // 合并配置
     object
       .merge(pluginConfig, newConfig)

@@ -187,6 +187,7 @@ module.exports = {
         content: fileInfo.content,
         compiler: fileSetting.compiler,
         variables: JSON.stringify(fileSetting.variables),
+        withoutIfNotExists: fileSetting.withoutIfNotExists,
         enableExpress: fileSetting.enableExpress
       }
     })
@@ -197,6 +198,7 @@ module.exports = {
       plugin: dto.plugin,
       label: serviceConfig.label,
       version: serviceConfig.version,
+      minServiceVersion: serviceConfig.minServiceVersion,
       withPrivate: serviceConfig.private,
       receivable: serviceConfig.receivable,
       prices: serviceConfig.prices,

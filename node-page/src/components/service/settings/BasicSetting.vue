@@ -23,6 +23,9 @@
         <el-form-item :label="$t('service.settings.version')" prop="version" required>
           <el-input v-model="form.version" @input="saveConfig"/>
         </el-form-item>
+        <el-form-item v-if="isPlugin" label="最低兼容的服务版本号" prop="minServiceVersion">
+          <el-input v-model="form.minServiceVersion" @input="saveConfig"/>
+        </el-form-item>
         <el-form-item :label="$t('service.settings.compiler')" prop="compiler" required>
           <CompilerSelect v-model="form.compiler" @change="saveConfig"/>
         </el-form-item>
@@ -153,6 +156,7 @@ export default {
         name: '',
         label: '',
         version: '',
+        minServiceVersion: '',
         private: false,
         receivable: false,
         compiler: '',
@@ -309,6 +313,7 @@ export default {
             this.form.name = config.name || this.form.name
             this.form.label = config.label || config.name || this.form.label
             this.form.version = config.version || this.form.version
+            this.form.minServiceVersion = config.minServiceVersion || this.form.minServiceVersion
             this.form.introduce = config.introduce || this.form.introduce
             this.form.compiler = config.compiler || this.form.compiler
             this.form.prices = config.prices || this.form.prices
@@ -345,6 +350,8 @@ export default {
           space: this.space,
           service: this.service
         }
+        // 服务没有最小版本
+        delete this.form.minServiceVersion
       }
       // 保存配置
       saveConfig({
