@@ -198,6 +198,7 @@ module.exports = {
       plugin: dto.plugin,
       label: serviceConfig.label,
       version: serviceConfig.version,
+      minServiceVersion: serviceConfig.minServiceVersion,
       withPrivate: serviceConfig.private,
       receivable: serviceConfig.receivable,
       prices: serviceConfig.prices,

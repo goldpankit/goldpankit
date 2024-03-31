@@ -35,6 +35,37 @@ module.exports = {
     introduce: '', // 服务简介
     readme: `详细的服务描述有利于使用者更好的明确您的服务意图，您可以采用以下大纲来完善您的服务信息。\n\n## 服务介绍\n\n\n## 代码设计\n\n\n## 使用说明\n\n\n## 效果预览\n\n\n## 注意事项` // 服务说明
   },
+  // 插件配置文件内容
+  PLUGIN_CONFIG_CONTENT: {
+    name: '', // 服务标识符
+    label: '', // 服务名称
+    minServiceVersion: '', // 最小兼容的服务版本
+    version: '1.0.0', // 版本号
+    private: false, // 是否为私有服务
+    receivable: false, // 是否接收服务
+    compiler: 'static', // 编译器
+    repository: '', // 仓库
+    branch: '', // 仓库分支
+    supportedDatabases: [], // 支持的数据库列表
+    prices: [ // 价格定义
+      {
+        type: 'FREE',
+        value: 0
+      }
+    ],
+    builds: [], // 构建列表
+    unbuilds: [], // 卸载构建
+    variables: [], // 服务变量列表
+    translator: { // 翻译器
+      output: '', // 翻译输出路径
+      settings: [ // 翻译器列表，将代码翻译成模版
+        // {path: '*', source: 'ruoyi', target: '${projectEnName}' },
+      ]
+    },
+    settings: [], // 文件设置列表，设置内容见SERVICE_FILE_CONFIG_CONTENT
+    introduce: '', // 插件简介
+    readme: `详细的插件描述有利于使用者更好的明确您的插件意图，您可以采用以下大纲来完善您的服务信息。\n\n## 插件介绍\n\n\n## 代码设计\n\n\n## 使用说明\n\n\n## 效果预览\n\n\n## 注意事项` // 插件说明
+  },
   // 服务文件配置
   SERVICE_FILE_CONFIG_CONTENT: {
     path: '',
