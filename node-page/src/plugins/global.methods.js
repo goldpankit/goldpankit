@@ -51,6 +51,22 @@ export default {
     return ElMessageBox(defaultConfig)
   },
   // 成功弹窗提示
+  error (message, title, config) {
+    title = title || '错误'
+    const defaultConfig = {
+      type: 'error',
+      title: title,
+      message: message,
+      showCancelButton: false,
+      cancelButtonText: '关闭',
+      confirmButtonText: '知道了'
+    }
+    if (config != null) {
+      Object.assign(defaultConfig, config)
+    }
+    return ElMessageBox(defaultConfig)
+  },
+  // 成功弹窗提示
   success (message, title, config) {
     title = title || '操作成功'
     const defaultConfig = {
