@@ -184,7 +184,7 @@ export default {
       return 'padding-top: 0; border-top: 0;margin-top: 0;'
     },
     unique () {
-      return [this.space, this.service, this.selectedVersion]
+      return [this.space, this.service, this.plugin, this.selectedVersion]
     }
   },
   watch: {
@@ -253,6 +253,7 @@ export default {
     // 初始化变量
     initVariables () {
       if (this.versionData == null) {
+        this.variables = []
         return
       }
       this.variables = JSON.parse(this.versionData.variables).map(item => {
