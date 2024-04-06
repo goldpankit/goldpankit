@@ -15,7 +15,12 @@
       :min-width="getColumnMinWidth(variable)"
     >
       <template #header>
-        <em v-if="variable.required" class="required">*</em>{{variable.label}}
+        <div class="column-header-wrap">
+          <em v-if="variable.required" class="required">*</em>
+          <label>{{variable.label}}</label>
+          <!-- 填写提示 -->
+          <VariableRemarkIcon :variable="variable" />
+        </div>
       </template>
       <template #default="{ row }">
         <TableFieldVariableInput
@@ -32,10 +37,11 @@
 import MySqlFieldSelect from "../../database/MySqlFieldSelect.vue";
 import TableFieldVariableInput from "./TableFieldVariableInput.vue";
 import {getDefaultEmptyValue, isEmptyValue} from '../../../utils/variable'
+import VariableRemarkIcon from "@/components/service/installer/VariableRemarkIcon.vue";
 
 export default {
   name: "FieldSetting",
-  components: {TableFieldVariableInput, MySqlFieldSelect},
+  components: {VariableRemarkIcon, TableFieldVariableInput, MySqlFieldSelect},
   props: {
     valueKey: {
       default: 'value'
@@ -86,10 +92,16 @@ h5 {
   margin-top: 20px;
 }
 .el-table {
-  :deep(.required) {
-    color: var(--el-color-danger);
-    margin-right: 2px;
-    font-style: normal;
+  // 列头
+  :deep(.column-header-wrap) {
+    display: flex;
+    align-items: center;
+    // 必填
+    .required {
+      color: var(--el-color-danger);
+      margin-right: 2px;
+      font-style: normal;
+    }
   }
 }
 </style>

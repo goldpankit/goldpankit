@@ -47,12 +47,7 @@
                     <div class="label-wrap-left">
                       <label>{{variable.label}}</label>
                       <!-- 填写提示 -->
-                      <el-popover v-if="variable.remark != null && variable.remark.trim() !== ''" placement="top">
-                        <p>{{variable.remark}}</p>
-                        <template #reference>
-                          <el-icon><QuestionFilled /></el-icon>
-                        </template>
-                      </el-popover>
+                      <VariableRemarkIcon :variable="variable" />
                     </div>
                     <!-- 变量组增加箭头 -->
                     <div v-if="variable.type !== 'variable'" class="label-wrap-right">
@@ -107,10 +102,12 @@ import MergeWindow from "../service/installer/merge/MergeWindow.vue";
 import ServiceCodeErrorWindow from "../service/ServiceCodeErrorWindow.vue";
 import FormItemTip from "../common/FormItemTip.vue";
 import VipExpiredWindow from "@/components/usr/VipExpiredWindow.vue";
+import VariableRemarkIcon from "@/components/service/installer/VariableRemarkIcon.vue";
 
 export default {
   name: "ServiceInstaller",
   components: {
+    VariableRemarkIcon,
     VipExpiredWindow,
     FormItemTip,
     ServiceCodeErrorWindow,
