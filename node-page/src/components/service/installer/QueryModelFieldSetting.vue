@@ -39,7 +39,10 @@
       :min-width="getColumnMinWidth(variable)"
     >
       <template #header>
-        <em v-if="variable.required" class="required">*</em>{{variable.label}}
+        <em v-if="variable.required" class="required">*</em>
+        <label>{{variable.label}}</label>
+        <!-- 填写提示 -->
+        <VariableRemarkIcon :variable="variable" />
       </template>
       <template #default="{ row }">
         <TableFieldVariableInput
@@ -57,10 +60,11 @@ import TableFieldVariableInput from "./TableFieldVariableInput.vue";
 import QueryModelFieldSelect from "@/components/database/query-model/FieldSelect.vue";
 import SortableButton from "@/components/common/SortableButton.vue";
 import {getDefaultEmptyValue, isEmptyValue} from '@/utils/variable'
+import VariableRemarkIcon from "@/components/service/installer/VariableRemarkIcon.vue";
 
 export default {
   name: "QueryModelFieldSetting",
-  components: {SortableButton, QueryModelFieldSelect, TableFieldVariableInput },
+  components: {VariableRemarkIcon, SortableButton, QueryModelFieldSelect, TableFieldVariableInput },
   props: {
     valueKey: {
       default: 'value'
@@ -144,10 +148,16 @@ h5 {
   margin-top: 20px;
 }
 .el-table {
-  :deep(.required) {
-    color: var(--el-color-danger);
-    margin-right: 2px;
-    font-style: normal;
+  // 列头
+  :deep(.column-header-wrap) {
+    display: flex;
+    align-items: center;
+    // 必填
+    .required {
+      color: var(--el-color-danger);
+      margin-right: 2px;
+      font-style: normal;
+    }
   }
   // 关键字
   :deep(em) {
