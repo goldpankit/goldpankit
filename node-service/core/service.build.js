@@ -81,7 +81,6 @@ module.exports = {
                 content = fs.readFile(buildFilePath).content
               } else {
                 content = ''
-
               }
             }
             if (content.trim() !== '') {
