@@ -43,13 +43,22 @@
                 :required="variable.required"
               >
                 <template #label>
-                  <template v-if="variable.type === 'variable'">{{variable.label}}</template>
-                  <template v-else>
-                    <div class="label-wrap">
-                      <span>{{variable.label}}</span>
+                  <div class="label-wrap">
+                    <div class="label-wrap-left">
+                      <label>{{variable.label}}</label>
+                      <!-- 填写提示 -->
+                      <el-popover v-if="variable.remark != null && variable.remark.trim() !== ''" placement="top">
+                        <p>{{variable.remark}}</p>
+                        <template #reference>
+                          <el-icon><QuestionFilled /></el-icon>
+                        </template>
+                      </el-popover>
+                    </div>
+                    <!-- 变量组增加箭头 -->
+                    <div v-if="variable.type !== 'variable'" class="label-wrap-right">
                       <el-icon><ArrowRight /></el-icon>
                     </div>
-                  </template>
+                  </div>
                 </template>
                 <!-- 根变量 -->
                 <VariableInput v-if="variable.type === 'variable'" :variable="variable"/>
@@ -739,6 +748,26 @@ export default {
           display: flex;
           justify-content: space-between;
           align-items: center;
+          .label-wrap-left {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            .el-icon {
+              cursor: pointer;
+              font-size: 16px;
+              margin-left: 5px;
+              color: #999;
+              &:hover {
+                color: #555;
+              }
+            }
+          }
+          .label-wrap-right {
+            flex-shrink: 0;
+            width: 100px;
+            display: flex;
+            justify-content: flex-end;
+          }
         }
       }
       .group-vars {
