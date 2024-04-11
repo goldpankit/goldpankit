@@ -307,7 +307,10 @@ class Kit {
           return
         }
         // 获取项目安装的服务
-        const projectService = project.service[dto.service]
+        let projectService = null
+        if (project.service != null) {
+          projectService = project.service[dto.service]
+        }
         // 获取服务信息
         const serviceConfig = service.getServiceConfig({space: dto.space, service: dto.service, plugin: dto.plugin})
         // 如果存在翻译器，则先进行翻译
@@ -328,7 +331,7 @@ class Kit {
             serviceApi.compile({
               space: dto.space,
               service: dto.service,
-              projectServiceVersion: projectService.version,
+              projectServiceVersion: projectService == null ? null : projectService.version,
               minServiceVersion: serviceConfig.minServiceVersion,
               defaultCompiler: serviceConfig.compiler,
               variables: vars,
