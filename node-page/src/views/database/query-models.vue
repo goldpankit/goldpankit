@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import QueryModelView from "../../components/database/query-model/QueryModelView.vue";
+import QueryModelView from '@/components/database/query-model/QueryModelView'
 
 export default {
   components: {QueryModelView}

@@ -502,7 +502,7 @@ export default {
       left: 0;
       width: 100%;
       height: 62px;
-      background: #333;
+      background: var(--primary-color-light);
       padding: 0 20px;
       box-sizing: border-box;
       box-shadow: 0 1px 10px rgba(0, 0, 0, .5);
