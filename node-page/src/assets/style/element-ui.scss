@@ -31,6 +31,8 @@ body.theme-light {
     --el-button-active-border-color: var(--primary-color-match-1-transition);
     --el-button-active-color: var(--primary-color-match-1);
     --el-button-active-bg-color: var(--primary-color-match-1-transition);
+    --el-button-disabled-bg-color: var(--primary-color-match-1-transition);
+    --el-disabled-text-color: var(--font-color);
     font-weight: bold;
   }
   // 输入框

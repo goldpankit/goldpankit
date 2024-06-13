@@ -20,6 +20,17 @@ export function checkEmail (rule, value, callback, message) {
   callback()
 }
 
+/**
+ * 验证手机号
+ */
+export function checkMobile (rule, value, callback, message) {
+  if (!/^1[3456789]\d{9}$/.test(value)) {
+    callback(new Error(message))
+    return
+  }
+  callback()
+}
+
 // 验证版本号
 export function checkVersionNumber (rule, value, callback, message) {
   if (!/^(?!0)(\d+)\.(\d+)\.(\d+)/.test(value)) {

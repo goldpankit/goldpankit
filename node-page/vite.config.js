@@ -24,7 +24,8 @@ export default ({ mode }) => {
     resolve: {
       alias: {
         '@': fileURLToPath(new URL('./src', import.meta.url))
-      }
+      },
+      extensions: ['.vue', '.js']
     },
     server: {
       host: '127.0.0.1',

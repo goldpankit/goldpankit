@@ -41,6 +41,10 @@ html {
   .text-mini {
     font-size: var(--font-size-mini);
   }
+  // 错误提示
+  .text-danger {
+    color: var(--color-danger);
+  }
   // 图标按钮
   .button-icon {
     padding-left: 10px;

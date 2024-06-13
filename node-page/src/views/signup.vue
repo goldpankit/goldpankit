@@ -1,56 +1,61 @@
 <template>
   <div class="signup">
     <div class="background-text">
-      <p>我<em style="color: #999;">无力</em>创办一个<em>伟大</em>的公司</p>
-      <p>就让我的作品替我<em>致敬</em>每一个<em style="font-size: 40px;color: #000;">技术人</em>吧！！<em style="font-size: 35px;">加油，刘大逵！！</em></p>
+      <p>世界因<em style="color: #333;">技术</em>变得更简洁，每个技术人都值得<em>更好</em>！</p>
+      <p>让我的作品替我<em>致敬</em>每一个<em style="font-size: 40px;color: #000;">技术人</em>！</p>
     </div>
     <div class="wrap">
+      <!-- Logo -->
       <Logo :with-version="false" :with-animation="true"/>
+      <!-- 标题 -->
       <h2>注册KIT账号，开启极速研发</h2>
-      <el-form ref="form" :model="form" :rules="getRules()" @submit.stop>
-        <el-form-item label="我该如何称呼您？" prop="nickname" required>
-          <el-input v-model="form.nickname" type="text" size="large"/>
+      <!-- 表单 -->
+      <el-form ref="form" :model="form" @submit.stop>
+        <el-form-item label="希望网友如何称呼您？" prop="nickname">
+          <el-input v-model="form.nickname" type="text" size="large" maxlength="20"/>
         </el-form-item>
-        <el-form-item label="登录用户名" prop="username" required>
-          <el-input v-model="form.username" type="text" size="large"/>
+        <el-form-item label="登录用户名" prop="username">
+          <el-input v-model="form.username" type="text" placeholder="非必填" size="large" maxlength="50"/>
         </el-form-item>
-        <el-form-item class="password-item" label="登录密码" prop="password" required>
+        <el-form-item class="password-item" label="登录密码" prop="password">
           <el-input
             v-model="form.password"
             show-password
             type="password"
             size="large"
-            @keypress.enter.native="login()"
+            maxlength="20"
           />
         </el-form-item>
-        <el-form-item label="手机号码" prop="mobile" required>
+        <el-form-item label="手机号码" prop="otpElement">
           <el-input
-            v-model="form.mobile"
-            show-password
-            type="password"
+            v-model="form.otpElement"
             size="large"
-            @keypress.enter.native="login()"
+            maxlength="11"
           />
         </el-form-item>
-        <el-form-item label="短信验证码" prop="otp" required>
+        <el-form-item label="短信验证码" prop="otpCode">
           <div class="otp-input">
             <el-input
-              v-model="form.otp"
-              show-password
-              type="password"
+              v-model="form.otpCode"
               size="large"
-              @keypress.enter.native="login()"
+              maxlength="4"
             />
-            <el-button type="primary">发送验证码</el-button>
+            <el-button
+              type="primary"
+              :disabled="disabledSendOTPButton"
+              @click="sendOTP"
+            >{{ sendOTPData.buttonText }}</el-button>
           </div>
         </el-form-item>
       </el-form>
-      <div class="login-box">
+      <p class="text-danger" style="height: 40px;">{{ errorTip }}</p>
+      <!-- 底部操作 -->
+      <div class="footer-wrap">
         <div>
           <el-button
             type="important"
-            :disabled="loginData.isWorking"
-            @click="login()"
+            :disabled="disabledRegisButton"
+            @click="regis"
           >注册KIT账号</el-button>
         </div>
       </div>
@@ -62,109 +67,140 @@
 </template>
 
 <script>
-import cookie from 'js-cookie'
-import {loginByPassword, getLoginInfo} from "../api/user.login";
-import {save} from '@/api/user.token'
-import {mapMutations} from "vuex";
-import Logo from "@/components/common/Logo.vue";
+import { mapMutations } from 'vuex'
+import cookie from "js-cookie";
+import Logo from '@/components/common/Logo'
+import { regisByMobileOTP, sendRegisMobileOTP } from '@/api/user.regis'
+import { save } from '@/api/user.token'
+import {getLoginInfo} from "@/api/user.login";
 
 export default {
-  components: {Logo},
+  components: { Logo },
   data () {
     return {
+      isWorking: {
+        regis: false,
+        sendOTP: false
+      },
+      errorTip: ' ',
       // 密码登录表单
       form: {
+        nickname: '',
         username: '',
-        password: ''
+        password: '',
+        otpElement: '',
+        otpCodeId: null,
+        otpCode: ''
       },
-      // 短信登录表单
-      mobileOtpForm: {
-        mobile: '',
-        otp: '',
-        otpUUID: ''
-      },
-      loginData: {
-        isWorking: false
+      sendOTPData: {
+        time: 5,
+        buttonText: '发送验证码'
       }
+    }
+  },
+  computed: {
+    // 发送验证码按钮是否禁用
+    disabledSendOTPButton () {
+      if (this.isWorking.sendOTP) {
+        return true
+      }
+      if (this.form.otpElement.trim() === '') {
+        return true
+      }
+      return !/^1[3456789]\d{9}$/.test(this.form.otpElement);
+    },
+    // 注册按钮是否禁用
+    disabledRegisButton () {
+      if (this.isWorking.regis) {
+        return true
+      }
+      if (this.form.nickname.trim() === '') {
+        return true
+      }
+      if (this.form.password.trim() === '') {
+        return true
+      }
+      if (this.form.otpElement.trim() === '') {
+        return true
+      }
+      if (!/^1[3456789]\d{9}$/.test(this.form.otpElement)) {
+        return true
+      }
+      return this.form.otpCode.trim() === '';
     }
   },
   methods: {
     ...mapMutations(['setUserInfo']),
-    getRules () {
-      return {
-        username: [
-          { required: true, message: this.$t('form.isRequired', { value: this.$t('user.username') })}
-        ],
-        password: [
-          { required: true, message: this.$t('form.isRequired', { value: this.$t('user.password') })}
-        ]
+    /**
+     * 注册
+     */
+    regis () {
+      if (this.disabledRegisButton) {
+        return
       }
-    },
-    // 密码登录
-    login (force = false) {
-      this.$refs.form.validate()
-        .then(() => {
-          if (this.loginData.isWorking) {
-            return
-          }
-          this.loginData.isWorking = true
-          loginByPassword ({
-            ...this.form,
-            username: this.form.username.trim(),
-            force
-          })
-            .then(token => {
-              cookie.set('x-kit-token', token)
-              // 调用接口，将令牌存储在用户设备文件系统中，便于下次自动授权
-              return save(token)
-            })
-            .then(() => {
-              // 获取用户信息
-              return getLoginInfo()
-            })
-            .then(userInfo => {
-              // 存储用户信息
-              this.setUserInfo(userInfo)
-              // 获取重定向地址
-              const redirect_uri = this.$route.query.redirect_uri
-              if (redirect_uri != null && redirect_uri !== '') {
-                this.$router.push(redirect_uri)
-              } else {
-                const backUri = this.$router.options.history.state.back
-                /**
-                 * 返回页面为null或为注册页面，则跳转到用户桌面去。当直接访问登录页面时，返回页为null。
-                 */
-                if (backUri == null || backUri === '/signup') {
-                  this.$router.push({name: 'Desktop'})
-                }
-                // 其他页面直接返回
-                else {
-                  this.$router.back()
-                }
-              }
-            })
-            .catch(e => {
-              // 账号在其他设备登录
-              if (e.code === 6201) {
-                this.alert('当前账号已登录，继续登录后其它设备将自动离线，确认要继续登录吗？如果您对当前登录状态存在疑问，建议您登录后尽快修改密码！', '重要提示', {
-                  showCancelButton: true,
-                  cancelButtonText: '暂不登录',
-                  confirmButtonText: '继续登录'
-                })
-                  .then(() => {
-                    this.login(true)
-                  })
-                return
-              }
-              this.$tip.apiFailed(e)
-            })
-            .finally(() => {
-              // 标记登录状态为false
-              this.loginData.isWorking = false
-            })
+      this.errorTip = ''
+      // 验证验证码
+      if (this.form.otpCodeId == null) {
+        this.errorTip = '短信验证码不正确'
+        return
+      }
+      this.isWorking.regis = true
+      regisByMobileOTP(this.form)
+        .then(token => {
+          cookie.set('x-kit-token', token)
+          // 调用接口，将令牌存储在用户设备文件系统中，便于下次自动授权
+          return save(token)
         })
-        .catch(() => {})
+        .then(() => {
+          // 获取用户信息
+          return getLoginInfo()
+        })
+        .then(userInfo => {
+          // 存储用户信息
+          this.setUserInfo(userInfo)
+          // 跳转桌面
+          this.$router.push({name: 'Desktop'})
+        })
+        .catch(e => {
+          this.errorTip = e.message
+        })
+        .finally(() => {
+          this.isWorking.regis = false
+        })
     },
+    /**
+     * 发送短信验证码
+     */
+    sendOTP () {
+      if (this.disabledSendOTPButton) {
+        return
+      }
+      this.errorTip = ''
+      this.isWorking.sendOTP = true
+      sendRegisMobileOTP({
+        mobile: this.form.otpElement
+      })
+        .then(otpCodeId => {
+          this.form.otpCodeId = otpCodeId
+          // 倒计时
+          this.sendOTPData.buttonText = `${this.sendOTPData.time}s`
+          const interval = setInterval(() => {
+            if (this.sendOTPData.time === 0) {
+              clearInterval(interval)
+              this.sendOTPData.buttonText = '发送验证码'
+              this.sendOTPData.time = 5
+              this.isWorking.sendOTP = false
+            } else {
+              this.sendOTPData.time--
+              this.sendOTPData.buttonText = `${this.sendOTPData.time}s`
+            }
+          }, 1000)
+        })
+        .catch(e => {
+          this.errorTip = e.message
+          this.isWorking.sendOTP = false
+        })
+    }
   }
 }
 </script>
@@ -224,16 +260,13 @@ export default {
     margin-bottom: 50px;
   }
   :deep(.el-form) {
-    .password-item {
-      .el-form-item__label {
-        position: relative;
-        a {
-          position: absolute;
-          top: 0;
-          right: 0;
-          text-decoration: underline !important;
-        }
-      }
+    .el-form-item__label {
+      font-weight: bold;
+    }
+    // 输入框
+    .el-input__inner {
+      font-weight: bold;
+      font-size: var(--font-size-middle);
     }
     // 短信验证码输入
     .otp-input {
@@ -249,8 +282,8 @@ export default {
       }
     }
   }
-  .login-box {
-    margin-top: 100px;
+  .footer-wrap {
+    margin-top: 50px;
     .el-button {
       width: 100%;
       height: 55px;

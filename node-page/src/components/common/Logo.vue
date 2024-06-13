@@ -89,7 +89,7 @@ export default {
         height: 100%;
         background-color: var(--primary-color);
         box-sizing: border-box;
-        transform: translateX(50px);
+        transform: translateX(20px);
         border-radius: 10px;
         animation: loop 5s linear infinite;
       }

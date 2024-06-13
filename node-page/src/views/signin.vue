@@ -2,12 +2,11 @@
   <div class="signup">
     <div class="background-text">
       <p>我<em style="color: #999;">无力</em>创办一个<em>伟大</em>的公司</p>
-      <p>就让我的作品替我<em>致敬</em>每一个<em style="font-size: 40px;color: #000;">技术人</em>吧！！<em style="font-size: 35px;">加油，刘大逵！！</em></p>
+      <p>但我的<em>人生</em>依然需要满意的<em>作品</em><br/><em style="font-size: 30px;">加油，刘大逵！！</em></p>
     </div>
     <div class="wrap">
       <Logo :with-version="false" :with-animation="true"/>
       <h2>登录KIT</h2>
-      <!-- 密码登录 -->
       <el-form v-if="loginType === 'password'" ref="form" :model="form" :rules="getRules()" @submit.stop>
         <el-form-item label="用户名或手机号码" prop="username" required>
           <el-input v-model="form.username" type="text" size="large"/>
@@ -22,22 +21,7 @@
           />
         </el-form-item>
       </el-form>
-      <!-- 短信登录 -->
-      <el-form v-else-if="loginType === 'mobile-otp'" ref="form" :model="mobileOtpForm" :rules="getRules()" @submit.stop>
-        <el-form-item label="手机号码" prop="mobile" required>
-          <el-input v-model="form.username" type="text" size="large"/>
-        </el-form-item>
-        <el-form-item class="password-item" :label="$t('user.password')" prop="password" required>
-          <el-input
-            v-model="form.password"
-            show-password
-            type="password"
-            size="large"
-            @keypress.enter.native="login()"
-          />
-        </el-form-item>
-      </el-form>
-      <div class="login-box">
+      <div class="footer-wrap">
         <div>
           <el-button
             type="important"
@@ -55,18 +39,16 @@
 </template>
 
 <script>
+import { mapMutations } from 'vuex'
 import cookie from 'js-cookie'
-import {loginByPassword, getLoginInfo} from "../api/user.login";
-import {save} from "../api/user.token";
-import {mapMutations} from "vuex";
-import Logo from "@/components/common/Logo.vue";
+import Logo from '@/components/common/Logo'
+import { loginByPassword, getLoginInfo } from '@/api/user.login'
+import { save } from '@/api/user.token'
 
 export default {
-  components: {Logo},
+  components: { Logo },
   data () {
     return {
-      // 登录类型
-      loginType: 'password',
       // 密码登录表单
       form: {
         username: '',
@@ -231,7 +213,7 @@ export default {
       }
     }
   }
-  .login-box {
+  .footer-wrap {
     margin-top: 100px;
     .el-button {
       width: 100%;
