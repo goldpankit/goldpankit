@@ -5,13 +5,15 @@
       <p>但我的<em>人生</em>依然需要满意的<em>作品</em><br/><em style="font-size: 30px;">加油，刘大逵！！</em></p>
     </div>
     <div class="wrap">
+      <!-- Logo -->
       <Logo :with-version="false" :with-animation="true"/>
       <h2>登录KIT</h2>
-      <el-form v-if="loginType === 'password'" ref="form" :model="form" :rules="getRules()" @submit.stop>
-        <el-form-item label="用户名或手机号码" prop="username" required>
-          <el-input v-model="form.username" type="text" size="large"/>
+      <!-- 表单 -->
+      <el-form ref="form" :model="form" @submit.stop>
+        <el-form-item label="用户名或手机号码" prop="username">
+          <el-input ref="username" v-model="form.username" type="text" size="large"/>
         </el-form-item>
-        <el-form-item class="password-item" label="登录密码" prop="password" required>
+        <el-form-item class="password-item" label="登录密码" prop="password">
           <el-input
             v-model="form.password"
             show-password
@@ -21,11 +23,14 @@
           />
         </el-form-item>
       </el-form>
+      <!-- 错误提示 -->
+      <p class="text-danger" style="height: 40px;">{{ errorTip }}</p>
+      <!-- 底部操作 -->
       <div class="footer-wrap">
         <div>
           <el-button
             type="important"
-            :disabled="loginData.isWorking"
+            :disabled="disabledLoginButton"
             @click="login()"
           >{{$t('common.signIn')}}</el-button>
         </div>
@@ -49,111 +54,107 @@ export default {
   components: { Logo },
   data () {
     return {
+      isWorking: {
+        login: false
+      },
       // 密码登录表单
       form: {
         username: '',
         password: ''
-      },
-      // 短信登录表单
-      mobileOtpForm: {
-        mobile: '',
-        otp: '',
-        otpUUID: ''
-      },
-      loginData: {
-        isWorking: false
       }
+    }
+  },
+  computed: {
+    disabledLoginButton () {
+      if (this.isWorking.login) {
+        return true
+      }
+      if (this.form.username.trim() === '') {
+        return true
+      }
+      return this.form.password.trim() === ''
     }
   },
   methods: {
     ...mapMutations(['setUserInfo']),
-    getRules () {
-      return {
-        username: [
-          { required: true, message: this.$t('form.isRequired', { value: this.$t('user.username') })}
-        ],
-        password: [
-          { required: true, message: this.$t('form.isRequired', { value: this.$t('user.password') })}
-        ]
-      }
-    },
     // 密码登录
     login (force = false) {
-      this.$refs.form.validate()
+      if (this.disabledLoginButton) {
+        return
+      }
+      this.isWorking.login = true
+      loginByPassword ({
+        username: this.form.username.trim(),
+        password: this.form.password.trim(),
+        force
+      })
+        .then(token => {
+          cookie.set('x-kit-token', token)
+          // 调用接口，将令牌存储在用户设备文件系统中，便于下次自动授权
+          return save(token)
+        })
         .then(() => {
-          if (this.loginData.isWorking) {
+          // 获取用户信息
+          return getLoginInfo()
+        })
+        .then(userInfo => {
+          localStorage.setItem('login_username', this.form.username)
+          // 存储用户信息
+          this.setUserInfo(userInfo)
+          // 获取重定向地址
+          const redirect_uri = this.$route.query.redirect_uri
+          if (redirect_uri != null && redirect_uri !== '') {
+            this.$router.push(redirect_uri)
+          } else {
+            const backUri = this.$router.options.history.state.back
+            /**
+             * 返回页面为null或为注册页面，则跳转到用户桌面去。当直接访问登录页面时，返回页为null。
+             */
+            if (backUri == null || backUri === '/signup') {
+              this.$router.push({name: 'Desktop'})
+            }
+            // 其他页面直接返回
+            else {
+              this.$router.back()
+            }
+          }
+        })
+        .catch(e => {
+          // 账号在其他设备登录
+          if (e.code === 6201) {
+            this.alert('当前账号已登录，继续登录后其它设备将自动离线，确认要继续登录吗？如果您对当前登录状态存在疑问，建议您登录后尽快修改密码！', '重要提示', {
+              showCancelButton: true,
+              cancelButtonText: '暂不登录',
+              confirmButtonText: '继续登录'
+            })
+              .then(() => {
+                this.login(true)
+              })
             return
           }
-          this.loginData.isWorking = true
-          loginByPassword ({
-            ...this.form,
-            username: this.form.username.trim(),
-            force
-          })
-            .then(token => {
-              cookie.set('x-kit-token', token)
-              // 调用接口，将令牌存储在用户设备文件系统中，便于下次自动授权
-              return save(token)
-            })
-            .then(() => {
-              // 获取用户信息
-              return getLoginInfo()
-            })
-            .then(userInfo => {
-              // 存储用户信息
-              this.setUserInfo(userInfo)
-              // 获取重定向地址
-              const redirect_uri = this.$route.query.redirect_uri
-              if (redirect_uri != null && redirect_uri !== '') {
-                this.$router.push(redirect_uri)
-              } else {
-                const backUri = this.$router.options.history.state.back
-                /**
-                 * 返回页面为null或为注册页面，则跳转到用户桌面去。当直接访问登录页面时，返回页为null。
-                 */
-                if (backUri == null || backUri === '/signup') {
-                  this.$router.push({name: 'Desktop'})
-                }
-                // 其他页面直接返回
-                else {
-                  this.$router.back()
-                }
-              }
-            })
-            .catch(e => {
-              // 账号在其他设备登录
-              if (e.code === 6201) {
-                this.alert('当前账号已登录，继续登录后其它设备将自动离线，确认要继续登录吗？如果您对当前登录状态存在疑问，建议您登录后尽快修改密码！', '重要提示', {
-                  showCancelButton: true,
-                  cancelButtonText: '暂不登录',
-                  confirmButtonText: '继续登录'
-                })
-                  .then(() => {
-                    this.login(true)
-                  })
-                return
-              }
-              this.$tip.apiFailed(e)
-            })
-            .finally(() => {
-              // 标记登录状态为false
-              this.loginData.isWorking = false
-            })
+          this.$tip.apiFailed(e)
         })
-        .catch(() => {})
-    },
+        .finally(() => {
+          // 标记登录状态为false
+          this.isWorking.login = false
+        })
+    }
+  },
+  mounted () {
+    const username = localStorage.getItem('login_username')
+    if (username) {
+      this.form.username = username
+    }
+    this.$refs.username.focus()
   }
 }
 </script>
 
 <style scoped lang="scss">
 .signup {
-  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  overflow-y: auto;
-  padding: 50px 0;
 }
 .background-text {
   width: 1200px;
@@ -164,6 +165,7 @@ export default {
   position: absolute;
   display: flex;
   justify-content: space-between;
+  background-color: var(--background-color);
   p {
     width: 300px;
     em {
@@ -188,7 +190,7 @@ export default {
   box-sizing: border-box;
   box-shadow: var(--page-shadow);
   border-radius: var(--radius-page);
-  position: relative;
+  position: absolute;
   z-index: 99;
   .logo {
     justify-content: center;
@@ -201,16 +203,15 @@ export default {
     margin-bottom: 50px;
   }
   :deep(.el-form) {
-    .password-item {
-      .el-form-item__label {
-        position: relative;
-        a {
-          position: absolute;
-          top: 0;
-          right: 0;
-          text-decoration: underline !important;
-        }
-      }
+    .el-form-item__label {
+      font-weight: bold;
+    }
+    // 输入框
+    .el-input__inner {
+      font-weight: bold;
+      font-size: var(--font-size-middle);
+      letter-spacing: 2px;
+      text-align: center;
     }
   }
   .footer-wrap {

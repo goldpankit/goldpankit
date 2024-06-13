@@ -7,7 +7,6 @@
     <div class="wrap">
       <!-- Logo -->
       <Logo :with-version="false" :with-animation="true"/>
-      <!-- 标题 -->
       <h2>注册KIT账号，开启极速研发</h2>
       <!-- 表单 -->
       <el-form ref="form" :model="form" @submit.stop>
@@ -48,6 +47,7 @@
           </div>
         </el-form-item>
       </el-form>
+      <!-- 错误提示 -->
       <p class="text-danger" style="height: 40px;">{{ errorTip }}</p>
       <!-- 底部操作 -->
       <div class="footer-wrap">
@@ -207,12 +207,9 @@ export default {
 
 <style scoped lang="scss">
 .signup {
-  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  overflow-y: auto;
-  padding: 50px 0;
 }
 .background-text {
   width: 1200px;
@@ -247,7 +244,7 @@ export default {
   box-sizing: border-box;
   box-shadow: var(--page-shadow);
   border-radius: var(--radius-page);
-  position: relative;
+  position: absolute;
   z-index: 99;
   .logo {
     justify-content: center;
@@ -266,6 +263,7 @@ export default {
     // 输入框
     .el-input__inner {
       font-weight: bold;
+      letter-spacing: 2px;
       font-size: var(--font-size-middle);
     }
     // 短信验证码输入

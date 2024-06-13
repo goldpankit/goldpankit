@@ -88,9 +88,7 @@ export default {
     toUserProfile () {
       if (this.userInfo == null) {
         this.$router.push({ name: 'SignIn' })
-        return
       }
-      //this.$router.push({ name: 'UserProfile' })
     },
     // 退出登录
     doLogout () {
@@ -100,6 +98,7 @@ export default {
       this.logoutData.isWorking = true
       this.logout()
         .then(() => {
+          this.$router.push({ name: 'SignIn' })
         })
         .catch(e => {
           this.$tip.apiFailed(e)
