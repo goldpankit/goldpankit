@@ -3,39 +3,125 @@
     <div class="banner">
       <div class="wrap">
         <h2>Gold Pan Kit</h2>
-        <h3>{{$t('guide.kitIntroduce')}}</h3>
-        <p>{{$t('guide.kitDescription')}}</p>
+        <h3>我想助力您和您的团队进行高效的项目研发</h3>
+        <p>经过五年多的发展，很荣幸我们获得了「清华海峡院」和「彭一波先生」的认可和投资。未来我们（就我吧）将继续佛系研发，直到KIT成为真正好用的产品！</p>
         <div class="opera">
           <el-button @click="$router.push({name: 'SignUp'})" type="important">{{$t('common.signUp')}}</el-button>
-          <el-button type="primary" @click="$router.push({name: 'PublicServices'})">{{$t('guide.goToServices')}}</el-button>
+          <el-button type="important2" @click="$router.push({name: 'PublicServices'})">{{$t('guide.goToServices')}}</el-button>
         </div>
       </div>
-      <span class="emb">G</span>
-      <span class="emb service">{{$t('guide.selectService2')}}</span>
-      <span class="emb install">{{$t('service.install')}}</span>
-      <span class="emb done">{{$t('guide.completed')}}</span>
     </div>
-    <div class="content">
+    <div class="content-wrap">
+      <div class="content what-content">
+        <div class="wrap">
+          <h3>WHAT is the KIT？</h3>
+          <ul class="words">
+            <li>KIT is ....，好吧我说中文！</li>
+            <li>简单来讲，KIT就是个GITHUB！但，在KIT上获取的代码是动态的！</li>
+            <li>更简单的来说，录入参数，就可以构建出你想要的项目、框架和功能！</li>
+            <li>所以！！！</li>
+            <li>你可以在这里快速构建出各个技术框架（技术栈想怎么集成就怎么集成的那种），虽然目前我们支持的技术框架并不多！</li>
+            <li>你也可以在这里快速构建出一整套系统，并且功能随意挑，再也不用像GIT那样拉下来就是一大堆不要的功能啦！比如大家想要的电商小程序、知识付费APP等，虽然这些我们都还没有！</li>
+            <li>更重要的是，在KIT上构建的项目或框架，你可以很方便的进行升级和及时获得项目重大BUG消息！防止你的项目出现了重大漏洞造成了公司的损失！</li>
+            <li>当然，还能替代一些代码生成器的工作，无论是单表还是多表，你都可以在KIT上直接构建出页面和接口！</li>
+            <li>未来我们还会深度整合AI技术，让一切逐渐不可思议！</li>
+          </ul>
+        </div>
+      </div>
+      <div class="content">
+        <div class="wrap">
+          <h3>发展历史</h3>
+          <el-timeline>
+            <el-timeline-item timestamp="2018/12" placement="top">
+              <el-card>
+                <h4>想法诞生</h4>
+                <p>之前在开发一款基于浏览器的操作系统，想用它来实现未来跨硬件且高隐私的数据操作和读取。系统研发完了，但应用过多，没法快速实现，所以想实现一个极速开发平台。</p>
+              </el-card>
+            </el-timeline-item>
+            <el-timeline-item timestamp="2019/3/16" placement="top">
+              <el-card>
+                <h4>前身发布</h4>
+                <p>2019年3月16日正式发布<a href="http://coderd.adjustrd.com" target="_blank">CodeRd</a>（Kit前身）</p>
+              </el-card>
+            </el-timeline-item>
+            <el-timeline-item timestamp="2021/1/18" placement="top">
+              <el-card>
+                <h4>辞职</h4>
+                <p>2021年1月28日辞了工作，回到湖南老家创办公司，把精力全身心投入到产品中。</p>
+              </el-card>
+            </el-timeline-item>
+            <el-timeline-item timestamp="2021/3/8" placement="top">
+              <el-card>
+                <h4>成立公司</h4>
+                <p>2021年3月8日成立了桂阳阿茄思特网络技术有限公司，阿茄思特为Adjust的谐音，寓意公司为“调整”而生，简称“AD科技”。注册了公司域名adjustrd.com，后面加了“路”的缩写“rd”，寓意我们愿意不断的去调整目前世界所有不够完善的一切。</p>
+              </el-card>
+            </el-timeline-item>
+            <el-timeline-item timestamp="2023/5/6" placement="top">
+              <el-card>
+                <h4>获天使轮投资</h4>
+                <p>经过2年的摸爬滚打，通过了「清华海峡院」的项目评估，2023年5月6日获得了「清华海峡院北京办公室副主任彭一波」先生10万元资金投入和100万元的资源投入。</p>
+              </el-card>
+            </el-timeline-item>
+            <el-timeline-item timestamp="2023/8/17" placement="top">
+              <el-card>
+                <h4>正式发布</h4>
+                <p>经过3个月的研发，2023年8月17日首次发布v1.1.0。</p>
+              </el-card>
+            </el-timeline-item>
+            <el-timeline-item timestamp="2024/2/1" placement="top">
+              <el-card>
+                <h4>扩大团队</h4>
+                <p>拿着手头上的积蓄和投资款开始招募团队，组建了一个5人团队，准备做大做强！筹划KIT的商业模式，从全面开放通过售卖服务和插件的方式，到尝试只做付费用户的方式。</p>
+              </el-card>
+            </el-timeline-item>
+            <el-timeline-item timestamp="2024/5/31" placement="top">
+              <el-card>
+                <h4>缩减团队</h4>
+                <p>在尝试两次商业模式的变化后，手头上资金不多了，准备干老本行——接外包！公司团队缩减至了2个人，加上外部优秀的合作人员，差不多团队还有10人。</p>
+              </el-card>
+            </el-timeline-item>
+            <el-timeline-item timestamp="2024/6/14" placement="top">
+              <el-card>
+                <h4>全面免费</h4>
+                <p>KIT进入了全面免费模式，不再收费。目标只有一个，让KIT真正的好用和被接受！</p>
+              </el-card>
+            </el-timeline-item>
+            <el-timeline-item timestamp="1993/8/13" placement="top">
+              <el-card>
+                <h4>未来</h4>
+                <p>未来就回到初衷，不管投资人怎么想。我只踏踏实实基于KIT提供的服务做好外包项目，没有外包项目时就升级KIT，开发更多的服务和插件。</p>
+              </el-card>
+            </el-timeline-item>
+          </el-timeline>
+        </div>
+      </div>
+      <div class="content guide-content">
       <div class="wrap">
-        <h3>{{$t('guide.start')}}</h3>
+        <h3>试一试</h3>
         <ul>
           <li>
-            <h4>i. {{$t('guide.selectService')}}</h4>
+            <h4>i. 注册个账号</h4>
+            <p>需要有可以接收短信的大陆手机号，单纯用来修改密码和BUG通知，个人信息均加密存储，不会泄漏也不会打电话骚扰。</p>
+          </li>
+          <li>
+            <h4>ii. {{$t('guide.selectService')}}</h4>
             <p>{{$t('guide.serviceIntroduce')}}</p>
           </li>
           <li>
-            <h4>ii. {{$t('guide.installService')}}</h4>
+            <h4>iii. {{$t('guide.installService')}}</h4>
             <p>{{$t('guide.installIntroduce')}}</p>
           </li>
           <li>
-            <h4>iii. 安装插件</h4>
+            <h4>iv. 安装插件</h4>
             <p>KIT插件表示框架或基础工程中的某一个功能模块或技术栈集成代码。可在工作台页面选择您需要的插件进行安装。</p>
           </li>
         </ul>
         <div class="opera">
-          <el-button type="primary" size="large"  @click="$router.push({name: 'PublicServices'})">{{$t('guide.goToServices')}}</el-button>
+          <el-button type="important" size="large"  @click="$router.push({name: 'SignUp'})">注册个账号</el-button>
+          <el-button type="important2" size="large"  @click="$router.push({name: 'PublicServices'})">{{$t('guide.goToServices')}}</el-button>
         </div>
       </div>
+    </div>
     </div>
     <footer>
       {{$t('common.currentVersion')}}: v{{version}}
@@ -78,8 +164,8 @@ export default {
 }
 .banner {
   height: 800px;
-  animation: changeBackground 10s ease-in-out infinite alternate;
-  background: #FC777D;
+  // animation: changeBackground 10s ease-in-out infinite alternate;
+  background: #2e3444;
   position: relative;
   overflow: hidden;
   .wrap {
@@ -127,44 +213,21 @@ export default {
     margin-bottom: 15px;
     line-height: 30px;
   }
-  .emb {
-    transform: rotate(45deg);
-    position: absolute;
-    left: 150px;
-    top: 120px;
-    font-size: 395px;
-    color: #c46165;
-    font-family: fantasy;
-    font-weight: bold;
-    &.service {
-      font-size: 50px;
-      left: 450px;
-      top: 100px;
-      transform: none;
-      color: #502829;
-    }
-    &.install {
-      font-size: 50px;
-      left: 800px;
-      top: initial;
-      bottom: 50px;
-      transform: none;
-      color: #773c3e;
-    }
-    &.done {
-      font-size: 50px;
-      left: 1050px;
-      top: initial;
-      bottom: 200px;
-      transform: none;
-      color: #a25154;
-    }
-  }
+}
+.content-wrap {
+  width: 88%;
+  min-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+  top: -150px;
+  box-shadow: 0 0 20px -10px #999;
+  border-radius: 100px;
+  overflow: hidden;
 }
 .content {
   background: var(--color-light);
   .wrap {
-    width: var(--page-width);
+    width: 1200px;
     margin: 0 auto;
     padding: var(--gap-page-padding);
     h3 {
@@ -184,8 +247,20 @@ export default {
         }
       }
     }
+    ul.words {
+      li {
+        font-size: 20px;
+      }
+    }
     p {
       font-size: 20px;
+    }
+    // 时间线
+    .el-card {
+      border-radius: 100px;
+      padding: 20px 100px;
+      box-shadow: none;
+      border-width: 5px;
     }
     .opera {
       display: flex;
@@ -199,11 +274,26 @@ export default {
     }
   }
 }
+// 什么是KIT
+.content.what-content {
+  // background-color: #ecf0f9;
+  background-color: var(--primary-color-match-1);
+  .wrap {
+    padding-left: 550px;
+    background: url('/images/coding_boy.svg') no-repeat;
+    background-size: 550px auto;
+    background-position: 0 150px;
+  }
+}
+// 开始使用
+.content.guide-content {
+  background-color: #2e3444;
+  color: #fff;
+}
 footer {
   display: flex;
   justify-content: center;
   padding: 50px;
-  background: var(--background-color);
 }
 @keyframes changeBackground {
   0%   { background-color: #FC777D; }

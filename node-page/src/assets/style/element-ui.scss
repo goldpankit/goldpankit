@@ -35,6 +35,21 @@ body.theme-light {
     --el-disabled-text-color: var(--font-color);
     font-weight: bold;
   }
+  // 重点按钮
+  .el-button--important2 {
+    --el-button-text-color: var(--color-light);
+    --el-button-bg-color: var(--primary-color-match-2);
+    --el-button-border-color: var(--primary-color-match-2);
+    --el-button-hover-text-color: var(--color-light);
+    --el-button-hover-bg-color: var(--primary-color-match-2);
+    --el-button-hover-border-color: var(--primary-color-match-2);
+    --el-button-active-border-color: var(--primary-color-match-2-transition);
+    --el-button-active-color: var(--primary-color-match-2);
+    --el-button-active-bg-color: var(--primary-color-match-2-transition);
+    --el-button-disabled-bg-color: var(--primary-color-match-2-transition);
+    --el-disabled-text-color: var(--color-light);
+    font-weight: bold;
+  }
   // 输入框
   .el-input, .el-textarea {
     --el-input-focus-border-color: var(--input-border-color);
