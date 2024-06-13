@@ -35,6 +35,9 @@ axiosInstance.interceptors.response.use(function (response) {
   }
   return Promise.reject(response.data)
 }, function (error) {
+  if (error.response.status === 500) {
+    return Promise.reject(new Error('服务繁忙或者出现了错误，请先检查KIT启动状态，如KIT状态正常请在KIT群中联系管理员！'))
+  }
   // 对响应错误做点什么
   return Promise.reject(error)
 })

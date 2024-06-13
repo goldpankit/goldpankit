@@ -235,7 +235,7 @@ export default {
     text-decoration: underline !important;
     font-weight: bold;
     &:first-of-type {
-      margin-right: 30px;
+      margin-right: 20px;
     }
   }
 }
