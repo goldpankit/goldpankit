@@ -93,7 +93,7 @@ export default {
         otpCode: ''
       },
       sendOTPData: {
-        time: 5,
+        time: 60,
         buttonText: '发送验证码'
       }
     }
@@ -188,7 +188,7 @@ export default {
             if (this.sendOTPData.time === 0) {
               clearInterval(interval)
               this.sendOTPData.buttonText = '发送验证码'
-              this.sendOTPData.time = 5
+              this.sendOTPData.time = 60
               this.isWorking.sendOTP = false
             } else {
               this.sendOTPData.time--

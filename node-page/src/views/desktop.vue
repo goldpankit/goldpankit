@@ -15,10 +15,6 @@
           </template>
           <template v-else>
             <h2>{{ getUserDisplayName(userInfo) }}</h2>
-            <p v-if="getRemainingDay(userInfo.vipExpiredTime) === 0" class="remaining-tip">
-              账号已过期
-            </p>
-            <p v-else class="remaining-tip">账号剩余 <em>{{ getRemainingDay(userInfo.vipExpiredTime) }}</em> 天</p>
             <ul v-if="userInfo != null">
               <li>
                 <el-button
