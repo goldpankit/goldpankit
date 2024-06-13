@@ -131,6 +131,11 @@ const router = createRouter({
           path: '/signup',
           name: 'SignUp',
           component: () => import('@/views/signup.vue')
+        },
+        {
+          path: '/pwd/find-by-mobile-otp',
+          name: 'FindPasswordByMobileOTP',
+          component: () => import('@/views/pwd/find-by-mobile-otp.vue')
         }
       ]
     },

@@ -11,7 +11,13 @@
       <!-- 表单 -->
       <el-form ref="form" :model="form" @submit.stop>
         <el-form-item label="用户名或手机号码" prop="username">
-          <el-input ref="username" v-model="form.username" type="text" size="large"/>
+          <el-input
+            ref="username"
+            v-model="form.username"
+            type="text"
+            size="large"
+            @input="errorTip = ''"
+          />
         </el-form-item>
         <el-form-item class="password-item" label="登录密码" prop="password">
           <el-input
@@ -19,6 +25,7 @@
             show-password
             type="password"
             size="large"
+            @input="errorTip = ''"
             @keypress.enter.native="login()"
           />
         </el-form-item>
@@ -37,7 +44,7 @@
       </div>
       <div class="create-account">
         <router-link :to="{ name: 'SignUp' }">创建新账号</router-link>
-        <router-link :to="{ name: 'SignUp' }">忘记密码了</router-link>
+        <router-link :to="{ name: 'FindPasswordByMobileOTP' }">忘记密码了</router-link>
       </div>
     </div>
   </div>

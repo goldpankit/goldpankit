@@ -13,10 +13,3 @@ export function saveProfile (data) {
     baseURL: import.meta.env.VITE_REMOTE_API_PREFIX
   })
 }
-
-// 修改用户资料
-export function updatePwd (data) {
-  return request.post('/usr/password/update', data, {
-    baseURL: import.meta.env.VITE_REMOTE_API_PREFIX
-  })
-}

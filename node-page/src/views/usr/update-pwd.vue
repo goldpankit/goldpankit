@@ -42,7 +42,7 @@
 </template>
 
 <script>
-import { updatePwd } from '@/api/user'
+import { updatePwd } from '@/api/user.password'
 
 export default {
   data () {

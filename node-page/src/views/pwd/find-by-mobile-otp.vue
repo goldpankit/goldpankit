@@ -1,31 +1,10 @@
 <template>
   <div class="signup">
-    <div class="background-text">
-      <p>世界因<em style="color: #333;">技术</em>变得更简洁，每个技术人都值得<em>更好</em>！</p>
-      <p>让我的作品替我<em>致敬</em>每一个<em style="font-size: 40px;color: #000;">技术人</em>！</p>
-    </div>
     <div class="wrap">
-      <!-- Logo -->
-      <Logo :with-version="false" :with-animation="true"/>
-      <h2>注册KIT账号，开启极速研发</h2>
+      <h2>设置新的登录密码</h2>
+      <p class="tip">作为一个没有钱的初创团队，为了节省短信开支，我们关闭了短信登录功能，请您谅解！现在请通过验证短信验证码的方式设置新的登录密码，并牢牢的记住它。</p>
       <!-- 表单 -->
       <el-form ref="form" :model="form" @submit.stop>
-        <el-form-item label="希望网友如何称呼您？" prop="nickname">
-          <el-input v-model="form.nickname" type="text" size="large" maxlength="20" @input="check"/>
-        </el-form-item>
-        <el-form-item label="登录用户名" prop="username">
-          <el-input v-model="form.username" type="text" placeholder="非必填" size="large" maxlength="50" @input="check"/>
-        </el-form-item>
-        <el-form-item class="password-item" label="登录密码" prop="password">
-          <el-input
-            v-model="form.password"
-            show-password
-            type="password"
-            size="large"
-            maxlength="20"
-            @input="check"
-          />
-        </el-form-item>
         <el-form-item label="手机号码（仅支持中国大陆）" prop="otpElement">
           <el-input
             v-model="form.otpElement"
@@ -49,6 +28,16 @@
             >{{ sendOTPData.buttonText }}</el-button>
           </div>
         </el-form-item>
+        <el-form-item class="password-item" label="新的登录密码" prop="newPassword">
+          <el-input
+            v-model="form.newPassword"
+            show-password
+            type="password"
+            size="large"
+            maxlength="20"
+            @input="check"
+          />
+        </el-form-item>
       </el-form>
       <!-- 错误提示 -->
       <p class="text-danger" style="height: 40px;">{{ errorTip }}</p>
@@ -57,13 +46,10 @@
         <div>
           <el-button
             type="important"
-            :disabled="disabledRegisButton"
-            @click="regis"
-          >注册KIT账号</el-button>
+            :disabled="disabledConfirmButton"
+            @click="confirm"
+          >确认设置</el-button>
         </div>
-      </div>
-      <div class="create-account">
-        <router-link :to="{ name: 'SignIn' }">已有账号？点击登录</router-link>
       </div>
     </div>
   </div>
@@ -72,8 +58,8 @@
 <script>
 import { mapMutations } from 'vuex'
 import cookie from "js-cookie";
-import Logo from '@/components/common/Logo'
-import { regisByMobileOTP, sendRegisMobileOTP } from '@/api/user.regis'
+import Logo from '@/components/common/Logo.vue'
+import { updateByMobileOTP, sendUpdatePasswordMobileOTP } from '@/api/user.password'
 import { save } from '@/api/user.token'
 import {getLoginInfo} from "@/api/user.login";
 
@@ -82,18 +68,16 @@ export default {
   data () {
     return {
       isWorking: {
-        regis: false,
+        update: false,
         sendOTP: false
       },
       errorTip: '',
       // 密码登录表单
       form: {
-        nickname: '',
-        username: '',
-        password: '',
         otpElement: '',
         otpCodeId: null,
-        otpCode: ''
+        otpCode: '',
+        newPassword: ''
       },
       sendOTPData: {
         time: 60,
@@ -107,23 +91,17 @@ export default {
       if (this.isWorking.sendOTP) {
         return true
       }
-      if (this.form.nickname.trim() === '') {
-        return true
-      }
       if (this.form.otpElement.trim() === '') {
         return true
       }
       return !/^1[3456789]\d{9}$/.test(this.form.otpElement);
     },
-    // 注册按钮是否禁用
-    disabledRegisButton () {
-      if (this.isWorking.regis) {
+    // 确认按钮是否禁用
+    disabledConfirmButton () {
+      if (this.isWorking.update) {
         return true
       }
-      if (this.form.nickname.trim() === '') {
-        return true
-      }
-      if (this.form.password.trim() === '') {
+      if (this.form.newPassword.trim() === '') {
         return true
       }
       if (this.form.otpElement.trim() === '') {
@@ -138,10 +116,10 @@ export default {
   methods: {
     ...mapMutations(['setUserInfo']),
     /**
-     * 注册
+     * 确认修改
      */
-    regis () {
-      if (this.disabledRegisButton) {
+    confirm () {
+      if (this.disabledConfirmButton) {
         return
       }
       // 基础验证
@@ -153,8 +131,9 @@ export default {
         this.errorTip = '短信验证码不正确'
         return
       }
-      this.isWorking.regis = true
-      regisByMobileOTP(this.form)
+      this.isWorking.update = true
+      this.form.newPassword = this.form.newPassword.trim()
+      updateByMobileOTP(this.form)
         .then(token => {
           cookie.set('x-kit-token', token)
           // 调用接口，将令牌存储在用户设备文件系统中，便于下次自动授权
@@ -174,7 +153,7 @@ export default {
           this.errorTip = e.message
         })
         .finally(() => {
-          this.isWorking.regis = false
+          this.isWorking.update = false
         })
     },
     /**
@@ -184,12 +163,9 @@ export default {
       if (this.disabledSendOTPButton) {
         return
       }
-      // 基础验证
-      if (!this.check()) {
-        return
-      }
+      this.errorTip = ''
       this.isWorking.sendOTP = true
-      sendRegisMobileOTP({
+      sendUpdatePasswordMobileOTP({
         mobile: this.form.otpElement
       })
         .then(otpCodeId => {
@@ -213,20 +189,10 @@ export default {
           this.isWorking.sendOTP = false
         })
     },
-    // 基础验证
+    // 验证
     check () {
-      // 用户名不能为纯数字
-      if (this.form.username.trim() !== '' && /^\d+$/.test(this.form.username.trim())) {
-        this.errorTip = '用户名不能为纯数字'
-        return false
-      }
-      // 用户名不能包含@符号
-      if (this.form.username.trim() !== '' && this.form.username.trim().indexOf('@') !== -1) {
-        this.errorTip = '用户名不能包含@符号'
-        return false
-      }
       // 密码长度必须大于6位
-      if (this.form.password.trim().length < 6) {
+      if (this.form.newPassword.trim().length < 6) {
         this.errorTip = '密码长度至少为6位'
         return false
       }
@@ -271,7 +237,7 @@ export default {
 }
 .wrap {
   width: 500px;
-  padding: 50px 50px 50px 50px;
+  padding: 100px 50px 100px 50px;
   background-color: var(--color-light);
   box-sizing: border-box;
   box-shadow: var(--page-shadow);
@@ -287,6 +253,14 @@ export default {
     text-align: center;
     transition: all ease .15s;
     margin-bottom: 50px;
+  }
+  // 提示
+  & > p.tip {
+    background-color: var(--primary-color-match-2);
+    padding: 8px 15px;
+    border-radius: 10px;
+    color: #fff;
+    margin-bottom: 20px;
   }
   :deep(.el-form) {
     .el-form-item__label {
@@ -321,16 +295,6 @@ export default {
       font-weight: bold;
       font-size: 20px;
     }
-  }
-}
-.create-account {
-  margin-top: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  a {
-    text-decoration: underline !important;
-    font-weight: bold;
   }
 }
 </style>
