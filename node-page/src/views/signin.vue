@@ -54,6 +54,7 @@ export default {
   components: { Logo },
   data () {
     return {
+      errorTip: '',
       isWorking: {
         login: false
       },
@@ -82,6 +83,7 @@ export default {
       if (this.disabledLoginButton) {
         return
       }
+      this.errorTip = ''
       this.isWorking.login = true
       loginByPassword ({
         username: this.form.username.trim(),
@@ -132,7 +134,7 @@ export default {
               })
             return
           }
-          this.$tip.apiFailed(e)
+          this.errorTip = e.message
         })
         .finally(() => {
           // 标记登录状态为false
@@ -215,7 +217,7 @@ export default {
     }
   }
   .footer-wrap {
-    margin-top: 100px;
+    margin-top: 60px;
     .el-button {
       width: 100%;
       height: 55px;

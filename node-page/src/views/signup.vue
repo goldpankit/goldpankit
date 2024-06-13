@@ -82,7 +82,7 @@ export default {
         regis: false,
         sendOTP: false
       },
-      errorTip: ' ',
+      errorTip: '',
       // 密码登录表单
       form: {
         nickname: '',
@@ -102,6 +102,9 @@ export default {
     // 发送验证码按钮是否禁用
     disabledSendOTPButton () {
       if (this.isWorking.sendOTP) {
+        return true
+      }
+      if (this.form.nickname.trim() === '') {
         return true
       }
       if (this.form.otpElement.trim() === '') {
@@ -139,6 +142,16 @@ export default {
         return
       }
       this.errorTip = ''
+      // 用户名不能为纯数字
+      if (this.form.username.trim() !== '' && /^\d+$/.test(this.form.username.trim())) {
+        this.errorTip = '用户名不能为纯数字'
+        return
+      }
+      // 用户名不能包含@符号
+      if (this.form.username.trim() !== '' && this.form.username.trim().indexOf('@') !== -1) {
+        this.errorTip = '用户名不能包含@符号'
+        return
+      }
       // 验证验证码
       if (this.form.otpCodeId == null) {
         this.errorTip = '短信验证码不正确'
@@ -176,6 +189,16 @@ export default {
         return
       }
       this.errorTip = ''
+      // 用户名不能为纯数字
+      if (this.form.username.trim() !== '' && /^\d+$/.test(this.form.username.trim())) {
+        this.errorTip = '用户名不能为纯数字'
+        return
+      }
+      // 用户名不能包含@符号
+      if (this.form.username.trim() !== '' && this.form.username.trim().indexOf('@') !== -1) {
+        this.errorTip = '用户名不能包含@符号'
+        return
+      }
       this.isWorking.sendOTP = true
       sendRegisMobileOTP({
         mobile: this.form.otpElement

@@ -7,14 +7,22 @@
       </div>
       <el-form ref="form" :model="copyUserInfo" :rules="rules">
         <el-form-item label="昵称" prop="nickname" required>
-          <el-input v-model="copyUserInfo.nickname" maxlength="20"/>
+          <el-input size="large" v-model="copyUserInfo.nickname" maxlength="20"/>
         </el-form-item>
         <el-form-item :label="$t('common.introduce')" prop="introduce">
-          <el-input v-model="copyUserInfo.introduce" type="textarea" :rows="5"/>
+          <el-input
+            size="large"
+            v-model="copyUserInfo.introduce"
+            type="textarea"
+            :rows="5"
+            maxlength="200"
+            show-word-limit
+          />
         </el-form-item>
       </el-form>
       <div class="opera">
-        <el-button type="primary" size="large" :disabled="isWorking" @click="save">{{$t('common.save')}}</el-button>
+        <el-button size="large"  @click="$router.push({ name: 'Desktop' })" icon="Back">返回</el-button>
+        <el-button type="primary" size="large" :disabled="isWorking" @click="save">保存资料</el-button>
       </div>
     </div>
   </div>
@@ -61,10 +69,16 @@ export default {
           return
         }
         this.isWorking = true
-        saveProfile(this.copyUserInfo)
+        // 去掉两侧空格
+        this.copyUserInfo.nickname = this.copyUserInfo.nickname.trim()
+        this.copyUserInfo.introduce = this.copyUserInfo.introduce == null ? null : this.copyUserInfo.introduce.trim()
+        saveProfile({
+          nickname: this.copyUserInfo.nickname,
+          introduce: this.copyUserInfo.introduce
+        })
           .then(()  => {
             this.setUserInfo(this.copyUserInfo)
-            this.$tip.success(this.$t('common.saveSuccessfully'))
+            this.$router.push({name: 'Desktop'})
           })
           .catch(e => {
             this.$tip.apiFailed(e)
@@ -81,14 +95,18 @@ export default {
 <style scoped lang="scss">
 .page {
   .wrap {
-    width: var(--form-width);
+    width: 500px;
     margin: 0 auto;
-    background: var(--color-light);
-    padding: var(--gap-page-padding);
+    padding: 50px 50px 50px 50px;
+    background-color: var(--color-light);
+    box-sizing: border-box;
+    box-shadow: var(--page-shadow);
+    border-radius: var(--radius-page);
     .avatar-wrap {
       display: flex;
       align-items: center;
       flex-direction: column;
+      margin-bottom: 50px;
     }
     .introduce-wrap {
       width: 450px;
