@@ -96,32 +96,51 @@
         </div>
       </div>
       <div class="content guide-content">
-      <div class="wrap">
-        <h3>试一试</h3>
-        <ul>
-          <li>
-            <h4>i. 注册个账号</h4>
-            <p>需要有可以接收短信的大陆手机号，单纯用来修改密码和BUG通知，个人信息均加密存储，不会泄漏也不会打电话骚扰。</p>
-          </li>
-          <li>
-            <h4>ii. {{$t('guide.selectService')}}</h4>
-            <p>{{$t('guide.serviceIntroduce')}}</p>
-          </li>
-          <li>
-            <h4>iii. {{$t('guide.installService')}}</h4>
-            <p>{{$t('guide.installIntroduce')}}</p>
-          </li>
-          <li>
-            <h4>iv. 安装插件</h4>
-            <p>KIT插件表示框架或基础工程中的某一个功能模块或技术栈集成代码。可在工作台页面选择您需要的插件进行安装。</p>
-          </li>
-        </ul>
-        <div class="opera">
-          <el-button type="important" size="large"  @click="$router.push({name: 'SignUp'})">注册个账号</el-button>
-          <el-button type="important2" size="large"  @click="$router.push({name: 'PublicServices'})">{{$t('guide.goToServices')}}</el-button>
+        <div class="wrap">
+          <h3>试一试</h3>
+          <ul>
+            <li>
+              <h4>i. 注册个账号</h4>
+              <p>需要有可以接收短信的大陆手机号，单纯用来修改密码和BUG通知，个人信息均加密存储，不会泄漏也不会打电话骚扰。</p>
+            </li>
+            <li>
+              <h4>ii. {{$t('guide.selectService')}}</h4>
+              <p>{{$t('guide.serviceIntroduce')}}</p>
+            </li>
+            <li>
+              <h4>iii. {{$t('guide.installService')}}</h4>
+              <p>{{$t('guide.installIntroduce')}}</p>
+            </li>
+            <li>
+              <h4>iv. 安装插件</h4>
+              <p>KIT插件表示框架或基础工程中的某一个功能模块或技术栈集成代码。可在工作台页面选择您需要的插件进行安装。</p>
+            </li>
+          </ul>
+          <div class="opera">
+            <el-button type="important" size="large"  @click="$router.push({name: 'SignUp'})">注册个账号</el-button>
+            <el-button type="important2" size="large"  @click="$router.push({name: 'PublicServices'})">{{$t('guide.goToServices')}}</el-button>
+          </div>
         </div>
       </div>
-    </div>
+      <div class="content about-me">
+        <div class="wrap">
+          <h3>继续了解我们</h3>
+          <ul>
+            <li>
+              <div class="img-wrap">
+                <img src="/images/wechat.png" alt="微信二维码"/>
+              </div>
+              <label>微信扫码加入交流群</label>
+            </li>
+            <li>
+              <div class="img-wrap">
+                <img src="/images/douyin.png" alt="抖音二维码"/>
+              </div>
+              <label>抖音关注不迷路</label>
+            </li>
+          </ul>
+        </div>
+      </div>
     </div>
     <footer>
       {{$t('common.currentVersion')}}: v{{version}}
@@ -226,6 +245,7 @@ export default {
 }
 .content {
   background: var(--color-light);
+  padding: 50px 0;
   .wrap {
     width: 1200px;
     margin: 0 auto;
@@ -289,6 +309,47 @@ export default {
 .content.guide-content {
   background-color: #2e3444;
   color: #fff;
+}
+// 关注
+.content.about-me {
+  ul {
+    display: flex;
+    justify-content: center;
+    margin-top: 50px;
+    li {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      label {
+        margin-top: 20px;
+        font-size: 20px;
+      }
+      .img-wrap {
+        border: 10px solid #222e5e;
+        border-radius: 50%;
+        overflow: hidden;
+        width: 300px;
+        height: 300px;
+        img {
+          width: 100%;
+          height: 100%;
+        }
+      }
+      &:first-of-type {
+        margin-right: 200px;
+        .img-wrap {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          border: 10px solid #000000;
+          img {
+            width: 230px;
+            height: 230px;
+          }
+        }
+      }
+    }
+  }
 }
 footer {
   display: flex;
