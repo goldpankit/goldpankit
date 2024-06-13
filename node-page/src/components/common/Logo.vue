@@ -2,12 +2,12 @@
   <div class="logo" @click="go2home">
     <div class="logo-wrap">
       <h1>Gold Pan Kit</h1>
-      <div class="decoration">
+      <div class="decoration" :class="{ 'no-animation': !withAnimation }">
         <em></em>
-        <em></em>
+        <i v-if="withAnimation">加油，刘大逵</i>
       </div>
     </div>
-    <div class="version">
+    <div v-if="withVersion" class="version">
       v{{ version }}
     </div>
   </div>
@@ -19,6 +19,14 @@ import {fetchVersion} from "@/api/client";
 
 export default {
   name: 'Logo',
+  props: {
+    withVersion: {
+      default: true
+    },
+    withAnimation: {
+      default: false
+    }
+  },
   data () {
     return {
       version: ''
@@ -67,17 +75,35 @@ export default {
     .decoration {
       width: 160px;
       height: 15px;
-      background-color: var(--primary-color);
-      border: 1px solid var(--primary-color);
+      background-color: var(--primary-color-match-1);
+      border: 2px solid var(--primary-color-match-1);
       display: flex;
-      justify-content: space-between;
+      justify-content: center;
+      margin-top: 2px;
+      position: relative;
       em {
-        width: 80px;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 50px;
         height: 100%;
-        background-color: var(--primary-color-match-1);
+        background-color: var(--primary-color);
         box-sizing: border-box;
-        &:first-of-type {
-          width: 10px;
+        transform: translateX(50px);
+        border-radius: 10px;
+        animation: loop 5s linear infinite;
+      }
+      i {
+        height: 100%;
+        font-size: var(--font-size-small);
+        transform: scale(0.6);
+        color: var(--primary-color-match-1);
+        position: relative;
+        top: -2px;
+      }
+      &.no-animation {
+        em {
+          animation: none;
         }
       }
     }
@@ -85,6 +111,17 @@ export default {
   .version {
     margin-left: 15px;
     font-style: italic;
+  }
+}
+@keyframes loop {
+  0% {
+    transform: translateX(0px);
+  }
+  50% {
+    transform: translateX(106px);
+  }
+  100% {
+    transform: translateX(0px);
   }
 }
 </style>

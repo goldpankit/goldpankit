@@ -1,59 +1,95 @@
 <template>
   <div class="signup">
-    <div class="wrap">
-      <h2>{{ $t('common.signUp') }}</h2>
-      <h3>GoldPanKit账号需要购买，请添加下方微信，我们的客服人员会为您开通账号！</h3>
-      <p>首次使用可扫码免费领取30天体验账号！</p>
-      <div class="wechat-wrap">
-        <img src="/images/wechat.png"/>
-        <span>小艺</span>
-      </div>
-      <div class="price-wrap">
-        <h4>价格套餐</h4>
-        <el-table :data="priceTableData">
-          <el-table-column align="center" prop="dayCount" label="时长"/>
-          <el-table-column align="center" prop="price" class-name="price" label="价格"/>
-        </el-table>
-      </div>
+    <div class="background-text">
+      <p>我<em style="color: #999;">无力</em>创办一个<em>伟大</em>的公司</p>
+      <p>就让我的作品替我<em>致敬</em>每一个<em style="font-size: 40px;color: #000;">技术人</em>吧！！<em style="font-size: 35px;">加油，刘大逵！！</em></p>
     </div>
-    <div class="have-an-account">
-      <p>{{$t('user.haveAnAccount')}}</p>
-      <router-link :to="{ name: 'SignIn' }">{{$t('common.signIn')}}</router-link>
+    <div class="wrap">
+      <Logo :with-version="false" :with-animation="true"/>
+      <h2>注册KIT账号，开启极速研发</h2>
+      <el-form ref="form" :model="form" :rules="getRules()" @submit.stop>
+        <el-form-item label="我该如何称呼您？" prop="nickname" required>
+          <el-input v-model="form.nickname" type="text" size="large"/>
+        </el-form-item>
+        <el-form-item label="登录用户名" prop="username" required>
+          <el-input v-model="form.username" type="text" size="large"/>
+        </el-form-item>
+        <el-form-item class="password-item" label="登录密码" prop="password" required>
+          <el-input
+            v-model="form.password"
+            show-password
+            type="password"
+            size="large"
+            @keypress.enter.native="login()"
+          />
+        </el-form-item>
+        <el-form-item label="手机号码" prop="mobile" required>
+          <el-input
+            v-model="form.mobile"
+            show-password
+            type="password"
+            size="large"
+            @keypress.enter.native="login()"
+          />
+        </el-form-item>
+        <el-form-item label="短信验证码" prop="otp" required>
+          <div class="otp-input">
+            <el-input
+              v-model="form.otp"
+              show-password
+              type="password"
+              size="large"
+              @keypress.enter.native="login()"
+            />
+            <el-button type="primary">发送验证码</el-button>
+          </div>
+        </el-form-item>
+      </el-form>
+      <div class="login-box">
+        <div>
+          <el-button
+            type="important"
+            :disabled="loginData.isWorking"
+            @click="login()"
+          >注册KIT账号</el-button>
+        </div>
+      </div>
+      <div class="create-account">
+        <router-link :to="{ name: 'SignIn' }">已有账号？点击登录</router-link>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import {regisByEmail, sendRegisByEmailOtpCode} from '@/api/user.regis'
-import {checkEmail} from '@/utils/form.check'
+import cookie from 'js-cookie'
+import {loginByPassword, getLoginInfo} from "../api/user.login";
+import {save} from '@/api/user.token'
+import {mapMutations} from "vuex";
+import Logo from "@/components/common/Logo.vue";
 
 export default {
+  components: {Logo},
   data () {
     return {
+      // 密码登录表单
       form: {
         username: '',
-        password: '',
-        otpElement: '',
-        otpCodeId: null,
-        otpCode: ''
+        password: ''
       },
-      sendOtpCodeData: {
-        isWorking: false,
-        timeout: 0,
-        sended: false
+      // 短信登录表单
+      mobileOtpForm: {
+        mobile: '',
+        otp: '',
+        otpUUID: ''
       },
-      regisData: {
+      loginData: {
         isWorking: false
-      },
-      // 价格表
-      priceTableData: [
-        { dayCount: '30天（首次）', price: '免费领取' },
-        { dayCount: '90天', price: '299元' },
-        { dayCount: '365天', price: '799元' }
-      ]
+      }
     }
   },
   methods: {
+    ...mapMutations(['setUserInfo']),
     getRules () {
       return {
         username: [
@@ -61,70 +97,74 @@ export default {
         ],
         password: [
           { required: true, message: this.$t('form.isRequired', { value: this.$t('user.password') })}
-        ],
-        otpElement: [
-          { required: true, message: this.$t('form.isRequired', { value: this.$t('user.email') })},
-          { validator: (rule, value, callback) => checkEmail(rule, value, callback, this.$t('form.correctEmailTip'))},
-        ],
-        otpCode: [
-          { required: true, message: this.$t('form.isRequired', { value: this.$t('user.otpCode') })},
-        ],
+        ]
       }
     },
-    // 注册
-    regis () {
+    // 密码登录
+    login (force = false) {
       this.$refs.form.validate()
         .then(() => {
-          if (this.regisData.isWorking) {
+          if (this.loginData.isWorking) {
             return
           }
-          this.regisData.isWorking = true
-          regisByEmail(this.form)
+          this.loginData.isWorking = true
+          loginByPassword ({
+            ...this.form,
+            username: this.form.username.trim(),
+            force
+          })
+            .then(token => {
+              cookie.set('x-kit-token', token)
+              // 调用接口，将令牌存储在用户设备文件系统中，便于下次自动授权
+              return save(token)
+            })
             .then(() => {
-              this.$message.success('Register successful.')
-              this.$router.push({ name: 'SignIn'})
+              // 获取用户信息
+              return getLoginInfo()
+            })
+            .then(userInfo => {
+              // 存储用户信息
+              this.setUserInfo(userInfo)
+              // 获取重定向地址
+              const redirect_uri = this.$route.query.redirect_uri
+              if (redirect_uri != null && redirect_uri !== '') {
+                this.$router.push(redirect_uri)
+              } else {
+                const backUri = this.$router.options.history.state.back
+                /**
+                 * 返回页面为null或为注册页面，则跳转到用户桌面去。当直接访问登录页面时，返回页为null。
+                 */
+                if (backUri == null || backUri === '/signup') {
+                  this.$router.push({name: 'Desktop'})
+                }
+                // 其他页面直接返回
+                else {
+                  this.$router.back()
+                }
+              }
             })
             .catch(e => {
+              // 账号在其他设备登录
+              if (e.code === 6201) {
+                this.alert('当前账号已登录，继续登录后其它设备将自动离线，确认要继续登录吗？如果您对当前登录状态存在疑问，建议您登录后尽快修改密码！', '重要提示', {
+                  showCancelButton: true,
+                  cancelButtonText: '暂不登录',
+                  confirmButtonText: '继续登录'
+                })
+                  .then(() => {
+                    this.login(true)
+                  })
+                return
+              }
               this.$tip.apiFailed(e)
             })
             .finally(() => {
-              this.regisData.isWorking = false
+              // 标记登录状态为false
+              this.loginData.isWorking = false
             })
         })
         .catch(() => {})
     },
-    // 发送动态码
-    sendOtpCode () {
-      this.$refs.form.validateField('otpElement')
-        .then(() => {
-          if (this.sendOtpCodeData.isWorking) {
-            return
-          }
-          this.sendOtpCodeData.isWorking = true
-          sendRegisByEmailOtpCode({
-            email: this.form.otpElement,
-            username: this.form.username
-          })
-            .then(data => {
-              this.form.otpCodeId = data
-              this.sendOtpCodeData.timeout = 60
-              this.sendOtpCodeData.sended = true
-              const interval = setInterval(() => {
-                this.sendOtpCodeData.timeout--
-                if (this.sendOtpCodeData.timeout === 0) {
-                  clearInterval(interval)
-                }
-              }, 1000)
-            })
-            .catch(e => {
-              this.$tip.apiFailed(e)
-            })
-            .finally(() => {
-              this.sendOtpCodeData.isWorking = false
-            })
-        })
-        .catch(() => {})
-    }
   }
 }
 </script>
@@ -138,69 +178,95 @@ export default {
   overflow-y: auto;
   padding: 50px 0;
 }
+.background-text {
+  width: 1200px;
+  font-size: 40px;
+  line-height: 120px;
+  font-style: italic;
+  color: #e5e5e5;
+  position: absolute;
+  display: flex;
+  justify-content: space-between;
+  p {
+    width: 300px;
+    em {
+      font-size: 70px;
+      font-weight: bold;
+      margin: 0 10px;
+      color: var(--primary-color-match-2);
+      opacity: .25;
+    }
+    &:first-of-type {
+      margin-top: 100px;
+    }
+    &:last-of-type {
+      margin-top: 300px;
+    }
+  }
+}
 .wrap {
   width: 500px;
-  padding: 50px 30px;
+  padding: 50px 50px 50px 50px;
   background-color: var(--color-light);
   box-sizing: border-box;
   box-shadow: var(--page-shadow);
   border-radius: var(--radius-page);
-  // 头部
-  h2 {
-    padding: 10px 0 60px 0;
-    font-size: 30px;
-    text-align: center;
-  }
-  // 提示
-  h3 {
-    font-weight: normal;
-  }
-  // 首次免费领取账号提醒
-  & > p {
-    background-color: var(--primary-color-match-2);
-    padding: 8px 15px;
-    border-radius: 20px;
-    color: #fff;
-    margin-top: 20px;
-  }
-  // 微信图片
-  .wechat-wrap {
-    margin: 20px 0;
-    display: flex;
-    flex-direction: column;
+  position: relative;
+  z-index: 99;
+  .logo {
     justify-content: center;
-    align-items: center;
-    img {
-      width: 255px;
-    }
+    margin-bottom: 50px;
   }
-  // 价格套操
-  .price-wrap {
-    h4 {
-      text-align: center;
-      font-size: 16px;
-    }
-    ::v-deep(.el-table) {
-      tbody {
-        .cell {
-          font-size: 20px;
-        }
-        .price {
-          color: var(--primary-color-match-2);
-          font-weight: bold;
+  h2 {
+    font-size: 25px;
+    text-align: center;
+    transition: all ease .15s;
+    margin-bottom: 50px;
+  }
+  :deep(.el-form) {
+    .password-item {
+      .el-form-item__label {
+        position: relative;
+        a {
+          position: absolute;
+          top: 0;
+          right: 0;
+          text-decoration: underline !important;
         }
       }
     }
+    // 短信验证码输入
+    .otp-input {
+      width: 100%;
+      display: flex;
+      .el-input {
+        flex: 1;
+      }
+      .el-button {
+        width: 150px;
+        height: 40px;
+        margin-left: 10px;
+      }
+    }
+  }
+  .login-box {
+    margin-top: 100px;
+    .el-button {
+      width: 100%;
+      height: 55px;
+      border: 0;
+      font-weight: bold;
+      font-size: 20px;
+    }
   }
 }
-.have-an-account {
-  margin-top: 30px;
+.create-account {
+  margin-top: 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
   a {
     text-decoration: underline !important;
-    margin-top: 15px;
     font-weight: bold;
   }
 }

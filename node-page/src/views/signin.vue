@@ -1,16 +1,33 @@
 <template>
   <div class="signup">
+    <div class="background-text">
+      <p>我<em style="color: #999;">无力</em>创办一个<em>伟大</em>的公司</p>
+      <p>就让我的作品替我<em>致敬</em>每一个<em style="font-size: 40px;color: #000;">技术人</em>吧！！<em style="font-size: 35px;">加油，刘大逵！！</em></p>
+    </div>
     <div class="wrap">
-      <h2>{{$t('common.signIn')}}</h2>
-      <el-form ref="form" :model="form" :rules="getRules()" @submit.stop>
-        <el-form-item :label="$t('user.username')" prop="username" required>
+      <Logo :with-version="false" :with-animation="true"/>
+      <h2>登录KIT</h2>
+      <!-- 密码登录 -->
+      <el-form v-if="loginType === 'password'" ref="form" :model="form" :rules="getRules()" @submit.stop>
+        <el-form-item label="用户名或手机号码" prop="username" required>
+          <el-input v-model="form.username" type="text" size="large"/>
+        </el-form-item>
+        <el-form-item class="password-item" label="登录密码" prop="password" required>
+          <el-input
+            v-model="form.password"
+            show-password
+            type="password"
+            size="large"
+            @keypress.enter.native="login()"
+          />
+        </el-form-item>
+      </el-form>
+      <!-- 短信登录 -->
+      <el-form v-else-if="loginType === 'mobile-otp'" ref="form" :model="mobileOtpForm" :rules="getRules()" @submit.stop>
+        <el-form-item label="手机号码" prop="mobile" required>
           <el-input v-model="form.username" type="text" size="large"/>
         </el-form-item>
         <el-form-item class="password-item" :label="$t('user.password')" prop="password" required>
-          <template #label>
-            <label>{{$t('user.password')}}</label>
-<!--            <router-link to="#">{{$t('user.forgotPassword')}}</router-link>-->
-          </template>
           <el-input
             v-model="form.password"
             show-password
@@ -29,9 +46,10 @@
           >{{$t('common.signIn')}}</el-button>
         </div>
       </div>
-    </div>
-    <div class="create-account">
-      <router-link :to="{ name: 'SignUp' }">{{$t('user.createAccount')}}</router-link>
+      <div class="create-account">
+        <router-link :to="{ name: 'SignUp' }">创建新账号</router-link>
+        <router-link :to="{ name: 'SignUp' }">忘记密码了</router-link>
+      </div>
     </div>
   </div>
 </template>
@@ -41,13 +59,24 @@ import cookie from 'js-cookie'
 import {loginByPassword, getLoginInfo} from "../api/user.login";
 import {save} from "../api/user.token";
 import {mapMutations} from "vuex";
+import Logo from "@/components/common/Logo.vue";
 
 export default {
+  components: {Logo},
   data () {
     return {
+      // 登录类型
+      loginType: 'password',
+      // 密码登录表单
       form: {
         username: '',
         password: ''
+      },
+      // 短信登录表单
+      mobileOtpForm: {
+        mobile: '',
+        otp: '',
+        otpUUID: ''
       },
       loginData: {
         isWorking: false
@@ -144,18 +173,50 @@ export default {
   overflow-y: auto;
   padding: 50px 0;
 }
+.background-text {
+  width: 1200px;
+  font-size: 40px;
+  line-height: 120px;
+  font-style: italic;
+  color: #e5e5e5;
+  position: absolute;
+  display: flex;
+  justify-content: space-between;
+  p {
+    width: 300px;
+    em {
+      font-size: 70px;
+      font-weight: bold;
+      margin: 0 10px;
+      color: var(--primary-color-match-2);
+      opacity: .25;
+    }
+    &:first-of-type {
+      margin-top: 100px;
+    }
+    &:last-of-type {
+      margin-top: 300px;
+    }
+  }
+}
 .wrap {
   width: 500px;
-  padding: 50px 30px;
+  padding: 100px 50px 200px 50px;
   background-color: var(--color-light);
   box-sizing: border-box;
   box-shadow: var(--page-shadow);
   border-radius: var(--radius-page);
-  // 头部
+  position: relative;
+  z-index: 99;
+  .logo {
+    justify-content: center;
+    margin-bottom: 100px;
+  }
   h2 {
-    padding: 10px 0 60px 0;
-    font-size: 30px;
+    font-size: 25px;
     text-align: center;
+    transition: all ease .15s;
+    margin-bottom: 50px;
   }
   :deep(.el-form) {
     .password-item {
@@ -171,7 +232,7 @@ export default {
     }
   }
   .login-box {
-    margin-top: 50px;
+    margin-top: 100px;
     .el-button {
       width: 100%;
       height: 55px;
@@ -184,11 +245,13 @@ export default {
 .create-account {
   margin-top: 20px;
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  justify-content: flex-end;
   a {
     text-decoration: underline !important;
     font-weight: bold;
+    &:first-of-type {
+      margin-right: 30px;
+    }
   }
 }
 </style>
