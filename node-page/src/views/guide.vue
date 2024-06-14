@@ -4,7 +4,7 @@
       <div class="wrap">
         <h2>Gold Pan Kit</h2>
         <h3>我想助力您和您的团队进行高效的项目研发</h3>
-        <p>经过五年多的发展，很荣幸我们获得了「清华海峡院」和「彭一波先生」的认可和投资。未来我们（就我吧）将继续佛系研发，直到KIT成为真正好用的产品！</p>
+        <p>经过五年多的发展，很荣幸我们获得了「清华海峡院」和「彭一波」先生的认可和投资。未来我们（就我吧）将继续佛系研发，直到KIT成为真正好用的产品！</p>
         <div class="opera">
           <el-button @click="$router.push({name: 'SignUp'})" type="important">{{$t('common.signUp')}}</el-button>
           <el-button type="important2" @click="$router.push({name: 'PublicServices'})">{{$t('guide.goToServices')}}</el-button>
@@ -65,7 +65,7 @@
             <el-timeline-item timestamp="2023/5/20" placement="top">
               <el-card>
                 <h4>获天使轮投资</h4>
-                <p>经过2年的摸爬滚打，通过了「清华海峡院」的项目评估，2023年5月6日获得了「清华海峡院北京办公室副主任彭一波」先生10万元资金投入和100万元的资源投入。</p>
+                <p>经过2年的摸爬滚打，通过了「清华海峡院」的项目评估，2023年5月20日获得了「清华海峡院北京办公室副主任彭一波」先生10万元资金投入和100万元的资源投入。</p>
               </el-card>
             </el-timeline-item>
             <el-timeline-item timestamp="2023/8/17" placement="top">
