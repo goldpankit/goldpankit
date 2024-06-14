@@ -18,7 +18,7 @@
           <ul class="words">
             <li>KIT is ....，好吧我说中文！</li>
             <li>简单来讲，KIT就是个GITHUB！但，在KIT上获取的代码是动态的！</li>
-            <li>更简单的来说，录入参数，就可以构建出你想要的项目、框架和功能！</li>
+            <li>更简单的来说，录入参数，就可以构建出你想要的项目、框架或功能的代码！</li>
             <li>所以！！！</li>
             <li>你可以在这里快速构建出各个技术框架（技术栈想怎么集成就怎么集成的那种），虽然目前我们支持的技术框架并不多！</li>
             <li>你也可以在这里快速构建出一整套系统，并且功能随意挑，再也不用像GIT那样拉下来就是一大堆不要的功能啦！比如大家想要的电商小程序、知识付费APP等，虽然这些我们都还没有！</li>
@@ -35,13 +35,13 @@
             <el-timeline-item timestamp="2018/12" placement="top">
               <el-card>
                 <h4>想法诞生</h4>
-                <p>之前在开发一款基于浏览器的操作系统，想用它来实现未来跨硬件且高隐私的数据操作和读取。系统研发完了，但应用过多，没法快速实现，所以想实现一个极速开发平台。</p>
+                <p>在此之前，我在研发一款基于浏览器的操作系统，想用它来实现未来跨硬件且高隐私的数据操作和读取。系统研发完了，但应用过多，没法快速实现，所以想实现一个极速开发平台。</p>
               </el-card>
             </el-timeline-item>
             <el-timeline-item timestamp="2019/3/16" placement="top">
               <el-card>
-                <h4>前身发布</h4>
-                <p>2019年3月16日正式发布<a href="http://coderd.adjustrd.com" target="_blank">CodeRd</a>（Kit前身）</p>
+                <h4>KIT前身发布</h4>
+                <p>2019年3月16日正式发布<a href="http://coderd.adjustrd.com" target="_blank">懒猴子CG</a>，而后更名为CodeRd。</p>
               </el-card>
             </el-timeline-item>
             <el-timeline-item timestamp="2021/1/18" placement="top">
@@ -53,10 +53,16 @@
             <el-timeline-item timestamp="2021/3/8" placement="top">
               <el-card>
                 <h4>成立公司</h4>
-                <p>2021年3月8日成立了桂阳阿茄思特网络技术有限公司，阿茄思特为Adjust的谐音，寓意公司为“调整”而生，简称“AD科技”。注册了公司域名adjustrd.com，后面加了“路”的缩写“rd”，寓意我们愿意不断的去调整目前世界所有不够完善的一切。</p>
+                <p>2021年3月8日成立了桂阳阿茄思特网络技术有限公司，阿茄思特为Adjust的谐音，寓意公司为“调整”而生，简称“AD科技”。注册了公司域名adjustrd.com，后面加了“路”的缩写“rd”，寓意我们愿意不断的去调整目前世界所有不够完善的一切。本想全身心投入，但生活所迫不得不做一些外包项目和带一些学生来养活自己。</p>
               </el-card>
             </el-timeline-item>
-            <el-timeline-item timestamp="2023/5/6" placement="top">
+            <el-timeline-item timestamp="2023/5/9" placement="top">
+              <el-card>
+                <h4>获用户投资</h4>
+                <p>资金陷入困境，我个人的温饱成了问题。我尝试在交流群中售卖CodeRd股份，获得了崔易、朱晨辉、赵鹏、林郴、常洋、赵浩、曹宝红、侯泽为、李寻飞9人累计4万元的投资款，非常荣幸也非常感谢能得到他们的帮助。将来无论是工作还是继续创业，只要我能赚到钱，我会一一表达感谢和加倍偿还。</p>
+              </el-card>
+            </el-timeline-item>
+            <el-timeline-item timestamp="2023/5/20" placement="top">
               <el-card>
                 <h4>获天使轮投资</h4>
                 <p>经过2年的摸爬滚打，通过了「清华海峡院」的项目评估，2023年5月6日获得了「清华海峡院北京办公室副主任彭一波」先生10万元资金投入和100万元的资源投入。</p>
@@ -65,7 +71,13 @@
             <el-timeline-item timestamp="2023/8/17" placement="top">
               <el-card>
                 <h4>正式发布</h4>
-                <p>经过3个月的研发，2023年8月17日首次发布v1.1.0。</p>
+                <p>经过3个月的研发，CodeRd进行了全面的重构，采用了新的架构和设计，解决了CodeRd的瓶颈问题，2023年8月17日首次发布KIT v1.1.0。</p>
+              </el-card>
+            </el-timeline-item>
+            <el-timeline-item timestamp="2024/1" placement="top">
+              <el-card>
+                <h4>用户里程碑</h4>
+                <p>虽然KIT刚上线不久，但CodeRd依然在持续运营，2024年1月，CodeRd累计注册用户数超过1万。</p>
               </el-card>
             </el-timeline-item>
             <el-timeline-item timestamp="2024/2/1" placement="top">
@@ -301,7 +313,7 @@ export default {
   .wrap {
     padding-left: 550px;
     background: url('/images/coding_boy.svg') no-repeat;
-    background-size: 550px auto;
+    background-size: 520px auto;
     background-position: 0 150px;
   }
 }

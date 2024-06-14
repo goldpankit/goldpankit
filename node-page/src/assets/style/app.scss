@@ -3,12 +3,12 @@
 @import "iconfont";
 @import "element-ui";
 html {
+  overflow: hidden !important;
   body {
     margin: 0;
     padding: 0;
     width: 100%;
     height: 100%;
-    overflow: hidden;
     background: var(--background-color);
   }
   h1,h2,h3,h4,h5,h6,ul,li,p {
@@ -24,7 +24,7 @@ html {
   #app {
     width: 100%;
     height: 100%;
-    overflow-y: auto;
+    overflow: hidden;
     font-size: var(--font-size);
     color: var(--font-color);
     background-color: var(--background-color);

@@ -1,5 +1,5 @@
 <template>
-  <div class="signup">
+  <div class="page-wrap">
     <div class="background-text">
       <p>世界因<em style="color: #333;">技术</em>变得更简洁，每个技术人都值得<em>更好</em>！</p>
       <p>让我的作品替我<em>致敬</em>每一个<em style="font-size: 40px;color: #000;">技术人</em>！</p>
@@ -238,7 +238,13 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.signup {
+.page-wrap {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  left: 0;
+  height: 100%;
+  overflow: auto;
   display: flex;
   flex-direction: column;
   align-items: center;

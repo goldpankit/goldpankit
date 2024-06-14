@@ -1,5 +1,5 @@
 <template>
-  <div class="signup">
+  <div class="page-wrap">
     <div class="wrap">
       <h2>设置新的登录密码</h2>
       <p class="tip">作为一个没有钱的初创团队，为了节省短信开支，我们关闭了短信登录功能，请您谅解！现在请通过验证短信验证码的方式设置新的登录密码，并牢牢的记住它。</p>
@@ -204,7 +204,13 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.signup {
+.page-wrap {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  left: 0;
+  height: 100%;
+  overflow: auto;
   display: flex;
   flex-direction: column;
   align-items: center;
