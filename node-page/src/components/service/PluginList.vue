@@ -123,7 +123,7 @@ export default {
         width: 20px;
         height: 20px;
         border-radius: 50%;
-        object-fit: contain;
+        object-fit: cover;
         margin-right: 5px;
       }
     }

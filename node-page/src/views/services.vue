@@ -199,7 +199,7 @@ export default {
         width: 30px;
         height: 30px;
         border-radius: 50%;
-        object-fit: contain;
+        object-fit: cover;
         margin-right: 10px;
       }
     }

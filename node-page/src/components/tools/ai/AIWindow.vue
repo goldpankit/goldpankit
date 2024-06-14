@@ -38,8 +38,8 @@
         </li>
         <li v-for="message in messages" :key="message.id" class="message" :class="{'self-message': message.self}">
           <template v-if="message.self">
-            <img v-if="userInfo == null" src="/images/avatar/default.png">
-            <img v-else :src="getAvatarUri(userInfo.avatar)">
+            <Avatar v-if="userInfo == null" file-key="/images/avatar/default.png" size="40px" margin="0 20px 0 0"/>
+            <Avatar v-else :file-key="userInfo.avatar" size="40px" margin="0 20px 0 0"/>
           </template>
           <div v-else class="message-opera">
             <svg width="41" height="41" viewBox="0 0 41 41" fill="none" xmlns="http://www.w3.org/2000/svg" strokewidth="2" class="scale-appear">
@@ -414,7 +414,7 @@ export default {
       padding: 30px;
       border-radius: 10px 10px 0 0;
       background: var(--background-color);
-      svg, img {
+      svg {
         flex-shrink: 0;
         margin-right: 20px;
         width: 40px;

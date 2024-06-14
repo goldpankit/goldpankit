@@ -38,7 +38,7 @@
             />
             <!-- 用户信息 -->
             <div v-if="space.user != null" class="user-profile">
-              <img :src="getAvatarUri(space.user.avatar)">
+              <Avatar :file-key="space.user.avatar" size="30px" margin="0 10px 0 0"/>
               <span>{{space.user.username}}</span>
             </div>
           </a>
@@ -264,13 +264,6 @@ export default {
     .user-profile {
       display: flex;
       align-items: center;
-      img {
-        width: 30px;
-        height: 30px;
-        border-radius: 50%;
-        object-fit: contain;
-        margin-right: 10px;
-      }
     }
   }
 }

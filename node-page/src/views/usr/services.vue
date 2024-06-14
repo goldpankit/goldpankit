@@ -39,10 +39,10 @@
             </div>
             <div class="footer-info">
               <!-- 用户信息 -->
-              <div v-if="service.user != null" class="user-profile">
-                <img :src="getAvatarUri(service.user.avatar)">
-                <span>{{service.user.username}}</span>
-              </div>
+<!--              <div v-if="service.user != null" class="user-profile">-->
+<!--                <Avatar :file-key="service.user.avatar" size="20px" margin="0 10px 0 0"/>-->
+<!--                <span>{{service.user.username}}</span>-->
+<!--              </div>-->
               <ServiceStatus :with-private="service.withPrivate"/>
               <span>|</span>
               <p class="text-info-1 text-mini">
@@ -306,13 +306,6 @@ export default {
           display: flex;
           align-items: center;
           color: var(--font-color);
-          img {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            object-fit: contain;
-            margin-right: 10px;
-          }
         }
       }
       // 操作

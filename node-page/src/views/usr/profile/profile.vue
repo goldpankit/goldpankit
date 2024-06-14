@@ -2,7 +2,7 @@
   <div class="page">
     <div v-if="copyUserInfo != null" class="wrap">
       <div class="avatar-wrap">
-        <AvatarUploader v-model="copyUserInfo.avatar"/>
+        <AvatarUploader v-model="copyUserInfo.avatar" @uploaded="saveAvatar"/>
         <h2>{{getUserDisplayName(copyUserInfo)}}</h2>
       </div>
       <el-form ref="form" :model="copyUserInfo" :rules="rules">
@@ -22,22 +22,19 @@
       </el-form>
       <div class="opera">
         <el-button size="large"  @click="$router.push({ name: 'Desktop' })" icon="Back">返回</el-button>
-        <el-button type="primary" size="large" :disabled="isWorking" @click="save">保存资料</el-button>
+        <el-button type="primary" size="large" :disabled="disabledSaveButton" @click="save">保存资料</el-button>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import AvatarUploader from "../../../components/common/AvatarUploader.vue";
-import {mapMutations, mapState} from "vuex";
-import {saveProfile} from "../../../api/user";
+import { mapMutations, mapState } from 'vuex'
+import AvatarUploader from '@/components/common/AvatarUploader'
+import { saveProfile } from '@/api/user'
 
 export default {
-  components: {AvatarUploader},
-  computed: {
-    ...mapState(['userInfo'])
-  },
+  components: { AvatarUploader },
   data () {
     return {
       copyUserInfo: null,
@@ -47,6 +44,19 @@ export default {
           {required: true, message: '请输入昵称', trigger: 'blur'}
         ]
       }
+    }
+  },
+  computed: {
+    ...mapState(['userInfo']),
+    // 保存按钮是否禁用
+    disabledSaveButton () {
+      if (this.isWorking) {
+        return true
+      }
+      if (this.copyUserInfo.nickname.trim() === '') {
+        return true
+      }
+      return JSON.stringify(this.copyUserInfo) === JSON.stringify(this.userInfo);
     }
   },
   watch: {
@@ -59,9 +69,22 @@ export default {
   },
   methods: {
     ...mapMutations(['setUserInfo']),
+    // 保存头像
+    saveAvatar (avatarFileKey) {
+      saveProfile({
+        avatar: avatarFileKey
+      })
+        .then(()  => {
+          this.setUserInfo(this.copyUserInfo)
+          this.$tip.apiSuccess('头像修改成功')
+        })
+        .catch(e => {
+          this.$tip.apiFailed(e)
+        })
+    },
     // 保存资料
     save () {
-      if (this.isWorking) {
+      if (this.disabledSaveButton) {
         return
       }
       this.$refs.form.validate((pass) => {
@@ -97,7 +120,7 @@ export default {
   .wrap {
     width: 500px;
     margin: 0 auto;
-    padding: 50px 50px 50px 50px;
+    padding: 100px 50px 100px 50px;
     background-color: var(--color-light);
     box-sizing: border-box;
     box-shadow: var(--page-shadow);

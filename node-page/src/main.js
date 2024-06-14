@@ -28,6 +28,7 @@ import '@kangc/v-md-editor/lib/plugins/emoji/emoji.css';
 import '@kangc/v-md-editor/lib/plugins/todo-list/todo-list.css';
 import plugins from "./plugins";
 import directives from "./directives";
+import components from './components/index'
 // md支持所有语言
 VueMarkdownEditor.use(theme, {
   Prism,
@@ -58,6 +59,7 @@ app.use(ElementUI, {
 })
 app.use(plugins)
 app.use(directives)
+app.use(components)
 console.warn = function () {}
 
 app.mount('#app')

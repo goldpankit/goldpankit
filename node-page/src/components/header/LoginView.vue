@@ -11,7 +11,7 @@
   </template>
   <template v-else>
     <div class="user-info" @click="$router.push({ name: 'Desktop'})">
-      <img :src="getAvatarUri(userInfo.avatar)" class="avatar"/>
+      <Avatar :file-key="userInfo.avatar" size="30px"/>
     </div>
   </template>
 </template>
@@ -73,11 +73,5 @@ export default {
   flex-direction: column;
   align-items: center;
   cursor: pointer;
-  img {
-    width: 30px;
-    height: 30px;
-    object-fit: contain;
-    border-radius: 50%;
-  }
 }
 </style>

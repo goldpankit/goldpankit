@@ -7,14 +7,16 @@
     :on-success="handleAvatarSuccess"
     :before-upload="beforeAvatarUpload"
   >
-    <img :src="getAvatarUri(modelValue)" class="avatar" />
+    <Avatar :file-key="modelValue"/>
+    <div class="tip-wrap">
+      <span>修改头像</span>
+    </div>
   </el-upload>
 </template>
 
 <script>
-
 export default {
-  name: "AvatarUploader",
+  name: 'AvatarUploader',
   props: {
     modelValue: {
       required: true
@@ -27,6 +29,7 @@ export default {
         return
       }
       this.$emit('update:modelValue', res.data.fileKey)
+      this.$emit('uploaded', res.data.fileKey)
     },
     beforeAvatarUpload (rawFile) {
       if (rawFile.size / 1024 / 1024 > 2) {
@@ -40,13 +43,33 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.el-upload {
-  .avatar {
-    width: 95px;
-    height: 95px;
-    object-fit: cover;
+.avatar-uploader {
+  width: 95px;
+  height: 95px;
+  position: relative !important;
+  &:hover {
+    .tip-wrap {
+      opacity: 1;
+    }
+  }
+  :deep(.el-upload) {
+    width: 100%;
+    height: 100%;
+  }
+  .tip-wrap {
+    width: 100%;
+    height: 100%;
     border-radius: 50%;
-    margin-bottom: 10px;
+    position: absolute;
+    background: rgba(0, 0, 0, 0.5);
+    top: 0;
+    left: 0;
+    opacity: 0;
+    transition: opacity 0.15s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
   }
 }
 </style>

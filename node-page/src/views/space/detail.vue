@@ -31,7 +31,7 @@
         <div class="info">
           <div class="user-profile">
             <div class="user-info">
-              <img :src="getAvatarUri(space.user.avatar)">
+              <Avatar :file-key="space.user.avatar" size="30px" margin="0 10px 0 0"/>
               <h4>{{getUserDisplayName(space.user)}}</h4>
             </div>
             <p class="introduce">
@@ -221,12 +221,6 @@ export default {
         .user-info {
           display: flex;
           align-items: center;
-          img {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            margin-right: 10px;
-          }
         }
         .introduce {
           margin-top: 5px;

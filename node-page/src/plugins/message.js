@@ -1,6 +1,9 @@
 import { ElMessage } from 'element-plus'
 export default {
   ...ElMessage,
+  apiSuccess (message) {
+    return ElMessage.success(message)
+  },
   apiFailed (e) {
     console.error && console.error('接口错误', e)
     // 检查是否存在全局错误
