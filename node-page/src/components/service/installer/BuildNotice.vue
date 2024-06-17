@@ -37,7 +37,7 @@
       <div v-if="!currentBuild.__executing && builds.findIndex(b => b === currentBuild) !== -1" class="opera">
         <el-button :disabled="currentBuild.__executing" @click="previewDialogData.visible = false">关闭</el-button>
         <el-button :disabled="currentBuild.__executing" type="primary" @click="ignore(currentBuild)">忽略此项构建</el-button>
-        <el-button :disabled="currentBuild.__executing" type="important2" @click="execute(currentBuild)">执行脚本</el-button>
+        <el-button :disabled="currentBuild.__executing" type="important2" @click="execute(currentBuild)">执行该脚本</el-button>
       </div>
     </el-dialog>
     <!-- 执行SQL构建脚本窗口 -->
@@ -52,6 +52,7 @@
       :show-close="false"
       append-to-body
     >
+      <h4>构建脚本：{{currentBuild.name}}</h4>
       <DataSourceSelect
         :model-value="currentDatabase"
         :prefix="$t('service.build.targetDataSource')"
@@ -59,8 +60,8 @@
       />
       <div class="warning-wrap text-bold">警告：该操作可能会影响项目的正常运行，请谨慎操作！</div>
       <div class="warning-wrap">
-        <p>构建脚本是服务或插件预设的代码。构建代码中可能存在<b style="margin: 0 3px;">删库、删表、新增修改删除数据</b>等操作，执行后无法恢复！请务必检查执行脚本内容！</p>
-        <p>脚本将在以下数据源/数据库执行，为防止误操作，确认继续操作请输入数据源/数据库名称：</p>
+        <p>构建脚本是服务或插件预设的代码。构建代码中可能存在<b style="margin: 0 3px;">删库、删表，以及对数据的增删改</b>等操作，执行后无法恢复！请务必检查执行脚本内容是否符合预期！</p>
+        <p>脚本将在以下数据源执行，为防止误操作，确认继续操作请输入数据源名称：</p>
         <p class="confirm-text">{{ currentDatabaseName }}</p>
       </div>
       <el-input v-model="exactConfirmData.value" size="large" placeholder="请输入数据源名称" @input="exactConfirmData.error = ''"/>
@@ -78,6 +79,7 @@
     </el-dialog>
     <!-- 执行其它构建脚本窗口 -->
     <el-dialog
+      v-if="currentBuild != null"
       title="执行构建脚本"
       v-model="confirmData.visible"
       custom-class="confirm-script-dialog"
@@ -87,7 +89,7 @@
       :show-close="false"
       append-to-body
     >
-      <p>构建脚本是服务或插件预设的代码，但您仍然需要检查脚本内容以确保脚本能在您的机器上安全的运行，确认现在执行构建脚本吗？</p>
+      <p>构建脚本是服务或插件预设的代码，但您仍然需要检查脚本内容以确保脚本能在您的机器上安全的运行，确认现在执行<em>「{{currentBuild.name}}」</em>构建脚本吗？</p>
       <div class="opera">
         <el-button :disabled="currentBuild.__executing" @click="cancelBuild">取消</el-button>
         <el-button type="primary" @click="viewScript(currentBuild)">检查脚本</el-button>
@@ -101,7 +103,7 @@
     </el-dialog>
     <!-- 脚本执行失败窗口 -->
     <el-dialog
-      title="脚本执行失败"
+      title="构建脚本执行失败"
       v-model="errorData.visible"
       custom-class="script-error-dialog"
       width="550px"
@@ -163,11 +165,7 @@ export default {
       if (this.currentDatabaseDetail == null) {
         return ''
       }
-      let name = this.currentDatabaseDetail.name
-      if (this.currentDatabaseDetail.schema != null && this.currentDatabaseDetail.schema !== '') {
-        name += ('/' + this.currentDatabaseDetail.schema)
-      }
-      return name
+      return this.currentDatabaseDetail.name
     }
   },
   methods: {
@@ -371,6 +369,12 @@ export default {
 }
 // 确认执行脚本窗口
 .exact-confirm-script-dialog, .confirm-script-dialog {
+  h4 {
+    font-size: var(--font-size);
+    margin-bottom: 15px;
+    font-weight: normal;
+    padding: 5px 12px;
+  }
   .data-source-select {
     margin-bottom: 20px;
   }
@@ -395,6 +399,11 @@ export default {
         color: #fff;
       }
     }
+  }
+  em {
+    font-weight: bold;
+    font-style: normal;
+    color: var(--primary-color-match-2);
   }
   .el-input .el-input__inner{
     font-size: 16px;
@@ -440,7 +449,7 @@ export default {
     }
   }
   .el-dialog__body {
-    background-color: #FFE8E6;
+    background-color: #fff;
     border-top: 1px solid var(--primary-color-match-2-transition);
   }
   pre {
