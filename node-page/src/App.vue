@@ -12,12 +12,14 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 import HelpCenter from "./components/common/HelpCenter.vue";
 import BuildNotice from "./components/service/installer/BuildNotice.vue";
 import MergeWindow from "./components/service/installer/merge/MergeWindow.vue";
 import Toolbar from "./components/tools/Toolbar.vue";
 import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
 import en from 'element-plus/dist/locale/en.mjs'
+
 export default {
   components: {Toolbar, MergeWindow, BuildNotice, HelpCenter},
   computed: {
@@ -28,6 +30,12 @@ export default {
       }
       return zhCn
     }
+  },
+  methods: {
+    ...mapActions(['fetchDataSources'])
+  },
+  created () {
+    this.fetchDataSources()
   }
 }
 </script>

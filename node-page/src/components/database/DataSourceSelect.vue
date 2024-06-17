@@ -3,6 +3,7 @@
     <el-select
       popper-class="data-source-select-popper"
       :model-value="modelValue"
+      append-to-body
       @update:modelValue="handleChange"
       clearable
     >
@@ -32,13 +33,12 @@
 </template>
 
 <script>
-import {search} from "../../api/database";
-import OperaDataSourceWindow from "./OperaDataSourceWindow.vue";
-import {mapMutations} from "vuex";
+import { mapMutations, mapState } from 'vuex'
+import OperaDataSourceWindow from './OperaDataSourceWindow'
 
 export default {
-  name: "DataSourceSelect",
-  components: {OperaDataSourceWindow},
+  name: 'DataSourceSelect',
+  components: { OperaDataSourceWindow },
   props: {
     modelValue: {},
     withPrefix: {
@@ -54,29 +54,11 @@ export default {
       default: false
     }
   },
-  data () {
-    return {
-      dataSources: []
-    }
+  computed: {
+    ...mapState(['dataSources'])
   },
   methods: {
     ...mapMutations(['setCurrentDatabase', 'setCurrentDatabaseDetail']),
-    fetchList () {
-      search ()
-        .then(data => {
-          this.dataSources = data
-          // 触发handleChange，自动全局选中数据库
-          const selectedDataSource = this.dataSources.find(db => db.id === this.modelValue)
-          if (selectedDataSource == null) {
-            this.handleChange(null)
-          } else {
-            this.handleChange(selectedDataSource.id)
-          }
-        })
-        .catch(e => {
-          this.$tip.apiFailed(e)
-        })
-    },
     // 切换数据库
     handleChange(databaseId) {
       const targetDataSource = this.dataSources.find(item => item.id === databaseId)
@@ -90,9 +72,6 @@ export default {
       this.fetchList()
       this.handleChange(databaseId)
     }
-  },
-  created () {
-    this.fetchList()
   }
 }
 </script>

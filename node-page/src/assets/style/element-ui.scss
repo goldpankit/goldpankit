@@ -32,21 +32,23 @@ body.theme-light {
     --el-button-active-color: var(--primary-color-match-1);
     --el-button-active-bg-color: var(--primary-color-match-1-transition);
     --el-button-disabled-bg-color: var(--primary-color-match-1-transition);
+    --el-button-disabled-border-color: var(--primary-color-match-1-transition);
     --el-disabled-text-color: var(--font-color);
     font-weight: bold;
   }
-  // 重点按钮
+  // 重点按钮2
   .el-button--important2 {
     --el-button-text-color: var(--color-light);
-    --el-button-bg-color: var(--primary-color-match-2);
-    --el-button-border-color: var(--primary-color-match-2);
+    --el-button-bg-color: var(--primary-color-match-2-transition);
+    --el-button-border-color: var(--primary-color-match-2-transition);
     --el-button-hover-text-color: var(--color-light);
     --el-button-hover-bg-color: var(--primary-color-match-2);
     --el-button-hover-border-color: var(--primary-color-match-2);
-    --el-button-active-border-color: var(--primary-color-match-2-transition);
+    --el-button-active-border-color: var(--primary-color-match-2);
     --el-button-active-color: var(--primary-color-match-2);
-    --el-button-active-bg-color: var(--primary-color-match-2-transition);
-    --el-button-disabled-bg-color: var(--primary-color-match-2-transition);
+    --el-button-active-bg-color: var(--primary-color-match-2);
+    --el-button-disabled-bg-color: rgba(255, 144, 144, 0.8);
+    --el-button-disabled-border-color: rgba(255, 144, 144, 0.8);
     --el-disabled-text-color: var(--color-light);
     font-weight: bold;
   }

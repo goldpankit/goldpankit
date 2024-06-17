@@ -46,6 +46,10 @@ html {
   .text-danger {
     color: var(--color-danger);
   }
+  // 加醋
+  .text-bold {
+    font-weight: bold;
+  }
   // 图标按钮
   .button-icon {
     padding-left: 10px;
@@ -98,6 +102,20 @@ html {
   // 排序
   .sortable-ghost {
     background-color: #dcdcdc !important;
+  }
+  .el-dialog {
+    .el-dialog__header {
+      .el-dialog__headerbtn {
+        top: 2px;
+        .el-dialog__close {
+          font-size: 25px;
+          transition: all ease .5s;
+          &:hover {
+            transform: rotate(180deg);
+          }
+        }
+      }
+    }
   }
   input:-webkit-autofill,
   input:-webkit-autofill:hover,

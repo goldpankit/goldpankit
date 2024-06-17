@@ -1,111 +1,204 @@
 <template>
-  <div class="build-notice" :class="{ visible: buildsLength > 0 }">
+  <div class="build-notice" :class="{ visible: builds.length > 0 }">
+    <h2>执行构建</h2>
     <ul>
       <li v-for="(build,index) in builds" :key="build.name">
         <div class="title">
-          <h3>{{build.name}}</h3>
-          <el-button type="text" size="small" @click="viewScript(build)">{{$t('service.build.viewScript')}}</el-button>
+          <h3>{{index + 1}}、{{build.name}}</h3>
+          <el-button type="text" size="small" @click="viewScript(build)">查看构建脚本</el-button>
         </div>
         <div v-if="build.type === 'MySQL'" class="target-datasource">
           <DataSourceSelect
-            :model-value="installData.build.dataSourceId"
+            :model-value="currentDatabase"
             :prefix="$t('service.build.targetDataSource')"
             :with-block="true"
-            @change="changeDataSource"
           />
         </div>
         <div class="opera">
-          <el-button @click="ignore(build)">{{$t('service.build.ignore')}}</el-button>
-          <el-button type="primary" :disabled="build.__executing" @click="execute(build)">{{$t('service.build.execute')}}</el-button>
+          <el-button type="primary" @click="ignore(build)">忽略此项构建</el-button>
+          <el-button type="important2" :disabled="build.__executing" @click="execute(build)">执行构建脚本</el-button>
         </div>
       </li>
     </ul>
     <div v-if="builds.length > 1" class="opera">
-      <el-button @click="ignoreAll">{{$t('service.build.ignoreAll')}}</el-button>
-      <el-button type="primary" :disabled="anyExecuting" @click="executeAll">{{$t('service.build.executeAll')}}</el-button>
+      <el-button size="large" type="primary" @click="ignoreAll">忽略所有构建</el-button>
+      <el-button size="large" type="important2" :disabled="anyExecuting" @click="executeAll">执行所有构建脚本</el-button>
     </div>
+    <!-- 查看脚本窗口 -->
     <el-dialog
+      v-if="currentBuild != null"
       custom-class="view-script-dialog"
-      v-model="dialogData.visible"
-      :title="dialogData.build.name"
+      v-model="previewDialogData.visible"
+      :title="'构建脚本/' + currentBuild.name"
+      append-to-body
+    >
+      <el-input type="textarea" :model-value="currentBuild.content"></el-input>
+      <!-- 添加判断，防止脚本执行完成后依然显示操作 -->
+      <div v-if="!currentBuild.__executing && builds.findIndex(b => b === currentBuild) !== -1" class="opera">
+        <el-button :disabled="currentBuild.__executing" @click="previewDialogData.visible = false">关闭</el-button>
+        <el-button :disabled="currentBuild.__executing" type="primary" @click="ignore(currentBuild)">忽略此项构建</el-button>
+        <el-button :disabled="currentBuild.__executing" type="important2" @click="execute(currentBuild)">执行脚本</el-button>
+      </div>
+    </el-dialog>
+    <!-- 执行SQL构建脚本窗口 -->
+    <el-dialog
+      v-if="currentBuild != null && currentDatabaseDetail != null"
+      title="执行构建脚本"
+      v-model="exactConfirmData.visible"
+      custom-class="exact-confirm-script-dialog"
+      width="685px"
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
+      :show-close="false"
       append-to-body
     >
       <DataSourceSelect
-        v-if="dialogData.build.type === 'MySQL'"
-        :model-value="installData.build.dataSourceId"
+        :model-value="currentDatabase"
         :prefix="$t('service.build.targetDataSource')"
         :with-block="true"
-        @change="changeDataSource"
       />
-      <el-input type="textarea" :model-value="dialogData.build.content"></el-input>
-      <div class="opera">
-        <el-button @click="ignore(dialogData.build)">{{$t('service.build.ignore')}}</el-button>
-        <el-button type="primary" :disabled="dialogData.build.__executing" @click="execute(dialogData.build)">{{$t('service.build.execute')}}</el-button>
+      <div class="warning-wrap text-bold">警告：该操作可能会影响项目的正常运行，请谨慎操作！</div>
+      <div class="warning-wrap">
+        <p>构建脚本是服务或插件预设的代码。构建代码中可能存在<b style="margin: 0 3px;">删库、删表、新增修改删除数据</b>等操作，执行后无法恢复！请务必检查执行脚本内容！</p>
+        <p>脚本将在以下数据源/数据库执行，为防止误操作，确认继续操作请输入数据源/数据库名称：</p>
+        <p class="confirm-text">{{ currentDatabaseName }}</p>
       </div>
+      <el-input v-model="exactConfirmData.value" size="large" placeholder="请输入数据源名称" @input="exactConfirmData.error = ''"/>
+      <p class="error-tip">{{ exactConfirmData.error }}</p>
+      <div class="opera">
+        <el-button :disabled="currentBuild.__executing" @click="exactConfirmData.visible = false">取消</el-button>
+        <el-button type="primary" @click="viewScript(currentBuild)">检查脚本</el-button>
+        <el-button
+          type="important2"
+          :disabled="exactConfirmData.value.trim() === '' || currentBuild.__executing"
+          :loading="currentBuild.__executing"
+          @click="confirmExecute(currentBuild)"
+        >确认执行脚本</el-button>
+      </div>
+    </el-dialog>
+    <!-- 执行其它构建脚本窗口 -->
+    <el-dialog
+      title="执行构建脚本"
+      v-model="confirmData.visible"
+      custom-class="confirm-script-dialog"
+      width="400px"
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
+      :show-close="false"
+      append-to-body
+    >
+      <p>构建脚本是服务或插件预设的代码，但您仍然需要检查脚本内容以确保脚本能在您的机器上安全的运行，确认现在执行构建脚本吗？</p>
+      <div class="opera">
+        <el-button :disabled="currentBuild.__executing" @click="cancelBuild">取消</el-button>
+        <el-button type="primary" @click="viewScript(currentBuild)">检查脚本</el-button>
+        <el-button
+          type="important2"
+          :disabled="currentBuild.__executing"
+          :loading="currentBuild.__executing"
+          @click="confirmExecute(currentBuild)"
+        >确认执行脚本</el-button>
+      </div>
+    </el-dialog>
+    <!-- 脚本执行失败窗口 -->
+    <el-dialog
+      title="脚本执行失败"
+      v-model="errorData.visible"
+      custom-class="script-error-dialog"
+      width="550px"
+      append-to-body
+    >
+      <pre class="text-danger">{{ errorData.error }}</pre>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import {build} from "../../../api/service.compile";
-import {mapMutations, mapState} from "vuex";
-import DataSourceSelect from "../../database/DataSourceSelect.vue";
+import { mapMutations, mapState } from 'vuex'
+import DataSourceSelect from '@/components/database/DataSourceSelect'
+import { build } from '@/api/service.compile'
 
 export default {
   name: "BuildNotice",
-  components: {DataSourceSelect},
+  components: { DataSourceSelect },
   data () {
     return {
       executing: false,
-      dialogData: {
-        build: {
-          name: '',
-          content: ''
-        },
+      // 当前执行的构建对象
+      currentBuild: null,
+      // 脚本预览窗口
+      previewDialogData: {
         visible: false
+      },
+      // 确认执行脚本窗口
+      exactConfirmData: {
+        visible: false,
+        value: '',
+        error: ''
+      },
+      confirmData: {
+        visible: false,
+        value: '',
+        error: ''
+      },
+      // 脚本执行失败窗口
+      errorData: {
+        visible: false,
+        error: ''
       }
     }
   },
   computed: {
-    ...mapState(['installData']),
+    ...mapState(['currentDatabase', 'currentDatabaseDetail', 'installData']),
     builds () {
       if (this.installData == null) {
         return []
       }
       return this.installData.build.builds
     },
-    buildsLength () {
-      return this.builds.length
-    },
     anyExecuting () {
       return this.executing || this.builds.filter(b => b.__executing === true).length > 0
+    },
+    // 执行的数据源名称
+    currentDatabaseName () {
+      if (this.currentDatabaseDetail == null) {
+        return ''
+      }
+      let name = this.currentDatabaseDetail.name
+      if (this.currentDatabaseDetail.schema != null && this.currentDatabaseDetail.schema !== '') {
+        name += ('/' + this.currentDatabaseDetail.schema)
+      }
+      return name
     }
   },
   methods: {
     ...mapMutations(['setInstallData']),
-    // 修改数据源
-    changeDataSource (dataSourceId) {
-      this.setInstallData({
-        build: {
-          ...this.installData.build,
-          dataSourceId: dataSourceId
-        }
-      })
+    // 取消构建
+    cancelBuild () {
+      if (this.currentBuild.__executing) {
+        return
+      }
+      this.confirmData.visible = false
+      this.exactConfirmData.visible = false
     },
     // 显示脚本
     viewScript (build) {
-      this.dialogData.visible = true
-      this.dialogData.build = build
+      this.currentBuild = build
+      this.previewDialogData.visible = true
     },
     // 忽略
     ignore (build) {
+      // 关闭脚本窗口
+      this.previewDialogData.visible = false
+      // 关闭确认构建窗口
+      this.confirmData.visible = false
+      this.exactConfirmData.visible = false
+      // 移除构建
       const index = this.builds.findIndex(b => b === build)
-      if (index === -1) {
-        this.dialogData.visible = false
-        return
+      if (index !== -1) {
+        this.installData.build.builds.splice(index, 1)
       }
-      this.installData.build.builds.splice(index, 1)
-      this.dialogData.visible = false
+      // 清空选择
+      this.currentBuild = null
     },
     // 忽略所有
     ignoreAll () {
@@ -113,40 +206,56 @@ export default {
     },
     // 执行构建
     execute (item) {
-      this.$messageBox.confirm('执行脚本前请认真查看脚本内容，避免删库和重复执行等问题，确认执行脚本吗？', '重要提示', {
-        confirmButtonText: '已确认脚本准确无误，立即执行',
-        cancelButtonText: '再检查一遍',
-        confirmButtonClass: 'button-danger',
-        type: 'warning'
+      this.currentBuild = item
+      // 数据库构建，但没选中数据库
+      if (this.currentBuild.type === 'MySQL' && (this.currentDatabase == null || this.currentDatabase === '')) {
+        this.$tip.warning('请先选择数据源')
+        return
+      }
+      // 数据库构建
+      if (this.currentBuild.type === 'MySQL') {
+        this.previewDialogData.visible = false
+        this.exactConfirmData.value = ''
+        this.exactConfirmData.visible = true
+        return
+      }
+      // 其它脚本构建
+      this.previewDialogData.visible = false
+      this.confirmData.visible = true
+    },
+    // 确认执行
+    confirmExecute (buildItem) {
+      // 如果执行的是SQL脚本，则需要验证数据源名称是否匹配
+      if (buildItem.type === 'MySQL') {
+        if (this.currentDatabaseName !== this.exactConfirmData.value) {
+          this.exactConfirmData.error = '数据源名称错误'
+          return
+        }
+      }
+      if (buildItem.__executing) {
+        return
+      }
+      buildItem.__executing = true
+      const index = this.builds.findIndex(b => b === buildItem)
+      build({
+        ...this.installData.build,
+        builds: [buildItem]
       })
         .then(() => {
-          // 数据库构建，但没选中数据库
-          if (item.type === 'MySQL' && (this.installData.build.dataSourceId == null || this.installData.build.dataSourceId === '')) {
-            this.$tip.warning(this.$t('service.noneDataSourceTip'))
-            return
-          }
-          if (item.__executing) {
-            return
-          }
-          item.__executing = true
-          const index = this.builds.find(b => b === item)
-          build({
-            ...this.installData.build,
-            builds: [item]
-          })
-            .then(() => {
-              this.dialogData.visible = false
-              this.installData.build.builds.splice(index, 1)
-              this.$tip.success(`「${item.name}」${this.$t('service.build.completed')}`)
-            })
-            .catch(e => {
-              this.$tip.apiFailed(e)
-            })
-            .finally(() => {
-              item.__executing = false
-            })
+          this.currentBuild = null
+          this.installData.build.builds.splice(index, 1)
+          this.$tip.success(`「${buildItem.name}」构建完成`)
         })
-        .catch(() => {})
+        .catch(e => {
+          this.errorData.visible = true
+          this.errorData.error = e.message
+        })
+        .finally(() => {
+          // 关闭确认窗口
+          this.exactConfirmData.visible = false
+          this.confirmData.visible = false
+          buildItem.__executing = false
+        })
     },
     // 执行构建
     executeAll () {
@@ -162,7 +271,7 @@ export default {
             builds: this.builds
           })
             .then(() => {
-              this.dialogData.visible = false
+              this.previewDialogData.visible = false
               this.installData.build.builds.splice(0, this.builds.length)
               this.$tip.success(`Build successfully`)
             })
@@ -181,28 +290,42 @@ export default {
   width: 450px;
   position: fixed;
   right: 20px;
-  bottom: 20px;
-  padding: 20px;
+  bottom: 0;
+  padding: 20px 20px 50px 20px;
   max-height: 80%;
   overflow-y: auto;
-  transform: translateX(2000px);
-  transition: all ease .15s;
+  transform: translateY(2000px);
+  transition: all ease .5s;
   z-index: 99;
+  background: rgba(46, 52, 68, .8);
+  border-radius: 10px 10px 0 0;
   &.visible {
     transform: translateX(0);
+  }
+  h2 {
+    margin-bottom: 20px;
+    text-align: center;
+    color: #fff;
+    font-size: 20px;
   }
   li {
     margin-top: 15px;
     padding: 30px;
     border-radius: 10px;
     background: var(--color-light);
-    box-shadow: var(--page-shadow);
+    &:first-of-type {
+      margin-top: 0;
+    }
     .title {
       display: flex;
       justify-content: space-between;
+      align-items: center;
+      h3 {
+        font-size: 14px;
+      }
       .el-button {
         flex-shrink: 0;
-        margin-left: 50px;
+        margin-left: 20px;
       }
     }
     .target-datasource {
@@ -217,14 +340,15 @@ export default {
   & > .opera {
     margin-top: 10px;
     background: var(--color-light);
-    padding: 10px;
+    padding: 30px 10px;
     display: flex;
     justify-content: center;
-    box-shadow: var(--page-shadow);
+    border-radius: 10px;
   }
 }
 </style>
 <style lang="scss">
+// 脚本预览窗口
 .view-script-dialog {
   .el-dialog__body {
     padding-top: 10px;
@@ -243,6 +367,84 @@ export default {
     padding: 20px 0 0 0;
     display: flex;
     justify-content: center;
+  }
+}
+// 确认执行脚本窗口
+.exact-confirm-script-dialog, .confirm-script-dialog {
+  .data-source-select {
+    margin-bottom: 20px;
+  }
+  .warning-wrap {
+    margin-bottom: 20px;
+    border: 2px solid var(--color-danger);
+    padding: 15px;
+    background-color: #FFE8E6;
+    border-radius: 5px;
+    color: var(--color-danger);
+    p {
+      line-height: 40px;
+    }
+    .confirm-text {
+      font-weight: bold;
+      color: #333;
+      font-size: 16px;
+      letter-spacing: 2px;
+      // 调整选中后的颜色
+      &::selection {
+        background-color: var(--color-danger);
+        color: #fff;
+      }
+    }
+  }
+  .el-input .el-input__inner{
+    font-size: 16px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    &::placeholder {
+      font-size: 14px;
+      font-weight: normal;
+      letter-spacing: initial;
+    }
+  }
+  .error-tip {
+    height: 20px;
+    margin-top: 5px;
+    color: var(--color-danger);
+  }
+  .opera {
+    display: flex;
+    justify-content: flex-end;
+    padding: 20px 0 0 0;
+  }
+}
+.confirm-script-dialog {
+  .el-dialog__body {
+    padding-top: 10px;
+    p {
+      line-height: 25px;
+    }
+  }
+}
+// 脚本执行失败窗口
+.el-dialog.script-error-dialog {
+  background-color: var(--color-danger);
+  .el-dialog__header {
+    .el-dialog__headerbtn {
+      top: 2px;
+    }
+    .el-dialog__title {
+      color: #fff;
+    }
+    .el-dialog__close {
+      color: #fff;
+    }
+  }
+  .el-dialog__body {
+    background-color: #FFE8E6;
+    border-top: 1px solid var(--primary-color-match-2-transition);
+  }
+  pre {
+    margin: 0;
   }
 }
 </style>

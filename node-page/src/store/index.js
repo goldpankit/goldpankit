@@ -1,7 +1,8 @@
 import Vuex from 'vuex'
-import {getToken} from "../api/user.token";
-import {getLoginInfo, logout} from "../api/user.login";
-import {getBalance} from "../api/user";
+import { getToken } from '@/api/user.token'
+import { getLoginInfo, logout } from '@/api/user.login'
+import { getBalance } from '@/api/user'
+import { search } from '@/api/database'
 // 获取本地项目
 let currentProject = null
 const currentProjectStr = window.localStorage.getItem('CURRENT_PROJECT')
@@ -25,6 +26,8 @@ export default new Vuex.Store({
   state: {
     // 用户信息
     userInfo: null,
+    // 本地数据源列表
+    dataSources: [],
     // 当前项目
     currentProject,
     currentProjectDetail,
@@ -48,6 +51,9 @@ export default new Vuex.Store({
       } else {
         Object.assign(state.userInfo, value)
       }
+    },
+    setDataSources (state, value) {
+      state.dataSources = value
     },
     setCurrentProject(state, project) {
       state.currentProject = project
@@ -129,6 +135,16 @@ export default new Vuex.Store({
             reject(e)
           })
       })
+    },
+    // 获取本地数据源列表
+    fetchDataSources ({ commit }) {
+      search()
+        .then(data => {
+          commit('setDataSources', data)
+        })
+        .catch(e => {
+          console.error('获取本地数据源失败', e)
+        })
     }
   },
   getters: {}
