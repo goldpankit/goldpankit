@@ -10,7 +10,7 @@ module.exports = {
     const builds = dto.builds
     const project = cache.projects.get(dto.projectId)
     const database = cache.datasources.get(dto.dataSourceId)
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
       if (builds == null || builds.length === 0) {
         resolve()
         return
@@ -19,7 +19,7 @@ module.exports = {
         // 获取所有MYSQL脚本，整合在一起执行
         const sqlContent = builds.filter(b => b.type === 'MySQL').map(b => b.content).join('\n')
         if (sqlContent != null && sqlContent !== '') {
-          mysql.exec({
+          await mysql.exec({
             host: database.host,
             port: database.port,
             user: database.username,
@@ -31,7 +31,7 @@ module.exports = {
         // 获取所有Node脚本，整合在一起执行
         const nodeContent = builds.filter(b => b.type === 'Node').map(b => b.content).join('\n')
         if (nodeContent != null && nodeContent !== '') {
-          nc.exec(project.codespace, nodeContent)
+          await nc.exec(project.codespace, nodeContent)
         }
         resolve()
       } catch (e) {
