@@ -5,7 +5,7 @@
       <li v-for="(build,index) in builds" :key="build.name">
         <div class="title">
           <h3>{{index + 1}}、{{build.name}}</h3>
-          <el-button type="text" size="small" @click="viewScript(build)">查看构建脚本</el-button>
+          <el-button type="text" size="small" @click="$refs.scriptPreviewDialog.open(build)">查看构建脚本</el-button>
         </div>
         <div v-if="build.type === 'MySQL'" class="target-datasource">
           <DataSourceSelect
@@ -25,22 +25,11 @@
       <el-button size="large" type="important2" :disabled="anyExecuting" @click="executeAll">执行所有构建脚本</el-button>
     </div>
     <!-- 查看脚本窗口 -->
-    <el-dialog
-      v-if="currentBuild != null"
-      custom-class="view-script-dialog"
-      v-model="previewDialogData.visible"
-      :title="'构建脚本/' + currentBuild.name"
-      append-to-body
-    >
-      <el-input type="textarea" :model-value="currentBuild.content"></el-input>
-      <!-- 添加判断，防止脚本执行完成后依然显示操作 -->
-      <div v-if="!currentBuild.__executing && builds.findIndex(b => b === currentBuild) !== -1" class="opera">
-        <el-button :disabled="currentBuild.__executing" @click="previewDialogData.visible = false">关闭</el-button>
-        <el-button type="primary" @click="copy(currentBuild)">复制</el-button>
-        <el-button :disabled="currentBuild.__executing" type="primary" @click="ignore(currentBuild)">忽略此项构建</el-button>
-        <el-button :disabled="currentBuild.__executing" type="important2" @click="execute(currentBuild)">执行该脚本</el-button>
-      </div>
-    </el-dialog>
+    <ScriptPreviewDialog
+      ref="scriptPreviewDialog"
+      @ignore="ignore"
+      @execute="execute"
+    />
     <!-- 执行SQL构建脚本窗口 -->
     <el-dialog
       v-if="currentBuild != null && currentDatabaseDetail != null"
@@ -69,7 +58,7 @@
       <p class="error-tip">{{ exactConfirmData.error }}</p>
       <div class="opera">
         <el-button :disabled="currentBuild.__executing" @click="exactConfirmData.visible = false">取消</el-button>
-        <el-button type="primary" @click="viewScript(currentBuild)">检查脚本</el-button>
+        <el-button type="primary" @click="$refs.scriptPreviewDialog.open(currentBuild)">检查脚本</el-button>
         <el-button
           type="important2"
           :disabled="exactConfirmData.value.trim() === '' || currentBuild.__executing"
@@ -93,7 +82,7 @@
       <p>构建脚本是服务或插件预设的代码，但您仍然需要检查脚本内容以确保脚本能在您的机器上安全的运行，确认现在执行<em>「{{currentBuild.name}}」</em>构建脚本吗？</p>
       <div class="opera">
         <el-button :disabled="currentBuild.__executing" @click="cancelBuild">取消</el-button>
-        <el-button type="primary" @click="viewScript(currentBuild)">检查脚本</el-button>
+        <el-button type="primary" @click="$refs.scriptPreviewDialog.open(currentBuild)">检查脚本</el-button>
         <el-button
           type="important2"
           :disabled="currentBuild.__executing"
@@ -119,10 +108,11 @@
 import { mapMutations, mapState } from 'vuex'
 import DataSourceSelect from '@/components/database/DataSourceSelect'
 import { build } from '@/api/service.compile'
+import ScriptPreviewDialog from "@/components/service/installer/ScriptPreviewDialog.vue";
 
 export default {
   name: "BuildNotice",
-  components: { DataSourceSelect },
+  components: {ScriptPreviewDialog, DataSourceSelect },
   data () {
     return {
       executing: false,
@@ -171,11 +161,6 @@ export default {
   },
   methods: {
     ...mapMutations(['setInstallData']),
-    // 复制
-    copy (build) {
-      navigator.clipboard.writeText(build.content)
-      this.$tip.apiSuccess('复制成功')
-    },
     // 取消构建
     cancelBuild () {
       if (this.currentBuild.__executing) {
@@ -183,11 +168,6 @@ export default {
       }
       this.confirmData.visible = false
       this.exactConfirmData.visible = false
-    },
-    // 显示脚本
-    viewScript (build) {
-      this.currentBuild = build
-      this.previewDialogData.visible = true
     },
     // 忽略
     ignore (build) {
@@ -352,27 +332,6 @@ export default {
 }
 </style>
 <style lang="scss">
-// 脚本预览窗口
-.view-script-dialog {
-  .el-dialog__body {
-    padding-top: 10px;
-  }
-  .data-source-select {
-    margin-bottom: 10px;
-  }
-  .el-textarea {
-    border: 0;
-  }
-  .el-textarea__inner {
-    height: 500px;
-    border: 0;
-  }
-  .opera {
-    padding: 20px 0 0 0;
-    display: flex;
-    justify-content: center;
-  }
-}
 // 确认执行脚本窗口
 .exact-confirm-script-dialog, .confirm-script-dialog {
   h4 {
