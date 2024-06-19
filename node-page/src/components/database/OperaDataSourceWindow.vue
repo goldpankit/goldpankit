@@ -40,13 +40,14 @@
         <template #label>
           <div>
             <label>URL</label>
-            <a href="javascript:;" @click="testConnect">{{$t('database.testConnection')}}</a>
+            <a href="javascript:;" @click="testConnect">测试连接</a>
           </div>
         </template>
         <el-input :model-value="url" readonly disabled/>
         <p v-if="connectResult.connecting">{{$t('database.connecting')}}</p>
         <p v-else-if="!connectResult.withError && connectResult.message != null" class="success">{{connectResult.message}}</p>
         <p v-else-if="connectResult.message != null" class="error">{{connectResult.message}}</p>
+        <p v-else></p>
       </el-form-item>
     </el-form>
     <div class="opera">
@@ -177,6 +178,7 @@ export default {
         return
       }
       this.connectResult.connecting = true
+      this.connectResult.message = null
       this.connectResult.withError = false
       // 密码不去空
       const password = this.form.password
@@ -311,6 +313,7 @@ export default {
           }
         }
         p {
+          height: 20px;
           line-height: 20px;
           margin-top: 10px;
         }

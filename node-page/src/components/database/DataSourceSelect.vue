@@ -8,7 +8,7 @@
       clearable
     >
       <el-option
-        v-for="item in dataSources"
+        v-for="item in databases"
         :value="item.id"
         :key="item.id"
         :label="item.name"
@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import { mapMutations, mapState } from 'vuex'
+import {mapActions, mapMutations, mapState} from 'vuex'
 import OperaDataSourceWindow from './OperaDataSourceWindow'
 
 export default {
@@ -55,13 +55,19 @@ export default {
     }
   },
   computed: {
-    ...mapState(['dataSources'])
+    ...mapState(['databases'])
   },
   methods: {
     ...mapMutations(['setCurrentDatabase', 'setCurrentDatabaseDetail']),
+    ...mapActions(['fetchDatabases']),
     // 切换数据库
     handleChange(databaseId) {
-      const targetDataSource = this.dataSources.find(item => item.id === databaseId)
+      const targetDataSource = this.databases.find(item => item.id === databaseId)
+      if (targetDataSource == null) {
+        this.$tip.error('找不到数据库信息，请刷新后重试！')
+        return
+      }
+      // 设置当前选中的数据库信息
       this.setCurrentDatabase(databaseId)
       this.setCurrentDatabaseDetail(targetDataSource)
       this.$emit('update:modelValue', databaseId)
@@ -69,8 +75,13 @@ export default {
     },
     // 创建完成
     handleCreateSuccess (databaseId) {
-      this.fetchList()
-      this.handleChange(databaseId)
+      this.fetchDatabases()
+        .then(() => {
+          this.handleChange(databaseId)
+        })
+        .catch(e => {
+          this.$tip.apiFailed(e)
+        })
     }
   }
 }

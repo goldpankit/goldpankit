@@ -27,7 +27,7 @@ export default new Vuex.Store({
     // 用户信息
     userInfo: null,
     // 本地数据源列表
-    dataSources: [],
+    databases: [],
     // 当前项目
     currentProject,
     currentProjectDetail,
@@ -52,8 +52,8 @@ export default new Vuex.Store({
         Object.assign(state.userInfo, value)
       }
     },
-    setDataSources (state, value) {
-      state.dataSources = value
+    setDatabases (state, value) {
+      state.databases = value
     },
     setCurrentProject(state, project) {
       state.currentProject = project
@@ -136,15 +136,19 @@ export default new Vuex.Store({
           })
       })
     },
-    // 获取本地数据源列表
-    fetchDataSources ({ commit }) {
-      search()
-        .then(data => {
-          commit('setDataSources', data)
-        })
-        .catch(e => {
-          console.error('获取本地数据源失败', e)
-        })
+    // 获取本地数据库列表
+    fetchDatabases ({ commit }) {
+      return new Promise((resolve, reject) => {
+        search()
+          .then(data => {
+            commit('setDatabases', data)
+            resolve(data)
+          })
+          .catch(e => {
+            console.log('获取本地数据源失败')
+            reject(e)
+          })
+      })
     }
   },
   getters: {}

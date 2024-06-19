@@ -1,7 +1,7 @@
 <template>
   <div class="form">
     <div class="wrap">
-      <h2>{{$t('database.databases')}}</h2>
+      <h2>数据源</h2>
       <FormTip>
         {{$t('database.tip')}}
       </FormTip>
@@ -20,32 +20,33 @@
             />
           </li>
         </ul>
-        <Empty v-else description="No Databases"/>
+        <Empty v-else description="暂无数据库配置"/>
         <Pagination :pagination="pagination"/>
       </div>
     </div>
-    <OperaDataSourceWindow ref="operaDataSourceWindow" @success="search"/>
+    <OperaDataSourceWindow ref="operaDataSourceWindow"/>
   </div>
 </template>
 
 <script>
-import InnerRouterView from "@/components/common/InnerRouterView/InnerRouterView.vue";
-import InnerRouterViewWindow from "@/components/common/InnerRouterView/InnerRouterViewWindow.vue";
-import DatabaseView from "@/components/usr/project/DatabaseView.vue";
-import {deleteById, search} from "../../api/database";
-import Empty from "../../components/common/Empty.vue";
-import Pagination from "../../components/common/Pagination.vue";
-import OperaDataSourceWindow from "../../components/database/OperaDataSourceWindow.vue";
-import FormTip from "../../components/common/FormTip.vue";
+import {mapActions, mapState} from 'vuex'
+import InnerRouterView from '@/components/common/InnerRouterView/InnerRouterView'
+import InnerRouterViewWindow from '@/components/common/InnerRouterView/InnerRouterViewWindow'
+import DatabaseView from '@/components/usr/project/DatabaseView'
+import Empty from '@/components/common/Empty'
+import Pagination from '@/components/common/Pagination'
+import OperaDataSourceWindow from '@/components/database/OperaDataSourceWindow'
+import FormTip from '@/components/common/FormTip'
+import { deleteById } from '@/api/database'
 
 export default {
   components: {
     FormTip,
     OperaDataSourceWindow,
-    Pagination, Empty, DatabaseView, InnerRouterViewWindow, InnerRouterView},
+    Pagination, Empty, DatabaseView, InnerRouterViewWindow, InnerRouterView
+  },
   data () {
     return {
-      databases: [],
       pagination: {
         pageIndex: 1,
         capacity: 10,
@@ -53,28 +54,27 @@ export default {
       }
     }
   },
+  computed: {
+    ...mapState(['databases'])
+  },
   methods: {
-    // 搜索
-    search () {
-      search (this.pagination)
-        .then(data => {
-          this.databases = data.records
-        })
-        .catch(e => {
-          this.$tip.apiFailed(e)
-        })
-    },
+    ...mapActions(['fetchDatabases']),
     // 修改数据库
     edit (db) {
       this.$refs.operaDataSourceWindow.open(db)
     },
     // 删除数据库
     deleteDatabase (id) {
-      this.deleteConfirm(`Do you want to delete the database?`)
+      const database = this.databases.find(db => db.id === id)
+      if (database == null) {
+        this.$tip.error('未找到数据库信息，请刷新后重试！')
+        return
+      }
+      this.deleteConfirm(`确认删除「${database.name}」数据库吗？`)
         .then(() => {
           deleteById (id)
             .then(() => {
-              this.search()
+              this.fetchDatabases()
             })
             .catch(e => {
               this.$tip.apiFailed(e)
@@ -82,9 +82,6 @@ export default {
         })
         .catch(() => {})
     }
-  },
-  created () {
-    this.search()
   }
 }
 </script>

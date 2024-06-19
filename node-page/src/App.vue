@@ -32,10 +32,10 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['fetchDataSources'])
+    ...mapActions(['fetchDatabases'])
   },
   created () {
-    this.fetchDataSources()
+    this.fetchDatabases()
   }
 }
 </script>

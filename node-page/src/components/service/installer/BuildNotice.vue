@@ -142,7 +142,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['currentDatabase', 'currentDatabaseDetail', 'installData']),
+    ...mapState(['currentProject', 'currentDatabase', 'currentDatabaseDetail', 'installData']),
     builds () {
       if (this.installData == null) {
         return []
@@ -223,7 +223,8 @@ export default {
       buildItem.__executing = true
       const index = this.builds.findIndex(b => b === buildItem)
       build({
-        ...this.installData.build,
+        dataSourceId: this.currentDatabase,
+        projectId: this.currentProject,
         builds: [buildItem]
       })
         .then(() => {
