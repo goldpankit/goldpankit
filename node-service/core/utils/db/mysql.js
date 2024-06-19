@@ -180,6 +180,31 @@ class MySQL {
         })
     })
   }
+  // 检查书库是否存在
+  checkDatabase (config, databaseName) {
+    return new Promise((resolve, reject) => {
+      // 连接数据库
+      this.connect(config)
+        .then(conn => {
+          // 执行检测语句
+          conn.query(
+            `SHOW DATABASES;`,
+            (error, records) => {
+              conn.end()
+              if (error) {
+                return reject(error.sqlMessage)
+              }
+              if (records.find(r => r.Database === databaseName)) {
+                resolve(true)
+              }
+              resolve(false)
+            })
+        })
+        .catch(e => {
+          reject(e)
+        })
+    })
+  }
   // 获取表字段
   #getFields (conn, database, table) {
     return new Promise((resolve, reject) => {

@@ -4,6 +4,9 @@
     custom-class="script-preview-dialog"
     v-model="visible"
     destroy-on-close
+    :show-close="false"
+    :close-on-click-modal="false"
+    :close-on-press-escape="false"
     :title="'构建脚本/' + currentBuild.name"
     append-to-body
   >
@@ -53,11 +56,10 @@ export default {
             {
               value: build.content,
               language: 'sql',
-              // theme: 'vs-dark',
               readOnly: false,
               automaticLayout: true,
               minimap: {
-                enabled: false
+                enabled: true
               }
             }
         )
@@ -98,7 +100,7 @@ export default {
   .opera {
     padding: 20px 0 0 0;
     display: flex;
-    justify-content: center;
+    justify-content: flex-end;
   }
 }
 </style>

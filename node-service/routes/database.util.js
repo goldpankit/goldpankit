@@ -23,11 +23,21 @@ request
     return mysql.getTables(req.body, true)
   })
 
+// 检查数据库是否存在
+request
+  .post('/db/mysql/database/exists')
+  .data(req => {
+    return mysql.checkDatabase(req.body.config, req.body.database)
+  })
+
 // 执行sql
 request
   .post('/db/mysql/exec')
   .data(req => {
-    const database = cache.datasources.get(req.body.database)
+    let database = cache.datasources.get(req.body.database)
+    if (database == null) {
+      database = req.body.config
+    }
     const sql = mysql.format(req.body.sql)
     return mysql.exec({
       host: database.host,
