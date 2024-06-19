@@ -86,7 +86,7 @@ export default {
   methods: {
     ...mapMutations(['setUserInfo']),
     // 密码登录
-    login (force = false) {
+    login (force = true) {
       if (this.disabledLoginButton) {
         return
       }
