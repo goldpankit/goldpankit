@@ -36,6 +36,7 @@
       <!-- 添加判断，防止脚本执行完成后依然显示操作 -->
       <div v-if="!currentBuild.__executing && builds.findIndex(b => b === currentBuild) !== -1" class="opera">
         <el-button :disabled="currentBuild.__executing" @click="previewDialogData.visible = false">关闭</el-button>
+        <el-button type="primary" @click="copy(currentBuild)">复制</el-button>
         <el-button :disabled="currentBuild.__executing" type="primary" @click="ignore(currentBuild)">忽略此项构建</el-button>
         <el-button :disabled="currentBuild.__executing" type="important2" @click="execute(currentBuild)">执行该脚本</el-button>
       </div>
@@ -170,6 +171,11 @@ export default {
   },
   methods: {
     ...mapMutations(['setInstallData']),
+    // 复制
+    copy (build) {
+      navigator.clipboard.writeText(build.content)
+      this.$tip.apiSuccess('复制成功')
+    },
     // 取消构建
     cancelBuild () {
       if (this.currentBuild.__executing) {
