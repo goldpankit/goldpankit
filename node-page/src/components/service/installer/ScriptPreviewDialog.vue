@@ -4,20 +4,18 @@
     custom-class="script-preview-dialog"
     v-model="visible"
     destroy-on-close
-    :show-close="false"
-    :close-on-click-modal="false"
-    :close-on-press-escape="false"
     :title="'构建脚本/' + currentBuild.name"
     append-to-body
   >
     <!-- 脚本输入框 -->
     <div class="script-input-container"></div>
     <!-- 添加判断，防止脚本执行完成后依然显示操作 -->
-    <div v-if="!currentBuild.__executing && builds.findIndex(b => b === currentBuild) !== -1" class="opera">
-      <el-button :disabled="currentBuild.__executing" @click="visible = false">关闭</el-button>
-      <el-button type="primary" @click="copy(currentBuild)">复制</el-button>
-      <el-button :disabled="currentBuild.__executing" type="primary" @click="$emit('ignore', currentBuild)">忽略此项构建</el-button>
-      <el-button :disabled="currentBuild.__executing" type="important2" @click="execute">执行该脚本</el-button>
+    <div class="opera">
+      <el-button @click="copy(currentBuild)">复制</el-button>
+      <template v-if="builds.findIndex(b => b === currentBuild) !== -1">
+        <el-button :disabled="currentBuild.__executing" type="primary" @click="$emit('ignore', currentBuild)">忽略此项构建</el-button>
+        <el-button :disabled="currentBuild.__executing" type="important2" @click="execute">执行该脚本</el-button>
+      </template>
     </div>
   </el-dialog>
 </template>

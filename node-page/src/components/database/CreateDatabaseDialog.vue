@@ -13,10 +13,9 @@
     <!-- 脚本输入框 -->
     <div class="script-input-container"></div>
     <p>确认使用当前语句创建数据库吗？</p>
-    <!-- 添加判断，防止脚本执行完成后依然显示操作 -->
+    <!-- 错误提示 -->
+    <p class="error-tip">{{ error }}</p>
     <div class="opera">
-      <!-- 错误提示 -->
-      <p class="error-tip">{{ error }}</p>
       <!-- 操作按钮 -->
       <el-button @click="visible = false">关闭</el-button>
       <el-button type="primary" @click="copy">复制</el-button>
@@ -138,21 +137,18 @@ export default {
     height: 30px;
     margin: 10px 0;
   }
+  // 错误提示
+  .error-tip {
+    margin-top: 5px;
+    color: var(--color-danger);
+    padding-right: 30px;
+    min-height: 20px;
+  }
   // 操作
   .opera {
-    padding: 20px 0 0 0;
+    padding: 10px 0 0 0;
     display: flex;
-    justify-content: center;
-    // 错误提示
-    .error-tip {
-      flex-grow: 1;
-      margin-top: 5px;
-      color: var(--color-danger);
-      padding-right: 30px;
-    }
-    .el-button {
-      flex-shrink: 0;
-    }
+    justify-content: flex-end;
   }
 }
 </style>

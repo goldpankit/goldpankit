@@ -17,16 +17,10 @@
         </div>
         <div class="opera">
           <el-button type="primary" @click="ignore(build)">忽略此项构建</el-button>
-          <el-button type="important2" :disabled="build.__executing" @click="execute(build)">执行构建脚本</el-button>
+          <el-button type="important2" :disabled="build.__executing" @click="execute(build)">执行该脚本</el-button>
         </div>
       </li>
     </ul>
-    <!-- 查看脚本窗口 -->
-    <ScriptPreviewDialog
-      ref="scriptPreviewDialog"
-      @ignore="ignore"
-      @execute="execute"
-    />
     <!-- 执行SQL构建脚本窗口 -->
     <el-dialog
       v-if="currentBuild != null && currentDatabaseDetail != null"
@@ -60,7 +54,7 @@
           type="important2"
           :disabled="exactConfirmData.value.trim() === '' || currentBuild.__executing"
           :loading="currentBuild.__executing"
-          @click="confirmExecute([currentBuild])"
+          @click="confirmExecute(currentBuild)"
         >确认执行脚本</el-button>
       </div>
     </el-dialog>
@@ -76,7 +70,7 @@
       :show-close="false"
       append-to-body
     >
-      <p>构建脚本是服务或插件预设的代码，但您仍然需要检查脚本内容以确保脚本能在您的机器上安全的运行，确认现在执行<em>「{{currentBuild.name}}」</em>构建脚本吗？</p>
+      <p>构建脚本是服务或插件预设的代码，我们不敢保证发布者编写的代码中一定不存在，请务必检查脚本内容以确保脚本能在您的机器上安全的运行！确认执行<em>「{{currentBuild.name}}」</em>构建脚本吗？</p>
       <div class="opera">
         <el-button :disabled="currentBuild.__executing" @click="cancelBuild">取消</el-button>
         <el-button type="primary" @click="$refs.scriptPreviewDialog.open(currentBuild)">检查脚本</el-button>
@@ -84,20 +78,16 @@
           type="important2"
           :disabled="currentBuild.__executing"
           :loading="currentBuild.__executing"
-          @click="confirmExecute([currentBuild])"
+          @click="confirmExecute(currentBuild)"
         >确认执行脚本</el-button>
       </div>
     </el-dialog>
-    <!-- 脚本执行失败窗口 -->
-    <el-dialog
-      title="构建脚本执行失败"
-      v-model="errorData.visible"
-      custom-class="script-error-dialog"
-      width="550px"
-      append-to-body
-    >
-      <pre class="text-danger">{{ errorData.error }}</pre>
-    </el-dialog>
+    <!-- 查看脚本窗口 -->
+    <ScriptPreviewDialog
+      ref="scriptPreviewDialog"
+      @ignore="ignore"
+      @execute="execute"
+    />
   </div>
 </template>
 
@@ -122,14 +112,7 @@ export default {
         error: ''
       },
       confirmData: {
-        visible: false,
-        value: '',
-        error: ''
-      },
-      // 脚本执行失败窗口
-      errorData: {
-        visible: false,
-        error: ''
+        visible: false
       }
     }
   },
@@ -216,15 +199,14 @@ export default {
           this.currentBuild = null
           this.installData.build.builds.splice(index, 1)
           this.$tip.success(`「${buildItem.name}」构建完成`)
-        })
-        .catch(e => {
-          this.errorData.visible = true
-          this.errorData.error = e.message
-        })
-        .finally(() => {
           // 关闭确认窗口
           this.exactConfirmData.visible = false
           this.confirmData.visible = false
+        })
+        .catch(e => {
+          this.exactConfirmData.error = e.message
+        })
+        .finally(() => {
           buildItem.__executing = false
         })
     }
@@ -354,7 +336,7 @@ export default {
     }
   }
   .error-tip {
-    height: 20px;
+    min-height: 20px;
     margin-top: 5px;
     color: var(--color-danger);
   }

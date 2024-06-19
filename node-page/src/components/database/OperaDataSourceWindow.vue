@@ -282,7 +282,7 @@ export default {
     & > .opera {
       display: flex;
       justify-content: flex-end;
-      padding: 0 30px 30px 0;
+      padding: 10px 30px 30px 0;
     }
     & > .el-form {
       padding: 0 30px;
@@ -295,12 +295,13 @@ export default {
         }
         .el-button {
           margin-left: 10px;
-          width: 120px;
+          width: 80px;
           flex-shrink: 0;
         }
       }
       // 连接地址
       .item-url {
+        margin-bottom: 0;
         .el-form-item__label {
           padding-right: 0;
           & > div {
@@ -313,7 +314,8 @@ export default {
           }
         }
         p {
-          height: 20px;
+          width: 100%;
+          min-height: 20px;
           line-height: 20px;
           margin-top: 10px;
         }
