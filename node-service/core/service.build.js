@@ -24,8 +24,7 @@ module.exports = {
             port: database.port,
             user: database.username,
             password: database.password,
-            // 不指定数据库，以允许脚本创建数据库
-            // database: database.schema
+            database: database.schema
           }, sqlContent)
         }
         // 获取所有Node脚本，整合在一起执行

@@ -53,6 +53,7 @@
         <p>构建脚本是服务或插件预设的代码。构建代码中可能存在<b style="margin: 0 3px;">删库、删表，以及对数据的增删改</b>等操作，执行后无法恢复！请务必检查执行脚本内容是否符合预期！</p>
         <p>脚本将在以下数据源执行，为防止误操作，确认继续操作请输入数据源名称：</p>
         <p class="confirm-text">{{ currentDatabaseName }}</p>
+        <p>详细信息：{{ currentDatabaseDetail.host }}:{{currentDatabaseDetail.port}}/{{currentDatabaseDetail.schema}}</p>
       </div>
       <el-input v-model="exactConfirmData.value" size="large" placeholder="请输入数据源名称" @input="exactConfirmData.error = ''"/>
       <p class="error-tip">{{ exactConfirmData.error }}</p>
