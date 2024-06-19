@@ -1,7 +1,7 @@
 <template>
   <div class="form">
     <div class="wrap">
-      <h2>数据源</h2>
+      <h2>数据库</h2>
       <FormTip>
         {{$t('database.tip')}}
       </FormTip>

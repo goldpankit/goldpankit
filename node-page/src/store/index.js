@@ -26,7 +26,7 @@ export default new Vuex.Store({
   state: {
     // 用户信息
     userInfo: null,
-    // 本地数据源列表
+    // 本地数据库列表
     databases: [],
     // 当前项目
     currentProject,
@@ -145,7 +145,7 @@ export default new Vuex.Store({
             resolve(data)
           })
           .catch(e => {
-            console.log('获取本地数据源失败')
+            console.log('获取本地数据库失败')
             reject(e)
           })
       })

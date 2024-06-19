@@ -103,9 +103,9 @@ export default {
       tables: [],
       // 关联线类型
       lineType: 'join',
-      // 当前选中的数据源
+      // 当前选中的数据库
       currentDataSource: null,
-      // 当前选中的数据源连接失败消息
+      // 当前选中的数据库连接失败消息
       connectError: null,
       // 当前选中的模型
       currentModel: null,
@@ -462,7 +462,7 @@ export default {
   background: var(--background-color);
   border-top: 5px solid;
   border-image: var(--border-colors);
-  // 未选择数据源提醒 & 数据源连接失败
+  // 未选择数据库提醒 & 数据库连接失败
   .no-datasource-tip, .connect-error-tip {
     width: 100%;
     padding-top: 100px;

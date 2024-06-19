@@ -64,7 +64,7 @@
                     <VariableInput :variable="v"/>
                   </li>
                 </ul>
-                <!-- 选择的数据源信息 -->
+                <!-- 选择的数据库信息 -->
                 <FormItemTip
                   v-if="variable.inputType === 'datasource' && currentDatabaseDetail != null"
                   :content="`基础信息：${currentDatabaseDetail.host}:${currentDatabaseDetail.port}/${currentDatabaseDetail.schema}`"

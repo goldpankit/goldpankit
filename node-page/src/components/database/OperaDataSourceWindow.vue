@@ -12,7 +12,7 @@
       {{$t('database.tip')}}
     </FormTip>
     <el-form ref="form" :model="form" :rules="rules">
-      <el-form-item label="数据源名称" prop="name" required>
+      <el-form-item label="数据库名称" prop="name" required>
         <el-input v-model="form.name"/>
       </el-form-item>
       <el-form-item label="数据库类型" prop="type" required>
@@ -89,7 +89,7 @@ export default {
       },
       rules: {
         name: [
-          { required: true, message: '请输入数据源名称' }
+          { required: true, message: '请输入数据库名称' }
         ],
         type: [
           { required: true, message: '请选择数据库类型' }

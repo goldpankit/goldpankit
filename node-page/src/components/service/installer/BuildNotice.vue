@@ -1,6 +1,7 @@
 <template>
   <div class="build-notice" :class="{ visible: builds.length > 0 }">
     <h2>执行构建</h2>
+    <el-button class="button-close" @click="ignoreAll" icon="Close"/>
     <ul>
       <li v-for="(build,index) in builds" :key="build.name">
         <div class="title">
@@ -20,10 +21,6 @@
         </div>
       </li>
     </ul>
-    <div v-if="builds.length > 1" class="opera">
-      <el-button size="large" type="primary" @click="ignoreAll">忽略所有构建</el-button>
-      <el-button size="large" type="important2" :disabled="anyExecuting" @click="executeAll">执行所有构建脚本</el-button>
-    </div>
     <!-- 查看脚本窗口 -->
     <ScriptPreviewDialog
       ref="scriptPreviewDialog"
@@ -50,12 +47,11 @@
       />
       <div class="warning-wrap text-bold">警告：该操作可能会影响项目的正常运行，请谨慎操作！</div>
       <div class="warning-wrap">
-        <p>构建脚本是服务或插件预设的代码。构建代码中可能存在<b style="margin: 0 3px;">删库、删表，以及对数据的增删改</b>等操作，执行后无法恢复！请务必检查执行脚本内容是否符合预期！</p>
-        <p>脚本将在以下数据源执行，为防止误操作，确认继续操作请输入数据源名称：</p>
-        <p class="confirm-text">{{ currentDatabaseName }}</p>
-        <p>详细信息：{{ currentDatabaseDetail.host }}:{{currentDatabaseDetail.port}}/{{currentDatabaseDetail.schema}}</p>
+        <p>构建脚本是服务或插件预设的代码，我们不敢保证发布者编写的代码中一定不存在<b style="margin: 0 3px;">删库、删表，以及对数据的增删改</b>等敏感操作，<em>请务必检查执行脚本内容是否符合预期或存在安全隐患！</em></p>
+        <p>脚本将在以下数据库执行，为防止误操作，确认继续操作请输入下方数据库全路径：</p>
+        <p class="confirm-text">{{ currentDatabaseText }}</p>
       </div>
-      <el-input v-model="exactConfirmData.value" size="large" placeholder="请输入数据源名称" @input="exactConfirmData.error = ''"/>
+      <el-input v-model="exactConfirmData.value" size="large" placeholder="请输入数据库名称" @input="exactConfirmData.error = ''"/>
       <p class="error-tip">{{ exactConfirmData.error }}</p>
       <div class="opera">
         <el-button :disabled="currentBuild.__executing" @click="exactConfirmData.visible = false">取消</el-button>
@@ -64,7 +60,7 @@
           type="important2"
           :disabled="exactConfirmData.value.trim() === '' || currentBuild.__executing"
           :loading="currentBuild.__executing"
-          @click="confirmExecute(currentBuild)"
+          @click="confirmExecute([currentBuild])"
         >确认执行脚本</el-button>
       </div>
     </el-dialog>
@@ -88,7 +84,7 @@
           type="important2"
           :disabled="currentBuild.__executing"
           :loading="currentBuild.__executing"
-          @click="confirmExecute(currentBuild)"
+          @click="confirmExecute([currentBuild])"
         >确认执行脚本</el-button>
       </div>
     </el-dialog>
@@ -119,10 +115,6 @@ export default {
       executing: false,
       // 当前执行的构建对象
       currentBuild: null,
-      // 脚本预览窗口
-      previewDialogData: {
-        visible: false
-      },
       // 确认执行脚本窗口
       exactConfirmData: {
         visible: false,
@@ -149,15 +141,12 @@ export default {
       }
       return this.installData.build.builds
     },
-    anyExecuting () {
-      return this.executing || this.builds.filter(b => b.__executing === true).length > 0
-    },
     // 执行的数据源名称
-    currentDatabaseName () {
+    currentDatabaseText () {
       if (this.currentDatabaseDetail == null) {
         return ''
       }
-      return this.currentDatabaseDetail.name
+      return `${this.currentDatabaseDetail.host}:${this.currentDatabaseDetail.port}/${this.currentDatabaseDetail.schema}`
     }
   },
   methods: {
@@ -172,8 +161,6 @@ export default {
     },
     // 忽略
     ignore (build) {
-      // 关闭脚本窗口
-      this.previewDialogData.visible = false
       // 关闭确认构建窗口
       this.confirmData.visible = false
       this.exactConfirmData.visible = false
@@ -194,25 +181,23 @@ export default {
       this.currentBuild = item
       // 数据库构建，但没选中数据库
       if (this.currentBuild.type === 'MySQL' && (this.currentDatabase == null || this.currentDatabase === '')) {
-        this.$tip.warning('请先选择数据源')
+        this.$tip.warning('请先选择数据库')
         return
       }
       // 数据库构建
       if (this.currentBuild.type === 'MySQL') {
-        this.previewDialogData.visible = false
         this.exactConfirmData.value = ''
         this.exactConfirmData.visible = true
         return
       }
       // 其它脚本构建
-      this.previewDialogData.visible = false
       this.confirmData.visible = true
     },
     // 确认执行
     confirmExecute (buildItem) {
       // 如果执行的是SQL脚本，则需要验证数据源名称是否匹配
       if (buildItem.type === 'MySQL') {
-        if (this.currentDatabaseName !== this.exactConfirmData.value) {
+        if (this.currentDatabaseText !== this.exactConfirmData.value) {
           this.exactConfirmData.error = '数据源名称错误'
           return
         }
@@ -242,30 +227,6 @@ export default {
           this.confirmData.visible = false
           buildItem.__executing = false
         })
-    },
-    // 执行构建
-    executeAll () {
-      this.$messageBox.confirm('脚本中可能存在删库、删表等操作，执行前请务必认真检查脚本内容，确认执行脚本吗？', '重要提示', {
-        confirmButtonText: '已确认脚本准确无误，立即执行',
-        cancelButtonText: '复查脚本',
-        confirmButtonClass: 'button-danger',
-        type: 'warning'
-      })
-        .then(() => {
-          build({
-            ...this.installData.build,
-            builds: this.builds
-          })
-            .then(() => {
-              this.previewDialogData.visible = false
-              this.installData.build.builds.splice(0, this.builds.length)
-              this.$tip.success(`Build successfully`)
-            })
-            .catch(e => {
-              this.$tip.apiFailed(e)
-            })
-        })
-        .catch(() => {})
     }
   }
 }
@@ -293,6 +254,24 @@ export default {
     text-align: center;
     color: #fff;
     font-size: 20px;
+  }
+  // 关闭按钮
+  .button-close {
+    position: absolute;
+    top: 12px;
+    right: 10px;
+    width: 40px;
+    height: 40px;
+    border: 0;
+    background-color: transparent;
+    color: #eee;
+    font-size: 25px;
+    font-weight: bold;
+    transition: all ease .5s;
+    &:hover {
+      color: #fff;
+      transform: rotate(180deg);
+    }
   }
   li {
     margin-top: 15px;
@@ -322,14 +301,6 @@ export default {
       display: flex;
       justify-content: flex-end;
     }
-  }
-  & > .opera {
-    margin-top: 10px;
-    background: var(--color-light);
-    padding: 30px 10px;
-    display: flex;
-    justify-content: center;
-    border-radius: 10px;
   }
 }
 </style>
