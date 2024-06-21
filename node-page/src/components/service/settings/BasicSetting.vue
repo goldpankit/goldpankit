@@ -53,22 +53,22 @@
         <el-form-item :label="$t('service.settings.introduce')" prop="introduce" required>
           <el-input type="textarea" :rows="5" v-model="form.introduce" @input="saveConfig"/>
         </el-form-item>
-        <el-form-item :label="$t('service.settings.charge')" prop="prices[0].type" required>
-          <el-radio-group v-model="form.prices[0].type" @change="changePriceType">
-            <el-radio-button
-              v-for="option in $const.getServiceLeaseTypes($t)"
-              :key="option.code"
-              :label="option.code"
-            >{{option.label}}</el-radio-button>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item v-if="form.prices[0].type !== 'free'" label="Price" prop="prices[0].value" class="item-price" required>
-          <span><img src="/public/images/bean.png"></span>
-          <el-input-number :controls="false" v-model="form.prices[0].value" @input="saveConfig"/>
-        </el-form-item>
+<!--        <el-form-item :label="$t('service.settings.charge')" prop="prices[0].type" required>-->
+<!--          <el-radio-group v-model="form.prices[0].type" @change="changePriceType">-->
+<!--            <el-radio-button-->
+<!--              v-for="option in $const.getServiceLeaseTypes($t)"-->
+<!--              :key="option.code"-->
+<!--              :label="option.code"-->
+<!--            >{{option.label}}</el-radio-button>-->
+<!--          </el-radio-group>-->
+<!--        </el-form-item>-->
+<!--        <el-form-item v-if="form.prices[0].type !== 'free'" label="Price" prop="prices[0].value" class="item-price" required>-->
+<!--          <span><img src="/public/images/bean.png"></span>-->
+<!--          <el-input-number :controls="false" v-model="form.prices[0].value" @input="saveConfig"/>-->
+<!--        </el-form-item>-->
         <el-form-item :label="$t('service.settings.otherSettings')" class="item-other-settings">
           <div>
-            <el-checkbox v-model="form.private" label="Is a private service" @change="saveConfig"/>
+            <el-checkbox v-model="form.private" label="私有" @change="saveConfig"/>
           </div>
         </el-form-item>
         <el-form-item :label="$t('service.settings.translator.translator')" prop="translator">
