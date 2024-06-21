@@ -64,6 +64,10 @@ export default {
      * @param fields 选中的字段
      */
     handleSelect (fields) {
+      // 过滤掉实际表中不存在的字段（当数据库表字段发生了变化，此项操作可实现更新字段选择）
+      fields = fields.filter(field => {
+        return this.table.fields.find(v => v.name === field.name) != null
+      })
       const copyFields = JSON.parse(JSON.stringify(fields))
       for (const field of copyFields) {
         // 增加字段原始信息
@@ -90,6 +94,10 @@ export default {
       }
       return '120px'
     }
+  },
+  created () {
+    // 初始化时，触发一次change操作，更新表字段选择
+    this.handleSelect(this.group[this.valueKey])
   }
 }
 </script>
