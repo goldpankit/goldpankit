@@ -54,6 +54,7 @@ class Kit {
           }
           // 安装的是服务
           if (dto.plugin == null) {
+            config.name = project.name
             config.space = dto.space
             config.service[dto.service] = {
               version: dto.version,

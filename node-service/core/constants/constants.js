@@ -114,6 +114,7 @@ module.exports = {
   PROJECT_DATABASE_CONFIG_FILE: `${PROJECT_NAME}.db.json`,
   // 项目配置内容
   PROJECT_CONFIG_FILE_CONTENT: {
+    name: '', // 项目名称，当本地没有项目时，利用该名称进行自动创建
     space: '', // 空间名称
     service: { // 服务信息
     //   eva: {
