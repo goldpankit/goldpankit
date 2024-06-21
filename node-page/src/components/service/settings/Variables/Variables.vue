@@ -42,7 +42,7 @@
     <div class="variable-setting">
       <div class="title">
         <h4>{{$t('service.settings.variable.variableSetting')}}</h4>
-        <el-button v-if="currentVariable != null" type="danger" text @click="deleteVariable">Delete</el-button>
+        <el-button v-if="currentVariable != null" size="default" type="danger" link @click="deleteVariable">删除变量</el-button>
       </div>
       <div class="content-wrap">
         <template v-if="currentVariable != null">
@@ -297,8 +297,8 @@ export default {
     },
     // 删除变量
     deleteVariable () {
-      const type = this.currentVariable.type === 'variable' ? 'variable' : 'variable group'
-      this.deleteConfirm(`Do you want to delete the ${type} named 「${this.currentVariable.name}」?`)
+      const type = this.currentVariable.type === 'variable' ? '变量' : '变量组'
+      this.deleteConfirm(`确认删除 ${type} 「${this.currentVariable.label}」？删除后无法恢复！`)
         .then(() => {
           /**
            * 删除字段变量
