@@ -13,7 +13,7 @@
     <div class="opera">
       <el-button @click="copy(currentBuild)">复制</el-button>
       <template v-if="builds.findIndex(b => b === currentBuild) !== -1">
-        <el-button :disabled="currentBuild.__executing" type="primary" @click="$emit('ignore', currentBuild)">忽略此项构建</el-button>
+        <el-button :disabled="currentBuild.__executing" type="primary" @click="ignore">忽略此项构建</el-button>
         <el-button :disabled="currentBuild.__executing" type="important2" @click="execute">执行该脚本</el-button>
       </template>
     </div>
@@ -71,6 +71,11 @@ export default {
     copy (build) {
       navigator.clipboard.writeText(build.content)
       this.$tip.apiSuccess('复制成功')
+    },
+    // 忽略
+    ignore () {
+      this.visible = false
+      this.$emit('ignore', this.currentBuild)
     },
     // 执行脚本
     execute () {
