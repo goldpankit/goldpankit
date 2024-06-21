@@ -40,6 +40,7 @@ module.exports = {
   },
   /**
    * 获取build列表
+   * @param operaType 操作类型（INSTALL，UNINSTALL，COMPILE，CLEAN_COMPILE）
    * @param project 项目
    * @param builds 构建列表
    * @param diffFiles 安装&编译/卸载&清除编译的结果文件
@@ -47,7 +48,7 @@ module.exports = {
    * @param vars 变量
    * @returns {Promise<unknown>}
    */
-  getBuildDetails(project, builds, diffFiles, compiler, vars) {
+  getBuildDetails(operaType, project, builds, diffFiles, compiler, vars) {
     return new Promise((resolve, reject) => {
       if (builds.length === 0) {
         resolve(builds)
@@ -65,24 +66,41 @@ module.exports = {
             builds[i].content = contents[i]
           }
           for (const build of builds) {
+            // 此处content可能是构建脚本内容，也可能是构建脚本文件的路径
             let content = build.content
             if (build.contentType === 'file') {
-              const buildFilePath = path.join(project.codespace, build.content)
-              // 编译和安装的情况：从安装或变异的文件中查找构建文件
-              if (diffFiles != null && diffFiles.length > 0) {
-                const targetFile = diffFiles.find(file => file.filepath === build.content.substring(1))
-                if (targetFile != null) {
-                  content = targetFile.content
+              // 内容从文件中读取，默认先赋值为null，避免读取不到时构建脚本内容为文件路径
+              content = null
+              const relativeBuildFilePath = build.content
+              const buildFilePath = path.join(project.codespace, relativeBuildFilePath)
+              // 编译和安装，从差异文件中读取最新的构建文件，如果找不到，则不做构建处理（说明构建过程没有变化）
+              if (operaType === 'INSTALL' || operaType === 'COMPILE') {
+                // 从安装或编译的文件中查找最新的构建文件
+                if (diffFiles != null && diffFiles.length > 0) {
+                  const targetFile = diffFiles.find(file => file.filepath === relativeBuildFilePath.substring(1))
+                  if (targetFile != null) {
+                    content = targetFile.content
+                  }
                 }
               }
-              // 卸载和清除编译的情况：从项目代码中查找文件
-              else if (fs.exists(buildFilePath)) {
-                content = fs.readFile(buildFilePath).content
-              } else {
-                content = ''
+              // 卸载和清除编译，优先从差异文件中查找文件，如果找不到，则从本地读取
+              if (operaType === 'UNINSTALL' || operaType === 'CLEAN_COMPILE') {
+                // 从安装或编译的文件中查找最新的构建文件
+                if (diffFiles != null && diffFiles.length > 0) {
+                  const targetFile = diffFiles.find(file => file.filepath === relativeBuildFilePath.substring(1))
+                  if (targetFile != null) {
+                    content = targetFile.content
+                  }
+                }
+                // 如果未在差异文件中找到构建内容，则从本地读取
+                if (content == null) {
+                  if (fs.exists(buildFilePath)){
+                    content = fs.readFile(buildFilePath).content
+                  }
+                }
               }
             }
-            if (content.trim() !== '') {
+            if (content != null && content.trim() !== '') {
               buildDetails.push({
                 ...build,
                 content

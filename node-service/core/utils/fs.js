@@ -40,7 +40,7 @@ module.exports = {
       // 删除文件
       if (file.filetype !== 'DIRECTORY') {
         let content = file.content
-        // 如果内容为省略号表达式
+        // 如果内容为差异表达式
         if (diffExp.isDiffEllipsis(content)) {
           const fileInfo = this.readFile(filepath)
           let localFileContent = fileInfo.content
@@ -60,8 +60,9 @@ module.exports = {
           }
           continue
         }
-        // 待删除文件，填充本地内容，加入删除文件队列
+        // 将文件标记为“已删除”（指的是在新的服务或插件中代码中已被删除，并不是本地已被删除）并填充本地内容，加入差异文件队列
         file.operaType = 'DELETED'
+        file.localContent = ''
         file.localContent = this.readFile(filepath).content
         diffFiles.push(file)
       }
