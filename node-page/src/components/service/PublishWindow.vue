@@ -13,6 +13,7 @@
         <el-input v-model="form.version" @input="saveConfig">
           <template #prefix>v</template>
         </el-input>
+        <FormItemTip content="如1.0.0.0，其中最后一个版本号不触发升级提醒！"/>
       </el-form-item>
       <el-form-item :label="$t('service.versionDescription')" prop="publishDescription" required>
         <el-input type="textarea" :rows="5" v-model="form.publishDescription" />
@@ -40,9 +41,11 @@ import {
   fetchConfig as fetchPluginConfig,
   saveConfig as savePluginConfig
 } from "@/api/plugin";
+import FormItemTip from "@/components/common/FormItemTip.vue";
 
 export default {
   name: "PublishWindow",
+  components: {FormItemTip},
   data () {
     return {
       visible: false,
@@ -101,7 +104,7 @@ export default {
           { validator: checkVersionNumber, message: this.$t('form.isIncorrect', { field: this.$t('service.versionNumber') }) }
         ],
         publishDescription: [
-          { required: true, message: this.$t('form.isRequired', { value: this.$t('service.versionDescription') }), trigger: 'blur'}
+          { required: true, message: this.$t('form.isRequired', { value: this.$t('service.versionDescription') })}
         ]
       }
     },

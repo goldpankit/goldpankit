@@ -22,6 +22,7 @@
         </template>
         <el-form-item :label="$t('service.settings.version')" prop="version" required>
           <el-input v-model="form.version" @input="saveConfig"/>
+          <FormItemTip content="如1.0.0.0，其中最后一个版本号不触发升级提醒！"/>
         </el-form-item>
         <el-form-item v-if="isPlugin" label="最低兼容的服务版本号" prop="minServiceVersion">
           <el-input v-model="form.minServiceVersion" @input="saveConfig"/>
@@ -125,10 +126,11 @@ import {
 } from "@/api/plugin";
 import {gitClone} from "@/api/service";
 import {checkVersionNumber} from "@/utils/form.check";
+import FormItemTip from "@/components/common/FormItemTip.vue";
 
 export default {
   name: "BasicSetting",
-  components: {TranslatorList, BuildList, DirectorySelect, DatabaseTypeSelect, CompilerSelect},
+  components: {FormItemTip, TranslatorList, BuildList, DirectorySelect, DatabaseTypeSelect, CompilerSelect},
   props: {
     space: {
       required: true
