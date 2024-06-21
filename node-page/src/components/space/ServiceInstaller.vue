@@ -23,6 +23,7 @@
         <p class="install-tip">{{$t('service.withParametersTip')}}</p>
         <div class="form-wrap">
           <el-form>
+            <!-- 选择项目，仅服务需要该参数 -->
             <el-form-item v-if="withProject" :label="$t('project.project')" required class="form-item-project">
               <ProjectSelect
                 :model-value="currentProject"
@@ -35,6 +36,7 @@
                 :content="`服务安装后代码将写入<em>${currentProjectDetail.codespace}</em>目录。`"
               />
             </el-form-item>
+            <!-- 服务或插件的动态参数 -->
             <template v-for="variable in serviceVariables">
               <el-form-item
                 v-if="!variable.hidden"
@@ -67,7 +69,7 @@
                 <!-- 选择的数据库信息 -->
                 <FormItemTip
                   v-if="variable.inputType === 'datasource' && currentDatabaseDetail != null"
-                  :content="`基础信息：${currentDatabaseDetail.host}:${currentDatabaseDetail.port}/${currentDatabaseDetail.schema}`"
+                  :content="`路径：${currentDatabaseDetail.host}:${currentDatabaseDetail.port}/${currentDatabaseDetail.schema}`"
                 />
               </el-form-item>
             </template>

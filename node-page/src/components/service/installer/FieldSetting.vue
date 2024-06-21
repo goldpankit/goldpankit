@@ -4,7 +4,7 @@
     @update:modelValue="handleSelect"
     :model-value="group[valueKey]"
     :table="table"
-    placeholder="Select fields"
+    placeholder="选择表字段"
   />
   <el-table size="small" :data="group[valueKey]">
     <el-table-column label="字段名" width="100px" prop="name" fixed></el-table-column>
@@ -34,33 +34,43 @@
 </template>
 
 <script>
-import MySqlFieldSelect from "../../database/MySqlFieldSelect.vue";
-import TableFieldVariableInput from "./TableFieldVariableInput.vue";
-import {getDefaultEmptyValue, isEmptyValue} from '../../../utils/variable'
-import VariableRemarkIcon from "@/components/service/installer/VariableRemarkIcon.vue";
+import MySqlFieldSelect from '@/components/database/MySqlFieldSelect'
+import TableFieldVariableInput from './TableFieldVariableInput'
+import VariableRemarkIcon from '@/components/service/installer/VariableRemarkIcon'
+import { getDefaultEmptyValue, isEmptyValue } from '@/utils/variable'
 
 export default {
-  name: "FieldSetting",
-  components: {VariableRemarkIcon, TableFieldVariableInput, MySqlFieldSelect},
+  name: 'FieldSetting',
+  components: { VariableRemarkIcon, TableFieldVariableInput, MySqlFieldSelect },
   props: {
-    valueKey: {
-      default: 'value'
-    },
+    // 表对象
     table: {
       required: true
     },
+    // 变量组对象
     group: {
       required: true
+    },
+    // 变量组存放值的字段名称
+    valueKey: {
+      default: 'value'
     }
   },
   methods: {
+    /**
+     * 触发选中
+     * 添加字段原始信息，方便后期获取；将字段变量组中的动态变量添加到字段中
+     *
+     * @param fields 选中的字段
+     */
     handleSelect (fields) {
-      for (const field of fields) {
+      const copyFields = JSON.parse(JSON.stringify(fields))
+      for (const field of copyFields) {
         // 增加字段原始信息
         if (field.origin == null) {
           field.origin = JSON.parse(JSON.stringify(field))
         }
-        // 将字段变量添加到字段对象中，但需要保留原来的值
+        // 将动态的字段变量添加到字段对象中，但需要保留原来的值
         for (const variable of this.group.children) {
           field[variable.name] = isEmptyValue(field[variable.name]) ? variable.defaultValue : field[variable.name]
           if (isEmptyValue(field[variable.name])) {
@@ -68,7 +78,7 @@ export default {
           }
         }
       }
-      this.group[this.valueKey] = fields
+      this.group[this.valueKey] = copyFields
       this.emitChange()
     },
     emitChange () {

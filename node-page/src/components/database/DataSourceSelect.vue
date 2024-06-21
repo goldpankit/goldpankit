@@ -62,12 +62,16 @@ export default {
     ...mapActions(['fetchDatabases']),
     // 切换数据库
     handleChange(databaseId) {
-      const targetDataSource = this.databases.find(item => item.id === databaseId)
-      if (targetDataSource == null) {
-        this.$tip.error('找不到数据库信息，请刷新后重试！')
+      // 清空选中
+      if (databaseId == null) {
+        this.setCurrentDatabase(null)
+        this.setCurrentDatabaseDetail(null)
+        this.$emit('update:modelValue', null)
+        this.$emit('change', null)
         return
       }
       // 设置当前选中的数据库信息
+      const targetDataSource = this.databases.find(item => item.id === databaseId)
       this.setCurrentDatabase(databaseId)
       this.setCurrentDatabaseDetail(targetDataSource)
       this.$emit('update:modelValue', databaseId)

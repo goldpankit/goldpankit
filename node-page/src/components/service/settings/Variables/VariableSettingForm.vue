@@ -179,7 +179,7 @@ export default {
                 continue
               }
               const fieldVariable = fieldGroup.children.find(variable => variable.name === fieldName)
-              // 找不到字段变量的定义，又在不存在于原始字段信息中，则删除
+              // 找不到字段变量的定义，又不存在于原始字段信息中，则删除
               if (fieldVariable == null && !field.origin.hasOwnProperty(fieldName)) {
                 delete field[fieldName]
               }

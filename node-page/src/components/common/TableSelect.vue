@@ -4,6 +4,8 @@
     popper-class="table-select__popper"
     :model-value="modelValue"
     clearable
+    :loading="loading.tables"
+    loading-text="正在获取数据库表，请稍后..."
     @change="handleChange"
   >
     <el-option
@@ -20,21 +22,19 @@
   </el-select>
   <ul v-if="selected != null && fieldVariableGroup.length > 0" class="field-settings">
     <li v-for="group of fieldVariableGroup" :key="group.label">
-      <FieldSetting :value-key="valueKey" :table="selected" :group="group" @change="emitChange"/>
+      <FieldSetting :value-key="valueKey" :table="selected" :group="group" @change="$emit('change')"/>
     </li>
   </ul>
 </template>
 
 <script>
-import {mapState} from "vuex";
-import FieldSetting from "../service/installer/FieldSetting.vue";
-import {fetchTables} from "@/api/database.util";
-import {search} from "../../api/database";
-import {getDefaultEmptyValue, isEmptyValue} from "../../utils/variable";
+import { mapState } from 'vuex';
+import FieldSetting from "@/components/service/installer/FieldSetting.vue";
+import { fetchTables } from '@/api/database.util'
 
 export default {
-  name: "TableSelect",
-  components: {FieldSetting},
+  name: 'TableSelect',
+  components: { FieldSetting },
   props: {
     modelValue: {},
     // 值字段
@@ -48,19 +48,22 @@ export default {
   },
   data () {
     return {
+      loading: {
+        tables: false
+      },
       selected: null,
-      databases: [],
       tables: []
     }
   },
   computed: {
-    ...mapState(['currentProject', 'currentDatabase']),
+    ...mapState(['databases', 'currentProject', 'currentDatabase']),
     // 获取表字段变量组，组中包含了表字段的扩展变量
     fieldVariableGroup () {
       return this.variable.children || []
     }
   },
   watch: {
+    // 当数据库发生变化时，重新获取表
     currentDatabase () {
       this.fetchTables()
     }
@@ -76,27 +79,15 @@ export default {
       this.$emit('update:modelValue', value)
       this.$emit('change', value)
     },
-    emitChange () {
-      this.$emit('change')
-    },
-    // 查询库
-    fetchDatabases () {
-      search ()
-        .then(data => {
-          this.databases = data
-          this.fetchTables()
-        })
-        .catch(e => {
-          this.$tip.apiFailed(e)
-        })
-    },
     // 查询表
     fetchTables () {
       const database = this.databases.find(db => db.id === this.currentDatabase)
       if (database == null) {
         this.tables = []
+        this.handleChange(null)
         return
       }
+      this.loading.tables = true
       fetchTables({
         host: database.host,
         port: database.port,
@@ -117,10 +108,13 @@ export default {
         .catch(e => {
           this.$tip.apiFailed(e)
         })
+        .finally(() => {
+          this.loading.tables = false
+        })
     }
   },
   created () {
-    this.fetchDatabases()
+    this.fetchTables()
   }
 }
 </script>
