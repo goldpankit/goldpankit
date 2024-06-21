@@ -13,7 +13,7 @@
       />
     </div>
     <div class="opera-bottom">
-      <el-button type="primary" size="large" @click="initialize">{{$t('service.settings.initialize.initializeService')}}</el-button>
+      <el-button type="primary" @click="initialize">{{$t('service.settings.initialize.initializeService')}}</el-button>
     </div>
   </div>
 </template>

@@ -17,7 +17,7 @@
 
 <script>
 export default {
-  name: "MySqlFieldSelect",
+  name: 'MySqlFieldSelect',
   props: {
     modelValue: {},
     table: {
@@ -29,7 +29,8 @@ export default {
   },
   methods: {
     handleInput (fieldNames) {
-      this.$emit('update:modelValue',
+      this.$emit(
+        'update:modelValue',
         fieldNames
           // 找到field对象
           .map(name => {

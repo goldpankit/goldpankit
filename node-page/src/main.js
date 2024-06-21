@@ -55,7 +55,7 @@ app.use(VueKonva)
 app.use(router)
 app.use(store)
 app.use(ElementUI, {
-  size: 'default'
+  size: 'large'
 })
 app.use(plugins)
 app.use(directives)

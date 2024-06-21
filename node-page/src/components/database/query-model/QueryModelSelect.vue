@@ -1,7 +1,6 @@
 <template>
   <div class="query-model-select">
     <el-select
-      class="model-select"
       popper-class="model-select__popper"
       :model-value="modelValue"
       clearable
@@ -20,7 +19,7 @@
       </el-option>
     </el-select>
     <el-button class="button-icon" type="primary" @click="$refs.queryModelWindow.open()">
-      <img src="/images/database/icon-design.svg">
+      <img src="/images/database/icon-design.svg" alt="查询模型">
     </el-button>
     <!-- 查询模型设计窗口 -->
     <QueryModelWindow ref="queryModelWindow" @close="fetchDatabases"/>
@@ -128,12 +127,15 @@ export default {
 .query-model-select {
   display: flex;
   :deep(.el-button) {
+    width: 42px;
+    height: 42px;
+    margin-left: 1px;
     img {
       width: 14px;
     }
   }
-  .model-select {
-    width: 100%;
+  .el-select {
+    flex-grow: 1;
   }
 }
 .field-settings {

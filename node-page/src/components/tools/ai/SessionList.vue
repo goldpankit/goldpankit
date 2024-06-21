@@ -53,8 +53,8 @@
       </template>
     </div>
     <div class="session-list__footer">
-      <el-button type="primary" size="large" @click="$emit('open-settings')">{{$t('tool.ai.parameterSettings')}}</el-button>
-      <el-button type="primary" size="large" :loading="isWorking.create" :disabled="isWorking.create" @click="createSession">{{$t('tool.ai.createSession')}}</el-button>
+      <el-button type="primary" @click="$emit('open-settings')">{{$t('tool.ai.parameterSettings')}}</el-button>
+      <el-button type="primary" :loading="isWorking.create" :disabled="isWorking.create" @click="createSession">{{$t('tool.ai.createSession')}}</el-button>
     </div>
   </div>
 </template>

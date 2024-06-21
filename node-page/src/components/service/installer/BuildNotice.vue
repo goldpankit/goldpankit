@@ -45,7 +45,7 @@
         <p>脚本将在以下数据库执行，为防止误操作，确认继续操作请输入下方数据库全路径：</p>
         <p class="confirm-text">{{ currentDatabaseText }}</p>
       </div>
-      <el-input v-model="exactConfirmData.value" size="large" placeholder="请输入数据库名称" @input="exactConfirmData.error = ''"/>
+      <el-input v-model="exactConfirmData.value" placeholder="请输入数据库名称" @input="exactConfirmData.error = ''"/>
       <p class="error-tip">{{ exactConfirmData.error }}</p>
       <div class="opera">
         <el-button :disabled="currentBuild.__executing" @click="exactConfirmData.visible = false">取消</el-button>

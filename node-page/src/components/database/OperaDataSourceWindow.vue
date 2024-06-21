@@ -51,8 +51,8 @@
       </el-form-item>
     </el-form>
     <div class="opera">
-      <el-button size="large" @click="cancelCreate">{{$t('common.cancel')}}</el-button>
-      <el-button type="primary" size="large" @click="confirm">{{form.id ? $t('common.confirmUpdate') : $t('common.confirmAdd')}}</el-button>
+      <el-button @click="cancelCreate">{{$t('common.cancel')}}</el-button>
+      <el-button type="primary" @click="confirm">{{form.id ? $t('common.confirmUpdate') : $t('common.confirmAdd')}}</el-button>
     </div>
     <!-- 创建数据库窗口 -->
     <CreateDatabaseDialog ref="createDatabaseDialog"/>

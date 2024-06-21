@@ -116,7 +116,6 @@
                 <template v-if="userInfo == null">
                   <el-button
                     type="primary"
-                    size="large"
                     @click="$router.push({ name: 'SignIn' })"
                   >登录后可安装插件</el-button>
                 </template>
@@ -125,7 +124,6 @@
                     <el-button
                       v-if="hasNewVersion(selectedPlugin)"
                       type="primary"
-                      size="large"
                       icon="Upload"
                       :disabled="isWorking.install"
                       @click="install"
@@ -133,14 +131,12 @@
                     <el-button
                       v-else
                       type="primary"
-                      size="large"
                       :disabled="isWorking.install"
                       @click="install"
                     >
                       {{ isWorking.install ? $t('service.installing') : $t('service.reinstall')}}
                     </el-button>
                     <el-button
-                      size="large"
                       :disabled="isWorking.uninstall"
                       @click="uninstall"
                     >
@@ -150,7 +146,6 @@
                   <el-button
                     v-else
                     type="primary"
-                    size="large"
                     :disabled="isWorking.install"
                     @click="install"
                   >

@@ -8,7 +8,6 @@
             v-model="form.password"
             show-password
             type="password"
-            size="large"
           />
         </el-form-item>
         <el-form-item label="新密码" prop="newPassword" required>
@@ -16,7 +15,6 @@
             v-model="form.newPassword"
             show-password
             type="password"
-            size="large"
           />
         </el-form-item>
         <el-form-item label="确认新密码" prop="confirmNewPassword" required>
@@ -24,7 +22,6 @@
             v-model="form.confirmNewPassword"
             show-password
             type="password"
-            size="large"
           />
         </el-form-item>
       </el-form>

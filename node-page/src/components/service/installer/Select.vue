@@ -1,6 +1,6 @@
 <template>
   <template v-if="options.length > 0">
-    <div class="install-radio-select">
+    <div class="installer-select">
       <el-select
         :model-value="modelValue.value"
         clearable
@@ -154,44 +154,22 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.installer-checkbox {
+.installer-select {
   display: flex;
-  flex-wrap: wrap;
-  line-height: initial;
-  li {
-    padding: 5px 10px;
-    background-color: var(--background-color);
-    margin-right: 10px;
-    cursor: pointer;
-    border: 1px solid var(--background-color);
-    border-radius: 5px;
-    &.selected {
-      background: var(--color-value);
-      color: var(--color-light);
-      font-weight: bold;
-      border-color: var(--color-value);
-      &:hover {
-        border-color: var(--color-value);
-      }
-    }
-    &:hover {
-      border-color: var(--primary-color);
-    }
-  }
-}
-.install-radio-select {
-  display: flex;
-  border: 1px solid var(--border-default-color);
   border-radius: 5px;
   overflow: hidden;
   :deep(.el-select) {
     flex-grow: 1;
+    .el-input__wrapper {
+      height: 40px;
+      border-radius: 5px 0 0 5px;
+    }
   }
   .el-button {
-    flex-shrink: 0;
     border: 0;
-    border-left: 1px solid var(--border-default-color);
     border-radius: 0;
+    width: 40px;
+    height: 40px;
   }
 }
 </style>

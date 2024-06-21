@@ -33,8 +33,8 @@
       </ul>
     </div>
     <div class="opera">
-      <el-button size="large" @click="cancelSelect">Cancel</el-button>
-      <el-button type="primary" size="large" :disabled="selectedFilepath == null" @click="confirmSelect">Confirm Select</el-button>
+      <el-button @click="cancelSelect">Cancel</el-button>
+      <el-button type="primary" :disabled="selectedFilepath == null" @click="confirmSelect">Confirm Select</el-button>
     </div>
   </el-dialog>
 </template>

@@ -11,17 +11,16 @@
       <!-- 表单 -->
       <el-form ref="form" :model="form" @submit.stop>
         <el-form-item label="希望网友如何称呼您？" prop="nickname">
-          <el-input v-model="form.nickname" type="text" size="large" maxlength="20" @input="check"/>
+          <el-input v-model="form.nickname" type="text" maxlength="20" @input="check"/>
         </el-form-item>
         <el-form-item label="登录用户名" prop="username">
-          <el-input v-model="form.username" type="text" placeholder="非必填" size="large" maxlength="50" @input="check"/>
+          <el-input v-model="form.username" type="text" placeholder="非必填" maxlength="50" @input="check"/>
         </el-form-item>
         <el-form-item class="password-item" label="登录密码" prop="password">
           <el-input
             v-model="form.password"
             show-password
             type="password"
-            size="large"
             maxlength="20"
             @input="check"
           />
@@ -29,7 +28,6 @@
         <el-form-item label="手机号码（仅支持中国大陆）" prop="otpElement">
           <el-input
             v-model="form.otpElement"
-            size="large"
             maxlength="11"
             @input="check"
           />
@@ -38,7 +36,6 @@
           <div class="otp-input">
             <el-input
               v-model="form.otpCode"
-              size="large"
               maxlength="4"
               @input="check"
             />

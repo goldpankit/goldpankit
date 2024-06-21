@@ -8,7 +8,6 @@
         <el-form-item label="手机号码（仅支持中国大陆）" prop="otpElement">
           <el-input
             v-model="form.otpElement"
-            size="large"
             maxlength="11"
             @input="check"
           />
@@ -17,7 +16,6 @@
           <div class="otp-input">
             <el-input
               v-model="form.otpCode"
-              size="large"
               maxlength="4"
               @input="check"
             />
@@ -33,7 +31,6 @@
             v-model="form.newPassword"
             show-password
             type="password"
-            size="large"
             maxlength="20"
             @input="check"
           />

@@ -6,12 +6,11 @@
           <el-icon size="20"><Search/></el-icon>
           <el-input
             v-model="keyword"
-            size="large"
             :placeholder="$t('space.searchPlaceholder')"
             @keypress.enter.native="search"
           />
         </div>
-        <el-button size="large" type="primary" @click="search">{{$t('common.search')}}</el-button>
+        <el-button type="primary" @click="search">{{$t('common.search')}}</el-button>
       </div>
       <Pagination
         v-if="pagination.pageCount > 1"

@@ -54,7 +54,6 @@
           <div class="install">
             <el-button
               type="important"
-              size="large"
               @click="$router.push({
                 name: 'ServiceInstaller',
                 params: {
@@ -70,7 +69,6 @@
             </el-button>
             <el-button
               v-if="userInfo != null && userInfo.isDeveloper"
-              size="large"
               @click="$router.push({
                 name: 'CreatePlugin',
                 query: {

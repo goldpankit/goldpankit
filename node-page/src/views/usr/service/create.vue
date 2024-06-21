@@ -21,7 +21,7 @@
         </el-form-item>
       </el-form>
       <div class="opera">
-        <el-button type="primary" size="large" @click="create">{{$t('service.createService')}}</el-button>
+        <el-button type="primary" @click="create">{{$t('service.createService')}}</el-button>
       </div>
     </div>
   </div>

@@ -24,7 +24,7 @@
       </el-form>
     </div>
     <div class="opera">
-      <el-button type="primary" size="large" :disabled="isWorking" @click="save">{{$t('common.save')}}</el-button>
+      <el-button type="primary" :disabled="isWorking" @click="save">{{$t('common.save')}}</el-button>
     </div>
   </div>
 </template>

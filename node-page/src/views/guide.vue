@@ -129,8 +129,8 @@
             </li>
           </ul>
           <div class="opera">
-            <el-button type="important" size="large"  @click="$router.push({name: 'SignUp'})">注册个账号</el-button>
-            <el-button type="important2" size="large"  @click="$router.push({name: 'PublicServices'})">{{$t('guide.goToServices')}}</el-button>
+            <el-button type="important"  @click="$router.push({name: 'SignUp'})">注册个账号</el-button>
+            <el-button type="important2"  @click="$router.push({name: 'PublicServices'})">{{$t('guide.goToServices')}}</el-button>
           </div>
         </div>
       </div>

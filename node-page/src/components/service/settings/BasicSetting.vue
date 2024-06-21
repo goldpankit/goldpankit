@@ -100,8 +100,8 @@
         </el-form-item>
       </el-form>
       <div v-if="newCodespace.changing" class="opera-wrap">
-        <el-button size="large" @click="newCodespace.changing=false">{{$t('common.cancel')}}</el-button>
-        <el-button size="large" type="primary" @click="initialize">{{$t('service.settings.reinitialize')}}</el-button>
+        <el-button @click="newCodespace.changing=false">{{$t('common.cancel')}}</el-button>
+        <el-button type="primary" @click="initialize">{{$t('service.settings.reinitialize')}}</el-button>
       </div>
     </div>
   </div>

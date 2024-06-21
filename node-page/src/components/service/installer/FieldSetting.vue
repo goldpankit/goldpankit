@@ -56,6 +56,17 @@ export default {
       default: 'value'
     }
   },
+  computed: {
+    tableFields () {
+      return this.table.fields.map(field => field.name)
+    }
+  },
+  watch: {
+    // 监听表字段，如果发生变化，重新触发选中事件
+    tableFields () {
+      this.handleSelect(this.group[this.valueKey])
+    }
+  },
   methods: {
     /**
      * 触发选中
@@ -110,6 +121,7 @@ h5 {
   margin-top: 20px;
 }
 .el-table {
+  margin-top: 10px;
   // 列头
   :deep(.column-header-wrap) {
     display: flex;

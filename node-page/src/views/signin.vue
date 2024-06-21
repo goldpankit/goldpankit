@@ -15,7 +15,6 @@
             ref="username"
             v-model="form.username"
             type="text"
-            size="large"
             @input="errorTip = ''"
           />
         </el-form-item>
@@ -24,7 +23,6 @@
             v-model="form.password"
             show-password
             type="password"
-            size="large"
             @input="errorTip = ''"
             @keypress.enter.native="login()"
           />

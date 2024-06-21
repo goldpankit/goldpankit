@@ -41,7 +41,6 @@
           <div v-if="userInfo != null && userInfo.id === space.userId" class="opera-wrap">
             <el-button
               type="primary"
-              size="large"
               @click="$router.push({ name: 'CreateService', query: { space: space.name } })"
             >{{$t('service.createNewService')}}</el-button>
           </div>

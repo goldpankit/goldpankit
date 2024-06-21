@@ -1,30 +1,41 @@
 <template>
-  <el-select
-    class="table-select"
-    popper-class="table-select__popper"
-    :model-value="modelValue"
-    clearable
-    :loading="loading.tables"
-    loading-text="正在获取数据库表，请稍后..."
-    @change="handleChange"
-  >
-    <el-option
-      v-for="table in tables"
-      :key="table.name"
-      :value="table.name"
-      :label="table.name"
-    >
-      <p class="option-content">
-        <span>{{ table.name }}</span>
-        <span class="text-info-1">{{ table.comment }}</span>
-      </p>
-    </el-option>
-  </el-select>
-  <ul v-if="selected != null && fieldVariableGroup.length > 0" class="field-settings">
-    <li v-for="group of fieldVariableGroup" :key="group.label">
-      <FieldSetting :value-key="valueKey" :table="selected" :group="group" @change="$emit('change')"/>
-    </li>
-  </ul>
+  <div class="table-select">
+    <div class="table-select__wrap">
+      <el-select
+        popper-class="table-select__popper"
+        :model-value="modelValue"
+        clearable
+        :loading="loading.tables"
+        loading-text="正在获取数据库表，请稍后..."
+        @change="handleChange"
+      >
+        <el-option
+          v-for="table in tables"
+          :key="table.name"
+          :value="table.name"
+          :label="table.name"
+        >
+          <p class="option-content">
+            <span>{{ table.name }}</span>
+            <span class="text-info-1">{{ table.comment }}</span>
+          </p>
+        </el-option>
+      </el-select>
+      <!-- 刷新按钮 -->
+      <el-button class="button-icon" type="primary" icon="Refresh" @click="fetchTables"/>
+    </div>
+    <!-- 字段设置（含字段选择和字段设置表） -->
+    <ul v-if="selected != null && fieldVariableGroup.length > 0" class="field-settings">
+      <li v-for="group of fieldVariableGroup" :key="group.label">
+        <FieldSetting
+          :value-key="valueKey"
+          :table="selected"
+          :group="group"
+          @change="$emit('change')"
+        />
+      </li>
+    </ul>
+  </div>
 </template>
 
 <script>
@@ -81,6 +92,7 @@ export default {
     },
     // 查询表
     fetchTables () {
+      console.log('fetchTables')
       const database = this.databases.find(db => db.id === this.currentDatabase)
       if (database == null) {
         this.tables = []
@@ -122,6 +134,24 @@ export default {
 <style scoped lang="scss">
 .table-select {
   width: 100%;
+  .table-select__wrap {
+    display: flex;
+    overflow: hidden;
+    border-radius: 5px;
+    :deep(.el-select) {
+      flex-grow: 1;
+      .el-input__wrapper {
+        border-radius: 5px 0 0 5px;
+      }
+    }
+    .el-button {
+      flex-shrink: 0;
+      border: 0;
+      border-radius: 0;
+      width: 40px;
+      height: 40px;
+    }
+  }
 }
 .field-settings {
   width: 100%;

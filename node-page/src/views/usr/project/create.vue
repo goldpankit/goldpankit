@@ -17,7 +17,7 @@
         </el-form-item>
       </el-form>
       <div class="opera">
-        <el-button type="primary" size="large" @click="create">Create Project</el-button>
+        <el-button type="primary" @click="create">Create Project</el-button>
       </div>
     </div>
   </div>

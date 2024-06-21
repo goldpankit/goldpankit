@@ -7,8 +7,8 @@
     @close="setHelpCode(null)"
   >
     <div class="search-wrap">
-      <el-input size="large"/>
-      <el-button type="primary" size="large">Search</el-button>
+      <el-input/>
+      <el-button type="primary" >Search</el-button>
     </div>
     <div class="content">
       <span>help code: {{help.code}}</span>

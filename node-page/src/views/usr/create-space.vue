@@ -30,7 +30,7 @@
         </el-form>
       </div>
       <div class="opera">
-        <el-button type="primary" size="large" @click="create">{{$t('space.createSpace')}}</el-button>
+        <el-button type="primary" @click="create">{{$t('space.createSpace')}}</el-button>
       </div>
     </div>
   </div>

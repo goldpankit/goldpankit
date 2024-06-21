@@ -7,11 +7,10 @@
       </div>
       <el-form ref="form" :model="copyUserInfo" :rules="rules">
         <el-form-item label="昵称" prop="nickname" required>
-          <el-input size="large" v-model="copyUserInfo.nickname" maxlength="20"/>
+          <el-input v-model="copyUserInfo.nickname" maxlength="20"/>
         </el-form-item>
         <el-form-item :label="$t('common.introduce')" prop="introduce">
           <el-input
-            size="large"
             v-model="copyUserInfo.introduce"
             type="textarea"
             :rows="5"
@@ -21,8 +20,8 @@
         </el-form-item>
       </el-form>
       <div class="opera">
-        <el-button size="large"  @click="$router.push({ name: 'Desktop' })" icon="Back">返回</el-button>
-        <el-button type="primary" size="large" :disabled="disabledSaveButton" @click="save">保存资料</el-button>
+        <el-button @click="$router.push({ name: 'Desktop' })" icon="Back">返回</el-button>
+        <el-button type="primary" :disabled="disabledSaveButton" @click="save">保存资料</el-button>
       </div>
     </div>
   </div>

@@ -119,7 +119,6 @@ export default {
 <style scoped lang="scss">
 .data-source-select {
   display: flex;
-  border: 1px solid var(--border-default-color);
   border-radius: 5px;
   overflow: hidden;
   &.with-block {
@@ -134,7 +133,8 @@ export default {
   :deep(.el-select) {
     width: 225px;
     .el-input__wrapper {
-      box-shadow: none !important;
+      height: 40px;
+      border-radius: 5px 0 0 5px;
       .el-input__inner {
         color: var(--color-service-name) !important;
         font-weight: bold;
@@ -146,8 +146,9 @@ export default {
   }
   :deep(.el-button) {
     border: 0;
-    border-left: 1px solid var(--border-default-color);
     border-radius: 0;
+    width: 40px;
+    height: 40px;
   }
 }
 </style>
