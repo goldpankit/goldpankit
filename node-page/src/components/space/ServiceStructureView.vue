@@ -17,8 +17,8 @@
 </template>
 
 <script>
-import {sortFiles} from "@/utils/file";
-import {fetchVersionFiles} from "@/api/service.version";
+import { sortFiles } from '@/utils/file'
+import { fetchVersionFiles } from '@/api/service.version'
 
 export default {
   name: "ServiceStructureView",
@@ -62,14 +62,14 @@ export default {
           if (dir.children == null) {
             dir.children = []
           }
-          // 修改目录说明
+          // 获取当前文件发布时间
           let filePublishTime = new Date(files[i].publishTime).getTime()
+          // 如果当前文件发布时间 > 已知最后的发布时间，则将该文件的调整说明和发布时间赋给目录
           if (lastPublishFileTime == null || filePublishTime > lastPublishFileTime) {
             dir.description = files[i].description
+            dir.publishTime = files[i].publishTime
             lastPublishFileTime = filePublishTime
           }
-          // 修改目录最后发布时间
-          dir.publishTime = files[i].publishTime
           // 修改文件路径（添加到目录中后只需要保留文件名称）
           files[i].path = files[i].path.split('/').pop()
           dir.children.push(files[i])
