@@ -51,8 +51,8 @@
       </el-form-item>
     </el-form>
     <div class="opera">
-      <el-button @click="cancelCreate">{{$t('common.cancel')}}</el-button>
-      <el-button type="primary" @click="confirm">{{form.id ? $t('common.confirmUpdate') : $t('common.confirmAdd')}}</el-button>
+      <el-button @click="cancelCreate">取消</el-button>
+      <el-button type="primary" @click="confirm">{{ form.id ? '确认修改' : '确认添加' }}</el-button>
     </div>
     <!-- 创建数据库窗口 -->
     <CreateDatabaseDialog ref="createDatabaseDialog"/>
@@ -60,14 +60,15 @@
 </template>
 
 <script>
+import {mapState} from 'vuex'
 import DatabaseTypeSelect from './DatabaseTypeSelect'
 import FormTip from '@/components/common/FormTip'
+import FormItemTip from '@/components/common/FormItemTip'
+import CreateDatabaseDialog from '@/components/database/CreateDatabaseDialog'
 import { testConnect, checkDatabaseExists } from '@/api/database.util'
-import { create, updateById } from '@/api/database'
 import { trim } from '@/utils/util'
 import { strictCopy } from '@/utils/object'
-import FormItemTip from '@/components/common/FormItemTip'
-import CreateDatabaseDialog from "@/components/database/CreateDatabaseDialog.vue";
+import { create, updateById } from '@/api/user.project.database'
 
 export default {
   name: "OperaDataSourceWindow",
@@ -119,6 +120,7 @@ export default {
     }
   },
   computed: {
+    ...mapState(['currentProject']),
     url () {
       return `jdbc:mysql://${this.form.host}:${this.form.port}/${this.form.schema}`
     }
@@ -240,7 +242,10 @@ export default {
     // 确认创建
     __confirmCreate (form) {
       // 执行创建
-      create(form)
+      create({
+        ...form,
+        projectId: this.currentProject
+      })
         .then(data => {
           this.visible = false
           this.$emit('success', data)
@@ -255,7 +260,10 @@ export default {
     // 确认修改
     __confirmUpdate (form) {
       // 执行创建
-      updateById(form)
+      updateById({
+        ...form,
+        projectId: this.currentProject
+      })
         .then(data => {
           this.visible = false
           this.$emit('success', data)

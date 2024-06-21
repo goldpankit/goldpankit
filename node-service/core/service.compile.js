@@ -6,6 +6,7 @@ const serviceApi = require("./api/service");
 const fs = require("./utils/fs");
 const Const = require("./constants/constants");
 const userProject = require("./user.project");
+const userProjectDatabase = require("./user.project.database");
 const object = require("./utils/object");
 const serviceBuild = require("./service.build");
 const mysql = require("./utils/db/mysql");
@@ -47,8 +48,7 @@ class Kit {
           // 获取配置格式
           const config = JSON.parse(JSON.stringify(Const.PROJECT_CONFIG_FILE_CONTENT))
           // 获取项目配置
-          const configPath = userProject.getConfigPath(project.id)
-          let projectConfig = fs.readJSONFile(configPath)
+          let projectConfig = userProject.getProjectConfigById(project.id)
           if (projectConfig != null) {
             object.merge(projectConfig, config)
           }
@@ -87,6 +87,21 @@ class Kit {
             }
           }
           fs.createFile(userProject.getConfigPath(project.id), fs.toJSONFileString(config), true)
+          // 写入数据库配置文件
+          const dbConfig = userProjectDatabase.getProjectDatabaseConfigByIdWithDefaultBlankArray(project.id)
+          // - 从变量中获取数据库参数
+          const dataBaseVariable = dto.variables.find(v=>v.inputType === 'datasource')
+          if (dataBaseVariable.value != null && dataBaseVariable.value !== '') {
+            // 从全局数据库中找到数据库信息
+            const db = cache.datasources.get(dataBaseVariable.value)
+            if (db != null) {
+              // 如果数据库信息不存在，则添加
+              if (dbConfig.find(item => item.id === db.id) == null) {
+                dbConfig.push(db)
+              }
+            }
+          }
+          fs.createFile(userProjectDatabase.getDatabaseConfigPath(project.id), fs.toJSONFileString(dbConfig), true)
           // 获取构建详情并返回
           const builds = data.version.builds == null || data.version.builds === '' ? [] : JSON.parse(data.version.builds)
           serviceBuild.getBuildDetails('INSTALL', project, builds, diffFiles, data.version.compiler, variables)
@@ -110,7 +125,7 @@ class Kit {
             })
         })
         .catch(e => {
-          console.log(e)
+          console.log('安装出现异常', e)
           reject(e)
         })
     })
@@ -160,12 +175,12 @@ class Kit {
               })
             })
             .catch(e => {
-              console.log(e)
+              console.log('获取构建出现异常', e)
               reject(e)
             })
         })
         .catch(e => {
-          console.log(e)
+          console.log('卸载出现异常', e)
           reject(e)
         })
     })
@@ -206,12 +221,12 @@ class Kit {
                 reject(e)
               })
           } catch (e) {
-            console.log(e)
+            console.log('编译成功，写入文件出现异常', e)
             reject(e)
           }
         })
         .catch(e => {
-          console.log(e)
+          console.log('编译出现异常', e)
           reject(e)
         })
     })
@@ -248,7 +263,7 @@ class Kit {
             })
         })
         .catch(e => {
-          console.log('clean compile throw an exception', e)
+          console.log('编译出现异常', e)
           reject(e)
         })
     })

@@ -57,7 +57,10 @@ app.get('*', (req, res) => {
 
 // 404处理
 app.use(function(req, res, next) {
-  res.send('404')
+  res.send({
+    code: 404,
+    message: '找不到接口'
+  })
 });
 
 // 错误处理

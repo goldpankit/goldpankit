@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 import HelpCenter from "./components/common/HelpCenter.vue";
 import BuildNotice from "./components/service/installer/BuildNotice.vue";
 import MergeWindow from "./components/service/installer/merge/MergeWindow.vue";
@@ -23,12 +23,19 @@ import en from 'element-plus/dist/locale/en.mjs'
 export default {
   components: {Toolbar, MergeWindow, BuildNotice, HelpCenter},
   computed: {
+    ...mapState(['currentProject']),
     locale () {
       const i18nLocal = this.$i18n.locale
       if (i18nLocal === 'en') {
         return en
       }
       return zhCn
+    }
+  },
+  watch: {
+    // 当当前项目变化时，重新加载数据库列表
+    currentProject () {
+      this.fetchDatabases()
     }
   },
   methods: {

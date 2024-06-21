@@ -78,7 +78,7 @@ module.exports = {
    */
   writeFiles (files, project, service = null, versionPath = []) {
     const currentFiles = this.getFiles(project.codespace)
-    const hasFile = currentFiles.filter(file => file !== 'kit.json').length > 0
+    const hasFile = currentFiles.filter(file => file !== Const.SERVICE_CONFIG_FILE).length > 0
     log.debug(`${project.name}: preparing to process ${files.length} files.`)
     const diffFiles = []
     let fileCount = 0

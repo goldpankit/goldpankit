@@ -2,7 +2,7 @@ import Vuex from 'vuex'
 import { getToken } from '@/api/user.token'
 import { getLoginInfo, logout } from '@/api/user.login'
 import { getBalance } from '@/api/user'
-import { search } from '@/api/database'
+import { fetchDatabases } from '@/api/user.project.database';
 // 获取本地项目
 let currentProject = null
 const currentProjectStr = window.localStorage.getItem('CURRENT_PROJECT')
@@ -137,15 +137,20 @@ export default new Vuex.Store({
       })
     },
     // 获取本地数据库列表
-    fetchDatabases ({ commit }) {
+    fetchDatabases ({ state, commit }) {
       return new Promise((resolve, reject) => {
-        search()
+        if (state.currentProject == null || state.currentProject === '') {
+          commit('setDatabases', [])
+          resolve([])
+          return
+        }
+        fetchDatabases(state.currentProject)
           .then(data => {
             commit('setDatabases', data)
             resolve(data)
           })
           .catch(e => {
-            console.log('获取本地数据库失败')
+            console.log('获取本地数据库失败', e)
             reject(e)
           })
       })

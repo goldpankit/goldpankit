@@ -1,7 +1,7 @@
 const cache = require('./utils/cache')
 const utils = require('./utils/index')
 const fs = require('./utils/fs')
-const Const = require("./constants/constants")
+const Const = require('./constants/constants')
 const path = require('path')
 const response = require('./constants/response')
 module.exports = {
@@ -49,9 +49,6 @@ module.exports = {
     }
     // 获取项目安装配置
     const projectInstallConfig = this.getProjectConfig(projectConfig.codespace)
-    if (projectInstallConfig == null) {
-      throw new Error('找不到项目配置信息')
-    }
     return {
       ...projectConfig,
       ...projectInstallConfig
@@ -61,9 +58,17 @@ module.exports = {
   search () {
     return cache.projects.search()
   },
-  // 获取项目配置
+  // 根据项目路径获取项目配置
   getProjectConfig (codespace) {
     const configFilePath = this.__getConfigPath(codespace)
+    if (!fs.exists(configFilePath)) {
+      return null
+    }
+    return fs.readJSONFile(configFilePath)
+  },
+  // 获取项目配置
+  getProjectConfigById (id) {
+    const configFilePath = this.getConfigPath(id)
     if (!fs.exists(configFilePath)) {
       return null
     }

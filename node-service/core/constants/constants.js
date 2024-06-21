@@ -110,6 +110,8 @@ module.exports = {
   },
   // 项目配置文件
   PROJECT_CONFIG_FILE: `${PROJECT_NAME}.json`,
+  // 项目数据库配置文件
+  PROJECT_DATABASE_CONFIG_FILE: `${PROJECT_NAME}.db.json`,
   // 项目配置内容
   PROJECT_CONFIG_FILE_CONTENT: {
     space: '', // 空间名称

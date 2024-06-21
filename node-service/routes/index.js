@@ -4,6 +4,7 @@ const plugin = require('./plugin')
 const serviceCompile = require('./service.compile')
 const serviceVersion = require('./service.version')
 const userProject = require('./user.project')
+const userProjectDatabase = require('./user.project.database')
 const userLogin = require('./user.login')
 const userToken = require('./user.token')
 const userService = require('./user.service')
@@ -17,6 +18,7 @@ module.exports = {
   serviceCompile,
   serviceVersion,
   userProject,
+  userProjectDatabase,
   userLogin,
   userToken,
   userService,

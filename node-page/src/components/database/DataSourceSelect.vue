@@ -27,7 +27,7 @@
         <template v-else>{{prefix}}</template>:
       </template>
     </el-select>
-    <el-button v-if="withCreateButton" class="button-icon" type="primary" icon="Plus" @click="$refs.operaDataSourceWindow.open()"></el-button>
+    <el-button v-if="withCreateButton" class="button-icon" type="primary" icon="Plus" @click="openCreateDatabaseWindow"></el-button>
     <OperaDataSourceWindow ref="operaDataSourceWindow" @success="handleCreateSuccess"/>
   </div>
 </template>
@@ -55,11 +55,25 @@ export default {
     }
   },
   computed: {
-    ...mapState(['databases'])
+    ...mapState(['currentProject', 'databases'])
+  },
+  watch: {
+    // 数据库列表发生变化时，重新触发一次数据库选择，防止选中了不是当前项目的数据库
+    databases () {
+      this.handleChange(this.modelValue)
+    }
   },
   methods: {
     ...mapMutations(['setCurrentDatabase', 'setCurrentDatabaseDetail']),
     ...mapActions(['fetchDatabases']),
+    // 打开创建数据库窗口
+    openCreateDatabaseWindow () {
+      if (this.currentProject == null || this.currentProject === '') {
+        this.$tip.warning('请先选择项目！')
+        return
+      }
+      this.$refs.operaDataSourceWindow.open()
+    },
     // 切换数据库
     handleChange(databaseId) {
       // 清空选中（手动清空和数据库不存在于本地时均需要清空选中，当服务或插件存在默认的数据库值时，使用者本地没有该数据库，此时需要清空选择）
@@ -89,7 +103,7 @@ export default {
     }
   },
   created () {
-    // 触发一次change，更新选中值
+    // 触发一次数据库选择，防止选中了不是当前项目的数据库
     this.handleChange(this.modelValue)
   }
 }
