@@ -62,8 +62,9 @@ export default {
     ...mapActions(['fetchDatabases']),
     // 切换数据库
     handleChange(databaseId) {
-      // 清空选中
-      if (databaseId == null) {
+      // 清空选中（手动清空和数据库不存在于本地时均需要清空选中，当服务或插件存在默认的数据库值时，使用者本地没有该数据库，此时需要清空选择）
+      const targetDataSource = this.databases.find(item => item.id === databaseId)
+      if (databaseId == null || targetDataSource == null) {
         this.setCurrentDatabase(null)
         this.setCurrentDatabaseDetail(null)
         this.$emit('update:modelValue', null)
@@ -71,7 +72,6 @@ export default {
         return
       }
       // 设置当前选中的数据库信息
-      const targetDataSource = this.databases.find(item => item.id === databaseId)
       this.setCurrentDatabase(databaseId)
       this.setCurrentDatabaseDetail(targetDataSource)
       this.$emit('update:modelValue', databaseId)
@@ -87,6 +87,10 @@ export default {
           this.$tip.apiFailed(e)
         })
     }
+  },
+  created () {
+    // 触发一次change，更新选中值
+    this.handleChange(this.modelValue)
   }
 }
 </script>
