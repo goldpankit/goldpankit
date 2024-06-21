@@ -400,12 +400,13 @@ class Kit {
         projectService = project.service[dto.service]
       }
       // 获取数据库信息
-      const database = cache.datasources.get(dto.database)
+      const database = userProjectDatabase.getDatabase(projectId, dto.database)
       // 组装变量
       const variables = this.#getVariables(project, database, dto.variables, dto.plugin != null)
       let serviceVars = null
       return Promise.all(variables)
         .then(vars => {
+          console.log('vars', vars)
           serviceVars = vars
           // 执行安装
           return serviceApi.install({

@@ -22,15 +22,22 @@ module.exports = {
    */
   create (database) {
     const projectId = database.projectId
-    // 分配ID
-    database.id = utils.generateId()
+    // 移除id
+    delete database.id
+    // 保持json结构
+    const newDatabase = {
+      // 分配ID
+      id: utils.generateId(),
+      ...database
+    }
     // 移除projectId
-    delete database.projectId
+    delete newDatabase.projectId
     // 保存
     const databases = this.getProjectDatabaseConfigByIdWithDefaultBlankArray(projectId)
-    databases.push(database)
+    databases.push(newDatabase)
+    console.log('创建数据库', newDatabase)
     fs.rewrite(this.getDatabaseConfigPath(projectId), fs.toJSONFileString(databases))
-    return Promise.resolve(database.id)
+    return Promise.resolve(newDatabase.id)
   },
   // 修改
   updateById (newDatabase) {
@@ -65,6 +72,11 @@ module.exports = {
     databases.splice(targetIndex, 1)
     // 保存
     fs.rewrite(this.getDatabaseConfigPath(dto.projectId), fs.toJSONFileString(databases))
+  },
+  // 获取数据库配置
+  getDatabase (projectId, databaseId) {
+    const databases = this.getProjectDatabaseConfigByIdWithDefaultBlankArray(projectId)
+    return databases.find(db => db.id === databaseId)
   },
   // 获取项目数据库配置文件路径
   getDatabaseConfigPath (projectId) {
