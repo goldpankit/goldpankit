@@ -23,7 +23,7 @@
         </div>
       </el-option>
       <template v-if="withPrefix" #prefix>
-        <template v-if="prefix == null">{{$t('common.currentDataSource')}}</template>
+        <template v-if="prefix == null">当前数据库</template>
         <template v-else>{{prefix}}</template>:
       </template>
     </el-select>
@@ -60,6 +60,7 @@ export default {
   watch: {
     // 数据库列表发生变化时，重新触发一次数据库选择，防止选中了不是当前项目的数据库
     databases () {
+      console.log('数据库发生了变化', this.databases, this.modelValue)
       this.handleChange(this.modelValue)
     }
   },
