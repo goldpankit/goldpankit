@@ -18,12 +18,14 @@
             <ul v-if="userInfo != null">
               <li>
                 <el-button
+                  size="default"
                   icon="UserFilled"
                   @click.stop="$router.push({ name: 'UserProfile' })"
                 >{{$t('user.profile')}}</el-button>
               </li>
               <li>
                 <el-button
+                  size="default"
                   :disabled="logoutData.isWorking"
                   @click.stop="$router.push({ name: 'UpdatePwd' })"
                 >修改密码</el-button>

@@ -69,9 +69,9 @@
     <div class="opera">
       <div class="danger-opera">
         <el-button @click="ignoreAllFiles">{{$t('service.ignoreAll')}}</el-button>
-        <el-button type="primary" @click="overwriteAll">{{$t('service.overwriteAll')}}</el-button>
+        <el-button type="important2" @click="overwriteAll">{{$t('service.overwriteAll')}}</el-button>
       </div>
-      <el-button @click="ignoreFiles">{{$t('service.ignore')}}</el-button>
+      <el-button @click="ignoreFiles">忽略当前文件</el-button>
       <el-button type="primary" @click="overwrite">{{$t('service.overwrite')}}</el-button>
     </div>
   </el-dialog>

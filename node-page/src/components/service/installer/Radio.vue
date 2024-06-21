@@ -39,7 +39,7 @@ export default {
   flex-wrap: wrap;
   line-height: initial;
   li {
-    padding: 5px 10px;
+    padding: 8px 10px;
     background-color: var(--background-color);
     margin-right: 10px;
     cursor: pointer;
