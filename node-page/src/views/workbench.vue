@@ -17,7 +17,7 @@
                 · v{{service.version}}
               </div>
               <el-popover
-                v-if="latestService != null && latestService.version !== service.version"
+                v-if="latestService != null && latestServiceVersion !== currentServiceVersion"
                 :title="$t('service.upgradeTitle')"
                 :width="255"
                 trigger="hover"
@@ -229,6 +229,28 @@ export default {
       }
       return this.installedPlugins[this.selectedPlugin.name] != null
     },
+    // 最新的服务版本
+    latestServiceVersion () {
+      if (this.latestService == null) {
+        return null
+      }
+      const versionNumbers = this.latestService.version.split('.')
+      if (versionNumbers.length > 3) {
+        return versionNumbers.slice(0, 3).join('.')
+      }
+      return this.latestService.version
+    },
+    // 当前使用的服务版本
+    currentServiceVersion () {
+      if (this.service == null) {
+        return null
+      }
+      const versionNumbers = this.service.version.split('.')
+      if (versionNumbers.length > 3) {
+        return versionNumbers.slice(0, 3).join('.')
+      }
+      return this.service.version
+    },
     // 服务主版本
     majorVersion () {
       if (this.service == null) {
@@ -405,7 +427,19 @@ export default {
       if (serviceConfig == null) {
         return false
       }
-      return serviceConfig.version !== service.lastVersion
+      // 获取已安装的插件版本号（只取前三个版本）
+      let installedVersion = serviceConfig.version
+      const installedVersionNumbers = installedVersion.split('.')
+      if (installedVersionNumbers.length > 3) {
+        installedVersion = installedVersionNumbers.slice(0, 3).join('.')
+      }
+      // 获取最新的的插件版本号（只取前三个版本）
+      let lastVersion = service.lastVersion
+      const lastVersionNumbers = lastVersion.split('.')
+      if (lastVersionNumbers.length > 3) {
+        lastVersion = lastVersionNumbers.slice(0, 3).join('.')
+      }
+      return installedVersion !== lastVersion
     }
   },
   created () {

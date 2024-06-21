@@ -1,7 +1,7 @@
 <template>
   <template v-if="userInfo == null">
-    <el-button @click="$router.push({ name: 'SignIn' })">{{$t('common.signIn')}}</el-button>
-    <el-button type="important" @click="$router.push({ name: 'SignUp' })">{{$t('common.signUp')}}</el-button>
+    <el-button size="default" @click="$router.push({ name: 'SignIn' })">{{$t('common.signIn')}}</el-button>
+    <el-button size="default" type="important" @click="$router.push({ name: 'SignUp' })">{{$t('common.signUp')}}</el-button>
     <div class="menu" @click="$router.push({ name: 'Desktop' })">
       <span></span>
       <span></span>
