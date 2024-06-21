@@ -92,7 +92,6 @@ export default {
     },
     // 查询表
     fetchTables () {
-      console.log('fetchTables')
       const database = this.databases.find(db => db.id === this.currentDatabase)
       if (database == null) {
         this.tables = []

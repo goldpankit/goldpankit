@@ -7,9 +7,6 @@
           <ProjectSelect :model-value="currentProject"/>
         </li>
         <li>
-          <DataSourceSelect :model-value="currentDatabase"/>
-        </li>
-        <li>
           <LoginView/>
         </li>
       </ul>
@@ -34,7 +31,7 @@ export default {
   extends: BaseLayout,
   components: {Logo, LoginView, AppLayout, ProjectSelect, DataSourceSelect },
   computed: {
-    ...mapState(['currentProject', 'currentDatabase', 'userInfo'])
+    ...mapState(['currentProject', 'userInfo'])
   }
 }
 </script>

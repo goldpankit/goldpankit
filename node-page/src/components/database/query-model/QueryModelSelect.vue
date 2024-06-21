@@ -105,6 +105,7 @@ export default {
       const database = this.databases.find(db => db.id === this.currentDatabase)
       if (database == null) {
         this.models = []
+        this.handleChange(null)
         return
       }
       this.models = database.models

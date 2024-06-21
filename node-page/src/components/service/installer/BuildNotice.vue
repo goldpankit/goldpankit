@@ -124,7 +124,7 @@ export default {
       }
       return this.installData.build.builds
     },
-    // 执行的数据源名称
+    // 执行的数据库名称
     currentDatabaseText () {
       if (this.currentDatabaseDetail == null) {
         return ''
@@ -178,10 +178,10 @@ export default {
     },
     // 确认执行
     confirmExecute (buildItem) {
-      // 如果执行的是SQL脚本，则需要验证数据源名称是否匹配
+      // 如果执行的是SQL脚本，则需要验证数据库名称是否匹配
       if (buildItem.type === 'MySQL') {
         if (this.currentDatabaseText !== this.exactConfirmData.value) {
-          this.exactConfirmData.error = '数据源名称错误'
+          this.exactConfirmData.error = '数据库名称错误'
           return
         }
       }
