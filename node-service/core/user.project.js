@@ -5,15 +5,16 @@ const Const = require("./constants/constants")
 const path = require('path')
 const response = require('./constants/response')
 module.exports = {
-  // 创建
+  /**
+   * 创建
+   * @param project = {
+   *   name: '项目名称',
+   *   codespace: '项目路径',
+   *   remark: '项目备注'
+   * }
+   * @returns {Promise<unknown>}
+   */
   create (project) {
-    // 验证项目名称
-    const projects = cache.projects.getAll()
-    const existsProject = projects.find(p => p.name.toLowerCase() === project.name.toLowerCase())
-    if (existsProject != null) {
-      return Promise.reject(response.PROJECT.PROJECT_NAME_EXISTS)
-    }
-    // 保存项目
     project.id = utils.generateId()
     cache.projects.save(project)
     return Promise.resolve(project.id)
@@ -47,7 +48,10 @@ module.exports = {
       return
     }
     // 获取项目安装配置
-    const projectInstallConfig = fs.readJSONFile(this.__getConfigPath(projectConfig.codespace))
+    const projectInstallConfig = this.getProjectConfig(projectConfig.codespace)
+    if (projectInstallConfig == null) {
+      throw new Error('找不到项目配置信息')
+    }
     return {
       ...projectConfig,
       ...projectInstallConfig
@@ -56,6 +60,14 @@ module.exports = {
   // 搜索
   search () {
     return cache.projects.search()
+  },
+  // 获取项目配置
+  getProjectConfig (codespace) {
+    const configFilePath = this.__getConfigPath(codespace)
+    if (!fs.exists(configFilePath)) {
+      return null
+    }
+    return fs.readJSONFile(configFilePath)
   },
   // 获取项目配置文件路径
   getConfigPath (projectId) {
@@ -66,7 +78,7 @@ module.exports = {
   deleteProject (projectId) {
     cache.projects.remove(projectId)
   },
-  // 获取配置文件
+  // 获取配置文件路径
   __getConfigPath (codespace) {
     return path.join(codespace, Const.PROJECT_CONFIG_FILE)
   }

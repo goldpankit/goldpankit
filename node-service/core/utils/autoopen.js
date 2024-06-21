@@ -4,17 +4,34 @@ const net = require('net')
 const fs = require('./fs')
 const Const = require('../constants/constants')
 const cache = require('./cache')
+const userProject = require('../user.project')
 module.exports = {
   open (port) {
-    const files = fs.getFiles(root)
-    // 查找是否存在配置文件，如果存在，则自动打开workbench
-    if (files.find(f => f === Const.SERVICE_CONFIG_FILE) != null) {
+    const projectConfig = userProject.getProjectConfig(root)
+    // 查找是否存在配置文件，如果存在，则自动打开工作提啊
+    if (projectConfig != null) {
+      // 根据路径查找项目
       const projects = cache.projects.getAll()
       const targetProject = projects.find(p => p.codespace === root)
       if (targetProject != null) {
         open(`http://127.0.0.1:${port}/workbench?project_id=${targetProject.id}`)
         return
       }
+      // 根据路径在本地未找到项目，根据kit.json中的项目名称创建一个新项目
+      // 如果kit.json中没有项目名称配置，则根据项目的最后一个目录名称来创建项目
+      let projectName = projectConfig.name == null ? null : projectConfig.name.trim()
+      if (projectName == null) {
+        projectName = fs.getFilename(root)
+      }
+      userProject.create({
+        name: projectName,
+        codespace: root,
+        remark: ''
+      })
+        .then(projectId => {
+          open(`http://127.0.0.1:${port}/workbench?project_id=${projectId}`)
+        })
+      return
     }
     // 找不到配置文件或项目，则打开公共空间页面
     open(`http://127.0.0.1:${port}`)
