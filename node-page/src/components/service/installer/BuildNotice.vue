@@ -313,6 +313,9 @@ export default {
       color: #333;
       font-size: 16px;
       letter-spacing: 2px;
+      word-break: break-all;
+      line-height: 20px;
+      margin-top: 8px;
       // 调整选中后的颜色
       &::selection {
         background-color: var(--color-danger);
