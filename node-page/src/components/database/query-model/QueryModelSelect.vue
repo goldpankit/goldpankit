@@ -39,7 +39,7 @@
 <script>
 import {mapState} from "vuex";
 import QueryModelFieldSetting from "../../service/installer/QueryModelFieldSetting.vue";
-import { search } from "@/api/project.database.model";
+import { fetchAll } from "@/api/project.database.model";
 import QueryModelWindow from "./QueryModelWindow.vue";
 
 export default {
@@ -91,7 +91,7 @@ export default {
     },
     // 查询数据库
     fetchDatabases () {
-      search ()
+      fetchAll ()
         .then(data => {
           this.databases = data
           this.fetchModels()

@@ -80,6 +80,12 @@ html {
       margin-right: 5px;
     }
   }
+  // 下拉选择
+  .el-select {
+    .el-select__prefix {
+      color: #333;
+    }
+  }
   // 跟随输入的输入框
   .el-input.follow-input {
     .el-input__wrapper {

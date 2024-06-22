@@ -3,8 +3,9 @@
 </template>
 
 <script>
+import { mapMutations } from 'vuex'
 import QueryModelView from '@/components/database/query-model/QueryModelView'
-import {mapState} from "vuex";
+import { fetchById } from '@/api/project'
 
 export default {
   components: { QueryModelView },
@@ -13,12 +14,21 @@ export default {
       databaseId: null
     }
   },
-  computed: {
-    ...mapState(['databases'])
+  methods: {
+    ...mapMutations(['setCurrentProject', 'setCurrentProjectDetail', 'setCurrentDatabase']),
   },
   created () {
-    // 全局选中当前数据库
-    this.databaseId = this.$route.query.db
+    fetchById(this.$route.query.project)
+      .then(project => {
+        this.setCurrentProject(project.id)
+        this.setCurrentProjectDetail(project)
+        this.setCurrentDatabase(this.$route.query.db)
+      })
+      .catch(e => {
+        console.error('找不到项目信息', e)
+        this.$tip.apiFailed('找不到项目信息！')
+        this.$router.push({ name: 'Desktop' })
+      })
   }
 }
 </script>

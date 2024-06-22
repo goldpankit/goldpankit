@@ -4,6 +4,9 @@
       <Logo/>
       <ul class="opera">
         <li>
+          <DataSourceSelect :model-value="currentDatabase"/>
+        </li>
+        <li>
           <LoginView/>
         </li>
       </ul>
@@ -15,23 +18,20 @@
 </template>
 
 <script>
-import {mapMutations, mapState} from 'vuex'
-import DataSourceSelect from "../components/database/DataSourceSelect.vue";
-import ProjectSelect from "../components/usr/project/ProjectSelect.vue";
-import AppLayout from "./AppLayout.vue";
-import LoginView from "../components/header/LoginView.vue";
-import BaseLayout from "./BaseLayout.vue";
-import Logo from "@/components/common/Logo.vue";
+import { mapState } from 'vuex'
+import DataSourceSelect from '../components/database/DataSourceSelect'
+import ProjectSelect from '../components/usr/project/ProjectSelect'
+import AppLayout from './AppLayout'
+import LoginView from '../components/header/LoginView'
+import BaseLayout from './BaseLayout'
+import Logo from '@/components/common/Logo'
 
 export default {
   name: 'WorkbenchLayout',
   extends: BaseLayout,
-  components: {Logo, LoginView, AppLayout, ProjectSelect, DataSourceSelect },
+  components: { Logo, LoginView, AppLayout, ProjectSelect, DataSourceSelect },
   computed: {
     ...mapState(['currentDatabase', 'userInfo'])
-  },
-  methods: {
-    ...mapMutations(['setCurrentProject', 'setCurrentDatabase'])
   }
 }
 </script>

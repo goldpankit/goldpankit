@@ -2,15 +2,15 @@
   <div class="database-query-models">
     <div v-if="currentDatabase == null || currentDatabase === ''" class="no-datasource-tip">
       <div class="tip-wrap">
-        <h4>{{$t('database.selectDataSourceTip')}}</h4>
+        <h4>请先选择一个数据库</h4>
         <DataSourceSelect :model-value="currentDatabase" :with-block="true"/>
       </div>
     </div>
     <div v-else-if="connectError != null" class="connect-error-tip">
       <div class="tip-wrap">
-        <h4>{{$t('database.dataSourceConnectFailedTip')}}</h4>
+        <h4>数据库连接失败</h4>
         <p>{{connectError}}</p>
-        <el-button @click="this.$refs.operaDataSourceWindow.open(this.currentDataSource)">{{$t('database.editDataSourceInfoTip')}}</el-button>
+        <el-button @click="this.$refs.operaDataSourceWindow.open(currentProject, this.currentDatabaseDetail)">修改数据库信息</el-button>
       </div>
     </div>
     <template v-else>
@@ -60,7 +60,7 @@
         </div>
       </div>
     </template>
-    <OperaDataSourceWindow ref="operaDataSourceWindow" @success="fetchDatabases"/>
+    <OperaDataSourceWindow ref="operaDataSourceWindow" @success="fetchTables"/>
   </div>
 </template>
 
@@ -106,16 +106,14 @@ export default {
       tables: [],
       // 关联线类型
       lineType: 'join',
-      // 当前选中的数据库
-      currentDataSource: null,
       // 当前选中的数据库连接失败消息
       connectError: null,
       // 当前选中的模型
-      currentModel: null,
+      currentModel: null
     }
   },
   computed: {
-    ...mapState(['currentProject', 'currentDatabase']),
+    ...mapState(['globalLoading', 'databases', 'currentProject', 'currentDatabase', 'currentDatabaseDetail']),
     // 当前表
     currentTable () {
       if (this.currentModel == null || this.currentModel.previewTableId == null) {
@@ -139,8 +137,13 @@ export default {
     }
   },
   watch: {
-    currentDatabase () {
-      this.fetchDatabases()
+    'globalLoading.databases': {
+      immediate: true,
+      handler (newValue) {
+        if (!newValue) {
+          this.fetchTables()
+        }
+      }
     }
   },
   methods: {
@@ -180,17 +183,18 @@ export default {
     },
     // 查询数据库表
     fetchTables (withModels = true) {
-      this.currentDataSource = this.databases.find(db => db.id === this.currentDatabase)
-      if (this.currentDataSource == null) {
+      // 此处不可直接使用currentDatabaseDetail，因为在进入页面时，currentDatabaseDetail可能还为被赋值
+      const targetDatabase = this.databases.find(d => d.id === this.currentDatabase)
+      if (targetDatabase == null) {
         return
       }
       this.loading.tables = true
       fetchTables ({
-        host: this.currentDataSource.host,
-        port: this.currentDataSource.port,
-        user: this.currentDataSource.username,
-        password: this.currentDataSource.password,
-        database: this.currentDataSource.schema
+        host: targetDatabase.host,
+        port: targetDatabase.port,
+        user: targetDatabase.username,
+        password: targetDatabase.password,
+        database: targetDatabase.schema
       })
         .then(tables => {
           this.connectError = null
@@ -437,9 +441,6 @@ export default {
       modelAggregate.targetField = targetField
       return modelAggregate
     }
-  },
-  created () {
-    this.fetchTables()
   }
 }
 </script>
