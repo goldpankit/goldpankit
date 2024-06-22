@@ -158,7 +158,7 @@ export default new Vuex.Store({
               resolve(data)
             })
             .catch(e => {
-              console.log('获取本地数据库失败', e)
+              console.log('获取项目数据库失败', e)
               reject(e)
             })
             .finally(() => {
