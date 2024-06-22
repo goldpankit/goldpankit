@@ -1,7 +1,6 @@
 // 安装服务
 const response = require('./constants/response')
 const service = require('./service')
-const cache = require("./utils/cache");
 const serviceApi = require("./api/service");
 const fs = require("./utils/fs");
 const Const = require("./constants/constants");
@@ -91,10 +90,10 @@ class Kit {
           // 写入数据库配置文件
           const dbConfig = userProjectDatabase.getProjectDatabaseConfigByIdWithDefaultBlankArray(project.id)
           // - 从变量中获取数据库参数
-          const dataBaseVariable = dto.variables.find(v=>v.inputType === 'datasource')
-          if (dataBaseVariable.value != null && dataBaseVariable.value !== '') {
+          const databaseVariable = dto.variables.find(v=>v.inputType === 'datasource')
+          if (databaseVariable.value != null && databaseVariable.value !== '') {
             // 从全局数据库中找到数据库信息
-            const db = cache.datasources.get(dataBaseVariable.value)
+            const db = userProjectDatabase.getDatabase(project.id, databaseVariable.value)
             if (db != null) {
               // 如果数据库信息不存在，则添加
               if (dbConfig.find(item => item.id === db.id) == null) {
@@ -339,7 +338,7 @@ class Kit {
           return reject(`编译失败，代码文件不能超过${env.limitFiles}个！`)
         }
         // 获取数据库信息
-        const database = cache.datasources.get(dto.database)
+        const database = userProjectDatabase.getDatabase(project.id, dto.database)
         // 组装变量
         const variables = this.#getVariables(project, database, dto.variables)
         Promise.all(variables)
@@ -535,8 +534,8 @@ class Kit {
       }
       if (service != null) {
         let serviceName = null
-        for (const servceName in service) {
-          serviceName = servceName
+        for (const name in service) {
+          serviceName = name
           break
         }
         // 将项目主服务的变量添加到最前
@@ -557,11 +556,11 @@ class Kit {
         try {
           // 如果类型为数据源，则查询出库信息
           if (item.inputType === 'datasource') {
-            const dataSourceId = item.value === undefined ?  item.defaultValue : item.value
-            const dataSource = cache.datasources.get(dataSourceId)
+            const databaseId = item.value === undefined ?  item.defaultValue : item.value
+            const database = userProjectDatabase.getDatabase(project.id, databaseId)
             resolve({
               ...item,
-              value: dataSource
+              value: database
             })
             return
           }

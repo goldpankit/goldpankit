@@ -78,6 +78,15 @@ module.exports = {
     const databases = this.getProjectDatabaseConfigByIdWithDefaultBlankArray(projectId)
     return databases.find(db => db.id === databaseId)
   },
+  // 保存数据库配置
+  saveDatabase (projectId, newDatabase) {
+    const databases = this.getProjectDatabaseConfigByIdWithDefaultBlankArray(projectId)
+    const target = databases.find(db => db.id === newDatabase.id)
+    // 修改配置
+    Object.assign(target, newDatabase)
+    // 保存
+    fs.rewrite(this.getDatabaseConfigPath(dto.projectId), fs.toJSONFileString(databases))
+  },
   // 获取项目数据库配置文件路径
   getDatabaseConfigPath (projectId) {
     const project = cache.projects.get(projectId)

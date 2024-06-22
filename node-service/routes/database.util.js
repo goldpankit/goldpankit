@@ -1,6 +1,6 @@
 const request = require('../utils/request.define')
 const mysql = require('../core/utils/db/mysql')
-const cache = require('../core/utils/cache')
+const projectDatabase = require('../core/user.project.database')
 
 // 格式化语句
 request
@@ -34,9 +34,14 @@ request
 request
   .post('/db/mysql/exec')
   .data(req => {
-    let database = cache.datasources.get(req.body.database)
+    // 查找项目数据库配置
+    let database = projectDatabase.getDatabase(req.body.projectId, req.body.database)
+    // 没有找到项目数据库，读取config字段
     if (database == null) {
       database = req.body.config
+    }
+    if (database == null) {
+      return Promise.reject('参数错误')
     }
     const sql = mysql.format(req.body.sql)
     return mysql.exec({

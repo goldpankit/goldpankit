@@ -192,7 +192,5 @@ module.exports = {
   // 插件
   plugins: new ArrayCache('plugins', ['space', 'service', 'name']),
   // 项目
-  projects: new ArrayCache('projects', 'id'),
-  // 数据库
-  datasources: new ArrayCache('datasources', 'id'),
+  projects: new ArrayCache('projects', 'id')
 }
