@@ -1,6 +1,6 @@
 <template>
   <el-dialog
-    custom-class="sql-preview"
+    class="sql-preview"
     :title="$t('database.queryResult')"
     width="1000px"
     v-model="visible"

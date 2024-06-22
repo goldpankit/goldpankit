@@ -1,6 +1,6 @@
 <template>
   <el-dialog
-    custom-class="query-model-window"
+    class="query-model-window"
     v-model="visible"
     fullscreen
     append-to-body

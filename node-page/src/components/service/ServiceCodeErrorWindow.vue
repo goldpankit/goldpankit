@@ -2,7 +2,7 @@
   <el-dialog
     v-model="visible"
     width="1000px"
-    custom-class="service-code-error-window"
+    class="service-code-error-window"
     :show-close="false"
   >
     <template #header>

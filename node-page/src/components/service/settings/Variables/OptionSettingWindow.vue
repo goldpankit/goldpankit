@@ -3,7 +3,7 @@
     v-model="visible"
     :title="$t('service.settings.variable.optionSettings')"
     append-to-body
-    custom-class="option-setting-window"
+    class="option-setting-window"
   >
     <div class="toolbar">
       <el-button icon="Plus" type="primary" @click="add">{{$t('common.add')}}</el-button>

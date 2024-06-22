@@ -1,7 +1,7 @@
 <template>
   <el-dialog
     v-model="visible"
-    custom-class="vip-expired-window"
+    class="vip-expired-window"
     width="500px"
   >
     <div class="wrap">

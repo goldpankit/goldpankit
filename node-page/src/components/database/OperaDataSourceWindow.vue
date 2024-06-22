@@ -3,13 +3,13 @@
     v-model="visible"
     :title="form.id ? $t('database.editDatabase') : $t('database.createDatabase')"
     width="550px"
-    custom-class="opera-data-source-dialog"
+    class="opera-data-source-dialog"
     append-to-body
     :close-on-click-modal="false"
     :close-on-press-escape="false"
   >
-    <FormTip>
-      {{$t('database.tip')}}
+    <FormTip v-if="currentProjectDetail != null">
+      数据库信息仅保存在「<em>{{currentProjectDetail.name}}</em>」项目的<em>kit.db.json</em>文件中，请放心填写！
     </FormTip>
     <el-form ref="form" :model="form" :rules="rules">
       <el-form-item label="数据库名称" prop="name" required>
@@ -120,7 +120,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['currentProject']),
+    ...mapState(['currentProject', 'currentProjectDetail']),
     url () {
       return `jdbc:mysql://${this.form.host}:${this.form.port}/${this.form.schema}`
     }

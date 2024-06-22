@@ -3,7 +3,7 @@
     <div v-if="withTitle" class="nav">
       <div class="title">
         <h4>@{{space}}/{{service}} · {{$t('service.install2')}} · </h4>
-        <el-select v-model="selectedVersion">
+        <el-select size="default" v-model="selectedVersion">
           <el-option
             v-for="version in versions"
             :key="version"
@@ -20,11 +20,11 @@
     </div>
     <div class="content-wrap" :style="contentWrapStyle">
       <template v-if="withProject || serviceVariables.length > 0">
-        <p class="install-tip">{{$t('service.withParametersTip')}}</p>
+        <p class="install-tip">安装提示: 填写以下信息并点击「立即安装」按钮即可安装代码到您项目目录中。</p>
         <div class="form-wrap">
           <el-form>
             <!-- 选择项目，仅服务需要该参数 -->
-            <el-form-item v-if="withProject" :label="$t('project.project')" required class="form-item-project">
+            <el-form-item v-if="withProject" label="项目" required class="form-item-project">
               <ProjectSelect
                 :model-value="currentProject"
                 :with-block="true"
@@ -32,7 +32,11 @@
                 @change="$emit('change-project', $event)"
               />
               <FormItemTip
-                v-if="currentProjectDetail != null"
+                v-if="currentProjectDetail == null"
+                content="服务安装后的代码将存放至指定的项目目录中，请先选择或创建一个项目！"
+              />
+              <FormItemTip
+                v-else
                 :content="`服务安装后代码将写入<em>${currentProjectDetail.codespace}</em>目录。`"
               />
             </el-form-item>
@@ -467,9 +471,9 @@ export default {
     // 提示空变量
     __tipEmptyVariable (variable, groupName) {
       if (groupName != null) {
-        this.$tip.warning(this.$t('service.missingGroupVariableValueTip', { variable: variable.label, groupName }))
+        this.$tip.warning(`「${groupName}」中缺少「${variable.label}」`)
       } else {
-        this.$tip.warning(this.$t('service.missingVariableValueTip', { variable: variable.label }))
+        this.$tip.warning(`缺少「${variable.label}」`)
       }
     },
     // 获取安装变量值
@@ -497,7 +501,7 @@ export default {
     /**
      * 获取默认值
      * @param variable 变量
-     * @param value 变量值，根变量无需传
+     * @param value 变量值
      * @param isRootVariable 是否为根变量，默认为true，为true时且value为null时才会从项目配置中读取已有变量数据
      * @returns {*}
      * @private
@@ -708,10 +712,10 @@ export default {
         width: 135px;
         position: relative;
         left: -3px;
-        .el-input__wrapper {
+        .el-select__wrapper {
           box-shadow: none !important;
         }
-        .el-input__inner {
+        .el-select__selected-item {
           color: var(--color-service-name);
           font-size: var(--font-size-title);
           font-weight: bold;

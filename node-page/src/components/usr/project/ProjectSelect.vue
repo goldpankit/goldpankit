@@ -6,6 +6,7 @@
       @update:modelValue="$emit('update:modelValue', $event)"
       @change="handleChange"
       clearable
+      placeholder="请选择或新建项目"
     >
       <el-option
         v-for="item in list"
@@ -136,10 +137,10 @@ export default {
   }
   :deep(.el-select) {
     width: 225px;
-    .el-input__wrapper {
+    .el-select__wrapper {
       height: 40px;
       border-radius: 5px 0 0 5px;
-      .el-input__inner {
+      .el-select__selected-item {
         color: var(--color-service-name) !important;
         font-weight: bold;
       }

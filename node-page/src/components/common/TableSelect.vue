@@ -35,6 +35,7 @@
         />
       </li>
     </ul>
+    <ErrorWindow ref="errorWindow"/>
   </div>
 </template>
 
@@ -42,10 +43,11 @@
 import { mapState } from 'vuex';
 import FieldSetting from "@/components/service/installer/FieldSetting.vue";
 import { fetchTables } from '@/api/database.util'
+import ErrorWindow from "@/components/common/ErrorWindow.vue";
 
 export default {
   name: 'TableSelect',
-  components: { FieldSetting },
+  components: {ErrorWindow, FieldSetting },
   props: {
     modelValue: {},
     // 值字段
@@ -67,7 +69,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['databases', 'currentProject', 'currentDatabase']),
+    ...mapState(['databases', 'globalLoading', 'currentProject', 'currentDatabase']),
     // 获取表字段变量组，组中包含了表字段的扩展变量
     fieldVariableGroup () {
       return this.variable.children || []
@@ -75,8 +77,17 @@ export default {
   },
   watch: {
     // 当数据库发生变化时，重新获取表
-    currentDatabase () {
-      this.fetchTables()
+    currentDatabase: {
+      immediate: true,
+      handler () {
+        this.fetchTables()
+      }
+    },
+    // 当数据库加载完成时，触发一次数据库选择，防止选中了不是当前项目的数据库，此处一定要监听第一次变化，防止刷新时不能初始化选中数据库
+    'globalLoading.databases' (newValue) {
+      if (!newValue) {
+        this.fetchTables(this.modelValue)
+      }
     }
   },
   methods: {
@@ -92,6 +103,10 @@ export default {
     },
     // 查询表
     fetchTables () {
+      // 如果数据库正在加载中，则不查询，在数据库加载完成后会重新触发该事件
+      if (this.globalLoading.databases) {
+        return
+      }
       const database = this.databases.find(db => db.id === this.currentDatabase)
       if (database == null) {
         this.tables = []
@@ -117,15 +132,17 @@ export default {
           }
         })
         .catch(e => {
-          this.$tip.apiFailed(e)
+          this.tables = []
+          this.handleChange(null)
+          this.$refs.errorWindow.open({
+            title: '获取表失败',
+            message: e.message
+          })
         })
         .finally(() => {
           this.loading.tables = false
         })
     }
-  },
-  created () {
-    this.fetchTables()
   }
 }
 </script>
@@ -139,8 +156,12 @@ export default {
     border-radius: 5px;
     :deep(.el-select) {
       flex-grow: 1;
-      .el-input__wrapper {
+      .el-select__wrapper {
         border-radius: 5px 0 0 5px;
+        .el-select__selected-item {
+          color: var(--color-service-name) !important;
+          font-weight: bold;
+        }
       }
     }
     .el-button {

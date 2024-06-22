@@ -2,7 +2,7 @@
   <el-dialog
     v-model="visible"
     :show-close="false"
-    custom-class="service-file-select-window"
+    class="service-file-select-window"
     append-to-body
   >
     <template #header="{ close, titleId, titleClass }">

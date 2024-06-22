@@ -3,9 +3,11 @@
     <el-select
       popper-class="data-source-select-popper"
       :model-value="modelValue"
+      :loading="globalLoading.databases"
       append-to-body
       @update:modelValue="handleChange"
       clearable
+      placeholder="请选择或新建数据库"
     >
       <el-option
         v-for="item in databases"
@@ -22,6 +24,10 @@
           </p>
         </div>
       </el-option>
+      <template #label="{ label }">
+        <el-icon v-if="globalLoading.databases" class="is-loading"><Loading/></el-icon>
+        <span v-else>{{ label }}</span>
+      </template>
       <template v-if="withPrefix" #prefix>
         <template v-if="prefix == null">当前数据库</template>
         <template v-else>{{prefix}}</template>:
@@ -55,13 +61,17 @@ export default {
     }
   },
   computed: {
-    ...mapState(['currentProject', 'databases'])
+    ...mapState(['currentProject', 'globalLoading', 'databases'])
   },
   watch: {
-    // 数据库列表发生变化时，重新触发一次数据库选择，防止选中了不是当前项目的数据库
-    databases () {
-      console.log('数据库发生了变化', this.databases, this.modelValue)
-      this.handleChange(this.modelValue)
+    // 当数据库加载完成时，触发一次数据库选择，防止选中了不是当前项目的数据库，此处一定要监听第一次变化，防止刷新时不能初始化选中数据库
+    'globalLoading.databases': {
+      immediate: true,
+      handler (newValue) {
+        if (!newValue) {
+          this.handleChange(this.modelValue)
+        }
+      }
     }
   },
   methods: {
@@ -102,10 +112,6 @@ export default {
           this.$tip.apiFailed(e)
         })
     }
-  },
-  created () {
-    // 触发一次数据库选择，防止选中了不是当前项目的数据库
-    this.handleChange(this.modelValue)
   }
 }
 </script>
@@ -147,10 +153,10 @@ export default {
   }
   :deep(.el-select) {
     width: 225px;
-    .el-input__wrapper {
+    .el-select__wrapper {
       height: 40px;
       border-radius: 5px 0 0 5px;
-      .el-input__inner {
+      .el-select__selected-item {
         color: var(--color-service-name) !important;
         font-weight: bold;
       }

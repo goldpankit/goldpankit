@@ -1,7 +1,7 @@
 <template>
   <el-dialog
     v-if="currentBuild != null"
-    custom-class="script-preview-dialog"
+    class="script-preview-dialog"
     v-model="visible"
     destroy-on-close
     :title="'构建脚本/' + currentBuild.name"

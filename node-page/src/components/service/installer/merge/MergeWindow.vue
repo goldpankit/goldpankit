@@ -1,6 +1,6 @@
 <template>
   <el-dialog
-    custom-class="merge-window"
+    class="merge-window"
     :title="$t('service.mergeFileTitle')"
     v-model="visible"
     fullscreen

@@ -1,6 +1,6 @@
 <template>
   <el-dialog
-    custom-class="create-database-dialog"
+    class="create-database-dialog"
     v-model="visible"
     width="800px"
     :close-on-click-modal="false"

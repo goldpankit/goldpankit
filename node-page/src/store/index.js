@@ -24,6 +24,9 @@ if (currentDatabaseDetailStr != null) {
 }
 export default new Vuex.Store({
   state: {
+    globalLoading: {
+      databases: false
+    },
     // 用户信息
     userInfo: null,
     // 本地数据库列表
@@ -71,7 +74,10 @@ export default new Vuex.Store({
     },
     setCurrentDatabase (state, database) {
       state.currentDatabase = database
-      window.localStorage.setItem('CURRENT_DATABASE', database)
+      window.localStorage.removeItem('CURRENT_DATABASE')
+      if (database != null) {
+        window.localStorage.setItem('CURRENT_DATABASE', database)
+      }
     },
     setCurrentDatabaseDetail (state, database) {
       state.currentDatabaseDetail = database
@@ -139,20 +145,26 @@ export default new Vuex.Store({
     // 获取本地数据库列表
     fetchDatabases ({ state, commit }) {
       return new Promise((resolve, reject) => {
-        if (state.currentProject == null || state.currentProject === '') {
-          commit('setDatabases', [])
-          resolve([])
-          return
-        }
-        fetchDatabases(state.currentProject)
-          .then(data => {
-            commit('setDatabases', data)
-            resolve(data)
-          })
-          .catch(e => {
-            console.log('获取本地数据库失败', e)
-            reject(e)
-          })
+        state.globalLoading.databases = true
+        setTimeout(() => {
+          if (state.currentProject == null || state.currentProject === '') {
+            commit('setDatabases', [])
+            resolve([])
+            return
+          }
+          fetchDatabases(state.currentProject)
+            .then(data => {
+              commit('setDatabases', data)
+              resolve(data)
+            })
+            .catch(e => {
+              console.log('获取本地数据库失败', e)
+              reject(e)
+            })
+            .finally(() => {
+              state.globalLoading.databases = false
+            })
+        }, 300)
       })
     }
   },

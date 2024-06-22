@@ -2,7 +2,7 @@
   <el-dialog
     v-model="visible"
     :title="form.id ? $t('project.editProject') : $t('project.createProject')"
-    custom-class="create-project-dialog"
+    class="create-project-dialog"
     append-to-body
     width="800px"
     :close-on-click-modal="false"
