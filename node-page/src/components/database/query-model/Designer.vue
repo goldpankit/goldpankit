@@ -12,6 +12,7 @@
       <p><em @click="confirmCreateVirtualTable">{{$t('database.createVirtualTableTip')}}</em></p>
     </div>
   </div>
+  <!-- 设计器 -->
   <div class="stage-wrap" tabindex="-1" @keyup.delete="handleDelete">
     <v-stage
       v-if="rendered"
@@ -53,13 +54,13 @@
 </template>
 
 <script>
-import RelationLine from "./RelationLine.vue";
-import Table from "./Table.vue";
-import {generateId} from "../../../utils/generator";
+import RelationLine from './RelationLine'
+import Table from './Table'
+import { generateId } from "@/utils/generator";
 
 export default {
-  name: "QueryModelDesigner",
-  components: {Table, RelationLine},
+  name: 'QueryModelDesigner',
+  components: { Table, RelationLine },
   props: {
     model: {},
     fieldHeight: {
@@ -515,10 +516,20 @@ export default {
       const x = table.x + (withWidth ? 200 : 0) - stagePosition.x
       const y = table.y + this.fieldHeight + (fieldIndex + 1) * this.fieldHeight - 15 - stagePosition.y
       return { x, y }
+    },
+    // 计算设计区域尺寸
+    __computeSize () {
+      const contentRect = document.querySelector('.designer-wrap').getBoundingClientRect()
+      this.configKonva.width = contentRect.width
+      this.configKonva.height = contentRect.height
     }
   },
   mounted() {
     this.render()
+    this.__computeSize()
+    window.addEventListener('resize', () => {
+      this.__computeSize()
+    })
   }
 }
 </script>
