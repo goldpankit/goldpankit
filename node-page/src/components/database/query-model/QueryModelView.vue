@@ -24,27 +24,28 @@
         @deleted="handleModelDeleted"
       />
       <div class="designer-wrap">
-        <div v-if="currentModel != null" class="toolbar">
-          <!-- 线条类型 -->
-          <ul class="line-types">
-            <li :class="{selected: currentModel.lineType === 'join'}" @click="currentModel.lineType = 'join'">
-              <em class="join-line"></em>
-              <label>{{$t('database.joinLine')}}</label>
-            </li>
-            <li :class="{selected: currentModel.lineType === 'aggregate'}" @click="currentModel.lineType = 'aggregate'">
-              <em class="aggregate-line"></em>
-              <label>{{$t('database.aggregateLine')}}</label>
-            </li>
-          </ul>
-        </div>
+<!--        <div v-if="currentModel != null" class="toolbar">-->
+<!--          &lt;!&ndash; 线条类型 &ndash;&gt;-->
+<!--          <ul class="line-types">-->
+<!--            <li :class="{selected: currentModel.lineType === 'join'}" @click="currentModel.lineType = 'join'">-->
+<!--              <em class="join-line"></em>-->
+<!--              <label>{{$t('database.joinLine')}}</label>-->
+<!--            </li>-->
+<!--            <li :class="{selected: currentModel.lineType === 'aggregate'}" @click="currentModel.lineType = 'aggregate'">-->
+<!--              <em class="aggregate-line"></em>-->
+<!--              <label>{{$t('database.aggregateLine')}}</label>-->
+<!--            </li>-->
+<!--          </ul>-->
+<!--        </div>-->
         <!-- 设计器 -->
-        <QueryModelDesigner
-          v-if="currentModel != null"
-          ref="designer"
-          :model="currentModel"
-          :field-height="30"
-          @change="saveModel"
-        />
+<!--        <QueryModelDesigner-->
+<!--          v-if="currentModel != null"-->
+<!--          ref="designer"-->
+<!--          :model="currentModel"-->
+<!--          :field-height="30"-->
+<!--          @change="saveModel"-->
+<!--        />-->
+        <DesignerV2/>
         <!-- 表设置 -->
         <TableSetting
           :table="currentTable"
@@ -76,10 +77,12 @@ import OperaDataSourceWindow from '../OperaDataSourceWindow'
 import { fetchAll, updateById } from '@/api/project.database.model'
 import { fetchDatabases } from '@/api/project.database'
 import { fetchTables } from '@/api/database.util'
+import DesignerV2 from "@/components/database/query-model/DesignerV2.vue";
 
 export default {
   name: 'QueryModelView',
   components: {
+    DesignerV2,
     OperaDataSourceWindow,
     DataSourceSelect,
     TableLibrary,
