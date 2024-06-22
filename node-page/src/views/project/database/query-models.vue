@@ -1,21 +1,24 @@
 <template>
-  <QueryModelView :project-id="projectId" :database-id="databaseId"/>
+  <QueryModelView :database-id="databaseId"/>
 </template>
 
 <script>
 import QueryModelView from '@/components/database/query-model/QueryModelView'
+import {mapState} from "vuex";
 
 export default {
   components: { QueryModelView },
   data () {
     return {
-      projectId: null,
       databaseId: null
     }
   },
+  computed: {
+    ...mapState(['databases'])
+  },
   created () {
-    this.projectId = this.$route.query.pid
-    this.databaseId = this.$route.query.did
+    // 全局选中当前数据库
+    this.databaseId = this.$route.query.db
   }
 }
 </script>

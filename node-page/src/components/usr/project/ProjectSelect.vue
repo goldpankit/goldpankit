@@ -32,11 +32,11 @@
 </template>
 
 <script>
-import {search} from "@/api/project";
-import DirectorySelect from "@/components/common/DirectorySelect.vue";
-import OperaProjectWindow from "./OperaProjectWindow.vue";
-import {mapMutations} from "vuex";
-import {getLimitString} from "@/utils/util";
+import { mapMutations } from 'vuex'
+import DirectorySelect from '@/components/common/DirectorySelect'
+import OperaProjectWindow from './OperaProjectWindow'
+import { getLimitString } from '@/utils/util'
+import { fetchAll } from '@/api/project'
 
 export default {
   name: "ProjectSelect",
@@ -59,8 +59,8 @@ export default {
     ...mapMutations(['setCurrentProject', 'setCurrentProjectDetail']),
     getLimitString,
     // 查询项目
-    fetchList (callback) {
-      search()
+    fetchAll (callback) {
+      fetchAll()
         .then(data => {
           this.list = data
           // 清空不存在的项目选择
@@ -89,13 +89,14 @@ export default {
     },
     // 创建完成
     handleCreateSuccess (projectId) {
-      this.fetchList(() => {
+      this.fetchAll(() => {
+        // 选中最新创建的项目
         this.handleChange(projectId)
       })
     }
   },
   created () {
-    this.fetchList()
+    this.fetchAll()
   }
 }
 </script>

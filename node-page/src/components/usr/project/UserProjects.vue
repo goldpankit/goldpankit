@@ -16,7 +16,7 @@
           <p>{{project.remark}}</p>
         </div>
         <div class="opera">
-          <el-button type="primary" size="small" @click="$router.push({ name: 'Databases', params: { projectId: project.id } })">数据库</el-button>
+          <el-button type="primary" size="small" @click="$router.push({ name: 'Databases', params: { projectId: project.id }})">数据库</el-button>
           <el-button size="small" icon="Edit" @click="editProject(project)">{{$t('common.edit')}}</el-button>
           <el-button type="danger" text @click="deleteProject(project)">{{$t('common.delete')}}</el-button>
         </div>
@@ -30,7 +30,7 @@
 <script>
 import Empty from '@/components/common/Empty'
 import OperaProjectWindow from './OperaProjectWindow'
-import { deleteProject, search } from '@/api/project'
+import { deleteProject, fetchAll } from '@/api/project'
 
 export default {
   name: 'UserProjects',
@@ -43,8 +43,9 @@ export default {
     }
   },
   methods: {
-    search () {
-      search()
+    // 查询所有项目
+    fetchAll () {
+      fetchAll()
         .then(data => {
           this.projects = data
         })
@@ -62,7 +63,7 @@ export default {
         .then(() => {
           deleteProject(project.id)
             .then(() => {
-              this.search()
+              this.fetchAll()
             })
             .catch(e => {
               this.$tip.apiFailed(e)
@@ -72,7 +73,7 @@ export default {
     }
   },
   created () {
-    this.search()
+    this.fetchAll()
   }
 }
 </script>

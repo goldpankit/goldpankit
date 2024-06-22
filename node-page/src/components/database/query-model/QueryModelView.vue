@@ -89,9 +89,6 @@ export default {
     Table
   },
   props: {
-    projectId: {
-      required: true
-    },
     databaseId: {
       required: true
     }
@@ -105,8 +102,6 @@ export default {
       fieldHeight: 30,
       // 查询模型
       queryModels: [],
-      // 数据库
-      databases: [],
       // 表集合
       tables: [],
       // 关联线类型
@@ -120,7 +115,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['currentDatabase']),
+    ...mapState(['currentProject', 'currentDatabase']),
     // 当前表
     currentTable () {
       if (this.currentModel == null || this.currentModel.previewTableId == null) {
@@ -163,8 +158,9 @@ export default {
     // 保存查询模型
     saveModel () {
       const modelSettings = this.__getModelSettings(this.currentModel)
-      updateModel ({
-        database: this.currentDatabase,
+      updateById ({
+        projectId: this.currentProject,
+        databaseId: this.currentDatabase,
         model: modelSettings
       })
         .then(() => {
@@ -181,20 +177,6 @@ export default {
     // 开始拖动表放置在设计器中
     handleDragStart (tableName) {
       this.currentModel.dragData = this.tables.find(t => t.name === tableName)
-    },
-    // 查询库
-    fetchDatabases () {
-      this.currentModel = null
-      this.$nextTick(() => {
-        fetchDatabases (this.projectId)
-          .then(data => {
-            this.databases = data
-            this.fetchTables()
-          })
-          .catch(e => {
-            this.$tip.apiFailed(e)
-          })
-      })
     },
     // 查询数据库表
     fetchTables (withModels = true) {
@@ -457,7 +439,7 @@ export default {
     }
   },
   created () {
-    this.fetchDatabases()
+    this.fetchTables()
   }
 }
 </script>

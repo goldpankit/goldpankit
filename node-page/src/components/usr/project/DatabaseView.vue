@@ -41,7 +41,7 @@
     </el-descriptions-item>
     <template #extra>
       <ul class="toolbar">
-        <li><el-button size="small" @click="gotoQueryModels">查询模型</el-button></li>
+        <li><el-button type="primary" size="small" @click="gotoQueryModels">查询模型</el-button></li>
         <li><el-button size="small" icon="Edit" @click="$emit('edit')">{{$t('common.edit')}}</el-button></li>
         <li><el-button size="small" type="danger" text @click="$emit('delete')">{{$t('common.delete')}}</el-button></li>
       </ul>
@@ -75,8 +75,8 @@ export default {
       this.$router.push({
         name: 'DatabaseQueryModel',
         query: {
-          pid: this.projectId,
-          did: this.database.id
+          project: this.projectId,
+          db: this.database.id
         }
       })
     }

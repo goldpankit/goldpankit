@@ -15,7 +15,7 @@ export function save (data) {
 }
 
 // 搜索项目
-export function search (data) {
+export function fetchAll (data) {
   return request.post('/project/search', data)
 }
 // 查询项目信息
