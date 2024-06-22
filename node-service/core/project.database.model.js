@@ -1,15 +1,23 @@
 const utils = require('./utils/index')
 const projectDatabase = require('./project.database')
 module.exports = {
+  // 查询模型
+  findAll (projectId, databaseId) {
+    const database = projectDatabase.getDatabase(projectId, databaseId)
+    if (database == null) {
+      return Promise.reject(new Error(`找不到数据库，请刷新后重试！数据库ID: ${databaseId}`))
+    }
+    return database.models
+  },
   // 删除模型
   delete (projectId, databaseId, modelId) {
     const database = projectDatabase.getDatabase(projectId, databaseId)
     if (database == null) {
-      throw new Error(`找不到数据库，请刷新后重试！数据库ID: ${databaseId}`)
+      return Promise.reject(new Error(`找不到数据库，请刷新后重试！数据库ID: ${databaseId}`))
     }
     const index = database.models.findIndex(m => m.id === modelId)
     if (index === -1) {
-      throw new Error(`找不到模型，请刷新后重试！模型ID: ${modelId}`)
+      return Promise.reject(new Error(`找不到模型，请刷新后重试！模型ID: ${modelId}`))
     }
     // 执行删除
     database.models.splice(index, 1)
@@ -20,7 +28,7 @@ module.exports = {
   create (projectId, databaseId, newModel) {
     const database = projectDatabase.getDatabase(projectId, databaseId)
     if (database == null) {
-      throw new Error(`找不到数据库，请刷新后重试！数据库ID: ${databaseId}`)
+      return Promise.reject(new Error(`找不到数据库，请刷新后重试！数据库ID: ${databaseId}`))
     }
     if (database.models == null) {
       database.models = []
@@ -28,7 +36,7 @@ module.exports = {
     // 验证名称
     const model = database.models.find(m => m.name === newModel.name)
     if (model != null) {
-      throw new Error(`模型名称不可重复！`)
+      return Promise.reject(new Error('模型名称不可重复！'))
     }
     // 添加模型
     newModel.id = utils.generateId()
@@ -42,7 +50,7 @@ module.exports = {
     // 验证数据库
     const database = projectDatabase.getDatabase(projectId, databaseId)
     if (database == null) {
-      throw new Error(`找不到数据库，请刷新后重试！数据库ID: ${databaseId}`)
+      return Promise.reject(new Error(`找不到数据库，请刷新后重试！数据库ID: ${databaseId}`))
     }
     if (database.models == null) {
       database.models = []
@@ -50,7 +58,7 @@ module.exports = {
     // 验证模型是否存在
     const model = database.models.find(m => m.id === newModel.id)
     if (model == null) {
-      throw new Error(`找不到模型，请刷新后重试！模型ID: ${newModel.id}`)
+      return Promise.reject(new Error(`找不到模型，请刷新后重试！模型ID: ${newModel.id}`))
     }
     // 修改信息
     Object.assign(model, newModel)

@@ -12,21 +12,21 @@ request
 request
   .post('/project/database/create')
   .data(req => {
-    return projectDatabase.create(req.body)
+    return projectDatabase.create(req.body.projectId, req.body.database)
   })
 
 // 编辑
 request
   .post('/project/database/updateById')
   .data(req => {
-    return projectDatabase.updateById(req.body)
+    return projectDatabase.updateById(req.body.projectId, req.body.database)
   })
 
 // 删除
 request
   .post('/project/database/delete')
   .data(req => {
-    return projectDatabase.deleteById(req.body)
+    return projectDatabase.deleteById(req.body.projectId, req.body.databaseId)
   })
 
 module.exports = request.router

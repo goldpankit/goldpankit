@@ -6,6 +6,7 @@ const Const = require('./constants/constants')
 module.exports = {
   /**
    * 创建
+   * @param projectId 项目ID
    * @param database = {
    *   projectId: '项目ID',
    *   name: '数据库昵称',
@@ -20,58 +21,46 @@ module.exports = {
    *
    * @returns {Promise<never>|Promise<unknown>}
    */
-  create (database) {
-    const projectId = database.projectId
-    // 移除id
-    delete database.id
+  create (projectId, database) {
     // 保持json结构
+    delete database.id
     const newDatabase = {
       // 分配ID
       id: utils.generateId(),
       ...database
     }
-    // 移除projectId
-    delete newDatabase.projectId
-    // 保存
+    // 添加
     const databases = this.getProjectDatabaseConfigByIdWithDefaultBlankArray(projectId)
     databases.push(newDatabase)
-    console.log('创建数据库', newDatabase)
+    // 保存
     fs.rewrite(this.getDatabaseConfigPath(projectId), fs.toJSONFileString(databases))
     return Promise.resolve(newDatabase.id)
   },
   // 修改
-  updateById (newDatabase) {
+  updateById (projectId, newDatabase) {
     // 验证数据
-    const databases = this.getProjectDatabaseConfigByIdWithDefaultBlankArray(newDatabase.projectId)
+    const databases = this.getProjectDatabaseConfigByIdWithDefaultBlankArray(projectId)
     const target = databases.find(db => db.id === newDatabase.id)
     if (target == null) {
       return Promise.reject(new Error('数据库不存在，请刷新后重试！'))
     }
-    // 更新数据
+    // 更新
     Object.assign(target, newDatabase)
-    // 移除projectId
-    delete target.projectId
     // 保存
-    fs.rewrite(this.getDatabaseConfigPath(database.projectId), fs.toJSONFileString(databases))
+    fs.rewrite(this.getDatabaseConfigPath(projectId), fs.toJSONFileString(databases))
   },
-  /**
-   * 删除
-   * @param dto = {
-   *   projectId: '项目ID'
-   *   databaseId: '数据库ID'
-   * }
-   */
-  deleteById(dto) {
+  // 删除
+  deleteById(projectId, databaseId) {
     // 验证数据
-    const databases = this.getProjectDatabaseConfigByIdWithDefaultBlankArray(dto.projectId)
-    const targetIndex = databases.findIndex(db => db.id === dto.databaseId)
+    const databases = this.getProjectDatabaseConfigByIdWithDefaultBlankArray(projectId)
+    const targetIndex = databases.findIndex(db => db.id === databaseId)
     if (targetIndex === -1) {
       return
     }
     // 执行删除
     databases.splice(targetIndex, 1)
     // 保存
-    fs.rewrite(this.getDatabaseConfigPath(dto.projectId), fs.toJSONFileString(databases))
+    fs.rewrite(this.getDatabaseConfigPath(projectId), fs.toJSONFileString(databases))
   },
   // 获取数据库配置
   getDatabase (projectId, databaseId) {
@@ -85,16 +74,22 @@ module.exports = {
     // 修改配置
     Object.assign(target, newDatabase)
     // 保存
-    fs.rewrite(this.getDatabaseConfigPath(dto.projectId), fs.toJSONFileString(databases))
+    fs.rewrite(this.getDatabaseConfigPath(projectId), fs.toJSONFileString(databases))
   },
   // 获取项目数据库配置文件路径
   getDatabaseConfigPath (projectId) {
     const project = cache.projects.get(projectId)
+    if (project == null) {
+      return null
+    }
     return path.join(project.codespace, Const.PROJECT_DATABASE_CONFIG_FILE)
   },
   // 获取项目数据库配置
-  getProjectDatabaseConfigByIdWithDefaultBlankArray (id) {
-    const configFilePath = this.getDatabaseConfigPath(id)
+  getProjectDatabaseConfigByIdWithDefaultBlankArray (projectId) {
+    const configFilePath = this.getDatabaseConfigPath(projectId)
+    if (configFilePath == null) {
+      return []
+    }
     if (!fs.exists(configFilePath)) {
       return []
     }

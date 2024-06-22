@@ -1,6 +1,13 @@
 const request = require('../utils/request.define')
 const projectDatabaseModel = require('../core/project.database.model')
 
+// 查询模型
+request
+  .post('/project/database/models')
+  .data(req => {
+    return projectDatabaseModel.findAll(req.body.projectId, req.body.databaseId)
+  })
+
 // 创建模型
 request
   .post('/project/database/model/create')

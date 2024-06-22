@@ -1,0 +1,1 @@
+import{Q as o}from"./QueryModelView-fef9c5b3.js";import{_ as r,r as t,o as s,g as n}from"./index-8f73103e.js";import"./database-3f2a6015.js";const c={components:{QueryModelView:o}};function p(a,_,i,m,d,l){const e=t("QueryModelView");return s(),n(e)}const M=r(c,[["render",p]]);export{M as default};
