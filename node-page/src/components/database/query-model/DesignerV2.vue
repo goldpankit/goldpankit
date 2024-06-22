@@ -65,7 +65,6 @@ export default {
       zIndex: 2
     });
     elementLayer.add(box);
-    this.elements.push(box)
 
     // 添加文本
     const textNode = new Konva.Text({
@@ -78,7 +77,50 @@ export default {
       draggable: true,
     });
     elementLayer.add(textNode);
-    this.elements.push(textNode)
+
+    // 添加球1
+    const ball = new Konva.Circle({
+      name: 'ball',
+      x: 200,
+      y: 300,
+      radius: 10,
+      fill: '#00D2FF',
+      draggable: true,
+      zIndex: 3
+    })
+    elementLayer.add(ball);
+
+    // 添加球2
+    const ball2 = new Konva.Circle({
+      name: 'ball2',
+      x: 300,
+      y: 300,
+      radius: 10,
+      fill: '#ff0000',
+      draggable: true,
+      zIndex: 3
+    })
+    elementLayer.add(ball2);
+
+    // 添加球1和球2的连接线
+    const line = new Konva.Line({
+      name: 'line',
+      points: [ball.x(), ball.y(), ball2.x(), ball2.y()],
+      stroke: '#00D2FF',
+      strokeWidth: 5,
+      lineCap: 'round',
+      lineJoin: 'round',
+      draggable: true,
+      zIndex: 3
+    })
+    elementLayer.add(line);
+
+    function updateLine() {
+      // we just need to update points in the line
+      line.points([ball.x(), ball.y(), ball2.x(), ball2.y()]);
+    }
+    ball.on('dragmove', updateLine);
+    ball2.on('dragmove', updateLine);
 
     // 添加预览stage
     const previewStage = new Konva.Stage({
