@@ -1,7 +1,7 @@
 <template>
   <div class="designer-v2" @scroll="handleScroll">
     <div class="stage"></div>
-    <el-slider v-model="scale" :min="0.5" :max="2" :step="0.01" @update:model-value="handleScale"/>
+    <div class="preview-stage"></div>
   </div>
 </template>
 
@@ -17,32 +17,17 @@ export default {
     }
   },
   methods: {
-    handleScale (scale) {
-      // console.log('scroll', e.target.scrollTop)
-      // console.log('scroll', e.target.scrollY)
-      // console.log(1 + e.target.scrollTop/1000)
-      // for (const element of this.elements) {
-      //   element.scale({
-      //     x: 1 + scale,
-      //     y: 1 + scale
-      //   })
-      // }
-      elementLayer.scale({
-        x: 1 + scale,
-        y: 1 + scale
-      })
-    }
   },
   mounted () {
     const stage = new Konva.Stage({
       container: '.stage',
-      width: 3000,
-      height: 3000
+      width: 2000,
+      height: 2000
     })
     // 添加布局layer
     const backgroundLayer = new Konva.Layer();
     stage.add(backgroundLayer);
-    // 添加500个点平均分布
+    // - 添加500个点平均分布
     const cycleLength = 80
     const cycleRadius = 1
     // (总宽 - 总直径) / 数量 + 1
@@ -61,11 +46,63 @@ export default {
         backgroundLayer.add(ball);
       }
     }
-    // add canvas element
+
+    // 添加内容布局
     window.elementLayer = new Konva.Layer();
     stage.add(elementLayer);
 
-    var scaleBy = 1.05;
+    // 添加矩形
+    const box = new Konva.Rect({
+      name: 'rect',
+      x: 50,
+      y: 50,
+      width: 100,
+      height: 50,
+      fill: '#00D2FF',
+      draggable: true,
+      scaleX: 2,
+      scaleY: 3,
+      zIndex: 2
+    });
+    elementLayer.add(box);
+    this.elements.push(box)
+
+    // 添加文本
+    const textNode = new Konva.Text({
+      name: 'text',
+      text: 'Some text here',
+      x: 50,
+      y: 50,
+      fill: '#fff',
+      fontSize: 20,
+      draggable: true,
+    });
+    elementLayer.add(textNode);
+    this.elements.push(textNode)
+
+    // 添加预览stage
+    const previewStage = new Konva.Stage({
+      container: '.preview-stage',
+      width: 200,
+      height: 200,
+      scaleX: 1 / 10,
+      scaleY: 1 / 10,
+    })
+    const cloneElementLayout = elementLayer.clone({ listening: false });
+    previewStage.add(cloneElementLayout)
+    function updatePreview() {
+      // we just need to update ALL nodes in the preview
+      elementLayer.children.forEach((shape) => {
+        // find cloned node
+        const clone = cloneElementLayout.findOne('.' + shape.name());
+        // update its position from the original
+        clone.position(shape.position());
+      });
+    }
+    stage.on('dragmove', updatePreview);
+
+    // 滚动缩放处理
+    const scaleBy = 1.05;
     stage.on('wheel', (e) => {
       if (!e.evt.ctrlKey) {
         return
@@ -84,38 +121,15 @@ export default {
         return
       }
       elementLayer.scale({ x: newScale, y: newScale });
+      cloneElementLayout.scale({ x: newScale, y: newScale });
       // 缩放时重新计算坐标并赋值
       const newPos = {
         x: pointer.x - mousePointTo.x * newScale,
         y: pointer.y - mousePointTo.y * newScale,
       };
       elementLayer.position(newPos);
+      cloneElementLayout.position(newPos);
     })
-
-    const box = new Konva.Rect({
-      x: 50,
-      y: 50,
-      width: 100,
-      height: 50,
-      fill: '#00D2FF',
-      draggable: true,
-      scaleX: 2,
-      scaleY: 3,
-      zIndex: 2
-    });
-    elementLayer.add(box);
-    this.elements.push(box)
-
-    const textNode = new Konva.Text({
-      text: 'Some text here',
-      x: 50,
-      y: 50,
-      fill: '#fff',
-      fontSize: 20,
-      draggable: true,
-    });
-    elementLayer.add(textNode);
-    this.elements.push(textNode)
   }
 }
 </script>
@@ -125,8 +139,9 @@ export default {
   width: 100%;
   height: 100%;
   overflow: auto;
-  .el-slider {
-    width: 200px;
+  .preview-stage {
+    background-color: rgba(0,0,0,.2);
+    border-radius: 10px;
     position: absolute;
     top: 20px;
     right: 30px;
