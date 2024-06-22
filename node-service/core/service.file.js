@@ -3,7 +3,7 @@ const fs = require('./utils/fs')
 const object = require("./utils/object");
 const serviceConf = require('./service.config')
 const log = require('./utils/log')
-const userProject = require('./user.project')
+const projectService = require('./project')
 const path = require('path')
 module.exports = {
   /**
@@ -17,7 +17,7 @@ module.exports = {
   writeDiffFiles (dto) {
     const projectId = dto.projectId
     const diffFiles = dto.diffFiles
-    const project = userProject.findConfigById(projectId)
+    const project = projectService.findConfigById(projectId)
     log.debug(`${project.name}: preparing to process ${diffFiles.length} diff files.`)
     let mergeCount = 0
     let deletedCount = 0

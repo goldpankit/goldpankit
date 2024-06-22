@@ -1,5 +1,5 @@
 const utils = require('./utils/index')
-const projectDatabase = require('./user.project.database')
+const projectDatabase = require('./project.database')
 module.exports = {
   // 删除模型
   delete (projectId, databaseId, modelId) {
@@ -28,7 +28,7 @@ module.exports = {
     // 验证名称
     const model = database.models.find(m => m.name === newModel.name)
     if (model != null) {
-      return throw new Error(`模型名称不可重复！`)
+      throw new Error(`模型名称不可重复！`)
     }
     // 添加模型
     newModel.id = utils.generateId()

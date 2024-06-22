@@ -68,7 +68,7 @@ import CreateDatabaseDialog from '@/components/database/CreateDatabaseDialog'
 import { testConnect, checkDatabaseExists } from '@/api/database.util'
 import { trim } from '@/utils/util'
 import { strictCopy } from '@/utils/object'
-import { create, updateById } from '@/api/user.project.database'
+import { create, updateById } from '@/api/project.database'
 
 export default {
   name: "OperaDataSourceWindow",

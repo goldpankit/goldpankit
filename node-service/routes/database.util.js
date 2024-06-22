@@ -1,6 +1,6 @@
 const request = require('../utils/request.define')
 const mysql = require('../core/utils/db/mysql')
-const projectDatabase = require('../core/user.project.database')
+const projectDatabase = require('../core/project.database')
 
 // 格式化语句
 request

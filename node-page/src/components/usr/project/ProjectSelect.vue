@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import {search} from "@/api/user.project";
+import {search} from "@/api/project";
 import DirectorySelect from "@/components/common/DirectorySelect.vue";
 import OperaProjectWindow from "./OperaProjectWindow.vue";
 import {mapMutations} from "vuex";

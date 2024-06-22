@@ -23,7 +23,7 @@
 import ServiceInstaller from "@/components/space/ServiceInstaller.vue";
 import { fetchServiceDetail } from "@/api/service";
 import { fetchProfileByName } from "@/api/service.space";
-import {fetchById} from "@/api/user.project";
+import {fetchById} from "@/api/project";
 import {mapState} from "vuex";
 
 export default {

@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import {deleteProject, search} from "../../../api/user.project";
+import {deleteProject, search} from "../../../api/project";
 import Empty from "../../common/Empty.vue";
 import OperaProjectWindow from "./OperaProjectWindow.vue";
 

@@ -4,8 +4,8 @@ const service = require('./service')
 const serviceApi = require("./api/service");
 const fs = require("./utils/fs");
 const Const = require("./constants/constants");
-const userProject = require("./user.project");
-const userProjectDatabase = require("./user.project.database");
+const projectService = require("./project");
+const projectDatabase = require("./project.database");
 const object = require("./utils/object");
 const serviceBuild = require("./service.build");
 const mysql = require("./utils/db/mysql");
@@ -47,7 +47,7 @@ class Kit {
           // 获取配置格式
           const config = JSON.parse(JSON.stringify(Const.PROJECT_CONFIG_FILE_CONTENT))
           // 获取项目配置
-          let projectConfig = userProject.getProjectConfigById(project.id)
+          let projectConfig = projectService.getProjectConfigById(project.id)
           if (projectConfig != null) {
             object.merge(projectConfig, config)
           }
@@ -86,14 +86,14 @@ class Kit {
               variables: this.#getSimpleMainServiceVariables(dto.variables)
             }
           }
-          fs.createFile(userProject.getConfigPath(project.id), fs.toJSONFileString(config), true)
+          fs.createFile(projectService.getConfigPath(project.id), fs.toJSONFileString(config), true)
           // 写入数据库配置文件
-          const dbConfig = userProjectDatabase.getProjectDatabaseConfigByIdWithDefaultBlankArray(project.id)
+          const dbConfig = projectDatabase.getProjectDatabaseConfigByIdWithDefaultBlankArray(project.id)
           // - 从变量中获取数据库参数
           const databaseVariable = dto.variables.find(v=>v.inputType === 'datasource')
           if (databaseVariable.value != null && databaseVariable.value !== '') {
             // 从全局数据库中找到数据库信息
-            const db = userProjectDatabase.getDatabase(project.id, databaseVariable.value)
+            const db = projectDatabase.getDatabase(project.id, databaseVariable.value)
             if (db != null) {
               // 如果数据库信息不存在，则添加
               if (dbConfig.find(item => item.id === db.id) == null) {
@@ -101,7 +101,7 @@ class Kit {
               }
             }
           }
-          fs.createFile(userProjectDatabase.getDatabaseConfigPath(project.id), fs.toJSONFileString(dbConfig), true)
+          fs.createFile(projectDatabase.getDatabaseConfigPath(project.id), fs.toJSONFileString(dbConfig), true)
           // 获取构建详情并返回
           const builds = data.version.builds == null || data.version.builds === '' ? [] : JSON.parse(data.version.builds)
           serviceBuild.getBuildDetails('INSTALL', project, builds, diffFiles, data.version.compiler, variables)
@@ -137,8 +137,8 @@ class Kit {
     return new Promise((resolve, reject) => {
       dto.operaType = 'UNINSTALL'
       // 获取项目配置
-      const project = userProject.findDetailById(dto.projectId)
-      const configPath = userProject.getConfigPath(project.id)
+      const project = projectService.findDetailById(dto.projectId)
+      const configPath = projectService.getConfigPath(project.id)
       const projectConfig = fs.readJSONFile(configPath)
       const plugins = projectConfig.services || projectConfig.plugins
       const installedService = plugins[dto.plugin]
@@ -159,7 +159,7 @@ class Kit {
               const plugins = projectConfig.services || projectConfig.plugins
               delete plugins[dto.plugin]
               // 重新写入项目配置文件中
-              fs.createFile(userProject.getConfigPath(project.id), fs.toJSONFileString(projectConfig), true)
+              fs.createFile(projectService.getConfigPath(project.id), fs.toJSONFileString(projectConfig), true)
               // 返回构建信息
               const result = {
                 projectId: project.id,
@@ -277,7 +277,7 @@ class Kit {
    * @param isPlugin 安装的是否为插件
    */
   #checkInstall (projectId, space, service, isPlugin) {
-    const project = userProject.findDetailById(projectId)
+    const project = projectService.findDetailById(projectId)
     // 插件
     if (isPlugin) {
       // 项目中必须已安装服务
@@ -316,7 +316,7 @@ class Kit {
     return new Promise((resolve, reject) => {
       try {
         // 获取项目信息
-        const project = userProject.findDetailById(dto.projectId)
+        const project = projectService.findDetailById(dto.projectId)
         if (project == null) {
           reject(new Error('请选择代码编译后输出的目标项目！'))
           return
@@ -338,7 +338,7 @@ class Kit {
           return reject(`编译失败，代码文件不能超过${env.limitFiles}个！`)
         }
         // 获取数据库信息
-        const database = userProjectDatabase.getDatabase(project.id, dto.database)
+        const database = projectDatabase.getDatabase(project.id, dto.database)
         // 组装变量
         const variables = this.#getVariables(project, database, dto.variables)
         Promise.all(variables)
@@ -389,7 +389,7 @@ class Kit {
   #install (dto) {
     try {
       const projectId = dto.projectId
-      const project = userProject.findDetailById(projectId)
+      const project = projectService.findDetailById(projectId)
       if (project == null) {
         return Promise.reject(response.INSTALL.MISSING_PROJECT)
       }
@@ -399,7 +399,7 @@ class Kit {
         projectService = project.service[dto.service]
       }
       // 获取数据库信息
-      const database = userProjectDatabase.getDatabase(projectId, dto.database)
+      const database = projectDatabase.getDatabase(projectId, dto.database)
       // 组装变量
       const variables = this.#getVariables(project, database, dto.variables, dto.plugin != null)
       let serviceVars = null
@@ -526,7 +526,7 @@ class Kit {
   #getVariables (project, database, variables, withMainServiceVariables = true) {
     // 补充服务变量
     if (withMainServiceVariables) {
-      const projectConfig = fs.readJSONFile(userProject.__getConfigPath(project.codespace))
+      const projectConfig = fs.readJSONFile(projectService.__getConfigPath(project.codespace))
       // 获取安装的服务配置
       let service = null
       if (projectConfig != null) {
@@ -557,7 +557,7 @@ class Kit {
           // 如果类型为数据源，则查询出库信息
           if (item.inputType === 'datasource') {
             const databaseId = item.value === undefined ?  item.defaultValue : item.value
-            const database = userProjectDatabase.getDatabase(project.id, databaseId)
+            const database = projectDatabase.getDatabase(project.id, databaseId)
             resolve({
               ...item,
               value: database

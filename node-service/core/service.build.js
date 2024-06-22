@@ -5,12 +5,12 @@ const fs = require('./utils/fs')
 const log = require('./utils/log')
 const path = require('path')
 const cache = require('./utils/cache')
-const userProjectDatabase = require('./user.project.database')
+const projectDatabase = require('./project.database')
 module.exports = {
   build (dto) {
     const builds = dto.builds
     const project = cache.projects.get(dto.projectId)
-    const database = userProjectDatabase.getDatabase(dto.projectId, dto.dataSourceId)
+    const database = projectDatabase.getDatabase(dto.projectId, dto.dataSourceId)
     return new Promise(async (resolve, reject) => {
       if (builds == null || builds.length === 0) {
         resolve()

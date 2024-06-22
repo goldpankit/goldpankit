@@ -2,7 +2,7 @@ import Vuex from 'vuex'
 import { getToken } from '@/api/user.token'
 import { getLoginInfo, logout } from '@/api/user.login'
 import { getBalance } from '@/api/user'
-import { fetchDatabases } from '@/api/user.project.database';
+import { fetchDatabases } from '@/api/project.database';
 // 获取本地项目
 let currentProject = null
 const currentProjectStr = window.localStorage.getItem('CURRENT_PROJECT')

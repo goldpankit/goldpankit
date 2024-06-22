@@ -31,7 +31,7 @@
 
 <script>
 import DirectorySelect from "@/components/common/DirectorySelect.vue";
-import {create, save} from "@/api/user.project";
+import {create, save} from "@/api/project";
 import {strictCopy} from "@/utils/object";
 import path from "@/utils/path";
 import FormTip from "../../common/FormTip.vue";

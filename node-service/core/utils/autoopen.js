@@ -4,10 +4,10 @@ const net = require('net')
 const fs = require('./fs')
 const Const = require('../constants/constants')
 const cache = require('./cache')
-const userProject = require('../user.project')
+const projectService = require('../project')
 module.exports = {
   open (port) {
-    const projectConfig = userProject.getProjectConfig(root)
+    const projectConfig = projectService.getProjectConfig(root)
     // 查找是否存在配置文件，如果存在，则自动打开工作提啊
     if (projectConfig != null) {
       // 根据路径查找项目
@@ -23,7 +23,7 @@ module.exports = {
       if (projectName == null) {
         projectName = fs.getFilename(root)
       }
-      userProject.create({
+      projectService.create({
         name: projectName,
         codespace: root,
         remark: ''

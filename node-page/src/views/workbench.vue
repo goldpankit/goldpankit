@@ -189,7 +189,7 @@ import BeanAmount from "@/components/common/BeanAmount.vue";
 import PluginList from "@/components/service/PluginList.vue";
 import {fetchLatestVersion} from "@/api/service.version";
 import {fetchList} from "@/api/plugin";
-import {fetchById} from "@/api/user.project";
+import {fetchById} from "@/api/project";
 import ServiceTitle from "../components/service/ServiceTitle.vue";
 import SearchInput from "../components/common/SearchInput.vue";
 import ServiceStructureView from "../components/space/ServiceStructureView.vue";
