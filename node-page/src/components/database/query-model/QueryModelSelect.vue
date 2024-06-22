@@ -22,7 +22,7 @@
       <img src="/images/database/icon-design.svg" alt="查询模型">
     </el-button>
     <!-- 查询模型设计窗口 -->
-    <QueryModelWindow ref="queryModelWindow" @close="fetchDatabases"/>
+    <QueryModelWindow ref="queryModelWindow" @close="fetchModels"/>
   </div>
   <ul v-if="selected != null && fieldVariableGroup.length > 0" class="field-settings">
     <li v-for="group of fieldVariableGroup" :key="group.label">
@@ -39,7 +39,6 @@
 <script>
 import {mapState} from "vuex";
 import QueryModelFieldSetting from "../../service/installer/QueryModelFieldSetting.vue";
-import { fetchAll } from "@/api/project.database.model";
 import QueryModelWindow from "./QueryModelWindow.vue";
 
 export default {
@@ -58,13 +57,12 @@ export default {
   },
   data () {
     return {
-      databases: [],
       models: [],
       selected: null
     }
   },
   computed: {
-    ...mapState(['currentProject', 'currentDatabase']),
+    ...mapState(['databases', 'currentProject', 'currentDatabase']),
     // 获取模型字段变量组，组中包含了表字段的扩展变量
     fieldVariableGroup () {
       return this.variable.children || []
@@ -89,17 +87,6 @@ export default {
     emitChange () {
       this.$emit('change')
     },
-    // 查询数据库
-    fetchDatabases () {
-      fetchAll ()
-        .then(data => {
-          this.databases = data
-          this.fetchModels()
-        })
-        .catch(e => {
-          this.$tip.apiFailed(e)
-        })
-    },
     // 查询模型
     fetchModels () {
       const database = this.databases.find(db => db.id === this.currentDatabase)
@@ -119,7 +106,7 @@ export default {
     }
   },
   created () {
-    this.fetchDatabases()
+    this.fetchModels()
   }
 }
 </script>

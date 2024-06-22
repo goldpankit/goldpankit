@@ -137,6 +137,7 @@ export default {
     }
   },
   watch: {
+    // 监听数据库加载完成动作，加载完成后查询数据库模型
     'globalLoading.databases': {
       immediate: true,
       handler (newValue) {
@@ -144,6 +145,9 @@ export default {
           this.fetchTables()
         }
       }
+    },
+    currentDatabase () {
+      this.fetchTables()
     }
   },
   methods: {
@@ -300,11 +304,14 @@ export default {
         model.aggregates = model.aggregates.filter(agg => agg != null)
         return model
       })
+      // 默认选择第一个
       if (this.queryModels.length > 0) {
         this.currentModel = this.queryModels[0]
       }
-      // 过滤掉无效的模型（不存在表的模型）
-      // this.queryModels = this.queryModels.filter(m => m != null)
+      // 没有模型，则清空模型选择
+      else {
+        this.currentModel = null
+      }
     },
     // 获取模型设置
     __getModelSettings (currentModel) {

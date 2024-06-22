@@ -88,7 +88,7 @@ import {mapState} from "vuex";
 import InnerRouterViewWindow from "@/components/common/InnerRouterView/InnerRouterViewWindow.vue";
 import InnerRouterView from "@/components/common/InnerRouterView/InnerRouterView.vue";
 import Empty from "@/components/common/Empty.vue";
-import {create, deleteById, updateById} from "@/api/project.database";
+import {create, deleteById, updateById} from "@/api/project.database.model";
 import {checkTableName} from '@/utils/form.check'
 
 export default {
@@ -119,7 +119,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['currentDatabase'])
+    ...mapState(['currentProject', 'currentDatabase'])
   },
   methods: {
     getRules () {
@@ -192,7 +192,8 @@ export default {
           aggregates: []
         }
         create ({
-          database: this.currentDatabase,
+          projectId: this.currentProject,
+          databaseId: this.currentDatabase,
           model: newModel
         })
           .then(modelId => {
@@ -211,8 +212,9 @@ export default {
       this.deleteConfirm(this.$t('database.deleteModelTip', { modelName: model.name }))
         .then(() => {
           deleteById({
-            database: this.currentDatabase,
-            model: model.id
+            projectId: this.currentProject,
+            databaseId: this.currentDatabase,
+            modelId: model.id
           })
             .then(() => {
               const index = this.queryModels.findIndex(m => m.id === model.id)

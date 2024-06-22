@@ -13,7 +13,7 @@
         <el-icon @click="close"><Close /></el-icon>
       </div>
     </template>
-    <QueryModelView/>
+    <QueryModelView :database-id="currentDatabase"/>
   </el-dialog>
 </template>
 
@@ -48,6 +48,7 @@ export default {
 
 <style lang="scss">
 .query-model-window {
+  padding: 0;
   min-width: 1000px;
   display: flex;
   flex-direction: column;
@@ -62,7 +63,7 @@ export default {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0;
+    padding: 0 !important;
     flex-shrink: 0;
     height: var(--header-height);
     // 标题
@@ -99,7 +100,7 @@ export default {
   }
 
   .el-dialog__body {
-    padding: 0;
+    padding: 0 !important;
     flex-grow: 1;
     overflow: hidden;
     display: flex;
