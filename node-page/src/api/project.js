@@ -2,12 +2,12 @@ import request from "../utils/request";
 
 // 创建
 export function create (data) {
-  return request.post('/usr/project/create', data)
+  return request.post('/project/create', data)
 }
 
 // 删除项目
 export function deleteProject (projectId) {
-  return request.get(`/usr/project/delete/${projectId}`)
+  return request.get(`/project/delete/${projectId}`)
 }
 // 保存项目配置
 export function save (data) {

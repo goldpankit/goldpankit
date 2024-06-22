@@ -16,6 +16,7 @@
           <p>{{project.remark}}</p>
         </div>
         <div class="opera">
+          <el-button type="primary" size="small" @click="$router.push({ name: 'Databases', params: { projectId: project.id } })">数据库</el-button>
           <el-button size="small" icon="Edit" @click="editProject(project)">{{$t('common.edit')}}</el-button>
           <el-button type="danger" text @click="deleteProject(project)">{{$t('common.delete')}}</el-button>
         </div>
@@ -27,13 +28,15 @@
 </template>
 
 <script>
-import {deleteProject, search} from "../../../api/project";
-import Empty from "../../common/Empty.vue";
-import OperaProjectWindow from "./OperaProjectWindow.vue";
+import Empty from '@/components/common/Empty'
+import OperaProjectWindow from './OperaProjectWindow'
+import { deleteProject, search } from '@/api/project'
 
 export default {
-  name: "UserProjects",
-  components: {OperaProjectWindow, Empty},
+  name: 'UserProjects',
+  components: {
+    OperaProjectWindow, Empty
+  },
   data () {
     return {
       projects: []
@@ -118,7 +121,7 @@ export default {
     }
     .opera {
       position: absolute;
-      top: 10px;
+      top: 6px;
       right: 5px;
       .el-button {
         margin-left: 10px;

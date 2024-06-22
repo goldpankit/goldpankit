@@ -83,7 +83,7 @@ export default {
         this.$tip.warning('请先选择项目！')
         return
       }
-      this.$refs.operaDataSourceWindow.open()
+      this.$refs.operaDataSourceWindow.open(this.currentProject)
     },
     // 切换数据库
     handleChange(databaseId) {

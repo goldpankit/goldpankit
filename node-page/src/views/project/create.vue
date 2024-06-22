@@ -24,8 +24,8 @@
 </template>
 
 <script>
-import {create} from "../../../api/project";
-import DirectorySelect from "../../../components/common/DirectorySelect.vue";
+import {create} from "../../api/project";
+import DirectorySelect from "../../components/common/DirectorySelect.vue";
 
 export default {
   components: {DirectorySelect},

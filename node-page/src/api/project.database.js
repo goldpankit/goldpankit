@@ -16,21 +16,6 @@ export function updateById (data) {
 }
 
 // 删除
-export function deleteById (id) {
+export function deleteById (data) {
   return request.post('/project/database/delete', data)
-}
-
-// 创建模型
-export function createModel (data) {
-  return request.post('/project/database/model/create', data)
-}
-
-// 修改模型
-export function updateModel (data) {
-  return request.post('/project/database/model/update', data)
-}
-
-// 删除模型
-export function deleteModel (data) {
-  return request.post('/project/database/model/delete', data)
 }

@@ -45,10 +45,10 @@
           <h2>{{$t('space.workbench')}}</h2>
           <p>{{$t('space.workbenchIntroduce')}}</p>
         </router-link>
-        <router-link :to="{ name: 'Databases' }" class="module database">
-          <h2>{{$t('database.databases')}}</h2>
-          <p>{{$t('database.databaseIntroduce')}}</p>
-        </router-link>
+<!--        <router-link :to="{ name: 'Databases' }" class="module database">-->
+<!--          <h2>{{$t('database.databases')}}</h2>-->
+<!--          <p>{{$t('database.databaseIntroduce')}}</p>-->
+<!--        </router-link>-->
       </div>
       <!-- 开发者可见 -->
       <div v-if="userInfo != null && userInfo.isDeveloper" class="line gap-top">
@@ -57,8 +57,8 @@
           <p>{{$t('space.createNewSpaceIntroduce')}}</p>
         </router-link>
         <router-link class="module private-services" :to="{ name: 'UserServices' }">
-          <h2>{{$t('user.leasedAndPrivateServices')}}</h2>
-          <p>{{$t('user.leasedAndPrivateServiceIntroduce')}}</p>
+          <h2>我的服务和插件</h2>
+          <p>点击此处可查看自己创建的服务和插件</p>
         </router-link>
       </div>
       <div class="project-wrap">

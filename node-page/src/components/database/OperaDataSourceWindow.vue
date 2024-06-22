@@ -8,8 +8,8 @@
     :close-on-click-modal="false"
     :close-on-press-escape="false"
   >
-    <FormTip v-if="currentProjectDetail != null">
-      数据库信息仅保存在「<em>{{currentProjectDetail.name}}</em>」项目的<em>kit.db.json</em>文件中，请放心填写！
+    <FormTip v-if="project != null && withTip">
+      数据库信息仅保存在「<em>{{project.name}}</em>」项目的<em>kit.db.json</em>文件中，请放心填写！
     </FormTip>
     <el-form ref="form" :model="form" :rules="rules">
       <el-form-item label="数据库名称" prop="name" required>
@@ -69,14 +69,22 @@ import { testConnect, checkDatabaseExists } from '@/api/database.util'
 import { trim } from '@/utils/util'
 import { strictCopy } from '@/utils/object'
 import { create, updateById } from '@/api/project.database'
+import { fetchById } from '@/api/project'
 
 export default {
   name: "OperaDataSourceWindow",
   components: {CreateDatabaseDialog, FormItemTip, FormTip, DatabaseTypeSelect},
+  props: {
+    // 是否显示顶部提示
+    withTip: {
+      default: true
+    }
+  },
   data () {
     return {
       visible: false,
       isWorking: false,
+      project: null,
       form: {
         id: null,
         name: '',
@@ -127,27 +135,35 @@ export default {
   },
   methods: {
     // 打开窗口
-    open (data) {
-      this.visible = true
-      this.connectResult = {
-        connecting: false,
-        message: null,
-        withError: false
-      }
-      this.$nextTick(() => {
-        this.$refs.form.resetFields()
-        this.form.id = null
-        // 编辑
-        if (data != null) {
-          this.form = strictCopy(this.form, data)
-        }
-        // 清理验证
-        setTimeout(() => {
-          for (const key in this.form) {
-            this.$refs.form.clearValidate(key)
+    open (projectId, data) {
+      fetchById(projectId)
+        .then(project => {
+          this.project = project
+          this.visible = true
+          this.connectResult = {
+            connecting: false,
+            message: null,
+            withError: false
           }
-        }, 0)
-      })
+          this.$nextTick(() => {
+            this.$refs.form.resetFields()
+            this.form.id = null
+            // 编辑
+            if (data != null) {
+              this.form = strictCopy(this.form, data)
+            }
+            // 清理验证
+            setTimeout(() => {
+              for (const key in this.form) {
+                this.$refs.form.clearValidate(key)
+              }
+            }, 0)
+          })
+        })
+        .catch(e => {
+          console.error(e)
+          this.$tip.apiFailed('找不到项目信息！')
+        })
     },
     // 确认创建
     confirm () {
@@ -241,10 +257,9 @@ export default {
     },
     // 确认创建
     __confirmCreate (form) {
-      // 执行创建
       create({
-        ...form,
-        projectId: this.currentProject
+        projectId: this.project.id,
+        database: form
       })
         .then(data => {
           this.visible = false
@@ -259,10 +274,9 @@ export default {
     },
     // 确认修改
     __confirmUpdate (form) {
-      // 执行创建
       updateById({
-        ...form,
-        projectId: this.currentProject
+        projectId: this.project.id,
+        database: form
       })
         .then(data => {
           this.visible = false
@@ -286,7 +300,7 @@ export default {
     font-weight: bold;
   }
   .el-dialog__body {
-    padding: 0;
+    padding: 0 !important;
     & > .opera {
       display: flex;
       justify-content: flex-end;

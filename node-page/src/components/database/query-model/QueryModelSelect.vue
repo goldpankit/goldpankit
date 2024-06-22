@@ -39,7 +39,7 @@
 <script>
 import {mapState} from "vuex";
 import QueryModelFieldSetting from "../../service/installer/QueryModelFieldSetting.vue";
-import {search} from "../../../api/database";
+import { search } from "@/api/project.database.model";
 import QueryModelWindow from "./QueryModelWindow.vue";
 
 export default {

@@ -104,7 +104,9 @@ html {
     background-color: #dcdcdc !important;
   }
   .el-dialog {
+    padding: 0;
     .el-dialog__header {
+      padding: var(--el-dialog-padding-primary);
       .el-dialog__headerbtn {
         top: 2px;
         .el-dialog__close {
@@ -115,6 +117,9 @@ html {
           }
         }
       }
+    }
+    .el-dialog__body {
+      padding: var(--el-dialog-padding-primary);
     }
   }
   // popover提示

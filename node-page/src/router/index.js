@@ -51,9 +51,9 @@ const router = createRouter({
           component: () => import('@/views/services.vue')
         },
         {
-          path: '/databases',
+          path: '/project/databases/:projectId',
           name: 'Databases',
-          component: () => import('@/views/database/list.vue')
+          component: () => import('@/views/project/database/list.vue')
         },
         {
           path: '/space/:name',
@@ -88,7 +88,7 @@ const router = createRouter({
         {
           path: '/usr/project/create',
           name: 'CreateProject',
-          component: () => import('@/views/usr/project/create.vue')
+          component: () => import('@/views/project/create.vue')
         },
         {
           path: '/usr/space/create',
@@ -169,7 +169,7 @@ const router = createRouter({
         {
           path: '/database/query-models',
           name: 'DatabaseQueryModel',
-          component: () => import('@/views/database/query-models.vue')
+          component: () => import('@/views/project/database/query-models.vue')
         },
       ]
     }

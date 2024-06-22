@@ -155,7 +155,7 @@ export default {
     font-weight: bold;
   }
   .el-dialog__body {
-    padding: 0;
+    padding: 0 !important;
     & > .opera {
       display: flex;
       justify-content: flex-end;

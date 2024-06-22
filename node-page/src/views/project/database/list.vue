@@ -1,14 +1,14 @@
 <template>
-  <div class="form">
+  <div v-if="project != null" class="form">
     <div class="wrap">
-      <h2>数据库</h2>
+      <h2>{{project.name}}项目数据库</h2>
       <FormTip>
-        {{$t('database.tip')}}
+        当前数据库信息保存在「<em>{{project.name}}</em>」项目的<em>kit.db.json</em>文件中。
       </FormTip>
       <div class="database-list-wrap">
         <ul class="toolbar">
           <li>
-            <el-button type="primary" @click="$refs.operaDataSourceWindow.open()">{{$t('database.addNewDatabase')}}</el-button>
+            <el-button type="primary" @click="$refs.operaDataSourceWindow.open(project.id)">{{$t('database.addNewDatabase')}}</el-button>
           </li>
         </ul>
         <ul v-if="databases.length > 0" class="database-list">
@@ -24,20 +24,20 @@
         <Pagination :pagination="pagination"/>
       </div>
     </div>
-    <OperaDataSourceWindow ref="operaDataSourceWindow"/>
+    <OperaDataSourceWindow :with-tip="false" ref="operaDataSourceWindow" @success="fetchDatabases"/>
   </div>
 </template>
 
 <script>
-import {mapActions, mapState} from 'vuex'
-import InnerRouterView from '@/components/common/InnerRouterView/InnerRouterView'
-import InnerRouterViewWindow from '@/components/common/InnerRouterView/InnerRouterViewWindow'
-import DatabaseView from '@/components/usr/project/DatabaseView'
-import Empty from '@/components/common/Empty'
-import Pagination from '@/components/common/Pagination'
-import OperaDataSourceWindow from '@/components/database/OperaDataSourceWindow'
-import FormTip from '@/components/common/FormTip'
-import { deleteById } from '@/api/database'
+import InnerRouterView from '@/components/common/InnerRouterView/InnerRouterView.vue'
+import InnerRouterViewWindow from '@/components/common/InnerRouterView/InnerRouterViewWindow.vue'
+import DatabaseView from '@/components/usr/project/DatabaseView.vue'
+import Empty from '@/components/common/Empty.vue'
+import Pagination from '@/components/common/Pagination.vue'
+import OperaDataSourceWindow from '@/components/database/OperaDataSourceWindow.vue'
+import FormTip from '@/components/common/FormTip.vue'
+import { deleteById, fetchDatabases } from '@/api/project.database'
+import { fetchById } from '@/api/project'
 
 export default {
   components: {
@@ -47,6 +47,8 @@ export default {
   },
   data () {
     return {
+      project: null,
+      databases: [],
       pagination: {
         pageIndex: 1,
         capacity: 10,
@@ -54,14 +56,33 @@ export default {
       }
     }
   },
-  computed: {
-    ...mapState(['databases'])
-  },
   methods: {
-    ...mapActions(['fetchDatabases']),
+    // 查询项目信息
+    fetchProject () {
+      fetchById(this.$route.params.projectId)
+        .then(data => {
+          this.project = data
+          this.fetchDatabases()
+        })
+        .catch(e => {
+          this.$tip.apiFailed('找不到项目信息！')
+          this.$routers.push({ name: 'Desktop'})
+        })
+    },
+    // 查询项目数据库
+    fetchDatabases () {
+      fetchDatabases(this.$route.params.projectId)
+        .then(databases => {
+          this.databases = databases
+        })
+        .catch(e => {
+          console.error('获取项目数据库失败！', e)
+          this.$tip.apiFailed('获取项目数据库失败！')
+        })
+    },
     // 修改数据库
     edit (db) {
-      this.$refs.operaDataSourceWindow.open(db)
+      this.$refs.operaDataSourceWindow.open(this.project.id, db)
     },
     // 删除数据库
     deleteDatabase (id) {
@@ -72,7 +93,10 @@ export default {
       }
       this.deleteConfirm(`确认删除「${database.name}」数据库吗？`)
         .then(() => {
-          deleteById (id)
+          deleteById ({
+            projectId: this.project.id,
+            databaseId: id
+          })
             .then(() => {
               this.fetchDatabases()
             })
@@ -82,6 +106,9 @@ export default {
         })
         .catch(() => {})
     }
+  },
+  created () {
+    this.fetchProject()
   }
 }
 </script>
