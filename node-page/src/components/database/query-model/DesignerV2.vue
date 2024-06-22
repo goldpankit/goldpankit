@@ -1,5 +1,9 @@
 <template>
-  <div class="designer-v2" @scroll="handleScroll">
+  <div
+    class="designer-v2"
+    @dragover.prevent
+    @drop="handleDrop($event, 1)"
+  >
     <div class="stage"></div>
     <div class="preview-stage"></div>
   </div>
@@ -9,6 +13,9 @@
 import Konva from 'konva'
 export default {
   name: 'DesignerV2',
+  props: {
+    model: {}
+  },
   data () {
     return {
       scale: 1,
@@ -17,6 +24,11 @@ export default {
     }
   },
   methods: {
+    // 拖拽表
+    handleDrop () {
+      // 获取到表信息
+      console.log(this.model.dragData)
+    }
   },
   mounted () {
     const stage = new Konva.Stage({
@@ -178,14 +190,13 @@ export default {
     })
     const cloneElementLayout = elementLayer.clone({ listening: false });
     previewStage.add(cloneElementLayout)
+    // - 更新预览内容
     function updatePreview() {
-      // we just need to update ALL nodes in the preview
+      // 找到所有节点，更新节点的位置
       elementLayer.children.forEach((shape) => {
-        // find cloned node
         const clone = cloneElementLayout.findOne('.' + shape.name());
-        // update its position from the original
         clone.position(shape.position());
-      });
+      })
     }
     stage.on('dragmove', updatePreview);
 
@@ -245,6 +256,11 @@ export default {
           pos.y - stage.y()
         ])
       }
+    })
+
+    // 接收拖拽内容
+    stage.on('drop', (e) => {
+      console.log('e', e)
     })
   }
 }

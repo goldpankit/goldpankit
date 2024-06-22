@@ -45,7 +45,7 @@
 <!--          :field-height="30"-->
 <!--          @change="saveModel"-->
 <!--        />-->
-        <DesignerV2/>
+        <DesignerV2 :model="currentModel"/>
         <!-- 表设置 -->
         <TableSetting
           :table="currentTable"
