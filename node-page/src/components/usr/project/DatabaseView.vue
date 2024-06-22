@@ -41,7 +41,7 @@
     </el-descriptions-item>
     <template #extra>
       <ul class="toolbar">
-        <li><el-button size="small" @click="gotoQueryModels">{{$t('database.queryModels')}}</el-button></li>
+        <li><el-button size="small" @click="gotoQueryModels">查询模型</el-button></li>
         <li><el-button size="small" icon="Edit" @click="$emit('edit')">{{$t('common.edit')}}</el-button></li>
         <li><el-button size="small" type="danger" text @click="$emit('delete')">{{$t('common.delete')}}</el-button></li>
       </ul>
@@ -50,12 +50,12 @@
 </template>
 
 <script>
-
-import {mapMutations} from "vuex";
-
 export default {
-  name: "DatabaseView",
+  name: 'DatabaseView',
   props: {
+    projectId: {
+      required: true
+    },
     database: {
       required: true
     }
@@ -70,11 +70,15 @@ export default {
     }
   },
   methods: {
-    ...mapMutations(['setCurrentDatabase']),
     // 跳转至查询模型页
     gotoQueryModels () {
-      this.setCurrentDatabase(this.database.id)
-      this.$router.push({ name: 'DatabaseQueryModel' })
+      this.$router.push({
+        name: 'DatabaseQueryModel',
+        query: {
+          pid: this.projectId,
+          did: this.database.id
+        }
+      })
     }
   }
 }

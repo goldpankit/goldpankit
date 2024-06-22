@@ -65,20 +65,20 @@
 </template>
 
 <script>
-
 import QueryModelDesigner from "./Designer.vue";
 import TableSetting from "./TableSetting.vue";
 import TableLibrary from "./TableLibrary.vue";
 import RelationLine from "./RelationLine.vue";
 import Table from "./Table.vue";
 import {mapState} from "vuex";
-import {search, updateModel} from "@/api/database";
-import {fetchTables} from "@/api/database.util";
-import DataSourceSelect from "../DataSourceSelect.vue";
-import OperaDataSourceWindow from "../OperaDataSourceWindow.vue";
+import DataSourceSelect from '../DataSourceSelect'
+import OperaDataSourceWindow from '../OperaDataSourceWindow'
+import { fetchAll, updateById } from '@/api/project.database.model'
+import { fetchDatabases } from '@/api/project.database'
+import { fetchTables } from '@/api/database.util'
 
 export default {
-  name: "QueryModelView",
+  name: 'QueryModelView',
   components: {
     OperaDataSourceWindow,
     DataSourceSelect,
@@ -87,6 +87,14 @@ export default {
     TableSetting,
     RelationLine,
     Table
+  },
+  props: {
+    projectId: {
+      required: true
+    },
+    databaseId: {
+      required: true
+    }
   },
   data () {
     return {
@@ -112,7 +120,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['currentProject', 'currentDatabase']),
+    ...mapState(['currentDatabase']),
     // 当前表
     currentTable () {
       if (this.currentModel == null || this.currentModel.previewTableId == null) {
@@ -178,7 +186,7 @@ export default {
     fetchDatabases () {
       this.currentModel = null
       this.$nextTick(() => {
-        search ()
+        fetchDatabases (this.projectId)
           .then(data => {
             this.databases = data
             this.fetchTables()

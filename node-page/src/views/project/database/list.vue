@@ -14,6 +14,7 @@
         <ul v-if="databases.length > 0" class="database-list">
           <li v-for="db in databases" :key="db.name">
             <DatabaseView
+              :project-id="project.id"
               :database="db"
               @edit="edit(db)"
               @delete="deleteDatabase(db.id)"

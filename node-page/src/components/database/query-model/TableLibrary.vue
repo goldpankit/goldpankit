@@ -88,7 +88,7 @@ import {mapState} from "vuex";
 import InnerRouterViewWindow from "@/components/common/InnerRouterView/InnerRouterViewWindow.vue";
 import InnerRouterView from "@/components/common/InnerRouterView/InnerRouterView.vue";
 import Empty from "@/components/common/Empty.vue";
-import {createModel, deleteModel, updateModel} from "@/api/database";
+import {create, deleteById, updateById} from "@/api/project.database";
 import {checkTableName} from '@/utils/form.check'
 
 export default {
@@ -161,7 +161,7 @@ export default {
         if (!pass) {
           return
         }
-        updateModel({
+        updateById({
           database: this.currentDatabase,
           model: this.editModel
         })
@@ -191,7 +191,7 @@ export default {
           // 聚合关系
           aggregates: []
         }
-        createModel ({
+        create ({
           database: this.currentDatabase,
           model: newModel
         })
@@ -210,7 +210,7 @@ export default {
     deleteModel (model) {
       this.deleteConfirm(this.$t('database.deleteModelTip', { modelName: model.name }))
         .then(() => {
-          deleteModel({
+          deleteById({
             database: this.currentDatabase,
             model: model.id
           })
