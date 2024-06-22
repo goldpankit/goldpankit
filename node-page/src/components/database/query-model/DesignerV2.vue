@@ -22,7 +22,8 @@ export default {
     const stage = new Konva.Stage({
       container: '.stage',
       width: 2000,
-      height: 2000
+      height: 2000,
+      draggable: true
     })
     // 添加布局layer
     const backgroundLayer = new Konva.Layer();
@@ -51,76 +52,121 @@ export default {
     window.elementLayer = new Konva.Layer();
     stage.add(elementLayer);
 
-    // 添加矩形
-    const box = new Konva.Rect({
-      name: 'rect',
-      x: 50,
-      y: 50,
-      width: 100,
-      height: 50,
-      fill: '#00D2FF',
-      draggable: true,
-      scaleX: 2,
-      scaleY: 3,
-      zIndex: 2
-    });
-    elementLayer.add(box);
-
-    // 添加文本
-    const textNode = new Konva.Text({
-      name: 'text',
-      text: 'Some text here',
-      x: 50,
-      y: 50,
-      fill: '#fff',
-      fontSize: 20,
-      draggable: true,
-    });
-    elementLayer.add(textNode);
-
-    // 添加球1
-    const ball = new Konva.Circle({
-      name: 'ball',
-      x: 200,
-      y: 300,
-      radius: 10,
-      fill: '#00D2FF',
-      draggable: true,
-      zIndex: 3
-    })
-    elementLayer.add(ball);
-
-    // 添加球2
-    const ball2 = new Konva.Circle({
-      name: 'ball2',
-      x: 300,
-      y: 300,
-      radius: 10,
-      fill: '#ff0000',
-      draggable: true,
-      zIndex: 3
-    })
-    elementLayer.add(ball2);
-
-    // 添加球1和球2的连接线
+    // 当前拖拽的字段
+    let currentDragField = null
+    // 所有的表
+    const tables = []
+    // 创建表
+    function createTable (name, x, y) {
+      const table = new Konva.Group({
+        name: 'table',
+        x,
+        y,
+        draggable: true
+      })
+      tables.push(table)
+      elementLayer.add(table);
+      // 创建标题背景
+      const titleBackground = new Konva.Rect({
+        name: 'a' + Math.round(Math.random() * 10000),
+        x: 0,
+        y: 0,
+        width: 200,
+        height: 50,
+        fill: '#17171a',
+        stroke: '#ccc',
+        strokeWidth: 1
+      })
+      // 创建标题
+      const title = new Konva.Text({
+        name: 'a' + Math.round(Math.random() * 10000),
+        x: 10,
+        y: 3,
+        text: name,
+        fontSize: 20,
+        fontFamily: 'Calibri',
+        fill: '#fff',
+        padding: 10,
+        shadowColor: 'black',
+        shadowBlur: 10,
+        shadowOffsetX: 10,
+        shadowOffsetY: 10,
+        shadowOpacity: 0.2,
+        width: 200,
+        height: 50
+      })
+      // 创建字段
+      const fields = ['name', 'gender', 'mobile', 'email', 'address']
+      const fieldHeight = 30
+      for (let i = 0; i < fields.length; i++) {
+        const field = fields[i]
+        const fieldGroup = new Konva.Group({
+          name: 'a' + Math.round(Math.random() * 10000),
+          x: 0,
+          y: titleBackground.height() + fieldHeight * i
+        })
+        // 背景
+        const fieldBackground = new Konva.Rect({
+          name: 'a' + Math.round(Math.random() * 10000),
+          x: 0,
+          y: 0,
+          width: 200,
+          height: fieldHeight,
+          fill: '#232325',
+          stroke: '#ccc',
+          strokeWidth: 1
+        })
+        // 文字
+        const fieldText = new Konva.Text({
+          name: 'a' + Math.round(Math.random() * 10000),
+          x: 25,
+          y: 0,
+          text: field,
+          fontSize: 14,
+          fontFamily: 'Calibri',
+          fill: '#fff',
+          height: fieldHeight,
+          lineHeight: 2
+        })
+        // 拖拽小球
+        const fieldDragBall = new Konva.Circle({
+          name: 'a' + Math.round(Math.random() * 10000),
+          x: 15,
+          y: 15,
+          radius: 4,
+          fill: '#00D2FF'
+        })
+        fieldGroup.add(fieldBackground);
+        fieldGroup.add(fieldText);
+        fieldGroup.add(fieldDragBall);
+        table.add(fieldGroup);
+        // 为拖拽小球添加鼠标按下事件，将对象记录至currentDragField
+        fieldDragBall.on('mousedown', () => {
+          table.draggable(false)
+          stage.draggable(false)
+          currentDragField = fieldDragBall
+        })
+        // 悬浮在拖拽小球上时修改鼠标样式
+        fieldDragBall.on('mouseover', () => {
+          stage.container().style.cursor = 'pointer'
+        })
+      }
+      table.add(titleBackground);
+      table.add(title);
+    }
+    createTable('user', 100, 100)
+    createTable('role', 400, 100)
+    // 创建一条隐藏的虚线
     const line = new Konva.Line({
-      name: 'line',
-      points: [ball.x(), ball.y(), ball2.x(), ball2.y()],
-      stroke: '#00D2FF',
-      strokeWidth: 5,
+      name: 'a' + Math.round(Math.random() * 10000),
+      points: [0, 0, 0, 0],
+      stroke: '#fc6a70',
+      strokeWidth: 1,
       lineCap: 'round',
       lineJoin: 'round',
-      draggable: true,
-      zIndex: 3
+      dash: [10, 10]
     })
     elementLayer.add(line);
-
-    function updateLine() {
-      // we just need to update points in the line
-      line.points([ball.x(), ball.y(), ball2.x(), ball2.y()]);
-    }
-    ball.on('dragmove', updateLine);
-    ball2.on('dragmove', updateLine);
 
     // 添加预览stage
     const previewStage = new Konva.Stage({
@@ -171,6 +217,34 @@ export default {
       };
       elementLayer.position(newPos);
       cloneElementLayout.position(newPos);
+    })
+
+    // 鼠标松开
+    stage.on('mouseup touchend', (e) => {
+      // 设置stage和所有的表均可拖动
+      stage.draggable(true)
+      tables.forEach(table => table.draggable(true))
+      // 清空拖拽字段
+      currentDragField = null
+      // 隐藏虚线
+      line.points([0, 0, 0, 0])
+    })
+
+    // 鼠标移动
+    stage.on('mousemove touchmove', (e) => {
+      // 如果存在currentDragField，则将隐藏的虚线line绘制到鼠标移动的当前位置
+      if (currentDragField) {
+        // 获取currentDragField的在stage中的x和y
+        const pos = stage.getPointerPosition();
+        line.points([
+          // 第一个点坐标
+          currentDragField.absolutePosition().x - stage.x(),
+          currentDragField.absolutePosition().y - stage.y(),
+          // 当前鼠标位置
+          pos.x - stage.x(),
+          pos.y - stage.y()
+        ])
+      }
     })
   }
 }
