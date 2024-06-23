@@ -325,8 +325,8 @@ export default {
         span {
           padding: 3px;
           margin-left: 5px;
-          margin-top: 2px;
           color: var(--color-gray);
+          font-size: 18px;
           &:first-of-type {
             margin-left: 0;
           }
@@ -349,6 +349,9 @@ export default {
       }
       &:hover {
         background-color: #f0f0f0;
+        & > div {
+          opacity: 1;
+        }
       }
     }
   }

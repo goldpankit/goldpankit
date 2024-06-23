@@ -5,10 +5,12 @@ class ModelDesigner {
   TABLE_WIDTH = 200
   TABLE_TITLE_HEIGHT = 40
   TABLE_FIELD_HEIGHT = 30
-  TABLE_TITLE_BACKGROUND_COLOR = '#eee'
-  TABLE_FIELD_BACKGROUND_COLOR = '#fff'
+  TABLE_TITLE_BACKGROUND_COLOR = '#e0e0e0'
+  TABLE_FIELD_BACKGROUND_COLOR = '#f7f7f7'
+  TABLE_BORDER_COLOR = '#000'
   LINE_COLOR = '#999'
   DEFAULT_FONT_COLOR = '#333'
+  DEFAULT_BORDER_COLOR = '#fc6a70'
   FONT_SIZE_TITLE = 16
   // 画布基础信息
   stageWidth = null
@@ -141,13 +143,30 @@ class ModelDesigner {
     const tableGroup = new Konva.Group({
       id: table.id,
       name: `table_${table.name}_${Math.round(Math.random() * 10000)}`,
-      width: this.TABLE_WIDTH,
-      height: this.TABLE_TITLE_HEIGHT,
+      width: this.TABLE_WIDTH + 4,
+      height: this.TABLE_TITLE_HEIGHT + 13,
       x,
       y,
       draggable: true,
       zIndex: 10
     })
+    // 创建表背景
+    const background = new Konva.Rect({
+      width: this.TABLE_WIDTH + 4,
+      height: this.TABLE_TITLE_HEIGHT + 13,
+      x: -2,
+      y: -10,
+      fill: this.DEFAULT_BORDER_COLOR,
+      // 添加圆弧
+      cornerRadius: [10, 10, 10, 10],
+      cornerStrokeWidth: 2,
+      cornerStroke: this.DEFAULT_BORDER_COLOR,
+      shadowColor: '#999',
+      shadowBlur: 5,
+      shadowOffset: { x: 1, y: 1 },
+      shadowOpacity: 0.5
+    })
+    tableGroup.add(background)
     // 创建标题背景
     const titleBackground = new Konva.Rect({
       x: 0,
@@ -155,12 +174,8 @@ class ModelDesigner {
       width: this.TABLE_WIDTH,
       height: this.TABLE_TITLE_HEIGHT,
       fill: this.TABLE_TITLE_BACKGROUND_COLOR,
-      stroke: '#ccc',
-      strokeWidth: 1,
-      // 添加变宽圆弧
-      cornerRadius: [10, 10, 0, 0],
-      cornerStrokeWidth: 1,
-      cornerStroke: '#ccc'
+      stroke: '#999',
+      strokeWidth: 1
     })
     // 创建标题
     const title = new Konva.Text({
@@ -168,16 +183,11 @@ class ModelDesigner {
       y: 3,
       text: table.name,
       fontSize: this.FONT_SIZE_TITLE,
-      fontFamily: 'Calibri',
+      fontStyle: 'bold',
       fill: this.DEFAULT_FONT_COLOR,
-      padding: 10,
-      shadowColor: 'black',
-      shadowBlur: 10,
-      shadowOffsetX: 10,
-      shadowOffsetY: 10,
-      shadowOpacity: 0.2,
       width: this.TABLE_WIDTH,
-      height: this.TABLE_TITLE_HEIGHT
+      height: this.TABLE_TITLE_HEIGHT,
+      lineHeight: 2
     })
     // 创建字段
     for (let i = 0; i < table.fields.length; i++) {
@@ -189,6 +199,10 @@ class ModelDesigner {
         y: titleBackground.height() + this.TABLE_FIELD_HEIGHT * i
       })
       // 背景
+      let cornerRadius = [0, 0, 0, 0]
+      if (i === table.fields.length - 1) {
+        cornerRadius = [0, 0, 10, 10]
+      }
       const fieldBackground = new Konva.Rect({
         name: 'background',
         x: 0,
@@ -196,8 +210,11 @@ class ModelDesigner {
         width: this.TABLE_WIDTH,
         height: this.TABLE_FIELD_HEIGHT,
         fill: this.TABLE_FIELD_BACKGROUND_COLOR,
-        stroke: '#ccc',
-        strokeWidth: 1
+        stroke: '#999',
+        strokeWidth: 1,
+        cornerRadius,
+        cornerStrokeWidth: 1,
+        cornerStroke: '#ccc'
       })
       // 文字
       const fieldText = new Konva.Text({
@@ -275,7 +292,10 @@ class ModelDesigner {
       fieldGroup.add(fieldDragBall)
       // 添加到表
       tableGroup.add(fieldGroup)
-      tableGroup.height(tableGroup.height() + this.TABLE_FIELD_HEIGHT)
+      // 调整group和背景的高度
+      const newHeight = tableGroup.height() + this.TABLE_FIELD_HEIGHT
+      tableGroup.height(newHeight)
+      background.height(newHeight)
     }
     // 添加到表分组
     tableGroup.add(titleBackground)
