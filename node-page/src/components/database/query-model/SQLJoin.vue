@@ -4,9 +4,9 @@
       <SQLLine>
         <SQLLineKeywordSelect
           v-model="join.joinType"
+          width="105px"
           :data="['INNER JOIN', 'LEFT JOIN', 'RIGHT JOIN', 'OUTER JOIN']"
           class="keyword"
-          style="width: 100px;"
           @change="handleChange"
         />
         <span class="hidden">{{join.joinType}}</span>
@@ -15,9 +15,9 @@
         <em>ON</em>
         <SQLLineKeywordSelect
           v-model="join.relation"
+          width="130px"
           :data="['ONE-TO-ONE', 'ONE-TO-MANY', 'MANY-TO-ONE']"
           class="relation"
-          style="width: 115px;"
           @change="handleChange"
         />
       </SQLLine>
@@ -27,7 +27,7 @@
             v-if="index !== 0"
             v-model="on.relation"
             :data="['AND', 'OR']"
-            style="width:40px"
+            width="45px"
             @change="handleChange"
           />
           <DynamicWidthInput v-model="join.targetTable.alias" @change="handleChange"/>

@@ -19,6 +19,12 @@ export default {
   props: {
     model: {}
   },
+  data () {
+    return {
+      // 已打开的表
+      openedTable: null
+    }
+  },
   watch: {
     model () {
       this.init()
@@ -44,8 +50,7 @@ export default {
               field: on.field,
               targetField: on.targetField,
               table: join.table,
-              targetTable: join.targetTable,
-              isInit: true
+              targetTable: join.targetTable
             })
           }
         }
@@ -101,7 +106,7 @@ export default {
     })
 
     // 绑定创建关联线事件
-    MD.on('createNewLine', ({ table, targetTable, field, targetField }) => {
+    MD.on('line:created', ({ table, targetTable, field, targetField }) => {
       let join = this.model.joins.find(
         r => r.table.id === table.id &&
           r.targetTable.id === targetTable.id
@@ -122,6 +127,20 @@ export default {
         relation: 'AND'
       })
       this.$emit('change')
+    })
+
+    // 绑定双击表事件
+    MD.on('table:dblclick', ({ event, table, tableGroup }) => {
+      console.log('ddd')
+      event.evt.preventDefault()
+      this.model.previewTableId = table.id
+    })
+
+    // 绑定全局点击
+    MD.on('stage:click', (e) => {
+      if (e.target.nodeType === 'Stage') {
+        this.model.previewTableId = null
+      }
     })
   }
 }

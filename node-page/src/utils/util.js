@@ -45,7 +45,7 @@ export function getLimitString (string, limit = 15) {
 export function getWidthByLetters (string, extParams = {}) {
   const params = {
     // 英文字符占用宽度
-    lowerCaseLetterWidth: 8,
+    lowerCaseLetterWidth: 10,
     // 英文字符占用宽度
     upperCaseLetterWidth: 10,
     // 中文字符占用宽度

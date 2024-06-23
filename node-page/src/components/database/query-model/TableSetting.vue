@@ -157,11 +157,11 @@ export default {
   background: #fff;
   padding: 0 30px 10px 30px;
   box-sizing: border-box;
-  top: 62px;
+  top: 0;
   bottom: 0;
   z-index: 100;
   right: 0;
-  width: 800px;
+  width: 500px;
   overflow: hidden;
   flex-shrink: 0;
   overflow-y: auto;

@@ -46,6 +46,10 @@ class ModelDesigner {
       draggable: false
     })
     this.redraw()
+    // 鼠标点击
+    this.stage.on('click', e => {
+      this.events['stage:click'] && this.events['stage:click'](e)
+    })
     // 鼠标松开处理
     this.stage.on('mouseup touchend', () => {
       // 设置所有的表均可拖动
@@ -205,7 +209,7 @@ class ModelDesigner {
         x: 15,
         y: 15,
         radius: 4,
-        fill: '#00D2FF'
+        fill: '#008fab'
       })
       // 为拖拽小球添加鼠标按下事件，将对象记录至this.currentDragField
       fieldDragBall.on('mousedown', () => {
@@ -216,7 +220,11 @@ class ModelDesigner {
       })
       // 悬浮在拖拽小球上时修改鼠标样式
       fieldDragBall.on('mouseover', () => {
-        this.stage.container().style.cursor = 'pointer'
+        fieldDragBall.fill('#00d8ff')
+      })
+      // 鼠标离开小球
+      fieldDragBall.on('mouseout', () => {
+        fieldDragBall.fill('#008fab')
       })
       // 为字段组添加鼠标悬浮事件
       fieldGroup.on('mouseover', () => {
@@ -245,8 +253,8 @@ class ModelDesigner {
           targetField: field,
           targetFieldBackgroundRect: fieldBackground
         })
-        // 触发createNewLine事件
-        this.events.createNewLine && this.events.createNewLine({
+        // 触发line:created事件
+        this.events['line:created'] && this.events['line:created']({
           table: this.currentDragTable,
           field: this.currentDragField,
           targetTable: table,
@@ -264,6 +272,21 @@ class ModelDesigner {
     // 添加到表分组
     tableGroup.add(titleBackground)
     tableGroup.add(title)
+    // 为表添加鼠标离开事件，恢复鼠标样式
+    tableGroup.on('mouseleave', () => {
+      this.stage.container().style.cursor = 'default'
+    })
+    // 为表添加鼠标进入事件
+    tableGroup.on('mouseover', (e) => {
+      // 悬浮在小球上，更改鼠标样式为手指
+      if (e.target instanceof Konva.Circle) {
+        this.stage.container().style.cursor = 'pointer'
+      }
+      // 更改鼠标样式为可拖动
+      else {
+        this.stage.container().style.cursor = 'move'
+      }
+    })
     // 为表添加拖拽移动事件
     tableGroup.on('dragmove', () => {
       const fields = tableGroup.find('.field')
@@ -277,6 +300,15 @@ class ModelDesigner {
       table.y = tableGroup.absolutePosition().y
       // 触发change事件
       this.events.change && this.events.change(table)
+    })
+    // 为表添加双击事件
+    tableGroup.on('dblclick', (e) => {
+      // 触发dblclick事件
+      this.events['table:dblclick'] && this.events['table:dblclick']({
+        event: e,
+        table,
+        tableGroup
+      })
     })
     return tableGroup
   }
@@ -311,7 +343,7 @@ class ModelDesigner {
       line: new Konva.Line({
         name: `line_${Math.round(Math.random() * 10000)}`,
         points: points,
-        stroke: '#757575',
+        stroke: '#cccccc',
         strokeWidth: 1,
         lineCap: 'round',
         lineJoin: 'round',

@@ -11,7 +11,7 @@
         <SQLLineKeywordSelect
           v-model="getAggregate(field).function"
           :data="['COUNT', 'SUM', 'AVG', 'MAX', 'MIN']"
-          :style="`width: ${__getAggregateFunctionWidth(getAggregate(field).function)}px;`"
+          :width="__getAggregateFunctionWidth(getAggregate(field).function)"
           @change="handleChange"
         />
         <span class="hidden">{{getAggregate(field).function}}</span>
@@ -27,7 +27,7 @@
         <span>{{getAggregate(field).targetTable.name}}</span>
         <DynamicWidthInput v-model="getAggregate(field).targetTable.alias" @change="handleChange"/>
       </SQLLine>
-      <!-- 觉和表的JOIN -->
+      <!-- 聚合表JOIN -->
       <SQLJoin :indent-level="3" :joins="joins" :table="getAggregate(field).targetTable"/>
       <!-- 聚合表别名的等信息 -->
       <SQLLine

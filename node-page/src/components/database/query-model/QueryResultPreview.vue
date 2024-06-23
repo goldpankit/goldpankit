@@ -27,15 +27,18 @@
       />
     </el-table>
   </el-dialog>
+  <ErrorWindow ref="errorWindow"/>
 </template>
 
 <script>
 import {execSql} from "@/api/database.util";
 import {mapState} from "vuex";
 import {getWidthByLetters} from "@/utils/util";
+import ErrorWindow from "@/components/common/ErrorWindow.vue";
 
 export default {
   name: "QueryResultPreview",
+  components: {ErrorWindow},
   data () {
     return {
       loading: false,
@@ -55,39 +58,55 @@ export default {
     }
   },
   computed: {
-    ...mapState(['currentDatabase'])
+    ...mapState(['currentProject', 'currentDatabase'])
   },
   methods: {
     open (fields, sql) {
-      this.visible = true
-      this.loading = true
-      this.columns = fields.map(item => item.substring(1, item.length - 1))
-      this.result = []
       this.sql = sql
       this.fetchList()
+        .then(() => {
+          this.visible = true
+          this.loading = true
+          this.columns = fields.map(item => item.substring(1, item.length - 1))
+          this.result = []
+        })
+        .catch(e => {
+          this.$refs.errorWindow.open({
+            title: 'SQL错误',
+            message: e.message
+          })
+        })
     },
     // 查询数据
     fetchList () {
-      execSql({
-        database: this.currentDatabase,
-        sql: this.__getCountSql()
-      })
-        .then(result => {
-          this.pagination.total = result[0].total
-          return execSql({
-            database: this.currentDatabase,
-            sql: this.__getPaginationSql()
+      return new Promise((resolve, reject) => {
+        execSql({
+          projectId: this.currentProject,
+          databaseId: this.currentDatabase,
+          sql: this.__getCountSql()
+        })
+          .then(result => {
+            resolve()
+            this.pagination.total = result[0].total
+            if (this.pagination.total > 0) {
+              return execSql({
+                projectId: this.currentProject,
+                databaseId: this.currentDatabase,
+                sql: this.__getPaginationSql()
+              })
+            }
+            return []
           })
-        })
-        .then(result => {
-          this.result = result
-        })
-        .catch(e => {
-          this.$tip.apiFailed(e)
-        })
-        .finally(() => {
-          this.loading = false
-        })
+          .then(result => {
+            this.result = result
+          })
+          .catch(e => {
+            reject(e)
+          })
+          .finally(() => {
+            this.loading = false
+          })
+      })
     },
     // 获取默认列宽
     getColumnWidth (columnName) {

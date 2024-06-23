@@ -38,6 +38,7 @@ export default {
 
 <style scoped lang="scss">
 .sql-line {
+  height: 28px;
   display: flex;
   align-items: center;
   padding: 0 10px 0 0;
