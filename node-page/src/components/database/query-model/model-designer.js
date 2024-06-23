@@ -51,37 +51,40 @@ class ModelDesigner {
       this.events['stage:click'] && this.events['stage:click'](e)
     })
     // 鼠标松开处理
-    this.stage.on('mouseup touchend', () => {
+    this.stage.on('mouseup', () => {
       // 设置所有的表均可拖动
       this.tables.forEach(table => table.draggable(true))
-      // 清空拖拽字段
-      this.currentDragTable = null
-      this.currentDragField = null
       // 隐藏虚线
       this.dashLine.points([0, 0, 0, 0])
+      this.dashLine.opacity(0)
+      // 清空拖拽字段，此处延迟50毫秒，避免字段组先监听到鼠标松开，导致获取不到拖拽元素引起关联字段失败
+      setTimeout(() => {
+        this.currentDragTable = null
+        this.currentDragField = null
+      }, 50)
     })
     // 鼠标移动
-    this.stage.on('mousemove touchmove', () => {
-      // 如果存在拖动元素，则绘制虚线
+    this.stage.on('mousemove', () => {
+      // 不存在拖动元素，直接返回
       if (!this.currentDragTable || !this.currentDragField) {
         return
       }
-      // 找到table
+      // 绘制虚线
+      // - 找到table
       const tableGroup = this.elementLayer.findOne(`#${this.currentDragTable.id}`)
-      console.log('tableGroup', tableGroup)
       if (tableGroup == null) {
         return
       }
-      // 找到字段
+      // - 找到字段
       const fieldGroup = tableGroup.findOne(`#${this.currentDragField.name}`)
-      console.log('fieldGroup', fieldGroup)
       if (fieldGroup == null) {
         return
       }
-      // 获取this.currentDragField的在this.stage中的x和y
+      // - 获取this.currentDragField的x和y
       const pos = this.stage.getPointerPosition()
       this.dashLine.scale({ x: 1 / this.elementLayer.scale().x, y: 1 / this.elementLayer.scale().y })
       this.dashLine.zIndex(10000)
+      this.dashLine.opacity(1)
       this.dashLine.points([
         // 第一个点坐标
         fieldGroup.absolutePosition().x + 15,
@@ -139,8 +142,6 @@ class ModelDesigner {
       draggable: true,
       zIndex: 10
     })
-    this.tables.push(tableGroup)
-    this.elementLayer.add(tableGroup)
     // 创建标题背景
     const titleBackground = new Konva.Rect({
       x: 0,
@@ -310,6 +311,11 @@ class ModelDesigner {
         tableGroup
       })
     })
+    this.tables.push(tableGroup)
+    this.elementLayer.add(tableGroup)
+    this.redrawPreview()
+    // 触发change事件
+    this.events.change && this.events.change()
     return tableGroup
   }
 
@@ -444,6 +450,7 @@ class ModelDesigner {
       points: [0, 0, 0, 0],
       stroke: '#fc6a70',
       strokeWidth: 1,
+      opacity: 0,
       lineCap: 'round',
       lineJoin: 'round',
       dash: [10, 10]

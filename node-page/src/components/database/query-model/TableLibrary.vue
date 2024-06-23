@@ -26,7 +26,7 @@
         </InnerRouterView>
         <InnerRouterView name="create-model" :title="$t('database.createNewModel')">
           <div class="create-model-form">
-            <el-form ref="createForm" :model="newModel" :rules="getRules()">
+            <el-form ref="createForm" :model="newModel" :rules="getRules()" @submit.prevent>
               <el-form-item :label="$t('common.name')" prop="name" required>
                 <el-input v-model="newModel.name"/>
               </el-form-item>
@@ -35,14 +35,14 @@
               </el-form-item>
             </el-form>
             <div class="opera">
-              <el-button @click="$refs.routerViewWindow.back()">{{$t('common.cancel')}}</el-button>
-              <el-button type="primary" @click="confirmCreate">{{$t('common.confirmAdd')}}</el-button>
+              <el-button size="default" @click="$refs.routerViewWindow.back()">{{$t('common.cancel')}}</el-button>
+              <el-button type="primary" size="default" @click="confirmCreate">{{$t('common.confirmAdd')}}</el-button>
             </div>
           </div>
         </InnerRouterView>
         <InnerRouterView name="update-model" :title="$t('database.updateModelTitle')">
           <div class="create-model-form">
-            <el-form ref="editForm" :model="editModel" :rules="getRules()">
+            <el-form ref="editForm" :model="editModel" :rules="getRules()" @submit.prevent>
               <el-form-item :label="$t('common.name')" prop="name" required>
                 <el-input v-model="editModel.name"/>
               </el-form-item>
@@ -51,8 +51,8 @@
               </el-form-item>
             </el-form>
             <div class="opera">
-              <el-button @click="$refs.routerViewWindow.back()">{{$t('common.cancel')}}</el-button>
-              <el-button type="primary" @click="confirmUpdate">{{$t('common.confirmUpdate')}}</el-button>
+              <el-button size="default" @click="$refs.routerViewWindow.back()">{{$t('common.cancel')}}</el-button>
+              <el-button type="primary" size="default" @click="confirmUpdate">{{$t('common.confirmUpdate')}}</el-button>
             </div>
           </div>
         </InnerRouterView>

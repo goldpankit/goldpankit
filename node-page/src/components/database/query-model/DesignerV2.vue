@@ -2,7 +2,7 @@
   <div
     class="designer-v2"
     @dragover.prevent
-    @drop="handleDrop($event, 1)"
+    @drop="handleDrop($event)"
   >
     <div class="stage"></div>
     <div class="preview-wrap stage-preview-wrap">
@@ -12,7 +12,7 @@
     <div class="preview-wrap sql-preview-wrap">
       <h2>SQL预览</h2>
       <TableSetting v-if="mainTable != null" v-show="false" ref="tableSetting" :table="mainTable" :joins="mainTableJoins" :aggregates="mainTableAggregates"/>
-      <div class="sql-preview"></div>
+      <div v-if="rerenderSqlPreview" class="sql-preview-editor"></div>
       <div class="sql-preview-panel" @click="openSqlPreviewWindow"></div>
     </div>
   </div>
@@ -34,7 +34,9 @@ export default {
   },
   data () {
     return {
-      sqlPreviewEditor: null
+      sqlPreviewEditor: null,
+      // 重新渲染SQL预览
+      rerenderSqlPreview: false
     }
   },
   computed: {
@@ -64,20 +66,18 @@ export default {
     },
     mainTable () {
       this.refreshSQL()
-    },
-    mainTableJoins () {
-      this.refreshSQL()
     }
   },
   methods: {
     // 初始化表
     init () {
       this.$nextTick(() => {
+        // 重绘
         MD.redraw()
+        MD.redrawPreview()
         if (this.model == null) {
           return
         }
-        console.log('模型数据', this.model)
         // 添加表
         for (const table of this.model.tables) {
           MD.createTable(table, table.x, table.y)
@@ -93,8 +93,6 @@ export default {
             })
           }
         }
-        // 重新绘制预览
-        MD.redrawPreview()
       })
     },
     // 拖拽表
@@ -103,14 +101,11 @@ export default {
         this.$tip.warning('请先选择或创建模型！')
         return
       }
-      // 获取放下时的鼠标坐标
+      // 获取坐标
       MD.stage.setPointersPositions(e)
       const mousePos = MD.stage.getPointerPosition()
-      // 获取到表信息
-      const newTableGroup = MD.createTable(this.model.dragData, mousePos.x - 100, mousePos.y)
-      // 重新绘制预览
-      MD.redrawPreview()
-      // 添加表数据
+      const tableX = mousePos.x - MD.TABLE_WIDTH / 2
+      const tableY = mousePos.y
       const newTable = {
         ...this.model.dragData,
         // 字段
@@ -126,44 +121,52 @@ export default {
         isVirtual: false,
         // 第一个表标记为主表
         type: this.model.tables.length === 0 ? 'MAIN' : 'SUB',
-        x: newTableGroup.absolutePosition().x,
-        y: newTableGroup.absolutePosition().y,
+        x: tableX,
+        y: tableY,
         // 增加设计器元素ID
         id: generateId(),
         // 添加joins，用于存放join关系
         joins: []
       }
+      // 添加到模型表中
       this.model.tables.push(newTable)
-      this.$emit('change')
+      // 创建表设计
+      MD.createTable(newTable, tableX, tableY)
     },
     // 获取最新SQL语句
     refreshSQL () {
+      this.rerenderSqlPreview = false
+      this.sqlPreviewEditor = null
       this.$nextTick(() => {
-        this.previewSql = this.$refs.tableSetting ? this.$refs.tableSetting.__getSql().sql : ''
-        if (this.previewSql != null && this.previewSql !== '') {
+        this.rerenderSqlPreview = true
+        this.$nextTick(() => {
+          // 防止多watch并发，出现重复创建编辑器
           if (this.sqlPreviewEditor != null) {
-            this.sqlPreviewEditor.destroy()
+            return
           }
-          this.sqlPreviewEditor = monaco.editor.create(
-            document.querySelector('.sql-preview-wrap .sql-preview'),
-            {
-              lineNumbers: "off",
-              value: this.previewSql,
-              language: 'sql',
-              readOnly: true,
-              theme: 'vs-dark',
-              overflowWidgetsDomNode: null,
-              automaticLayout: false,
-              selectionHighlight: false,
-              smartSelect: false,
-              disableLayerHinting: true,
-              cursorStyle: 'underline-thin',
-              minimap: {
-                enabled: false
+          const sql = this.$refs.tableSetting ? this.$refs.tableSetting.__getSql().sql : null
+          if (sql != null && sql !== '') {
+            this.sqlPreviewEditor = monaco.editor.create(
+              document.querySelector('.sql-preview-editor'),
+              {
+                lineNumbers: "off",
+                value: sql,
+                language: 'sql',
+                readOnly: true,
+                theme: 'vs-dark',
+                overflowWidgetsDomNode: null,
+                automaticLayout: false,
+                selectionHighlight: false,
+                smartSelect: false,
+                disableLayerHinting: true,
+                cursorStyle: 'underline-thin',
+                minimap: {
+                  enabled: false
+                }
               }
-            }
-          )
-        }
+            )
+          }
+        })
       })
     },
     openSqlPreviewWindow () {
@@ -181,15 +184,18 @@ export default {
 
     // 绑定change事件
     MD.on('change', () => {
+      // 触发change事件，保存模型数据
       this.$emit('change')
     })
 
     // 绑定创建关联线事件
     MD.on('line:created', ({ table, targetTable, field, targetField }) => {
+      // 查找JOIN关系是否已存在
       let join = this.model.joins.find(
         r => r.table.id === table.id &&
           r.targetTable.id === targetTable.id
       )
+      // 不存在JOIN关系，则添加JOIN关系
       if (join == null) {
         join = {
           table,
@@ -200,11 +206,14 @@ export default {
         }
         this.model.joins.push(join)
       }
+      // 添加ON条件
       join.ons.push({
         field,
         targetField,
         relation: 'AND'
       })
+      // 刷新SQL
+      this.refreshSQL()
       this.$emit('change')
     })
 
@@ -250,7 +259,7 @@ export default {
     width: 200px;
     height: 700px;
     // sql预览编辑器
-    .sql-preview {
+    .sql-preview-editor {
       position: absolute;
       top: 0;
       left: 0;
