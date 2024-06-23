@@ -186,6 +186,9 @@ export default {
     },
     // 开始拖动表放置在设计器中
     handleDragStart (tableName) {
+      if (this.currentModel == null) {
+        return
+      }
       this.currentModel.dragData = this.tables.find(t => t.name === tableName)
     },
     // 查询数据库表

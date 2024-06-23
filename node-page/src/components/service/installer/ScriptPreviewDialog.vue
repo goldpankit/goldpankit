@@ -50,16 +50,16 @@ export default {
       this.$nextTick(() => {
         // 初始化高亮编辑器
         const editor = monaco.editor.create(
-            document.querySelector('.script-preview-dialog .script-input-container'),
-            {
-              value: build.content,
-              language: 'sql',
-              readOnly: false,
-              automaticLayout: true,
-              minimap: {
-                enabled: true
-              }
+          document.querySelector('.script-preview-dialog .script-input-container'),
+          {
+            value: build.content,
+            language: 'sql',
+            readOnly: false,
+            automaticLayout: true,
+            minimap: {
+              enabled: true
             }
+          }
         )
         // - 内容变更后触发v-model修改
         editor.onDidChangeModelContent(e => {

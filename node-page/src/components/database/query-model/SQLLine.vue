@@ -40,6 +40,7 @@ export default {
 .sql-line {
   height: 28px;
   display: flex;
+  flex-wrap: nowrap;
   align-items: center;
   padding: 0 10px 0 0;
   letter-spacing: 1px;
@@ -58,6 +59,8 @@ export default {
   // 代码
   .code {
     flex-grow: 1;
+    display: flex;
+    align-items: center;
     & > :deep(*) {
       display: inline-block;
       margin-right: 5px;

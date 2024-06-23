@@ -161,7 +161,7 @@ export default {
   bottom: 0;
   z-index: 100;
   right: 0;
-  width: 500px;
+  width: 650px;
   overflow: hidden;
   flex-shrink: 0;
   overflow-y: auto;

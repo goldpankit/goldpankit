@@ -1,93 +1,95 @@
 <template>
-  <!-- 查询语句 -->
-  <SQLLine type="select" @field:create="createVirtualField"><em>SELECT</em></SQLLine>
-  <!-- 字段列表 -->
-  <template v-for="(field,index) in visibleFields">
-    <!-- 聚合字段 -->
-    <template v-if="getAggregate(field)">
-      <SQLLine indent="20" :visible="field.visible">(</SQLLine>
-      <SQLLine indent="40" :visible="field.visible"><em>SELECT</em></SQLLine>
-      <SQLLine indent="60" :visible="field.visible">
-        <SQLLineKeywordSelect
-          v-model="getAggregate(field).function"
-          :data="['COUNT', 'SUM', 'AVG', 'MAX', 'MIN']"
-          :width="__getAggregateFunctionWidth(getAggregate(field).function)"
-          @change="handleChange"
-        />
-        <span class="hidden">{{getAggregate(field).function}}</span>
-        <span>(</span>
-        <DynamicWidthInput v-model="getAggregate(field).targetTable.alias" @change="handleChange"/>
-        <span>.</span>
-        <span>{{getAggregate(field).targetField.name}}</span>
-        <span>)</span>
-      </SQLLine>
-      <!-- 聚合表 -->
-      <SQLLine indent="40" :visible="field.visible">
-        <em>FROM</em>
-        <span>{{getAggregate(field).targetTable.name}}</span>
-        <DynamicWidthInput v-model="getAggregate(field).targetTable.alias" @change="handleChange"/>
-      </SQLLine>
-      <!-- 聚合表JOIN -->
-      <SQLJoin :indent-level="3" :joins="joins" :table="getAggregate(field).targetTable"/>
-      <!-- 聚合表别名的等信息 -->
+  <div class="sql">
+    <!-- 查询语句 -->
+    <SQLLine type="select" @field:create="createVirtualField"><em>SELECT</em></SQLLine>
+    <!-- 字段列表 -->
+    <template v-for="(field,index) in visibleFields">
+      <!-- 聚合字段 -->
+      <template v-if="getAggregate(field)">
+        <SQLLine indent="20" :visible="field.visible">(</SQLLine>
+        <SQLLine indent="40" :visible="field.visible"><em>SELECT</em></SQLLine>
+        <SQLLine indent="60" :visible="field.visible">
+          <SQLLineKeywordSelect
+            v-model="getAggregate(field).function"
+            :data="['COUNT', 'SUM', 'AVG', 'MAX', 'MIN']"
+            :width="__getAggregateFunctionWidth(getAggregate(field).function)"
+            @change="handleChange"
+          />
+          <span class="hidden">{{getAggregate(field).function}}</span>
+          <span>(</span>
+          <DynamicWidthInput v-model="getAggregate(field).targetTable.alias" @change="handleChange"/>
+          <span>.</span>
+          <span>{{getAggregate(field).targetField.name}}</span>
+          <span>)</span>
+        </SQLLine>
+        <!-- 聚合表 -->
+        <SQLLine indent="40" :visible="field.visible">
+          <em>FROM</em>
+          <span>{{getAggregate(field).targetTable.name}}</span>
+          <DynamicWidthInput v-model="getAggregate(field).targetTable.alias" @change="handleChange"/>
+        </SQLLine>
+        <!-- 聚合表JOIN -->
+        <SQLJoin :indent-level="3" :joins="joins" :table="getAggregate(field).targetTable"/>
+        <!-- 聚合表别名的等信息 -->
+        <SQLLine
+          indent="20"
+          :type="field.isVirtual ? 'virtual-field': 'field'"
+          v-model:visible="field.visible"
+          @field:delete="deleteVirtualField(index)"
+          @update:visible="fieldVisibleChange"
+        >
+          <span>)</span>
+          <em>AS</em>
+          <DynamicWidthInput v-model="field.alias"/>
+          <span>{{visibleFields.length === index + 1 ? '' : ','}}</span>
+          <!-- 虚拟字段展示类型和注释 -->
+          <template v-if="field.isVirtual">
+            <span class="comment">#</span>
+            <DynamicWidthInput v-model="field.type" class="comment" @change="handleChange"/>
+            <DynamicWidthInput v-model="field.comment" class="comment" @change="handleChange"/>
+          </template>
+        </SQLLine>
+      </template>
+      <!-- 非聚合字段 -->
       <SQLLine
-        indent="20"
+        v-else
+        :key="field.name"
         :type="field.isVirtual ? 'virtual-field': 'field'"
         v-model:visible="field.visible"
+        indent="20"
         @field:delete="deleteVirtualField(index)"
         @update:visible="fieldVisibleChange"
       >
-        <span>)</span>
-        <em>AS</em>
-        <DynamicWidthInput v-model="field.alias"/>
-        <span>{{visibleFields.length === index + 1 ? '' : ','}}</span>
-        <!-- 虚拟字段展示类型和注释 -->
-        <template v-if="field.isVirtual">
+        <DynamicWidthInput v-model="field.table.alias" @change="handleChange"/>
+        <span>.</span>
+        <!-- 非虚拟字段 -->
+        <template v-if="!field.isVirtual">
+          <span>{{field.name}}</span>
+          <em>AS</em>
+          <DynamicWidthInput v-model="field.alias" @change="handleChange"/>
+          <span>{{visibleFields.length === index + 1 ? '' : ','}}</span>
+        </template>
+        <!-- 虚拟字段 -->
+        <template v-else>
+          <DynamicWidthInput :model-value="field.name" v-model:blur-model-value="field.name" @blur="handleChange"/>
+          <em>AS</em>
+          <DynamicWidthInput :model-value="field.alias" v-model:blur-model-value="field.alias" @blur="handleChange"/>
+          <span>{{visibleFields.length === index + 1 ? '' : ','}}</span>
           <span class="comment">#</span>
           <DynamicWidthInput v-model="field.type" class="comment" @change="handleChange"/>
           <DynamicWidthInput v-model="field.comment" class="comment" @change="handleChange"/>
         </template>
       </SQLLine>
     </template>
-    <!-- 非聚合字段 -->
-    <SQLLine
-      v-else
-      :key="field.name"
-      :type="field.isVirtual ? 'virtual-field': 'field'"
-      v-model:visible="field.visible"
-      indent="20"
-      @field:delete="deleteVirtualField(index)"
-      @update:visible="fieldVisibleChange"
-    >
-      <DynamicWidthInput v-model="field.table.alias" @change="handleChange"/>
-      <span>.</span>
-      <!-- 非虚拟字段 -->
-      <template v-if="!field.isVirtual">
-        <span>{{field.name}}</span>
-        <em>AS</em>
-        <DynamicWidthInput v-model="field.alias" @change="handleChange"/>
-        <span>{{visibleFields.length === index + 1 ? '' : ','}}</span>
-      </template>
-      <!-- 虚拟字段 -->
-      <template v-else>
-        <DynamicWidthInput :model-value="field.name" v-model:blur-model-value="field.name" @blur="handleChange"/>
-        <em>AS</em>
-        <DynamicWidthInput :model-value="field.alias" v-model:blur-model-value="field.alias" @blur="handleChange"/>
-        <span>{{visibleFields.length === index + 1 ? '' : ','}}</span>
-        <span class="comment">#</span>
-        <DynamicWidthInput v-model="field.type" class="comment" @change="handleChange"/>
-        <DynamicWidthInput v-model="field.comment" class="comment" @change="handleChange"/>
-      </template>
+    <SQLLine v-if="!table.isVirtual">
+      <em>FROM</em>
+      <span>{{table.name}}</span>
+      <em>AS</em>
+      <DynamicWidthInput v-model="table.alias" @change="handleChange"/>
     </SQLLine>
-  </template>
-  <SQLLine v-if="!table.isVirtual">
-    <em>FROM</em>
-    <span>{{table.name}}</span>
-    <em>AS</em>
-    <DynamicWidthInput v-model="table.alias" @change="handleChange"/>
-  </SQLLine>
-  <!-- JOIN语句 -->
-  <SQLJoin :joins="joins" :table="table" @change="handleChange"/>
+    <!-- JOIN语句 -->
+    <SQLJoin :joins="joins" :table="table" @change="handleChange"/>
+  </div>
 </template>
 
 <script>
