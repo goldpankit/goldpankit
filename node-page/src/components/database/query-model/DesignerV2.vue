@@ -13,6 +13,9 @@
 import Konva from 'konva'
 // 变量放在data中会导致卡顿
 const c = {
+  TABLE_WIDTH: 200,
+  TABLE_TITLE_HEIGHT: 50,
+  TABLE_FIELD_HEIGHT: 30,
   stage: null,
   elementLayer: null,
   // 预览stage
@@ -44,6 +47,7 @@ export default {
       // 重新绘制预览
       this.__redrawPreview()
     },
+    // 计算关联线坐标点
     computeLinePositions ({ field1, field2, table1, table2 }) {
       let leftTable = table1
       let rightTable = table2
@@ -57,41 +61,64 @@ export default {
         leftField = field2
         rightField = field1
       }
+      const leftFieldPosition = leftField.absolutePosition()
+      const rightFieldPosition = rightField.absolutePosition()
+      // 计算两表之间的距离
+      const distance = rightFieldPosition.x - leftFieldPosition.x - c.TABLE_WIDTH
       // 计算第一个坐标点
       const firstPoint = [
-        leftField.absolutePosition().x + 200,
-        leftField.absolutePosition().y + 15
+        0,
+        leftFieldPosition.y + 15
       ]
-      // 计算两个group之间的距离
-      const distance = rightField.absolutePosition().x - leftField.absolutePosition().x - 200
+      // - 如果表之间存在距离，则坐标点为右侧 + 宽度
+      if (distance > 0) {
+        firstPoint[0] = leftFieldPosition.x + c.TABLE_WIDTH
+      } else {
+        firstPoint[0] = leftFieldPosition.x
+      }
       // 计算高度差引起的转弯点
       let turnPoint1 = [...firstPoint]
       let turnPoint2 = [...firstPoint]
-      const heightDifference = Math.abs(rightField.absolutePosition().y - leftField.absolutePosition().y)
+      // - 存在高度差
+      const heightDifference = Math.abs(rightFieldPosition.y - leftFieldPosition.y)
       if (heightDifference > 0) {
-        // 箭头转弯点1
         turnPoint1 = [
-          leftField.absolutePosition().x + 200 + distance / 2,
-          leftField.absolutePosition().y + 15
+          leftFieldPosition.x + c.TABLE_WIDTH + distance / 2,
+          leftFieldPosition.y + 15,
         ]
+        // - 如果左侧x + 宽度 > 右侧x，则坐标点为左侧x - 30
+        if (leftFieldPosition.x + c.TABLE_WIDTH > rightFieldPosition.x) {
+          turnPoint1[0] = leftFieldPosition.x - 30
+        }
         turnPoint2 = [
-          leftField.absolutePosition().x + 200 + distance / 2,
-          rightField.absolutePosition().y + 15
+          leftFieldPosition.x + c.TABLE_WIDTH + distance / 2,
+          rightFieldPosition.y + 15
         ]
+        // - 如果左侧x + 宽度 > 右侧x，则坐标点为左侧x - 30
+        if (leftFieldPosition.x + c.TABLE_WIDTH > rightFieldPosition.x) {
+          turnPoint2[0] = leftFieldPosition.x - 30
+        }
       }
       // 计算最后一个坐标点
       const lastPoint = [
-        firstPoint[0] + distance,
-        rightField.absolutePosition().y + 15
+        0,
+        rightFieldPosition.y + 15
       ]
-      let data = '';
-      data += 'M' + firstPoint[0] + ',' + firstPoint[1] + ' ';  // 移动到第一个点
-      // data += 'L' + turnPoint1[0] + ',' + turnPoint1[1] + ' ';  // 绘制到第二个点
-      data += 'Q' + (turnPoint1[0]) + ',' + (turnPoint1[1]) + ' ';  // 绘制到第二个点
-      data += 'L' + turnPoint2[0] + ',' + turnPoint2[1] + ' ';  // 绘制到第二个点
-      data += 'L' + lastPoint[0] + ',' + lastPoint[1] + ' ';  // 绘制到第二个点
-      return data
-      // return [...firstPoint, ...turnPoint1, ...turnPoint2, ...lastPoint]
+      // - 如果左侧x+宽度超出右表x+宽度，则为右侧x + 宽度，否则为右侧x
+      if (leftFieldPosition.x + c.TABLE_WIDTH > rightFieldPosition.x + c.TABLE_WIDTH) {
+        lastPoint[0] = rightFieldPosition.x + c.TABLE_WIDTH
+      } else {
+        lastPoint[0] = rightFieldPosition.x
+      }
+      // - 如果坐标点在坐标区域，则坐标点为右侧x + 宽度
+      if (lastPoint[0] > leftTable.absolutePosition().x &&
+        lastPoint[0] < leftTable.absolutePosition().x + leftTable.width() &&
+        lastPoint[1] > leftTable.absolutePosition().y
+        && lastPoint[1] < leftTable.absolutePosition().y + leftTable.height()
+      ) {
+        lastPoint[0] = rightFieldPosition.x + c.TABLE_WIDTH
+      }
+      return [...firstPoint, ...turnPoint1, ...turnPoint2, ...lastPoint]
     },
     // 重新绘制预览
     __redrawPreview () {
@@ -146,9 +173,12 @@ export default {
       // 创建表分组
       const tableGroup = new Konva.Group({
         name: `table_${table.name}_${Math.round(Math.random() * 10000)}`,
+        width: c.TABLE_WIDTH,
+        height: c.TABLE_TITLE_HEIGHT,
         x,
         y,
-        draggable: true
+        draggable: true,
+        zIndex: 1
       })
       tables.push(tableGroup)
       c.elementLayer.add(tableGroup);
@@ -156,8 +186,8 @@ export default {
       const titleBackground = new Konva.Rect({
         x: 0,
         y: 0,
-        width: 200,
-        height: 50,
+        width: c.TABLE_WIDTH,
+        height: c.TABLE_TITLE_HEIGHT,
         fill: '#17171a',
         stroke: '#ccc',
         strokeWidth: 1
@@ -176,24 +206,23 @@ export default {
         shadowOffsetX: 10,
         shadowOffsetY: 10,
         shadowOpacity: 0.2,
-        width: 200,
-        height: 50
+        width: c.TABLE_WIDTH,
+        height: c.TABLE_TITLE_HEIGHT
       })
       // 创建字段
-      const fieldHeight = 30
       for (let i = 0; i < table.fields.length; i++) {
         const field = table.fields[i]
         const fieldGroup = new Konva.Group({
           name: 'field',
           x: 0,
-          y: titleBackground.height() + fieldHeight * i
+          y: titleBackground.height() + c.TABLE_FIELD_HEIGHT * i
         })
         // 背景
         const fieldBackground = new Konva.Rect({
           x: 0,
           y: 0,
-          width: 200,
-          height: fieldHeight,
+          width: c.TABLE_WIDTH,
+          height: c.TABLE_FIELD_HEIGHT,
           fill: '#232325',
           stroke: '#ccc',
           strokeWidth: 1
@@ -206,7 +235,7 @@ export default {
           fontSize: 14,
           fontFamily: 'Calibri',
           fill: '#fff',
-          height: fieldHeight,
+          height: c.TABLE_FIELD_HEIGHT,
           lineHeight: 2
         })
         // 拖拽小球
@@ -258,11 +287,13 @@ export default {
               field1: currentDragField,
               table2: tableGroup,
               field2: fieldGroup,
-              line: new Konva.Path({
+              line: new Konva.Line({
                 name: `line_${Math.round(Math.random() * 10000)}`,
-                data: points,
+                points: points,
                 stroke: '#fc6a70',
-                strokeWidth: 1
+                strokeWidth: 1,
+                lineCap: 'round',
+                lineJoin: 'round'
               })
             }
             // 添加到layer
@@ -279,6 +310,7 @@ export default {
         fieldGroup.add(fieldDragBall);
         // 添加到表
         tableGroup.add(fieldGroup);
+        tableGroup.height(tableGroup.height() + c.TABLE_FIELD_HEIGHT)
       }
       // 添加到表分组
       tableGroup.add(titleBackground);
@@ -289,10 +321,13 @@ export default {
         fields.forEach((field) => {
           // 调整箭头位置
           if (field.__line) {
-            field.__line.line.data(this.computeLinePositions(field.__line));
+            field.__line.line.points(this.computeLinePositions(field.__line));
           }
         })
       })
+      // 松开表拖拽
+      // tableGroup.on('dragend', () => {
+      // })
     }
     // 创建一条隐藏的虚线
     const line = new Konva.Line({
@@ -322,8 +357,8 @@ export default {
       c.elementLayer.children.forEach((shape) => {
         const clone = c.cloneElementLayer.findOne('.' + shape.name());
         clone.position(shape.position());
-        if (clone instanceof Konva.Path) {
-          clone.data(shape.data());
+        if (clone instanceof Konva.Line) {
+          clone.points(shape.points());
           clone.strokeWidth(2)
         }
         console.log('clone', clone)
