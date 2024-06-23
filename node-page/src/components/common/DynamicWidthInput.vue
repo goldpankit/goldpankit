@@ -48,10 +48,12 @@ export default {
 .dynamic-width-input {
   display: inline-block;
   outline: none;
-  background: #faebeb;
+  // background: #4c556e;
+  background: #eee;
   border-radius: 5px;
   min-width: 30px;
   cursor: text;
   padding: 2px 5px;
+  color: var(--font-color);
 }
 </style>

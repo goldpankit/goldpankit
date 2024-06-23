@@ -45,13 +45,14 @@ export default {
   padding: 0 10px 0 0;
   letter-spacing: 1px;
   justify-content: space-between;
+  color: var(--color-gray);
   &.sql-line__hide {
     .code {
       opacity: .35;
     }
   }
   &:hover {
-    background: var(--background-color);
+    background: #eee;
     .opera {
       opacity: 1;
     }
@@ -77,8 +78,10 @@ export default {
     // 注释
     :deep(span.comment) {
       color: var(--color-gray);
+      cursor: default;
     }
     :deep(span) {
+      cursor: default;
       &.hidden {
         width: 0;
         overflow: hidden;
@@ -97,11 +100,13 @@ export default {
         height: auto;
         padding: 5px;
         border: 1px solid transparent;
+        background-color: transparent;
         &:hover {
-          border: 1px solid var(--primary-color);
+          // border: 1px solid var(--primary-color);
         }
         .el-icon {
-          font-size: 12px;
+          font-size: 15px;
+          color: var(--font-color);
         }
       }
     }

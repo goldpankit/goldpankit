@@ -39,7 +39,7 @@
           @update:visible="fieldVisibleChange"
         >
           <span>)</span>
-          <em>AS</em>
+          <span>AS</span>
           <DynamicWidthInput v-model="field.alias"/>
           <span>{{visibleFields.length === index + 1 ? '' : ','}}</span>
           <!-- 虚拟字段展示类型和注释 -->
@@ -65,14 +65,14 @@
         <!-- 非虚拟字段 -->
         <template v-if="!field.isVirtual">
           <span>{{field.name}}</span>
-          <em>AS</em>
+          <span>AS</span>
           <DynamicWidthInput v-model="field.alias" @change="handleChange"/>
           <span>{{visibleFields.length === index + 1 ? '' : ','}}</span>
         </template>
         <!-- 虚拟字段 -->
         <template v-else>
           <DynamicWidthInput :model-value="field.name" v-model:blur-model-value="field.name" @blur="handleChange"/>
-          <em>AS</em>
+          <span>AS</span>
           <DynamicWidthInput :model-value="field.alias" v-model:blur-model-value="field.alias" @blur="handleChange"/>
           <span>{{visibleFields.length === index + 1 ? '' : ','}}</span>
           <span class="comment">#</span>
@@ -84,7 +84,7 @@
     <SQLLine v-if="!table.isVirtual">
       <em>FROM</em>
       <span>{{table.name}}</span>
-      <em>AS</em>
+      <span>AS</span>
       <DynamicWidthInput v-model="table.alias" @change="handleChange"/>
     </SQLLine>
     <!-- JOIN语句 -->

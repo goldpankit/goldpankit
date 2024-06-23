@@ -463,7 +463,7 @@ export default {
   height: 100%;
   display: flex;
   position: relative;
-  background: var(--background-color);
+  // background: var(--background-color);
   border-top: 5px solid;
   border-image: var(--border-colors);
   // 未选择数据库提醒 & 数据库连接失败
@@ -490,13 +490,20 @@ export default {
     }
   }
   .table-library {
-    width: 255px;
+    width: 300px;
     flex-shrink: 0;
+    position: fixed;
+    left: 0;
+    top: 68px;
+    bottom: 0;
+    z-index: 9;
+    background-color: #fff;
+    border-right: 1px solid #eee;
   }
   .designer-wrap {
     flex-grow: 1;
     position: relative;
-    background: var(--primary-color);
+    background: #fff;
     overflow: hidden;
     .toolbar {
       display: flex;

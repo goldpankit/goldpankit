@@ -153,7 +153,6 @@ export default {
                 value: sql,
                 language: 'sql',
                 readOnly: true,
-                theme: 'vs-dark',
                 overflowWidgetsDomNode: null,
                 automaticLayout: false,
                 selectionHighlight: false,
@@ -177,10 +176,10 @@ export default {
     }
   },
   mounted () {
-    MD = new ModelDesigner('.stage', 2000, 2000)
+    MD = new ModelDesigner('.stage')
     // 初始化设计器
     MD.createBackground()
-    MD.createPreview('.preview-stage')
+    MD.createPreview('.preview-stage', 200, 150)
 
     // 绑定change事件
     MD.on('change', () => {
@@ -224,6 +223,11 @@ export default {
         this.model.previewTableId = null
       }
     })
+
+    // 绑定创建关联线失败事件
+    MD.on('line:create:error', (err) => {
+      this.$tip.warning(err.message)
+    })
   }
 }
 </script>
@@ -235,13 +239,15 @@ export default {
   overflow: auto;
   // 预览
   .preview-wrap {
-    background-color: rgba(0,0,0,.2);
+    background-color: rgba(255,255,255, .8);
     border-radius: 10px;
     position: absolute;
     right: 30px;
+    box-shadow: 0 0 10px -5px #999;
     h2 {
-      font-size: 15px;
-      color: #555;
+      font-weight: normal;
+      font-size: 12px;
+      color: #999;
       position: absolute;
       bottom: 10px;
       right: 10px;
@@ -251,11 +257,11 @@ export default {
   .stage-preview-wrap {
     top: 20px;
     width: 200px;
-    height: 200px;
+    height: 150px;
   }
   // sql预览
   .sql-preview-wrap {
-    top: 240px;
+    top: 190px;
     width: 200px;
     height: 700px;
     // sql预览编辑器
@@ -289,16 +295,18 @@ export default {
         }
       }
     }
+    // sql预览蒙板，盖住编辑器，避免不适操作
     .sql-preview-panel {
       position: absolute;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
+      border-radius: 10px;
       z-index: 2;
       transition: all ease .15s;
       &:hover {
-        background-color: rgba(0, 0, 0, 0.1);
+        background-color: rgba(0, 0, 0, 0.05);
         cursor: pointer;
       }
     }

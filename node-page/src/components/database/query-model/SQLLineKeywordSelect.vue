@@ -30,7 +30,7 @@ export default {
   :deep(.el-select__wrapper) {
     min-height: 20px;
     height: 20px;
-    background: #faebeb;
+    background: #eee;
     padding: 2px 5px;
     box-shadow: none !important;
     .el-select__selected-item {

@@ -1,12 +1,18 @@
 import Konva from 'konva'
 
 class ModelDesigner {
+  BACKGROUND_ITEM_COLOR = '#555'
   TABLE_WIDTH = 200
-  TABLE_TITLE_HEIGHT = 50
+  TABLE_TITLE_HEIGHT = 40
   TABLE_FIELD_HEIGHT = 30
+  TABLE_TITLE_BACKGROUND_COLOR = '#eee'
+  TABLE_FIELD_BACKGROUND_COLOR = '#fff'
+  LINE_COLOR = '#999'
+  DEFAULT_FONT_COLOR = '#333'
+  FONT_SIZE_TITLE = 16
   // 画布基础信息
-  stageWidth = 2000
-  stageHeight = 2000
+  stageWidth = null
+  stageHeight = null
   stageContainer = null
   // 画布
   stage = null
@@ -27,7 +33,7 @@ class ModelDesigner {
   // 事件
   events = {}
 
-  constructor(container, width, height) {
+  constructor(container, width = 3500, height = 2000) {
     this.stageContainer = container
     this.stageWidth = width
     this.stageHeight = height
@@ -49,19 +55,6 @@ class ModelDesigner {
     // 鼠标点击
     this.stage.on('click', e => {
       this.events['stage:click'] && this.events['stage:click'](e)
-    })
-    // 鼠标松开处理
-    this.stage.on('mouseup', () => {
-      // 设置所有的表均可拖动
-      this.tables.forEach(table => table.draggable(true))
-      // 隐藏虚线
-      this.dashLine.points([0, 0, 0, 0])
-      this.dashLine.opacity(0)
-      // 清空拖拽字段，此处延迟50毫秒，避免字段组先监听到鼠标松开，导致获取不到拖拽元素引起关联字段失败
-      setTimeout(() => {
-        this.currentDragTable = null
-        this.currentDragField = null
-      }, 50)
     })
     // 鼠标移动
     this.stage.on('mousemove', () => {
@@ -94,6 +87,19 @@ class ModelDesigner {
         pos.y
       ])
     })
+    // 鼠标松开处理
+    this.stage.on('mouseup', () => {
+      // 设置所有的表均可拖动
+      this.tables.forEach(table => table.draggable(true))
+      // 隐藏虚线
+      this.dashLine.points([0, 0, 0, 0])
+      this.dashLine.opacity(0)
+      // 清空拖拽字段，此处延迟50毫秒，避免字段组先监听到鼠标松开，导致获取不到拖拽元素引起关联字段失败
+      setTimeout(() => {
+        this.currentDragTable = null
+        this.currentDragField = null
+      }, 50)
+    })
   }
 
   /**
@@ -114,7 +120,7 @@ class ModelDesigner {
           x: (distance + cycleRadius * 2) * j + distance,
           y: (distance + cycleRadius * 2) * i + distance,
           radius: cycleRadius,
-          fill: '#55555',
+          fill: this.BACKGROUND_ITEM_COLOR,
           draggable: true,
           zIndex: 1
         })
@@ -148,7 +154,7 @@ class ModelDesigner {
       y: 0,
       width: this.TABLE_WIDTH,
       height: this.TABLE_TITLE_HEIGHT,
-      fill: '#17171a',
+      fill: this.TABLE_TITLE_BACKGROUND_COLOR,
       stroke: '#ccc',
       strokeWidth: 1,
       // 添加变宽圆弧
@@ -161,9 +167,9 @@ class ModelDesigner {
       x: 10,
       y: 3,
       text: table.name,
-      fontSize: 20,
+      fontSize: this.FONT_SIZE_TITLE,
       fontFamily: 'Calibri',
-      fill: '#fff',
+      fill: this.DEFAULT_FONT_COLOR,
       padding: 10,
       shadowColor: 'black',
       shadowBlur: 10,
@@ -189,7 +195,7 @@ class ModelDesigner {
         y: 0,
         width: this.TABLE_WIDTH,
         height: this.TABLE_FIELD_HEIGHT,
-        fill: '#232325',
+        fill: this.TABLE_FIELD_BACKGROUND_COLOR,
         stroke: '#ccc',
         strokeWidth: 1
       })
@@ -200,7 +206,7 @@ class ModelDesigner {
         text: field.name,
         fontSize: 14,
         fontFamily: 'Calibri',
-        fill: '#fff',
+        fill: this.DEFAULT_FONT_COLOR,
         height: this.TABLE_FIELD_HEIGHT,
         lineHeight: 2
       })
@@ -231,14 +237,14 @@ class ModelDesigner {
       fieldGroup.on('mouseover', () => {
         // 当this.currentDragField不为null时，修改背景色为红色
         if (this.currentDragField && this.currentDragTable !== table) {
-          fieldBackground.fill('#fc6a70')
+          fieldBackground.fill(this.TABLE_TITLE_BACKGROUND_COLOR)
         }
       })
       // 为字段组添加鼠标离开事件
       fieldGroup.on('mouseout', () => {
         // 当this.currentDragField不为null时，恢复背景色
         if (this.currentDragField) {
-          fieldBackground.fill('#232325')
+          fieldBackground.fill(this.TABLE_FIELD_BACKGROUND_COLOR)
         }
       })
       // 为字段组添加鼠标松开事件
@@ -247,6 +253,7 @@ class ModelDesigner {
         if (!this.currentDragField || this.currentDragTable === table) {
           return
         }
+        // 创建关联线
         this.createLine({
           table: this.currentDragTable,
           field: this.currentDragField,
@@ -334,6 +341,17 @@ class ModelDesigner {
     const targetTableGroup = this.elementLayer.findOne(`#${targetTable.id}`)
     const fieldGroup = tableGroup.findOne(`#${field.name}`)
     const targetFieldGroup = targetTableGroup.findOne(`#${targetField.name}`)
+    // 字段已被关联，不允许继续关联
+    if (fieldGroup.__line != null || targetFieldGroup.__line != null) {
+      this.events['line:create:error'] && this.events['line:create:error']({
+        message: '一个字段不允许关联多个字段！',
+      })
+      // 恢复背景色
+      if (targetFieldBackgroundRect) {
+        targetFieldBackgroundRect.fill(this.TABLE_FIELD_BACKGROUND_COLOR)
+      }
+      return
+    }
     // 计算线坐标点
     const points = this.computeLinePoints({
       table1: tableGroup,
@@ -349,7 +367,7 @@ class ModelDesigner {
       line: new Konva.Line({
         name: `line_${Math.round(Math.random() * 10000)}`,
         points: points,
-        stroke: '#cccccc',
+        stroke: this.LINE_COLOR,
         strokeWidth: 1,
         lineCap: 'round',
         lineJoin: 'round',
@@ -361,7 +379,7 @@ class ModelDesigner {
     this.elementLayer.add(line.line)
     // 恢复背景色
     if (targetFieldBackgroundRect) {
-      targetFieldBackgroundRect.fill('#232325')
+      targetFieldBackgroundRect.fill(this.TABLE_FIELD_BACKGROUND_COLOR)
     }
     // 重新绘制预览
     this.redrawPreview()
@@ -372,16 +390,14 @@ class ModelDesigner {
    * @param container
    * @param width
    * @param height
-   * @param scaleX
-   * @param scaleY
    */
-  createPreview (container, width = 200, height = 200, scaleX = 1/10, scaleY = 1/10) {
+  createPreview (container, width = 200, height = 150) {
     this.previewStage = new Konva.Stage({
       container,
       width,
       height,
-      scaleX,
-      scaleY,
+      scaleX: width/this.stageWidth,
+      scaleY: height/this.stageHeight,
     })
     this.redrawPreview()
     // 监听拖动，触发更新

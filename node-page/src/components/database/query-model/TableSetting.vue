@@ -1,8 +1,11 @@
 <template>
   <div class="table-setting" :class="{ visible: table != null }">
     <div class="toolbar">
-      <el-button type="primary" class="button-copy" data-clipboard-text="Hello World" @click="copy">{{$t('common.copy')}}</el-button>
-      <el-button type="primary" @click="execute">{{$t('common.execute')}}</el-button>
+      <h2>SQL预览</h2>
+      <div class="opera">
+        <el-button type="primary" size="default" class="button-copy" @click="copy">复制</el-button>
+        <el-button type="primary" size="default" @click="execute">执行语句</el-button>
+      </div>
     </div>
     <div class="wrap" v-if="table != null">
       <SQL :aggregates="aggregates" :joins="joins" :table="table" @field:change="handleChange"/>
@@ -154,7 +157,7 @@ export default {
 <style scoped lang="scss">
 .table-setting {
   position: absolute;
-  background: #fff;
+  background-color: #fff;
   padding: 0 30px 10px 30px;
   box-sizing: border-box;
   top: 0;
@@ -168,7 +171,7 @@ export default {
   transform: translateX(2000px);
   transition: all ease .3s;
   letter-spacing: 1px;
-  box-shadow: -1px 0 10px -2px rgba(0,0,0,.5);
+  box-shadow: -1px 0 10px -5px rgba(0,0,0,.5);
   display: flex;
   flex-direction: column;
   &.visible {
@@ -176,11 +179,15 @@ export default {
   }
   .toolbar {
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 10px;
     flex-shrink: 0;
     border-bottom: 1px solid var(--border-default-color);
     padding: 10px 0;
+    h2 {
+      font-size: 16px;
+    }
   }
   .wrap {
     flex-grow: 1;

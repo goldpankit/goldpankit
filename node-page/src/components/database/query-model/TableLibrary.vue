@@ -5,7 +5,7 @@
         <InnerRouterView name="query-models">
           <div class="header" slot="title">
             <h4>{{$t('database.queryModels')}}</h4>
-            <el-button type="primary" icon="Plus" class="button-icon" @click="createQueryModel"></el-button>
+            <el-button type="primary" size="default" icon="Plus" class="button-icon" @click="createQueryModel"></el-button>
           </div>
           <ul v-if="queryModels.length > 0" class="model-list">
             <li
@@ -60,9 +60,10 @@
     </div>
     <div class="block table-list-wrap">
       <div class="header">
-        <h4>{{$t('database.tables')}}</h4>
+        <h4>数据库表</h4>
         <el-button
           class="button-icon"
+          size="default"
           type="primary"
           icon="Refresh"
           @click="$emit('tables:refresh')"
@@ -162,7 +163,8 @@ export default {
           return
         }
         updateById({
-          database: this.currentDatabase,
+          projectId: this.currentProject,
+          databaseId: this.currentDatabase,
           model: this.editModel
         })
           .then(() => {
@@ -275,6 +277,7 @@ export default {
     flex-direction: column;
     overflow: hidden;
     padding: 20px 0;
+    background-color: transparent;
     .header {
       flex-shrink: 0;
       display: flex;
@@ -294,6 +297,7 @@ export default {
   :deep(.model-list) {
     flex-grow: 1;
     overflow-y: auto;
+    user-select: none;
     li {
       padding: 10px 10px 10px 20px;
       display: flex;
@@ -303,7 +307,6 @@ export default {
       position: relative;
       & > label {
         word-break: break-all;
-        font-weight: bold;
       }
       & > p {
         color: var(--color-gray);
@@ -333,19 +336,19 @@ export default {
         }
       }
       &.selected {
-        background: var(--primary-color-match-1);
+        background: var(--primary-color-match-1-light);
         &:hover {
-          background: var(--primary-color-match-1);
+          background: var(--primary-color-match-1-light);
+        }
+        & > label {
+          font-weight: bold;
         }
         & > p {
           color: var(--font-color);
         }
       }
       &:hover {
-        background: var(--primary-color-match-1);
-        & > div {
-          opacity: 1;
-        }
+        background-color: #f0f0f0;
       }
     }
   }
