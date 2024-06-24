@@ -2,6 +2,7 @@ import Konva from 'konva'
 
 class ModelDesigner {
   BACKGROUND_ITEM_COLOR = '#555'
+  TABLE_MIN_DISTANCE = 50 // 关联表之间最大的间距
   TABLE_WIDTH = 200
   TABLE_TITLE_HEIGHT = 40
   TABLE_FIELD_HEIGHT = 30
@@ -13,7 +14,12 @@ class ModelDesigner {
   TABLE_FIELD_DRAG_BALL_BACKGROUND_COLOR = '#4a536e'
   TABLE_FIELD_DRAG_BALL_HOVER_BACKGROUND_COLOR = '#90a1d7'
   TABLE_OPERA_BACKGROUND_COLOR = '#f7f7f7'
+  TABLE_BUTTON_BACKGROUND_COLOR = '#cb5053'
+  TABLE_BUTTON_HOVER_BACKGROUND_COLOR = '#fc6a70'
   LINE_COLOR = '#999'
+  LINE_HOVER_COLOR = '#fc6a70'
+  LINE_CONTROL_COLOR = '#2e3444'
+  LINE_CONTROL_HOVER_COLOR = '#fc6a70'
   DEFAULT_FONT_COLOR = '#333'
   REVERSE_FONT_COLOR = '#fff'
   FONT_SIZE_TITLE = 16
@@ -175,7 +181,7 @@ class ModelDesigner {
       x: tableGroup.width() - 15,
       y: -10,
       radius: 5,
-      fill: '#cb5053',
+      fill: this.TABLE_BUTTON_BACKGROUND_COLOR,
       draggable: false,
     })
     deleteButton.on('click', () => {
@@ -185,10 +191,10 @@ class ModelDesigner {
       })
     })
     deleteButton.on('mouseover', () => {
-      deleteButton.fill('#fc6a70')
+      deleteButton.fill(this.TABLE_BUTTON_HOVER_BACKGROUND_COLOR)
     })
     deleteButton.on('mouseout', () => {
-      deleteButton.fill('#cb5053')
+      deleteButton.fill(this.TABLE_BUTTON_BACKGROUND_COLOR)
     })
     tableGroup.add(deleteButton)
     // 创建标题背景
@@ -345,12 +351,18 @@ class ModelDesigner {
       fields.forEach((field) => {
         // 调整箭头位置
         if (field.__line) {
-          field.__line.line.points(this.computeLinePoints(field.__line))
+          const linePoints = this.computeLinePoints(field.__line)
+          field.__line.line.points(linePoints)
+          const controlPoints = this.computeLineControlPoints({ linePoints, ...field.__line })
+          field.__line.control.position(controlPoints)
         }
       })
       table.x = tableGroup.absolutePosition().x
       table.y = tableGroup.absolutePosition().y
-      // 触发change事件
+    })
+    // 为表添加拖拽结束事件
+    tableGroup.on('dragend', () => {
+      // 触发change事件，以更新表坐标
       this.events.change && this.events.change(table)
     })
     // 为表添加双击事件
@@ -390,6 +402,7 @@ class ModelDesigner {
           continue
         }
         field.__line.line.destroy()
+        field.__line.control.destroy()
         field.__line.field1.__line = field.__line.field2.__line = null
       }
       // 删除表
@@ -433,25 +446,59 @@ class ModelDesigner {
       table2: targetTableGroup,
       field2: targetFieldGroup
     })
+    // 计算删除球坐标点
+    const controlPoints = this.computeLineControlPoints({
+      linePoints: points,
+      table1: tableGroup,
+      table2: targetTableGroup
+    })
+    // 创建线
     const line = fieldGroup.__line = targetFieldGroup.__line = {
       table1: tableGroup,
       field1: fieldGroup,
-      table2: tableGroup,
+      table2: targetTableGroup,
       field2: targetFieldGroup,
+      // 线条
       line: new Konva.Line({
-        name: `line_${Math.round(Math.random() * 10000)}`,
+        name: `field_line_${Math.round(Math.random() * 10000)}`,
         points: points,
         stroke: this.LINE_COLOR,
         strokeWidth: 1,
         lineCap: 'round',
         lineJoin: 'round',
         zIndex: 1
+      }),
+      // 删除球
+      control: new Konva.Circle({
+        name: `field_line_control_${Math.round(Math.random() * 10000)}`,
+        x: controlPoints.x,
+        y: controlPoints.y,
+        radius: 5,
+        fill: this.LINE_CONTROL_COLOR,
+        draggable: false,
+        zIndex: 2
       })
     }
-    // 添加到layer
-    line.line.zIndex(1)
     this.elementLayer.add(line.line)
-    // 恢复背景色
+    this.elementLayer.add(line.control)
+    // 悬浮在控制点时更改颜色和关联线颜色
+    line.control.on('mouseover', () => {
+      line.line.stroke(this.LINE_HOVER_COLOR)
+      line.line.zIndex(10000)
+      line.line.dash([5, 5])
+      line.control.fill(this.LINE_CONTROL_HOVER_COLOR)
+      // 修改手势为手指
+      this.stage.container().style.cursor = 'pointer'
+    })
+    // 离开小球时恢复小球颜色和关联线颜色
+    line.control.on('mouseout', () => {
+      line.line.stroke(this.LINE_COLOR)
+      line.line.zIndex(1)
+      line.line.dash([])
+      line.control.fill(this.LINE_CONTROL_COLOR)
+      this.stage.container().style.cursor = 'default'
+    })
+    // 恢复目标字段的背景色
     if (targetFieldBackgroundRect) {
       targetFieldBackgroundRect.fill(this.TABLE_FIELD_BACKGROUND_COLOR)
     }
@@ -479,10 +526,14 @@ class ModelDesigner {
       // 找到所有节点，更新节点的位置
       this.elementLayer.children.forEach((shape) => {
         const clone = this.cloneElementLayer.findOne('.' + shape.name())
-        clone.position(shape.position())
+        // 线条元素
         if (clone instanceof Konva.Line) {
           clone.points(shape.points())
           clone.strokeWidth(2)
+        }
+        // 其它元素
+        else {
+          clone.position(shape.position())
         }
       })
     })
@@ -571,12 +622,18 @@ class ModelDesigner {
    * @returns {number[]}
    */
   computeLinePoints ({ field1, field2, table1, table2 }) {
-    let leftTable = table1
-    let rightTable = table2
+    // 两表间的最小距离
+    let leftTable = table1 // 最左侧的表
+    let topTable = table1 // 最高的表
     if (table1.absolutePosition().x > table2.absolutePosition().x) {
       leftTable = table2
-      rightTable = table1
     }
+    console.log(table1.absolutePosition().x, table2.absolutePosition().x, table1 === table2)
+    if (table1.absolutePosition().y > table2.absolutePosition().y) {
+      console.log('最高的表为右表')
+      topTable = table2
+    }
+    let topTablePosition = topTable.absolutePosition()
     let leftField = field1
     let rightField = field2
     if (field1.absolutePosition().x > field2.absolutePosition().x) {
@@ -593,46 +650,60 @@ class ModelDesigner {
       leftFieldPosition.y + 15
     ]
     // - 如果表之间存在距离，则坐标点为右侧 + 宽度
-    if (distance > 0) {
+    if (distance >= this.TABLE_MIN_DISTANCE) {
       firstPoint[0] = leftFieldPosition.x + this.TABLE_WIDTH
     } else {
       firstPoint[0] = leftFieldPosition.x
     }
-    // 计算高度差引起的转弯点
+    // 计算4个拐点
     let turnPoint1 = [...firstPoint]
     let turnPoint2 = [...firstPoint]
-    // - 存在高度差
-    const heightDifference = Math.abs(rightFieldPosition.y - leftFieldPosition.y)
-    if (heightDifference > 0) {
-      turnPoint1 = [
-        leftFieldPosition.x + this.TABLE_WIDTH + distance / 2,
-        leftFieldPosition.y + 15,
-      ]
-      // - 如果左侧x + 宽度 > 右侧x，则坐标点为左侧x - 30
-      if (leftFieldPosition.x + this.TABLE_WIDTH > rightFieldPosition.x) {
-        turnPoint1[0] = leftFieldPosition.x - 30
-      }
-      turnPoint2 = [
-        leftFieldPosition.x + this.TABLE_WIDTH + distance / 2,
-        rightFieldPosition.y + 15
-      ]
-      // - 如果左侧x + 宽度 > 右侧x，则坐标点为左侧x - 30
-      if (leftFieldPosition.x + this.TABLE_WIDTH > rightFieldPosition.x) {
-        turnPoint2[0] = leftFieldPosition.x - 30
-      }
+    let turnPoint3 = [...firstPoint]
+    let turnPoint4 = [...firstPoint]
+    // 拐点1：默认处理左右边存在距离，且距离大于最小间距
+    turnPoint1 = [
+      leftFieldPosition.x + this.TABLE_WIDTH + distance / 2,
+      leftFieldPosition.y + 15,
+    ]
+    turnPoint2 = [...turnPoint1]
+    turnPoint3 = [...turnPoint1]
+    // 拐点2：如果左表x + 宽度 + 表最小距离 > 右侧x，则坐标点为左侧x - 30（两表相隔太近）
+    if (leftFieldPosition.x + this.TABLE_WIDTH + this.TABLE_MIN_DISTANCE > rightFieldPosition.x) {
+      // 修改拐点1的x为左表 - 30
+      turnPoint1[0] = leftFieldPosition.x - 30
+      // 第二个转弯点的Y为最高的表y - 50
+      turnPoint2[0] = turnPoint1[0]
+      turnPoint2[1] = topTablePosition.y - 50
+    }
+    // 拐点3：如果左表x + 宽度 + 表最小距离 > 右侧x，则坐标点为右侧x + 30（两表相隔太近）
+    if (leftFieldPosition.x + this.TABLE_WIDTH + this.TABLE_MIN_DISTANCE > rightFieldPosition.x) {
+      // x = 右侧x + 宽度 + 30
+      turnPoint3[0] = rightFieldPosition.x + this.TABLE_WIDTH + 30
+      // y = 第二个拐点Y
+      turnPoint3[1] = turnPoint2[1]
+    }
+    // 拐点4：默认处理左右边存在距离，且距离大于最小间距
+    turnPoint4 = [
+      leftFieldPosition.x + this.TABLE_WIDTH + distance / 2,
+      rightFieldPosition.y + 15
+    ]
+    // - 如果左表x + 宽度 + 表最小距离 > 右侧x，则坐标点为右侧x + 30（两表相隔太近）
+    if (leftFieldPosition.x + this.TABLE_WIDTH + this.TABLE_MIN_DISTANCE > rightFieldPosition.x) {
+      // x = 右侧x + 宽度 + 30
+      turnPoint4[0] = rightFieldPosition.x + this.TABLE_WIDTH + 30
     }
     // 计算最后一个坐标点
     const lastPoint = [
       0,
       rightFieldPosition.y + 15
     ]
-    // - 如果左侧x+宽度超出右表x+宽度，则为右侧x + 宽度，否则为右侧x
-    if (leftFieldPosition.x + this.TABLE_WIDTH > rightFieldPosition.x + this.TABLE_WIDTH) {
+    // - 如果左侧x+宽度+最小距离 超出 右表x，则为右侧x + 宽度，否则为右侧x
+    if (leftFieldPosition.x + this.TABLE_WIDTH + this.TABLE_MIN_DISTANCE > rightFieldPosition.x) {
       lastPoint[0] = rightFieldPosition.x + this.TABLE_WIDTH
     } else {
       lastPoint[0] = rightFieldPosition.x
     }
-    // - 如果坐标点在坐标区域，则第一个坐标点为左表右侧x+宽度，最后坐标点为右表右侧x + 宽度
+    // - 如果坐标点在左表区域，则第一个坐标点为左表右侧x+宽度，最后坐标点为右表右侧x + 宽度
     if (lastPoint[0] > leftTable.absolutePosition().x &&
       lastPoint[0] < leftTable.absolutePosition().x + leftTable.width() &&
       lastPoint[1] > leftTable.absolutePosition().y
@@ -644,7 +715,30 @@ class ModelDesigner {
       turnPoint1[0] = rightFieldPosition.x + this.TABLE_WIDTH + 30
       turnPoint2[0] = rightFieldPosition.x + this.TABLE_WIDTH + 30
     }
-    return [...firstPoint, ...turnPoint1, ...turnPoint2, ...lastPoint]
+    return [...firstPoint, ...turnPoint1, ...turnPoint2, ...turnPoint3, ...turnPoint4, ...lastPoint]
+  }
+
+  /**
+   * 计算关联线控制点
+   *
+   * @param linePoints 关联线的坐标
+   * @param table1 表1元素
+   * @param table2 表2元素
+   * @returns {{x: number, y: *}}
+   */
+  computeLineControlPoints ({ linePoints, table1, table2 }) {
+    // 获取最后一个点x轴坐标
+    const lastPointX = linePoints[linePoints.length - 2]
+    // 情况1: 最后一个点在右表左侧
+    let rightTable = table2 // 最右侧的表
+    if (table1.absolutePosition().x > table2.absolutePosition().x) {
+      rightTable = table1
+    }
+    let offset = lastPointX >= rightTable.absolutePosition().x + this.TABLE_WIDTH ? 20 : -20
+    return {
+      x: linePoints[linePoints.length - 2] + offset,
+      y: linePoints[linePoints.length - 1]
+    }
   }
 
   /**
