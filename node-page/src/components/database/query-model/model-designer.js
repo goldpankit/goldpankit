@@ -16,9 +16,9 @@ class ModelDesigner {
   TABLE_OPERA_BACKGROUND_COLOR = '#f7f7f7'
   TABLE_BUTTON_BACKGROUND_COLOR = '#cb5053'
   TABLE_BUTTON_HOVER_BACKGROUND_COLOR = '#fc6a70'
-  LINE_COLOR = '#999'
+  LINE_COLOR = '#2e3444'
   LINE_HOVER_COLOR = '#fc6a70'
-  LINE_CONTROL_COLOR = '#2e3444'
+  LINE_CONTROL_COLOR = '#999'
   LINE_CONTROL_HOVER_COLOR = '#fc6a70'
   DEFAULT_FONT_COLOR = '#333'
   REVERSE_FONT_COLOR = '#fff'
@@ -43,6 +43,8 @@ class ModelDesigner {
   currentDragField = null
   // 当前拖动的表信息
   currentDragTable = null
+  // 当前拖动是否结束（不可以直接使用当前拖动的字段信息或表信息替代，拖拽的信息在完成拖拽时会延迟清空，导致在延迟时间内移动鼠标产生绘制线）
+  isDragEnd = false
   // 事件
   events = {}
 
@@ -72,7 +74,7 @@ class ModelDesigner {
     // 鼠标移动
     this.stage.on('mousemove', () => {
       // 不存在拖动元素，直接返回
-      if (!this.currentDragTable || !this.currentDragField) {
+      if (this.isDragEnd || !this.currentDragTable || !this.currentDragField) {
         return
       }
       // 绘制虚线
@@ -88,7 +90,6 @@ class ModelDesigner {
       }
       // - 获取this.currentDragField的x和y
       const pos = this.stage.getPointerPosition()
-      this.dashLine.scale({ x: 1 / this.elementLayer.scale().x, y: 1 / this.elementLayer.scale().y })
       this.dashLine.zIndex(10000)
       this.dashLine.opacity(1)
       this.dashLine.points([
@@ -107,6 +108,8 @@ class ModelDesigner {
       // 隐藏虚线
       this.dashLine.points([0, 0, 0, 0])
       this.dashLine.opacity(0)
+      // 标记为拖动结束，使鼠标移动时不再绘制虚线
+      this.isDragEnd = true
       // 清空拖拽字段，此处延迟50毫秒，避免字段组先监听到鼠标松开，导致获取不到拖拽元素引起关联字段失败
       setTimeout(() => {
         this.currentDragTable = null
@@ -159,7 +162,7 @@ class ModelDesigner {
       x,
       y,
       draggable: true,
-      zIndex: 10
+      zIndex: 100
     })
     // 创建表背景
     const background = new Konva.Rect({
@@ -269,6 +272,9 @@ class ModelDesigner {
       fieldDragBall.on('mousedown', () => {
         tableGroup.draggable(false)
         this.stage.draggable(false)
+        // 标记为拖拽结束为false
+        this.isDragEnd = false
+        // 记录当前拖动的元素
         this.currentDragField = field
         this.currentDragTable = table
       })
@@ -308,13 +314,21 @@ class ModelDesigner {
           targetField: field,
           targetFieldBackgroundRect: fieldBackground
         })
-        // 触发line:created事件
-        this.events['line:created'] && this.events['line:created']({
-          table: this.currentDragTable,
-          field: this.currentDragField,
-          targetTable: table,
-          targetField: field
-        })
+          .then(() => {
+            // 触发line:created事件
+            this.events['line:created'] && this.events['line:created']({
+              table: this.currentDragTable,
+              field: this.currentDragField,
+              targetTable: table,
+              targetField: field
+            })
+          })
+          .catch(e => {
+            // 触发line:create:error事件
+            this.events['line:create:error'] && this.events['line:create:error']({
+              message: e.message,
+            })
+          })
       })
       // 添加到字段分组
       fieldGroup.add(fieldBackground)
@@ -406,8 +420,10 @@ class ModelDesigner {
         field.__line.field1.__line = field.__line.field2.__line = null
       }
       // 删除表
-      this.tables = this.tables.filter(t => t.id !== table.id)
+      this.tables = this.tables.filter(t => t !== tableGroup)
       tableGroup.destroy()
+      // 重新绘制预览
+      this.redrawPreview()
     } catch (e) {
       console.error(e)
     }
@@ -423,87 +439,110 @@ class ModelDesigner {
    * @param isInit
    */
   createLine = ({ field, targetField, table, targetTable, targetFieldBackgroundRect }) => {
-    // 找到表对象和字段对象
-    const tableGroup = this.elementLayer.findOne(`#${table.id}`)
-    const targetTableGroup = this.elementLayer.findOne(`#${targetTable.id}`)
-    const fieldGroup = tableGroup.findOne(`#${field.name}`)
-    const targetFieldGroup = targetTableGroup.findOne(`#${targetField.name}`)
-    // 字段已被关联，不允许继续关联
-    if (fieldGroup.__line != null || targetFieldGroup.__line != null) {
-      this.events['line:create:error'] && this.events['line:create:error']({
-        message: '一个字段不允许关联多个字段！',
+    return new Promise((resolve ,reject) => {
+      // 找到表对象和字段对象
+      const tableGroup = this.elementLayer.findOne(`#${table.id}`)
+      const targetTableGroup = this.elementLayer.findOne(`#${targetTable.id}`)
+      const fieldGroup = tableGroup.findOne(`#${field.name}`)
+      const targetFieldGroup = targetTableGroup.findOne(`#${targetField.name}`)
+      // 字段已被关联，不允许继续关联
+      if (fieldGroup.__line != null || targetFieldGroup.__line != null) {
+        // 恢复背景色
+        if (targetFieldBackgroundRect) {
+          targetFieldBackgroundRect.fill(this.TABLE_FIELD_BACKGROUND_COLOR)
+        }
+        return reject(new Error('一个字段不允许关联多个字段'))
+      }
+      // 计算线坐标点
+      const points = this.computeLinePoints({
+        table1: tableGroup,
+        field1: fieldGroup,
+        table2: targetTableGroup,
+        field2: targetFieldGroup
       })
-      // 恢复背景色
+      // 计算删除球坐标点
+      const controlPoints = this.computeLineControlPoints({
+        linePoints: points,
+        table1: tableGroup,
+        table2: targetTableGroup
+      })
+      // 创建线
+      const line = fieldGroup.__line = targetFieldGroup.__line = {
+        table1: tableGroup,
+        field1: fieldGroup,
+        table2: targetTableGroup,
+        field2: targetFieldGroup,
+        // 线条
+        line: new Konva.Line({
+          name: `field_line_${Math.round(Math.random() * 10000)}`,
+          points: points,
+          stroke: this.LINE_COLOR,
+          strokeWidth: 2,
+          lineCap: 'round',
+          lineJoin: 'round',
+          zIndex: 1,
+          opacity: 0.8
+        }),
+        // 删除球
+        control: new Konva.Circle({
+          name: `field_line_control_${Math.round(Math.random() * 10000)}`,
+          x: controlPoints.x,
+          y: controlPoints.y,
+          radius: 10,
+          fill: this.LINE_CONTROL_COLOR,
+          draggable: false,
+          zIndex: 2
+        })
+      }
+      this.elementLayer.add(line.line)
+      this.elementLayer.add(line.control)
+      // 点击删除控制点，删除关联线
+      line.control.on('click', () => {
+        fieldGroup.__line.line.destroy()
+        fieldGroup.__line.control.destroy()
+        fieldGroup.__line = targetFieldGroup.__line = null
+        // 重新绘制预览
+        this.redrawPreview()
+        // 触发line:deleted事件
+        this.events['line:deleted'] && this.events['line:deleted']({
+          field,
+          targetField,
+          table,
+          targetTable
+        })
+      })
+      // 悬浮在控制点时更改颜色和关联线颜色
+      line.control.on('mouseover', () => {
+        line.line.stroke(this.LINE_HOVER_COLOR)
+        line.line.zIndex(10000)
+        line.line.dash([5, 5])
+        line.control.zIndex(10000)
+        line.control.fill(this.LINE_CONTROL_HOVER_COLOR)
+        line.table1.zIndex(10000)
+        line.table2.zIndex(10000)
+        // 修改手势为手指
+        this.stage.container().style.cursor = 'pointer'
+      })
+      // 离开小球时恢复小球颜色和关联线颜色
+      line.control.on('mouseout', () => {
+        line.line.stroke(this.LINE_COLOR)
+        line.line.zIndex(1)
+        line.line.dash([])
+        line.control.fill(this.LINE_CONTROL_COLOR)
+        line.table1.zIndex(10)
+        line.table2.zIndex(10)
+        this.stage.container().style.cursor = 'default'
+      })
+      // 恢复目标字段的背景色
       if (targetFieldBackgroundRect) {
         targetFieldBackgroundRect.fill(this.TABLE_FIELD_BACKGROUND_COLOR)
       }
-      return
-    }
-    // 计算线坐标点
-    const points = this.computeLinePoints({
-      table1: tableGroup,
-      field1: fieldGroup,
-      table2: targetTableGroup,
-      field2: targetFieldGroup
+      // 重置table的zIndex，让表都能覆盖在line上
+      this.tables.forEach(t => t.zIndex(100))
+      // 重新绘制预览
+      this.redrawPreview()
+      resolve()
     })
-    // 计算删除球坐标点
-    const controlPoints = this.computeLineControlPoints({
-      linePoints: points,
-      table1: tableGroup,
-      table2: targetTableGroup
-    })
-    // 创建线
-    const line = fieldGroup.__line = targetFieldGroup.__line = {
-      table1: tableGroup,
-      field1: fieldGroup,
-      table2: targetTableGroup,
-      field2: targetFieldGroup,
-      // 线条
-      line: new Konva.Line({
-        name: `field_line_${Math.round(Math.random() * 10000)}`,
-        points: points,
-        stroke: this.LINE_COLOR,
-        strokeWidth: 1,
-        lineCap: 'round',
-        lineJoin: 'round',
-        zIndex: 1
-      }),
-      // 删除球
-      control: new Konva.Circle({
-        name: `field_line_control_${Math.round(Math.random() * 10000)}`,
-        x: controlPoints.x,
-        y: controlPoints.y,
-        radius: 5,
-        fill: this.LINE_CONTROL_COLOR,
-        draggable: false,
-        zIndex: 2
-      })
-    }
-    this.elementLayer.add(line.line)
-    this.elementLayer.add(line.control)
-    // 悬浮在控制点时更改颜色和关联线颜色
-    line.control.on('mouseover', () => {
-      line.line.stroke(this.LINE_HOVER_COLOR)
-      line.line.zIndex(10000)
-      line.line.dash([5, 5])
-      line.control.fill(this.LINE_CONTROL_HOVER_COLOR)
-      // 修改手势为手指
-      this.stage.container().style.cursor = 'pointer'
-    })
-    // 离开小球时恢复小球颜色和关联线颜色
-    line.control.on('mouseout', () => {
-      line.line.stroke(this.LINE_COLOR)
-      line.line.zIndex(1)
-      line.line.dash([])
-      line.control.fill(this.LINE_CONTROL_COLOR)
-      this.stage.container().style.cursor = 'default'
-    })
-    // 恢复目标字段的背景色
-    if (targetFieldBackgroundRect) {
-      targetFieldBackgroundRect.fill(this.TABLE_FIELD_BACKGROUND_COLOR)
-    }
-    // 重新绘制预览
-    this.redrawPreview()
   }
 
   /**
@@ -628,9 +667,7 @@ class ModelDesigner {
     if (table1.absolutePosition().x > table2.absolutePosition().x) {
       leftTable = table2
     }
-    console.log(table1.absolutePosition().x, table2.absolutePosition().x, table1 === table2)
     if (table1.absolutePosition().y > table2.absolutePosition().y) {
-      console.log('最高的表为右表')
       topTable = table2
     }
     let topTablePosition = topTable.absolutePosition()
@@ -727,17 +764,17 @@ class ModelDesigner {
    * @returns {{x: number, y: *}}
    */
   computeLineControlPoints ({ linePoints, table1, table2 }) {
-    // 获取最后一个点x轴坐标
-    const lastPointX = linePoints[linePoints.length - 2]
-    // 情况1: 最后一个点在右表左侧
-    let rightTable = table2 // 最右侧的表
+    // 获取第一个点x轴坐标
+    const firstPointX = linePoints[0]
+    // 情况1: 最后一个点在左表左侧
+    let leftTable = table1 // 最右侧的表
     if (table1.absolutePosition().x > table2.absolutePosition().x) {
-      rightTable = table1
+      leftTable = table2
     }
-    let offset = lastPointX >= rightTable.absolutePosition().x + this.TABLE_WIDTH ? 20 : -20
+    let offset = firstPointX >= leftTable.absolutePosition().x + this.TABLE_WIDTH ? 20 : -20
     return {
-      x: linePoints[linePoints.length - 2] + offset,
-      y: linePoints[linePoints.length - 1]
+      x: linePoints[0] + offset,
+      y: linePoints[1]
     }
   }
 

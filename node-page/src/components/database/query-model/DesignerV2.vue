@@ -168,6 +168,13 @@ export default {
         })
       })
     },
+    // 打开SQL预览窗口
+    openSqlPreviewWindow () {
+      if (this.mainTable == null) {
+        return
+      }
+      this.model.previewTableId = this.mainTable.id
+    },
     // 删除表
     __deleteTable (table) {
       // 找到表
@@ -217,12 +224,37 @@ export default {
         })
         .catch(() => {})
     },
-    openSqlPreviewWindow () {
-      if (this.mainTable == null) {
-        return
+    // 删除线
+    __deleteLine ({ table, targetTable, field, targetField }) {
+      // 查找对应join
+      const joinIndex = this.model.joins.findIndex(join => {
+        return join.table.id === table.id && join.targetTable.id === targetTable.id
+      })
+      // 删除join线
+      if (joinIndex !== -1) {
+        const join = this.model.joins[joinIndex]
+        // 找到对应的on
+        const onIndex = join.ons.findIndex(on => {
+          return on.field.name === field.name && targetField.name === targetField.name
+        })
+        if (onIndex !== -1) {
+          join.ons.splice(onIndex, 1)
+        }
+        // 如果没有了关联关系，则删除join
+        if (join.ons.length === 0) {
+          this.model.joins.splice(joinIndex, 1)
+        }
       }
-      this.model.previewTableId = this.mainTable.id
-    }
+      // 删除聚合线
+      const aggIndex = this.model.aggregates.findIndex(agg => {
+        return agg.table.id === table.id &&
+          agg.targetTable.id === targetTable.id &&
+          agg.field.name === field.name &&
+          agg.targetField.name === targetField.name
+      })
+      this.model.aggregates.splice(aggIndex, 1)
+      this.$emit('change')
+    },
   },
   mounted () {
     MD = new ModelDesigner('.stage')
@@ -281,6 +313,10 @@ export default {
     // 删除表事件
     MD.on('table:delete', ({ table }) => {
       this.__deleteTable(table)
+    })
+    // 删除关联线事件
+    MD.on('line:deleted', ({ table, targetTable, field, targetField }) => {
+      this.__deleteLine({ table, targetTable, field, targetField })
     })
   }
 }
