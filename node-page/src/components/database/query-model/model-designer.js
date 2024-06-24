@@ -5,12 +5,14 @@ class ModelDesigner {
   TABLE_WIDTH = 200
   TABLE_TITLE_HEIGHT = 40
   TABLE_FIELD_HEIGHT = 30
-  TABLE_TITLE_BACKGROUND_COLOR = '#e0e0e0'
-  TABLE_FIELD_BACKGROUND_COLOR = '#f7f7f7'
-  TABLE_BORDER_COLOR = '#000'
+  TABLE_TITLE_BACKGROUND_COLOR = '#fc6a70'
+  TABLE_FIELD_BACKGROUND_COLOR = '#fff'
+  TABLE_FIELD_BORDER_COLOR = '#ccc'
+  TABLE_FIELD_HOVER_BACKGROUND_COLOR = '#f0f0f0'
+  TABLE_OPERA_BACKGROUND_COLOR = '#f7f7f7'
   LINE_COLOR = '#999'
   DEFAULT_FONT_COLOR = '#333'
-  DEFAULT_BORDER_COLOR = '#fc6a70'
+  REVERSE_FONT_COLOR = '#fff'
   FONT_SIZE_TITLE = 16
   // 画布基础信息
   stageWidth = null
@@ -143,8 +145,8 @@ class ModelDesigner {
     const tableGroup = new Konva.Group({
       id: table.id,
       name: `table_${table.name}_${Math.round(Math.random() * 10000)}`,
-      width: this.TABLE_WIDTH + 4,
-      height: this.TABLE_TITLE_HEIGHT + 13,
+      width: this.TABLE_WIDTH,
+      height: this.TABLE_TITLE_HEIGHT + 20,
       x,
       y,
       draggable: true,
@@ -152,39 +154,58 @@ class ModelDesigner {
     })
     // 创建表背景
     const background = new Konva.Rect({
-      width: this.TABLE_WIDTH + 4,
-      height: this.TABLE_TITLE_HEIGHT + 13,
-      x: -2,
-      y: -10,
-      fill: this.DEFAULT_BORDER_COLOR,
+      width: this.TABLE_WIDTH,
+      height: this.TABLE_TITLE_HEIGHT + 20,
+      x: 0,
+      y: -20,
+      fill: this.TABLE_OPERA_BACKGROUND_COLOR,
+      stroke: this.TABLE_FIELD_BORDER_COLOR,
+      strokeWidth: 1,
       // 添加圆弧
       cornerRadius: [10, 10, 10, 10],
-      cornerStrokeWidth: 2,
-      cornerStroke: this.DEFAULT_BORDER_COLOR,
-      shadowColor: '#999',
-      shadowBlur: 5,
-      shadowOffset: { x: 1, y: 1 },
-      shadowOpacity: 0.5
+      cornerStrokeWidth: 1,
+      cornerStroke: this.TABLE_FIELD_BORDER_COLOR
     })
     tableGroup.add(background)
+    // 创建删除按钮
+    const deleteButton = new Konva.Circle({
+      x: tableGroup.width() - 15,
+      y: -10,
+      radius: 5,
+      fill: '#cb5053',
+      draggable: false,
+    })
+    deleteButton.on('click', () => {
+      this.events['table:delete'] && this.events['table:delete']({
+        table,
+        tableGroup
+      })
+    })
+    deleteButton.on('mouseover', () => {
+      deleteButton.fill('#fc6a70')
+    })
+    deleteButton.on('mouseout', () => {
+      deleteButton.fill('#cb5053')
+    })
+    tableGroup.add(deleteButton)
     // 创建标题背景
     const titleBackground = new Konva.Rect({
-      x: 0,
+      x: -2,
       y: 0,
-      width: this.TABLE_WIDTH,
+      width: this.TABLE_WIDTH + 4,
       height: this.TABLE_TITLE_HEIGHT,
       fill: this.TABLE_TITLE_BACKGROUND_COLOR,
-      stroke: '#999',
+      stroke: this.TABLE_TITLE_BACKGROUND_COLOR,
       strokeWidth: 1
     })
     // 创建标题
     const title = new Konva.Text({
       x: 10,
-      y: 3,
+      y: 5,
       text: table.name,
       fontSize: this.FONT_SIZE_TITLE,
       fontStyle: 'bold',
-      fill: this.DEFAULT_FONT_COLOR,
+      fill: this.REVERSE_FONT_COLOR,
       width: this.TABLE_WIDTH,
       height: this.TABLE_TITLE_HEIGHT,
       lineHeight: 2
@@ -210,10 +231,10 @@ class ModelDesigner {
         width: this.TABLE_WIDTH,
         height: this.TABLE_FIELD_HEIGHT,
         fill: this.TABLE_FIELD_BACKGROUND_COLOR,
-        stroke: '#999',
-        strokeWidth: 1,
+        stroke: this.TABLE_FIELD_BORDER_COLOR,
+        strokeWidth: 0.5,
         cornerRadius,
-        cornerStrokeWidth: 1,
+        cornerStrokeWidth: 0.5,
         cornerStroke: '#ccc'
       })
       // 文字
@@ -252,9 +273,9 @@ class ModelDesigner {
       })
       // 为字段组添加鼠标悬浮事件
       fieldGroup.on('mouseover', () => {
-        // 当this.currentDragField不为null时，修改背景色为红色
+        // 当this.currentDragField不为null时，修改背景色
         if (this.currentDragField && this.currentDragTable !== table) {
-          fieldBackground.fill(this.TABLE_TITLE_BACKGROUND_COLOR)
+          fieldBackground.fill(this.TABLE_FIELD_HOVER_BACKGROUND_COLOR)
         }
       })
       // 为字段组添加鼠标离开事件
@@ -344,6 +365,36 @@ class ModelDesigner {
     // 触发change事件
     this.events.change && this.events.change()
     return tableGroup
+  }
+
+  /**
+   * 删除表
+   *
+   * @param table
+   */
+  deleteTable (table) {
+    try {
+      const tableGroup = this.elementLayer.findOne(`#${table.id}`)
+      if (tableGroup == null) {
+        console.warn('删除表，但在设计器中找到表元素！', table)
+        return
+      }
+      // 获取表中所有字段
+      const fields = tableGroup.find('.field')
+      // 删除字段和对应字段的关联线
+      for (const field of fields) {
+        if (!field.__line) {
+          continue
+        }
+        field.__line.line.destroy()
+        field.__line.field1.__line = field.__line.field2.__line = null
+      }
+      // 删除表
+      this.tables = this.tables.filter(t => t.id !== table.id)
+      tableGroup.destroy()
+    } catch (e) {
+      console.error(e)
+    }
   }
 
   /**

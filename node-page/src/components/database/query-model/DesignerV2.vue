@@ -168,6 +168,55 @@ export default {
         })
       })
     },
+    // 删除表
+    __deleteTable (table) {
+      // 找到表
+      const tableIndex = this.model.tables.findIndex(t => t.id === table.id)
+      let promise = Promise.resolve()
+      if (table.type === 'MAIN' && this.model.tables.length > 1) {
+        promise = this.deleteConfirm(`删除主表会删除所有的子表及关联关系，确认删除嘛？`)
+      }
+      promise
+        .then(() => {
+          // 删除主表，清空一切
+          if (table.type === 'MAIN') {
+            // 从设计器中删除所有表
+            for (const t of this.model.tables) {
+              MD.deleteTable(t)
+            }
+            this.model.tables = []
+            this.model.joins = []
+            this.model.aggregates = []
+            this.$emit('change')
+            return
+          }
+          // 删除join关系
+          this.model.joins = this.model.joins.filter(join => {
+            if (join.table.id === table.id) {
+              return false
+            }
+            if (join.targetTable.id === table.id) {
+              return false
+            }
+            return true
+          })
+          // 删除聚合关系
+          this.model.aggregates = this.model.aggregates.filter(agg => {
+            if (agg.table.id === table.id) {
+              return false
+            }
+            if (agg.targetTable.id === table.id) {
+              return false
+            }
+            return true
+          })
+          // 删除table
+          MD.deleteTable(table)
+          this.model.tables.splice(tableIndex, 1)
+          this.$emit('change')
+        })
+        .catch(() => {})
+    },
     openSqlPreviewWindow () {
       if (this.mainTable == null) {
         return
@@ -227,6 +276,11 @@ export default {
     // 绑定创建关联线失败事件
     MD.on('line:create:error', (err) => {
       this.$tip.warning(err.message)
+    })
+
+    // 删除表事件
+    MD.on('table:delete', ({ table }) => {
+      this.__deleteTable(table)
     })
   }
 }
