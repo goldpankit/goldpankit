@@ -6,9 +6,12 @@ class ModelDesigner {
   TABLE_TITLE_HEIGHT = 40
   TABLE_FIELD_HEIGHT = 30
   TABLE_TITLE_BACKGROUND_COLOR = '#fc6a70'
+  SUB_TABLE_TITLE_BACKGROUND_COLOR = '#2e3444'
   TABLE_FIELD_BACKGROUND_COLOR = '#fff'
   TABLE_FIELD_BORDER_COLOR = '#ccc'
   TABLE_FIELD_HOVER_BACKGROUND_COLOR = '#f0f0f0'
+  TABLE_FIELD_DRAG_BALL_BACKGROUND_COLOR = '#4a536e'
+  TABLE_FIELD_DRAG_BALL_HOVER_BACKGROUND_COLOR = '#90a1d7'
   TABLE_OPERA_BACKGROUND_COLOR = '#f7f7f7'
   LINE_COLOR = '#999'
   DEFAULT_FONT_COLOR = '#333'
@@ -194,8 +197,8 @@ class ModelDesigner {
       y: 0,
       width: this.TABLE_WIDTH + 4,
       height: this.TABLE_TITLE_HEIGHT,
-      fill: this.TABLE_TITLE_BACKGROUND_COLOR,
-      stroke: this.TABLE_TITLE_BACKGROUND_COLOR,
+      fill: table.type === 'MAIN' ? this.TABLE_TITLE_BACKGROUND_COLOR : this.SUB_TABLE_TITLE_BACKGROUND_COLOR,
+      stroke: table.type === 'MAIN' ? this.TABLE_TITLE_BACKGROUND_COLOR : this.SUB_TABLE_TITLE_BACKGROUND_COLOR,
       strokeWidth: 1
     })
     // 创建标题
@@ -254,7 +257,7 @@ class ModelDesigner {
         x: 15,
         y: 15,
         radius: 4,
-        fill: '#008fab'
+        fill: this.TABLE_FIELD_DRAG_BALL_BACKGROUND_COLOR
       })
       // 为拖拽小球添加鼠标按下事件，将对象记录至this.currentDragField
       fieldDragBall.on('mousedown', () => {
@@ -265,11 +268,11 @@ class ModelDesigner {
       })
       // 悬浮在拖拽小球上时修改鼠标样式
       fieldDragBall.on('mouseover', () => {
-        fieldDragBall.fill('#00d8ff')
+        fieldDragBall.fill(this.TABLE_FIELD_DRAG_BALL_HOVER_BACKGROUND_COLOR)
       })
       // 鼠标离开小球
       fieldDragBall.on('mouseout', () => {
-        fieldDragBall.fill('#008fab')
+        fieldDragBall.fill(this.TABLE_FIELD_DRAG_BALL_BACKGROUND_COLOR)
       })
       // 为字段组添加鼠标悬浮事件
       fieldGroup.on('mouseover', () => {
