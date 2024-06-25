@@ -18,7 +18,8 @@ export default {
   },
   data () {
     return {
-      value: this.modelValue
+      value: this.modelValue,
+      changeTimeout: null
     }
   },
   watch: {
@@ -33,7 +34,12 @@ export default {
     handleInput (e) {
       this.value = e.target.innerText
       this.$emit('update:modelValue', e.target.innerText)
-      this.$emit('change', e.target.innerText)
+      if (this.changeTimeout != null) {
+        clearTimeout(this.changeTimeout)
+      }
+      this.changeTimeout = setTimeout(() => {
+        this.$emit('change', e.target.innerText)
+      }, 300)
     },
     // 失去焦点时修改焦点值，避免别名、字段名等信息通过v-model直接修改后导致表格重新渲染（会导致输入不连贯）
     handleBlur () {

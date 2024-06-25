@@ -11,10 +11,21 @@
     </div>
     <div class="preview-wrap sql-preview-wrap">
       <h2>SQL预览</h2>
-      <TableSetting v-if="mainTable != null" v-show="false" ref="tableSetting" :table="mainTable" :joins="mainTableJoins" :aggregates="mainTableAggregates"/>
+      <!-- 预览缩略 -->
       <div v-if="rerenderSqlPreview" class="sql-preview-editor"></div>
+      <!-- 预览缩略盖板 -->
       <div class="sql-preview-panel" @click="openSqlPreviewWindow"></div>
     </div>
+    <!-- 预览窗口 -->
+    <TableSetting
+      v-if="model != null"
+      ref="tableSetting"
+      :visible="model.visibleSQLPreviewWindow"
+      :table="mainTable"
+      :joins="mainTableJoins"
+      :aggregates="mainTableAggregates"
+      @field:change="$emit('change')"
+    />
   </div>
 </template>
 
@@ -189,7 +200,11 @@ export default {
       if (this.mainTable == null) {
         return
       }
-      this.model.previewTableId = this.mainTable.id
+      this.model.visibleSQLPreviewWindow = true
+    },
+    // 创建虚拟字段
+    createVirtualField ({ field }) {
+      console.log('创建虚拟字段', field)
     },
     // 删除表
     __deleteTable (table) {
@@ -345,7 +360,7 @@ export default {
     MD.on('stage:click', (e) => {
       // 关闭SQL查看，添加this.model判断，避免没有模型选中时报错
       if (e.target.nodeType === 'Stage' && this.model) {
-         this.model.previewTableId = null
+         this.model.visibleSQLPreviewWindow = false
       }
     })
 

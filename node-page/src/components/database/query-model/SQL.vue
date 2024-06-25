@@ -153,15 +153,17 @@ export default {
     },
     // 创建虚拟字段
     createVirtualField () {
-      this.table.fields.push({
+      const newField = {
         name: 'virtual1',
         alias: 'virtual1',
         type: 'int',
-        comment: 'Virtual field 1',
+        comment: '虚拟字段',
         isVirtual: true,
         visible: true
-      })
-      this.handleChange()
+      }
+      this.table.fields.push(newField)
+      this.$emit('field:created', { field: newField })
+      this.$emit('field:change')
     },
     // 获取字段聚合信息
     getAggregate (field) {
@@ -177,8 +179,10 @@ export default {
     },
     // 删除虚拟字段
     deleteVirtualField (index) {
+      const field = this.table.fields[index]
       this.table.fields.splice(index, 1)
-      this.handleChange()
+      this.$emit('field:deleted', { index, field })
+      this.$emit('field:change')
     },
     // 获取聚合函数宽度
     __getAggregateFunctionWidth (functionName) {

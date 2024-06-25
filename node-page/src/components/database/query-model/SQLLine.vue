@@ -8,12 +8,13 @@
         <el-button v-show="visible" icon="View" @click="$emit('update:visible', false)"></el-button>
         <el-button v-show="!visible" icon="Hide" @click="$emit('update:visible', true)"></el-button>
       </li>
-      <li v-if="type === 'virtual-field'">
-        <el-button icon="Delete" @click="$emit('field:delete', false)"></el-button>
-      </li>
-      <li v-if="type === 'select'">
-        <el-button icon="Plus" @click="$emit('field:create')"></el-button>
-      </li>
+      <!-- 暂时去掉虚拟字段 -->
+<!--      <li v-if="type === 'virtual-field'">-->
+<!--        <el-button icon="Delete" @click="$emit('field:delete', false)"></el-button>-->
+<!--      </li>-->
+<!--      <li v-if="type === 'select'">-->
+<!--        <el-button icon="Plus" @click="$emit('field:create')"></el-button>-->
+<!--      </li>-->
     </ul>
   </div>
 </template>

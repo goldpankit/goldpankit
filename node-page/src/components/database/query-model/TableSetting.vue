@@ -1,5 +1,5 @@
 <template>
-  <div class="table-setting" :class="{ visible: table != null }">
+  <div class="table-setting" :class="{ visible }">
     <div class="toolbar">
       <h2>SQL预览</h2>
       <div class="opera">
@@ -8,7 +8,14 @@
       </div>
     </div>
     <div class="wrap" v-if="table != null">
-      <SQL :aggregates="aggregates" :joins="joins" :table="table" @field:change="handleChange"/>
+      <SQL
+        :table="table"
+        :joins="joins"
+        :aggregates="aggregates"
+        @field:change="$emit('field:change', $event)"
+        @field:created="$emit('field:created', $event)"
+        @field:deleted="$emit('field:deleted', $event)"
+      />
     </div>
     <QueryResultPreview ref="queryResultPreview"/>
   </div>
@@ -27,6 +34,9 @@ export default {
   name: "TableSetting",
   components: {SQL, QueryResultPreview, SQLLineKeywordSelect, DynamicWidthInput, SQLLine},
   props: {
+    visible: {
+      default: true
+    },
     // 表
     table: {
       required: true
@@ -87,10 +97,6 @@ export default {
     execute () {
       const sql = this.__getSql()
       this.$refs.queryResultPreview.open(sql.fields, sql.sql, [])
-    },
-    // 修改设置
-    handleChange () {
-      this.$emit('field:change')
     },
     // 获取sql语句
     __getSql () {

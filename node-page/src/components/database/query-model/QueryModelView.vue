@@ -24,35 +24,21 @@
         @deleted="handleModelDeleted"
       />
       <div class="designer-wrap">
-        <div v-if="currentModel != null" class="toolbar">
-          <!-- 线条类型 -->
-          <ul class="line-types">
-            <li :class="{selected: currentModel.lineType === 'join'}" @click="currentModel.lineType = 'join'">
-              <em class="join-line"></em>
-              <label>{{$t('database.joinLine')}}</label>
-            </li>
-            <li :class="{selected: currentModel.lineType === 'aggregate'}" @click="currentModel.lineType = 'aggregate'">
-              <em class="aggregate-line"></em>
-              <label>{{$t('database.aggregateLine')}}</label>
-            </li>
-          </ul>
-        </div>
+<!--        <div v-if="currentModel != null" class="toolbar">-->
+<!--          &lt;!&ndash; 线条类型 &ndash;&gt;-->
+<!--          <ul class="line-types">-->
+<!--            <li :class="{selected: currentModel.lineType === 'join'}" @click="currentModel.lineType = 'join'">-->
+<!--              <em class="join-line"></em>-->
+<!--              <label>{{$t('database.joinLine')}}</label>-->
+<!--            </li>-->
+<!--            <li :class="{selected: currentModel.lineType === 'aggregate'}" @click="currentModel.lineType = 'aggregate'">-->
+<!--              <em class="aggregate-line"></em>-->
+<!--              <label>{{$t('database.aggregateLine')}}</label>-->
+<!--            </li>-->
+<!--          </ul>-->
+<!--        </div>-->
         <!-- 设计器 -->
-<!--        <QueryModelDesigner-->
-<!--          v-if="currentModel != null"-->
-<!--          ref="designer"-->
-<!--          :model="currentModel"-->
-<!--          :field-height="30"-->
-<!--          @change="saveModel"-->
-<!--        />-->
         <DesignerV2 :model="currentModel" @change="saveModel"/>
-        <!-- 表设置 -->
-        <TableSetting
-          :table="currentTable"
-          :joins="joins"
-          :aggregates="aggregates"
-          @field:change="handleSettingChange"
-        />
         <div v-if="queryModels.length === 0" class="no-model-tip">
           <div class="tip-wrap">
             <h4>{{$t('database.queryModelEmptyTipTitle')}}</h4>
@@ -107,8 +93,6 @@ export default {
       queryModels: [],
       // 表集合
       tables: [],
-      // 关联线类型
-      lineType: 'join',
       // 当前选中的数据库连接失败消息
       connectError: null,
       // 当前选中的模型
@@ -238,6 +222,11 @@ export default {
       const models = database.models
       const deletedTables = []
       this.queryModels = models.map(model => {
+        // 是否展示SQL预览窗口
+        model.visibleSQLPreviewWindow = false
+        // 默认选择关联线类型为join
+        model.lineType = 'join'
+        // 调整tables数据
         model.tables = model.tables.map(table => {
           const dbTable = this.tables.find(tb => tb.name.toLowerCase() === table.name.toLowerCase())
           // 如果表不存在 && 不是虚拟表，则返回null（表已被删除）
