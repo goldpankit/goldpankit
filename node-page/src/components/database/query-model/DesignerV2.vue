@@ -79,7 +79,7 @@ export default {
       this.refreshSQL()
     },
     'model.__lineType' () {
-      if (MD != null) {
+      if (MD != null && this.model != null) {
         MD.lineType(this.model.__lineType)
       }
     }
