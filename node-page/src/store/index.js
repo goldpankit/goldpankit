@@ -80,10 +80,13 @@ export default new Vuex.Store({
       }
     },
     setCurrentDatabaseDetail (state, database) {
-      state.currentDatabaseDetail = database
+      const newDatabase = { ...database }
+      // 删除数据模型，避免模型中存在循环引用（table=>fields=>table）
+      delete newDatabase.models
+      state.currentDatabaseDetail = newDatabase
       window.localStorage.removeItem('CURRENT_DATABASE_DETAIL')
       if (database != null) {
-        window.localStorage.setItem('CURRENT_DATABASE_DETAIL', JSON.stringify(database))
+        window.localStorage.setItem('CURRENT_DATABASE_DETAIL', JSON.stringify(newDatabase))
       }
     },
     setInstallData (state, value) {
