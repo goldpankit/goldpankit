@@ -6,10 +6,10 @@
         <DataSourceSelect :model-value="currentDatabase" :with-block="true"/>
       </div>
     </div>
-    <div v-else-if="connectError != null" class="connect-error-tip">
+    <div v-else-if="currentDatabaseConnect.error != null" class="connect-error-tip">
       <div class="tip-wrap">
         <h4>数据库连接失败</h4>
-        <p>{{connectError}}</p>
+        <p>{{currentDatabaseConnect.error}}</p>
         <el-button @click="$refs.operaDataSourceWindow.open(currentProject, getCurrentDatabaseDetail())">修改数据库信息</el-button>
       </div>
     </div>
@@ -43,6 +43,7 @@
         </div>
       </div>
     </template>
+    <!-- 用于发起修改数据库信息窗口 -->
     <OperaDataSourceWindow ref="operaDataSourceWindow" @success="fetchTables"/>
   </div>
 </template>
@@ -94,7 +95,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['globalLoading', 'databases', 'currentProject', 'currentDatabase']),
+    ...mapState(['globalLoading', 'databases', 'currentProject', 'currentDatabase', 'currentDatabaseConnect']),
     // 当前表
     currentTable () {
       if (this.currentModel == null || this.currentModel.previewTableId == null) {
@@ -118,18 +119,6 @@ export default {
     }
   },
   watch: {
-    // 监听数据库加载完成动作，加载完成后查询数据库模型
-    'globalLoading.databases': {
-      immediate: true,
-      handler (newValue) {
-        if (!newValue) {
-          this.fetchTables()
-        }
-      }
-    },
-    currentDatabase () {
-      this.fetchTables()
-    }
   },
   methods: {
     ...mapActions(['fetchTables']),
@@ -267,9 +256,9 @@ $--menu-width: 300px;
   .table-library {
     width: $--menu-width;
     flex-shrink: 0;
-    position: fixed;
+    position: absolute;
     left: 0;
-    top: 68px;
+    top: 0;
     bottom: 0;
     z-index: 9;
     background-color: #fff;

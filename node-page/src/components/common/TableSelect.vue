@@ -24,6 +24,8 @@
       <!-- 刷新按钮 -->
       <el-button class="button-icon" type="primary" icon="Refresh" @click="fetchTables"/>
     </div>
+    <!-- 数据库连接失败提示 -->
+    <p v-if="currentDatabaseConnect.error != null" class="connect-error">数据库连接失败：{{ currentDatabaseConnect.error }}</p>
     <!-- 字段设置（含字段选择和字段设置表） -->
     <ul v-if="currentTable != null && fieldVariableGroup.length > 0" class="field-settings">
       <li v-for="group of fieldVariableGroup" :key="group.label">
@@ -62,7 +64,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['tables', 'globalLoading']),
+    ...mapState(['tables', 'globalLoading', 'currentDatabaseConnect']),
     // 获取表字段变量组，组中包含了表字段的扩展变量
     fieldVariableGroup () {
       return this.variable.children || []
@@ -129,6 +131,11 @@ export default {
       height: 40px;
     }
   }
+}
+.connect-error {
+  color: var(--color-danger);
+  line-height: 20px;
+  margin-top: 5px;
 }
 .field-settings {
   width: 100%;

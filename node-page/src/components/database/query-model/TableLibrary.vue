@@ -282,6 +282,13 @@ export default {
   }
   .table-list-wrap {
     flex-grow: 1;
+    .connect-error {
+      padding: 20px;
+      color: var(--color-danger);
+      h4 {
+        margin-bottom: 5px;
+      }
+    }
   }
   .block {
     border-top: 1px solid #ccc;

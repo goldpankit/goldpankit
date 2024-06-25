@@ -60,7 +60,7 @@
 </template>
 
 <script>
-import {mapState} from 'vuex'
+import {mapActions, mapMutations, mapState} from 'vuex'
 import DatabaseTypeSelect from './DatabaseTypeSelect'
 import FormTip from '@/components/common/FormTip'
 import FormItemTip from '@/components/common/FormItemTip'
@@ -134,6 +134,8 @@ export default {
     }
   },
   methods: {
+    ...mapMutations(['setCurrentDatabase']),
+    ...mapActions(['fetchDatabases']),
     // 打开窗口
     open (projectId, data) {
       fetchById(projectId)
@@ -263,6 +265,8 @@ export default {
       })
         .then(data => {
           this.visible = false
+          this.setCurrentDatabase(data)
+          this.fetchDatabases()
           this.$emit('success', data)
         })
         .catch(e => {
@@ -279,8 +283,15 @@ export default {
         database: form
       })
         .then(data => {
-          this.visible = false
-          this.$emit('success', data)
+          // 获取数据库成功后再触发成功事件，避免修改成功后使用了旧的数据库信息重新连接（设计模型=>选择一个错误的数据库=>修改成正确的数据库信=>确认编辑=>获取表记录）
+          this.fetchDatabases()
+            .then(() => {
+              this.visible = false
+              this.$emit('success', data)
+            })
+            .catch(e => {
+              this.$tip.apiFailed(e)
+            })
         })
         .catch(e => {
           this.$tip.apiFailed(e)

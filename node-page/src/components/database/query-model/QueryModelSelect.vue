@@ -21,9 +21,13 @@
     <el-button class="button-icon" type="primary" @click="$refs.queryModelWindow.open()">
       <img src="/images/database/icon-design.svg" alt="查询模型">
     </el-button>
+    <p></p>
     <!-- 查询模型设计窗口 -->
     <QueryModelWindow ref="queryModelWindow"/>
   </div>
+  <!-- 数据库连接失败提示 -->
+  <p v-if="currentDatabaseConnect.error != null" class="connect-error">数据库连接失败：{{ currentDatabaseConnect.error }}</p>
+  <!-- 字段变量组设置 -->
   <ul v-if="currentModel != null && fieldVariableGroup.length > 0" class="field-settings">
     <li v-for="group of fieldVariableGroup" :key="group.label">
       <QueryModelFieldSetting
@@ -56,7 +60,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['models', 'globalLoading']),
+    ...mapState(['models', 'globalLoading', 'currentDatabaseConnect']),
     // 获取模型字段变量组，组中包含了表字段的扩展变量
     fieldVariableGroup () {
       return this.variable.children || []
@@ -118,6 +122,11 @@ export default {
   .el-select {
     flex-grow: 1;
   }
+}
+.connect-error {
+  color: var(--color-danger);
+  line-height: 20px;
+  margin-top: 5px;
 }
 .field-settings {
   width: 100%;

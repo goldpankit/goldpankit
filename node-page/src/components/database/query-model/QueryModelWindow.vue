@@ -57,7 +57,7 @@ export default {
   //top: 1%;
 
   .el-dialog__header {
-    --header-height: 55px;
+    --header-height: 63px;
     background: var(--background-color);
     margin-right: 0;
     display: flex;

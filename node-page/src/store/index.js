@@ -38,6 +38,10 @@ export default new Vuex.Store({
     currentProjectDetail,
     // 当前数据库
     currentDatabase,
+    // 当前数据库连接状态
+    currentDatabaseConnect: {
+      error: null
+    },
     // 帮助中心，服务于当前查看的帮助内容
     help: {
       code: null
@@ -155,9 +159,10 @@ export default new Vuex.Store({
       }
     },
     setCurrentDatabase (state, database) {
+      console.log('选中数据库', database)
       state.currentDatabase = database
       window.localStorage.removeItem('CURRENT_DATABASE')
-      if (database != null) {
+      if (database != null && database !== '') {
         window.localStorage.setItem('CURRENT_DATABASE', database)
       }
     },
@@ -238,7 +243,6 @@ export default new Vuex.Store({
               reject(e)
             })
             .finally(() => {
-              console.log('进来了')
               state.globalLoading.databases = false
             })
         }, 300)
@@ -247,6 +251,9 @@ export default new Vuex.Store({
     // 获取数据库表
     fetchTables ({ state, commit, getters }) {
       return new Promise((resolve, reject) => {
+        // 清空数据库连接错误信息
+        state.currentDatabaseConnect.error = null
+        // 如果不存在没有选中数据库，则清空表集合
         const currentDatabaseDetail = getters.getCurrentDatabaseDetail
         if (currentDatabaseDetail == null) {
           commit('setTables', [])
@@ -269,7 +276,9 @@ export default new Vuex.Store({
             resolve(tables)
           })
           .catch(e => {
-            console.log('获取数据库表失败', e)
+            commit('setTables', [])
+            commit('setModels', [])
+            state.currentDatabaseConnect.error = e.message
             reject(e)
           })
           .finally(() => {

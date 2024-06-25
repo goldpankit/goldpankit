@@ -34,7 +34,7 @@
       </template>
     </el-select>
     <el-button v-if="withCreateButton" class="button-icon" type="primary" icon="Plus" @click="openCreateDatabaseWindow"></el-button>
-    <OperaDataSourceWindow ref="operaDataSourceWindow" @success="handleCreateSuccess"/>
+    <OperaDataSourceWindow ref="operaDataSourceWindow"/>
   </div>
 </template>
 
@@ -99,16 +99,6 @@ export default {
       this.setCurrentDatabase(databaseId)
       this.$emit('update:modelValue', databaseId)
       this.$emit('change', databaseId)
-    },
-    // 创建完成
-    handleCreateSuccess (databaseId) {
-      this.fetchDatabases()
-        .then(() => {
-          this.handleChange(databaseId)
-        })
-        .catch(e => {
-          this.$tip.apiFailed(e)
-        })
     }
   }
 }
