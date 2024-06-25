@@ -36,10 +36,12 @@ export default {
     // 当前项目变化时，重新加载数据库列表
     currentProjectDetail () {
       this.fetchDatabases()
+        .catch(() => {})
     },
     // 切换数据库时，重新加载表集合，加载表结合会自动更新模型集合
     currentDatabase () {
       this.fetchTables()
+        .catch(() => {})
     }
   },
   methods: {
@@ -51,7 +53,9 @@ export default {
       .then(() => {
         // 数据库加载完成后，获取数据库表（如果当前选择了数据库），获取数据库时会自动更新模型集合
         this.fetchTables()
+          .catch(() => {})
       })
+      .catch(() => {})
   }
 }
 </script>

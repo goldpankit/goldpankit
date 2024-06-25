@@ -115,6 +115,17 @@ export default {
     }
   },
   watch: {
+    // 模型加载完成后，默认选中第一个模型
+    'globalLoading.models': {
+      immediate: true,
+      handler () {
+        if (this.models.length > 0) {
+          this.currentModel = this.models[0]
+        } else {
+          this.currentModel = null
+        }
+      }
+    }
   },
   methods: {
     ...mapActions(['fetchTables']),
@@ -146,7 +157,6 @@ export default {
     },
     // 开始拖动表放置在设计器中
     handleDragStart (tableName) {
-      console.log('tableName', tableName)
       if (this.currentModel == null) {
         return
       }

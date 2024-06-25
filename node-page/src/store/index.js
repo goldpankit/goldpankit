@@ -246,7 +246,7 @@ export default new Vuex.Store({
               resolve(data)
             })
             .catch(e => {
-              console.log('获取项目数据库失败', e)
+              console.error('获取项目数据库失败', e)
               reject(e)
             })
             .finally(() => {
@@ -283,6 +283,7 @@ export default new Vuex.Store({
             resolve(tables)
           })
           .catch(e => {
+            console.error('获取表失败', e)
             commit('setTables', [])
             commit('setModels', [])
             state.currentDatabaseConnect.error = e.message
