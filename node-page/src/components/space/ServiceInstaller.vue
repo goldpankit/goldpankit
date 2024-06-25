@@ -72,8 +72,8 @@
                 </ul>
                 <!-- 选择的数据库信息 -->
                 <FormItemTip
-                  v-if="variable.inputType === 'datasource' && currentDatabaseDetail != null"
-                  :content="`路径：${currentDatabaseDetail.host}:${currentDatabaseDetail.port}/${currentDatabaseDetail.schema}`"
+                  v-if="variable.inputType === 'datasource' && getCurrentDatabaseDetail() != null"
+                  :content="`路径：${getCurrentDatabaseDetail().host}:${getCurrentDatabaseDetail().port}/${getCurrentDatabaseDetail().schema}`"
                 />
               </el-form-item>
             </template>
@@ -92,7 +92,7 @@
 </template>
 
 <script>
-import {mapActions, mapMutations, mapState} from "vuex";
+import {mapActions, mapMutations, mapState, mapGetters} from "vuex";
 import InstallCheckbox from "../service/installer/Checkbox.vue";
 import InstallInput from "../service/installer/Input.vue";
 import InstallRadio from "../service/installer/Radio.vue";
@@ -179,7 +179,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['userInfo', 'currentProject', 'currentProjectDetail', 'currentDatabase', 'currentDatabaseDetail']),
+    ...mapState(['userInfo', 'currentProject', 'currentProjectDetail', 'currentDatabase']),
     // 安装的是否为插件
     isPlugin () {
       return this.plugin != null
@@ -227,6 +227,7 @@ export default {
   methods: {
     ...mapMutations(['setInstallData']),
     ...mapActions(['refreshBalance']),
+    ...mapGetters(['getCurrentDatabaseDetail']),
     // 获取版本信息
     fetchVersion () {
       fetchVersion({

@@ -22,15 +22,15 @@
       <img src="/images/database/icon-design.svg" alt="查询模型">
     </el-button>
     <!-- 查询模型设计窗口 -->
-    <QueryModelWindow ref="queryModelWindow" @close="fetchModels"/>
+    <QueryModelWindow ref="queryModelWindow"/>
   </div>
-  <ul v-if="selected != null && fieldVariableGroup.length > 0" class="field-settings">
+  <ul v-if="currentModel != null && fieldVariableGroup.length > 0" class="field-settings">
     <li v-for="group of fieldVariableGroup" :key="group.label">
       <QueryModelFieldSetting
         :value-key="valueKey"
-        :model="selected"
+        :model="currentModel"
         :group="group"
-        @change="emitChange"
+        @change="$emit('change')"
       />
     </li>
   </ul>
@@ -55,58 +55,36 @@ export default {
       required: true
     }
   },
-  data () {
-    return {
-      models: [],
-      selected: null
-    }
-  },
   computed: {
-    ...mapState(['databases', 'currentProject', 'currentDatabase']),
+    ...mapState(['models']),
     // 获取模型字段变量组，组中包含了表字段的扩展变量
     fieldVariableGroup () {
       return this.variable.children || []
-    }
-  },
-  watch: {
-    currentDatabase () {
-      this.fetchModels()
+    },
+    // 当前选中的表对象
+    currentModel () {
+      if (this.modelValue == null) {
+        return null
+      }
+      return this.models.find(model => model.id === this.modelValue)
     }
   },
   methods: {
     // 切换表选择
     handleChange (value) {
-      this.selected = this.models.find(model => model.id === value)
       // 清空表字段变量组的值（可能是默认值，取决于valueKey属性）
       this.fieldVariableGroup.forEach(group => {
         group[this.valueKey] = []
       })
-      this.$emit('update:modelValue', value)
-      this.emitChange()
-    },
-    emitChange () {
-      this.$emit('change')
-    },
-    // 查询模型
-    fetchModels () {
-      const database = this.databases.find(db => db.id === this.currentDatabase)
-      if (database == null) {
-        this.models = []
-        this.handleChange(null)
+      // 如果未找到对应的模型，则清空选择
+      if (this.models.find(model => model.id === value) == null) {
+        this.$emit('update:modelValue', null)
+        this.$emit('change', null)
         return
       }
-      this.models = database.models
-      // 填充默认选中的模型
-      if (this.modelValue != null) {
-        this.selected = this.models.find(model => model.id === this.modelValue)
-        if (this.selected == null) {
-          this.handleChange(null)
-        }
-      }
+      this.$emit('update:modelValue', value)
+      this.$emit('change')
     }
-  },
-  created () {
-    this.fetchModels()
   }
 }
 </script>

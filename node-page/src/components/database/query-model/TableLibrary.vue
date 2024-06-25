@@ -4,13 +4,13 @@
       <InnerRouterViewWindow ref="routerViewWindow" default="query-models">
         <InnerRouterView name="query-models">
           <div class="header" slot="title">
-            <h4>{{$t('database.queryModels')}}</h4>
+            <h4>查询模型</h4>
             <el-button type="primary" size="default" icon="Plus" class="button-icon" @click="createQueryModel"></el-button>
           </div>
-          <ul v-if="queryModels.length > 0" class="model-list">
+          <ul v-if="models.length > 0" class="model-list">
             <li
-              v-for="model in queryModels"
-              :key="model.name"
+              v-for="model in models"
+              :key="model.id"
               :class="{selected: currentModel != null && currentModel.id === model.id}"
               @click="selectModel(model)"
             >
@@ -66,10 +66,10 @@
           size="default"
           type="primary"
           icon="Refresh"
-          @click="$emit('tables:refresh')"
+          @click="fetchTables"
         ></el-button>
       </div>
-      <ul class="table-list" v-loading="tablesLoading">
+      <ul class="table-list" v-loading="globalLoading.tables">
         <li
           v-for="table in tables"
           :key="table.name"
@@ -85,48 +85,54 @@
 </template>
 
 <script>
-import {mapState} from "vuex";
-import InnerRouterViewWindow from "@/components/common/InnerRouterView/InnerRouterViewWindow.vue";
-import InnerRouterView from "@/components/common/InnerRouterView/InnerRouterView.vue";
-import Empty from "@/components/common/Empty.vue";
-import {create, deleteById, updateById} from "@/api/project.database.model";
-import {checkTableName} from '@/utils/form.check'
+import {mapActions, mapState} from "vuex";
+import InnerRouterViewWindow from '@/components/common/InnerRouterView/InnerRouterViewWindow'
+import InnerRouterView from '@/components/common/InnerRouterView/InnerRouterView'
+import Empty from '@/components/common/Empty'
+import { create, deleteById, updateById } from '@/api/project.database.model'
+import { checkTableName } from '@/utils/form.check'
 
 export default {
-  name: "TableLibrary",
-  components: {Empty, InnerRouterView, InnerRouterViewWindow},
+  name: 'TableLibrary',
+  components: { Empty, InnerRouterView, InnerRouterViewWindow },
   props: {
-    queryModels: {
-      required: true
-    },
-    tables: {},
-    // 是否正在加载表
-    tablesLoading: {
-      required: true
-    },
+    // 当前选中的模型
     currentModel: {},
   },
   data () {
     return {
+      // 新模型数据
       newModel: {
+        // 模型名称
         name: '',
+        // 备注
         comment: '',
-        // 是否展示SQL预览窗口
-        __visibleSQLPreviewWindow: false,
+        // 模型设计的数据库表
+        tables: [],
+        // join关联关系
+        joins: [],
+        // 聚合关联关系
+        aggregates: [],
         // 关联线类型，默认为join
-        __lineType: 'join'
+        __lineType: 'join',
+        // 是否展示SQL预览窗口
+        __visibleSQLPreviewWindow: false
       },
+      // 编辑模型数据
       editModel: {
         id: null,
         name: '',
         comment: ''
-      }
+      },
+      // 模型数据副本
+      modelTemplate: null,
     }
   },
   computed: {
-    ...mapState(['currentProject', 'currentDatabase'])
+    ...mapState(['tables', 'models', 'currentProject', 'currentDatabase', 'globalLoading'])
   },
   methods: {
+    ...mapActions(['fetchTables']),
     getRules () {
       return {
         name: [
@@ -135,7 +141,6 @@ export default {
         ]
       }
     },
-    checkTableName,
     // 开始拖动表放置在设计器中
     handleDragStart (name) {
       this.$emit('table:drag', name)
@@ -144,8 +149,9 @@ export default {
     createQueryModel () {
       this.$refs.routerViewWindow.push('create-model')
       for (const key in this.newModel) {
-        this.newModel[key] = ''
+        this.newModel[key] = this.modelTemplate[key]
       }
+      // 清空表单验证
       this.$nextTick(() => {
         this.$refs.createForm.clearValidate()
       })
@@ -157,7 +163,7 @@ export default {
       }
       this.$refs.routerViewWindow.push('update-model')
       this.$nextTick(() => {
-        this.$refs.createForm.clearValidate()
+        this.$refs.editForm.clearValidate()
       })
     },
     // 确认修改
@@ -186,16 +192,13 @@ export default {
         if (!pass) {
           return
         }
-        const newModel = {
-          ...this.newModel,
-          // 当前选择的关系线类型
-          lineType: 'join',
-          // 表
-          tables: [],
-          // 关联关系
-          joins: [],
-          // 聚合关系
-          aggregates: []
+        // 构建新模型对象
+        const newModel = JSON.parse(JSON.stringify(this.newModel))
+        // 去掉私有属性
+        for (const key in this.newModel) {
+          if (key.startsWith('__')) {
+            delete newModel[key]
+          }
         }
         create ({
           projectId: this.currentProject,
@@ -203,9 +206,11 @@ export default {
           model: newModel
         })
           .then(modelId => {
-            newModel.id = modelId
-            this.queryModels.unshift(newModel)
-            this.selectModel(newModel)
+            // 拷贝模型，避免内存模型引用当前this.newModel
+            const copyModel = JSON.parse(JSON.stringify(this.newModel))
+            copyModel.id = modelId
+            this.models.unshift(copyModel)
+            this.selectModel(copyModel)
             this.$refs.routerViewWindow.back()
           })
           .catch(e => {
@@ -223,10 +228,10 @@ export default {
             modelId: model.id
           })
             .then(() => {
-              const index = this.queryModels.findIndex(m => m.id === model.id)
+              const index = this.models.findIndex(m => m.id === model.id)
               if (index !== -1) {
-                const targetModel = this.queryModels[index]
-                this.queryModels.splice(index, 1)
+                const targetModel = this.models[index]
+                this.models.splice(index, 1)
                 this.$emit('deleted', targetModel)
               }
               this.$tip.success(this.$t('common.deleteSuccessfully'))
@@ -241,6 +246,9 @@ export default {
     selectModel (model) {
       this.$emit('update:currentModel', model)
     }
+  },
+  created() {
+    this.modelTemplate = {...this.newModel}
   }
 }
 </script>

@@ -15,12 +15,8 @@
     </div>
     <template v-else>
       <TableLibrary
-        :query-models="queryModels"
-        :tables="tables"
-        :tables-loading="loading.tables"
         @table:drag="handleDragStart"
         v-model:current-model="currentModel"
-        @tables:refresh="fetchTables(false)"
         @deleted="handleModelDeleted"
       />
       <div class="designer-wrap">
