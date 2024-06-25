@@ -24,19 +24,19 @@
         @deleted="handleModelDeleted"
       />
       <div class="designer-wrap">
-<!--        <div v-if="currentModel != null" class="toolbar">-->
-<!--          &lt;!&ndash; 线条类型 &ndash;&gt;-->
-<!--          <ul class="line-types">-->
-<!--            <li :class="{selected: currentModel.lineType === 'join'}" @click="currentModel.lineType = 'join'">-->
-<!--              <em class="join-line"></em>-->
-<!--              <label>{{$t('database.joinLine')}}</label>-->
-<!--            </li>-->
-<!--            <li :class="{selected: currentModel.lineType === 'aggregate'}" @click="currentModel.lineType = 'aggregate'">-->
-<!--              <em class="aggregate-line"></em>-->
-<!--              <label>{{$t('database.aggregateLine')}}</label>-->
-<!--            </li>-->
-<!--          </ul>-->
-<!--        </div>-->
+        <div v-if="currentModel != null" class="toolbar">
+          <!-- 线条类型 -->
+          <ul class="line-types">
+            <li :class="{selected: currentModel.lineType === 'join'}" @click="currentModel.lineType = 'join'">
+              <em class="join-line"></em>
+              <label>{{$t('database.joinLine')}}</label>
+            </li>
+            <li :class="{selected: currentModel.lineType === 'aggregate'}" @click="currentModel.lineType = 'aggregate'">
+              <em class="aggregate-line"></em>
+              <label>{{$t('database.aggregateLine')}}</label>
+            </li>
+          </ul>
+        </div>
         <!-- 设计器 -->
 <!--        <QueryModelDesigner-->
 <!--          v-if="currentModel != null"-->
@@ -459,6 +459,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
+$--menu-width: 300px;
 .database-query-models {
   height: 100%;
   display: flex;
@@ -490,7 +491,7 @@ export default {
     }
   }
   .table-library {
-    width: 300px;
+    width: $--menu-width;
     flex-shrink: 0;
     position: fixed;
     left: 0;
@@ -506,39 +507,38 @@ export default {
     background: #fff;
     overflow: hidden;
     .toolbar {
+      position: fixed;
+      top: 75px;
+      left: $--menu-width + 20;
       display: flex;
       align-items: center;
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
+      width: 300px;
       height: 62px;
-      background: var(--primary-color-light);
       padding: 0 20px;
       box-sizing: border-box;
-      box-shadow: 0 1px 10px rgba(0, 0, 0, .5);
       z-index: 100;
       .line-types {
         display: flex;
         li {
           width: 120px;
-          height: 50px;
+          height: 35px;
+          box-shadow: 0 1px 10px rgba(0, 0, 0, .2);
           background: var(--background-color);
           margin-right: 10px;
           display: flex;
-          flex-direction: column;
           justify-content: center;
           align-items: center;
           border-radius: 10px;
+          transition: all ease .15s;
+          border: 2px solid transparent;
           &.selected {
-            background: var(--primary-color-match-1);
+            border-color: var(--primary-color-light);
             label {
               color: var(--font-color);
-              font-weight: bold;
             }
           }
           label {
-            margin-top: 5px;
+            margin-left: 5px;
             font-size: var(--font-size-mini);
             color: var(--color-gray);
           }
@@ -547,15 +547,15 @@ export default {
           }
         }
         .join-line, .aggregate-line {
+          flex-shrink: 0;
           display: block;
-          width: 50px;
-          height: 3px;
-          background: #ccc;
-          border: 5px solid var(--primary-color);
-          box-sizing: content-box;
+          width: 20px;
+          height: 20px;
+          background: #999;
+          border-radius: 50%;
         }
         .aggregate-line {
-          background: var(--primary-color-match-1);
+          background: #3e74ea;
         }
       }
       .opera {

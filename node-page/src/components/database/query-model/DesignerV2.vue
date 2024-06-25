@@ -66,6 +66,11 @@ export default {
     },
     mainTable () {
       this.refreshSQL()
+    },
+    'model.lineType' () {
+      if (MD != null) {
+        MD.lineType(this.model.lineType)
+      }
     }
   },
   methods: {
@@ -82,16 +87,27 @@ export default {
         for (const table of this.model.tables) {
           MD.createTable(table, table.x, table.y)
         }
-        // 添加线
+        // 添加JOIN线
         for (const join of this.model.joins) {
           for (const on of join.ons) {
             MD.createLine({
+              lineType: 'join',
               field: on.field,
               targetField: on.targetField,
               table: join.table,
               targetTable: join.targetTable
             })
           }
+        }
+        // 添加聚合线
+        for (const aggregate of this.model.aggregates) {
+          MD.createLine({
+            lineType: 'aggregate',
+            field: aggregate.field,
+            targetField: aggregate.targetField,
+            table: aggregate.table,
+            targetTable: aggregate.targetTable
+          })
         }
       })
     },
@@ -255,21 +271,8 @@ export default {
       this.model.aggregates.splice(aggIndex, 1)
       this.$emit('change')
     },
-  },
-  mounted () {
-    MD = new ModelDesigner('.stage')
-    // 初始化设计器
-    MD.createBackground()
-    MD.createPreview('.preview-stage', 200, 150)
-
-    // 绑定change事件
-    MD.on('change', () => {
-      // 触发change事件，保存模型数据
-      this.$emit('change')
-    })
-
-    // 绑定创建关联线事件
-    MD.on('line:created', ({ table, targetTable, field, targetField }) => {
+    // 添加join关系
+    __addJoinLine ({ table, targetTable, field, targetField }) {
       // 查找JOIN关系是否已存在
       let join = this.model.joins.find(
         r => r.table.id === table.id &&
@@ -292,6 +295,47 @@ export default {
         targetField,
         relation: 'AND'
       })
+    },
+    // 添加聚合线
+    __addAggregateLine ({ table, targetTable, field, targetField }) {
+      let aggregate = this.model.aggregates.find(
+        r => r.table.id === table.id &&
+          r.targetTable.id === targetTable.id &&
+          (r.field.name === field.name || targetField.name === targetField.name)
+      )
+      if (aggregate == null) {
+        this.model.aggregates.push({
+          table: table,
+          targetTable: targetTable,
+          field: field,
+          targetField: targetField,
+          function: 'COUNT'
+        })
+      }
+    },
+  },
+  mounted () {
+    MD = new ModelDesigner('.stage')
+    // 初始化设计器
+    MD.createBackground()
+    MD.createPreview('.preview-stage', 200, 150)
+
+    // 绑定change事件
+    MD.on('change', () => {
+      // 触发change事件，保存模型数据
+      this.$emit('change')
+    })
+
+    // 绑定创建关联线事件
+    MD.on('line:created', ({ table, targetTable, field, targetField }) => {
+      // 添加关联线
+      if (this.model.lineType === 'join') {
+        this.__addJoinLine({ table, targetTable, field, targetField })
+      }
+      // 如果为聚合函数关联
+      if (this.model.lineType === 'aggregate') {
+        this.__addAggregateLine({ table, targetTable, field, targetField })
+      }
       // 刷新SQL
       this.refreshSQL()
       this.$emit('change')
@@ -299,9 +343,9 @@ export default {
 
     // 绑定全局点击
     MD.on('stage:click', (e) => {
-      // 关闭SQL查看
-      if (e.target.nodeType === 'Stage') {
-        this.model.previewTableId = null
+      // 关闭SQL查看，添加this.model判断，避免没有模型选中时报错
+      if (e.target.nodeType === 'Stage' && this.model) {
+         this.model.previewTableId = null
       }
     })
 
@@ -313,10 +357,12 @@ export default {
     // 删除表事件
     MD.on('table:delete', ({ table }) => {
       this.__deleteTable(table)
+      this.refreshSQL()
     })
     // 删除关联线事件
     MD.on('line:deleted', ({ table, targetTable, field, targetField }) => {
       this.__deleteLine({ table, targetTable, field, targetField })
+      this.refreshSQL()
     })
   }
 }

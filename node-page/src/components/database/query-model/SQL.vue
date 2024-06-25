@@ -12,7 +12,7 @@
           <SQLLineKeywordSelect
             v-model="getAggregate(field).function"
             :data="['COUNT', 'SUM', 'AVG', 'MAX', 'MIN']"
-            :width="__getAggregateFunctionWidth(getAggregate(field).function)"
+            :width="`${__getAggregateFunctionWidth(getAggregate(field).function)}px`"
             @change="handleChange"
           />
           <span class="hidden">{{getAggregate(field).function}}</span>
@@ -183,11 +183,11 @@ export default {
     // 获取聚合函数宽度
     __getAggregateFunctionWidth (functionName) {
       const widths = {
-        COUNT: 63,
-        SUM: 42,
-        AVG: 40,
-        MAX: 42,
-        MIN: 38
+        COUNT: 65,
+        SUM: 44,
+        AVG: 42,
+        MAX: 44,
+        MIN: 40
       }
       return widths[functionName]
     },

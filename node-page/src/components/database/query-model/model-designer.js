@@ -1,6 +1,7 @@
 import Konva from 'konva'
 
 class ModelDesigner {
+  #lineType = 'join'
   BACKGROUND_ITEM_COLOR = '#555'
   TABLE_MIN_DISTANCE = 50 // 关联表之间最大的间距
   TABLE_WIDTH = 200
@@ -16,11 +17,14 @@ class ModelDesigner {
   TABLE_OPERA_BACKGROUND_COLOR = '#f7f7f7'
   TABLE_BUTTON_BACKGROUND_COLOR = '#cb5053'
   TABLE_BUTTON_HOVER_BACKGROUND_COLOR = '#fc6a70'
-  LINE_COLOR = '#2e3444'
+  TABLE_Z_INDEX = 100
+  LINE_COLOR = '#394054'
   LINE_HOVER_COLOR = '#fc6a70'
   LINE_CONTROL_COLOR = '#999'
   LINE_CONTROL_HOVER_COLOR = '#fc6a70'
+  LINE_AGG_CONTROL_COLOR = '#3e74ea' // 聚合线控制点颜色
   DEFAULT_FONT_COLOR = '#333'
+  MAX_Z_INDEX = 10000
   REVERSE_FONT_COLOR = '#fff'
   FONT_SIZE_TITLE = 16
   // 画布基础信息
@@ -90,7 +94,7 @@ class ModelDesigner {
       }
       // - 获取this.currentDragField的x和y
       const pos = this.stage.getPointerPosition()
-      this.dashLine.zIndex(10000)
+      this.dashLine.zIndex(this.MAX_Z_INDEX)
       this.dashLine.opacity(1)
       this.dashLine.points([
         // 第一个点坐标
@@ -162,7 +166,7 @@ class ModelDesigner {
       x,
       y,
       draggable: true,
-      zIndex: 100
+      zIndex: this.TABLE_Z_INDEX
     })
     // 创建表背景
     const background = new Konva.Rect({
@@ -430,7 +434,21 @@ class ModelDesigner {
   }
 
   /**
+   * 获取或设置关联线类型
+   *
+   * @param lineType
+   * @returns {any}
+   */
+  lineType (lineType) {
+    if (lineType == null) {
+      return this.lineType
+    }
+    this.#lineType = lineType
+  }
+
+  /**
    * 创建关联线
+   * @param lineType
    * @param field
    * @param targetField
    * @param table
@@ -438,8 +456,9 @@ class ModelDesigner {
    * @param targetFieldBackgroundRect
    * @param isInit
    */
-  createLine = ({ field, targetField, table, targetTable, targetFieldBackgroundRect }) => {
+  createLine = ({ lineType, field, targetField, table, targetTable, targetFieldBackgroundRect }) => {
     return new Promise((resolve ,reject) => {
+      lineType = lineType || this.#lineType
       // 找到表对象和字段对象
       const tableGroup = this.elementLayer.findOne(`#${table.id}`)
       const targetTableGroup = this.elementLayer.findOne(`#${targetTable.id}`)
@@ -468,6 +487,7 @@ class ModelDesigner {
       })
       // 创建线
       const line = fieldGroup.__line = targetFieldGroup.__line = {
+        lineType: lineType,
         table1: tableGroup,
         field1: fieldGroup,
         table2: targetTableGroup,
@@ -480,8 +500,7 @@ class ModelDesigner {
           strokeWidth: 2,
           lineCap: 'round',
           lineJoin: 'round',
-          zIndex: 1,
-          opacity: 0.8
+          zIndex: 1
         }),
         // 删除球
         control: new Konva.Circle({
@@ -489,7 +508,7 @@ class ModelDesigner {
           x: controlPoints.x,
           y: controlPoints.y,
           radius: 10,
-          fill: this.LINE_CONTROL_COLOR,
+          fill: lineType === 'join' ? this.LINE_CONTROL_COLOR : this.LINE_AGG_CONTROL_COLOR,
           draggable: false,
           zIndex: 2
         })
@@ -514,12 +533,12 @@ class ModelDesigner {
       // 悬浮在控制点时更改颜色和关联线颜色
       line.control.on('mouseover', () => {
         line.line.stroke(this.LINE_HOVER_COLOR)
-        line.line.zIndex(10000)
-        line.line.dash([5, 5])
-        line.control.zIndex(10000)
+        line.line.zIndex(this.MAX_Z_INDEX)
+        // line.line.dash([5, 5])
+        line.control.zIndex(this.MAX_Z_INDEX)
         line.control.fill(this.LINE_CONTROL_HOVER_COLOR)
-        line.table1.zIndex(10000)
-        line.table2.zIndex(10000)
+        line.table1.zIndex(this.MAX_Z_INDEX)
+        line.table2.zIndex(this.MAX_Z_INDEX)
         // 修改手势为手指
         this.stage.container().style.cursor = 'pointer'
       })
@@ -528,9 +547,10 @@ class ModelDesigner {
         line.line.stroke(this.LINE_COLOR)
         line.line.zIndex(1)
         line.line.dash([])
-        line.control.fill(this.LINE_CONTROL_COLOR)
-        line.table1.zIndex(10)
-        line.table2.zIndex(10)
+        line.control.zIndex(2)
+        line.control.fill(line.lineType === 'join' ? this.LINE_CONTROL_COLOR : this.LINE_AGG_CONTROL_COLOR)
+        line.table1.zIndex(this.TABLE_Z_INDEX)
+        line.table2.zIndex(this.TABLE_Z_INDEX)
         this.stage.container().style.cursor = 'default'
       })
       // 恢复目标字段的背景色
@@ -538,7 +558,7 @@ class ModelDesigner {
         targetFieldBackgroundRect.fill(this.TABLE_FIELD_BACKGROUND_COLOR)
       }
       // 重置table的zIndex，让表都能覆盖在line上
-      this.tables.forEach(t => t.zIndex(100))
+      this.tables.forEach(t => t.zIndex(this.TABLE_Z_INDEX))
       // 重新绘制预览
       this.redrawPreview()
       resolve()
