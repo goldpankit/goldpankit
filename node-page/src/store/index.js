@@ -22,7 +22,8 @@ export default new Vuex.Store({
   state: {
     globalLoading: {
       databases: false,
-      tables: false
+      tables: false,
+      models: false
     },
     // 用户信息
     userInfo: null,
@@ -61,85 +62,83 @@ export default new Vuex.Store({
     // 设置当前表集合
     setTables (state, value) {
       state.tables = value
-      /*
-        根据存储模型中的结构更新内存模型数据（表集合会影响模型内容，例如修改了表，那么存储模型中不存在的表和字段在内存模型中则应该作出对应修改或移除）
-        内存模型：指的是模型数据存储在js运行内存中，对模型修改时，内存模型会实时更新
-        存储模型：指的是模型数据存储在项目kit.db.json文件中，文件中的模型数据可能和表不统一
-      */
-      if (state.currentDatabaseDetail != null && state.currentDatabaseDetail.models != null) {
-        state.models = state.currentDatabaseDetail.models.map(model => {
-          // 是否展示SQL预览窗口：用于模型设计器页面控制SQL预览窗口的打开和关闭
-          model.__visibleSQLPreviewWindow = false
-          // 默认选择关联线类型为join：用于模型设计器页面判断关联线的类型
-          model.__lineType = 'join'
-          // 同步表信息（会从模型中移除数据库不存在的表）
-          model.tables = model.tables.map(table => {
-            const dbTable = state.tables.find(tb => tb.name.toLowerCase() === table.name.toLowerCase())
-            // 表不存在
-            if (dbTable == null) {
-              return null
-            }
-            // 同步字段信息
-            const dbFields = dbTable.fields
-            const fields = dbFields.map(dbField => {
-              // 字段在存储模型结构中可能不存在（数据库表新增了字段A，则在存储模型中字段A不存在，此时字段A应该被体现出来，且需增加显示状态为true，别名按照规则生成）
-              const modelField = table.fields.find(field => field.name === dbField.name)
-              const field =  {
-                ...dbField,
-                // 增加显示状态
-                visible: modelField == null ? true : modelField.visible === true,
-                // 增加别名
-                alias: modelField == null ? `${table.alias}_${dbField.name}` : modelField.alias
-              }
-              // 该情况为kit.db.json中直接删除了别名，此时别名应当按照规则重新生成
-              if (field.alias == null) {
-                field.alias = `${table.alias}_${dbField.name}`
-              }
-              return field
-            })
-            return {
-              ...table,
-              fields
-            }
-          })
-          model.tables = model.tables.filter(t => t != null)
-          // 删除了主表（并不是只在kit.db.json中删除了主表，而是在数据库中主表被删除）
-          if (model.tables.find(t => t.type === 'MAIN') == null) {
-            model.tables = []
-            model.joins = []
-            model.aggregates = []
-          }
-          // join处理（移除掉无效的join）
-          model.joins.map(join => {
-            const table = model.tables.find(table => table.id === join.table)
-            const targetTable = model.tables.find(table => table.id === join.targetTable)
-            // 如果join的表在模型中不存在，则删除该join
-            if (table == null || targetTable == null) {
-              return null
-            }
-            // 如果join的所有on不成立（on的相关字段不存在），则删除该join
-            const ons = join.ons.map(on => {
-              const field = table.fields.find(field => field.name === on.field)
-              const targetField = targetTable.fields.find(field => field.name === on.targetField)
-              if (field == null || targetField == null) {
-                return null
-              }
-            })
-            if (ons.filter(on => on != null).length === 0) {
-              return null
-            }
-            return join
-          })
-          // // 聚合函数处理（移除掉无效的聚合）
-          // model.aggregates.map(agg => {
-          // })
-          // model.aggregates = model.aggregates.filter(agg => agg != null)
-          return model
-        })
-      }
     },
+    /*
+      设置模型数据
+      根据存储模型中的结构更新内存模型数据（表集合会影响模型内容，例如修改了表，那么存储模型中不存在的表和字段在内存模型中则应该作出对应修改或移除）
+      内存模型：指的是模型数据存储在js运行内存中，对模型修改时，内存模型会实时更新
+      存储模型：指的是模型数据存储在项目kit.db.json文件中，文件中的模型数据可能和表不统一
+    */
     setModels (state, value) {
-      state.models = value
+      state.models = state.models = value.map(model => {
+        // 是否展示SQL预览窗口：用于模型设计器页面控制SQL预览窗口的打开和关闭
+        model.__visibleSQLPreviewWindow = false
+        // 默认选择关联线类型为join：用于模型设计器页面判断关联线的类型
+        model.__lineType = 'join'
+        // 同步表信息（会从模型中移除数据库不存在的表）
+        model.tables = model.tables.map(table => {
+          const dbTable = state.tables.find(tb => tb.name.toLowerCase() === table.name.toLowerCase())
+          // 表不存在
+          if (dbTable == null) {
+            return null
+          }
+          // 同步字段信息
+          const dbFields = dbTable.fields
+          const fields = dbFields.map(dbField => {
+            // 字段在存储模型结构中可能不存在（数据库表新增了字段A，则在存储模型中字段A不存在，此时字段A应该被体现出来，且需增加显示状态为true，别名按照规则生成）
+            const modelField = table.fields.find(field => field.name === dbField.name)
+            const field =  {
+              ...dbField,
+              // 增加显示状态
+              visible: modelField == null ? true : modelField.visible === true,
+              // 增加别名
+              alias: modelField == null ? `${table.alias}_${dbField.name}` : modelField.alias
+            }
+            // 该情况为kit.db.json中直接删除了别名，此时别名应当按照规则重新生成
+            if (field.alias == null) {
+              field.alias = `${table.alias}_${dbField.name}`
+            }
+            return field
+          })
+          return {
+            ...table,
+            fields
+          }
+        })
+        model.tables = model.tables.filter(t => t != null)
+        // 删除了主表（并不是只在kit.db.json中删除了主表，而是在数据库中主表被删除）
+        if (model.tables.find(t => t.type === 'MAIN') == null) {
+          model.tables = []
+          model.joins = []
+          model.aggregates = []
+        }
+        // join处理（移除掉无效的join）
+        model.joins.map(join => {
+          const table = model.tables.find(table => table.id === join.table)
+          const targetTable = model.tables.find(table => table.id === join.targetTable)
+          // 如果join的表在模型中不存在，则删除该join
+          if (table == null || targetTable == null) {
+            return null
+          }
+          // 如果join的所有on不成立（on的相关字段不存在），则删除该join
+          const ons = join.ons.map(on => {
+            const field = table.fields.find(field => field.name === on.field)
+            const targetField = targetTable.fields.find(field => field.name === on.targetField)
+            if (field == null || targetField == null) {
+              return null
+            }
+          })
+          if (ons.filter(on => on != null).length === 0) {
+            return null
+          }
+          return join
+        })
+        // // 聚合函数处理（移除掉无效的聚合）
+        // model.aggregates.map(agg => {
+        // })
+        // model.aggregates = model.aggregates.filter(agg => agg != null)
+        return model
+      })
     },
     setCurrentProject(state, project) {
       state.currentProject = project
@@ -160,17 +159,6 @@ export default new Vuex.Store({
       window.localStorage.removeItem('CURRENT_DATABASE')
       if (database != null) {
         window.localStorage.setItem('CURRENT_DATABASE', database)
-      }
-    },
-    // 设置数据库详细信息，数据库发生了变化，那么对应的模型集合也应当一起更改，但这里更改的是基本信息
-    setCurrentDatabaseDetail (state, database) {
-      state.currentDatabaseDetail = database
-      window.localStorage.removeItem('CURRENT_DATABASE_DETAIL')
-      if (database != null) {
-        // 构建新的对象，删除数据模型，避免模型中存在循环引用（table=>fields=>table）无法被JSON序列化
-        let newDatabase = { ...database }
-        delete newDatabase.models
-        window.localStorage.setItem('CURRENT_DATABASE_DETAIL', JSON.stringify(newDatabase))
       }
     },
     setInstallData (state, value) {
@@ -255,22 +243,26 @@ export default new Vuex.Store({
       })
     },
     // 获取数据库表
-    fetchTables ({ state, commit }) {
+    fetchTables ({ state, commit, getters }) {
       return new Promise((resolve, reject) => {
-        if (state.currentDatabaseDetail == null) {
+        const currentDatabaseDetail = getters.getCurrentDatabaseDetail
+        if (currentDatabaseDetail == null) {
           commit('setTables', [])
+          commit('setModels', [])
           return resolve([])
         }
         state.globalLoading.tables = true
+        state.globalLoading.models = true
         fetchTables({
-          host: state.currentDatabaseDetail.host,
-          port: state.currentDatabaseDetail.port,
-          user: state.currentDatabaseDetail.username,
-          password: state.currentDatabaseDetail.password,
-          database: state.currentDatabaseDetail.schema
+          host: currentDatabaseDetail.host,
+          port: currentDatabaseDetail.port,
+          user: currentDatabaseDetail.username,
+          password: currentDatabaseDetail.password,
+          database: currentDatabaseDetail.schema
         })
           .then(tables => {
             commit('setTables', tables)
+            commit('setModels', currentDatabaseDetail.models)
             resolve(tables)
           })
           .catch(e => {
@@ -279,11 +271,13 @@ export default new Vuex.Store({
           })
           .finally(() => {
             state.globalLoading.tables = false
+            state.globalLoading.models = false
           })
       })
     }
   },
   getters: {
+    // 获取当前数据库详情
     getCurrentDatabaseDetail (state) {
       return state.databases.find(db => db.id === state.currentDatabase)
     }

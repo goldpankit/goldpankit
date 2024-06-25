@@ -10,7 +10,7 @@
       <div class="tip-wrap">
         <h4>数据库连接失败</h4>
         <p>{{connectError}}</p>
-        <el-button @click="this.$refs.operaDataSourceWindow.open(currentProject, this.currentDatabaseDetail)">修改数据库信息</el-button>
+        <el-button @click="$refs.operaDataSourceWindow.open(currentProject, getCurrentDatabaseDetail())">修改数据库信息</el-button>
       </div>
     </div>
     <template v-else>
@@ -48,17 +48,15 @@
 </template>
 
 <script>
+import {mapState, mapGetters, mapActions} from 'vuex'
 import QueryModelDesigner from "./Designer.vue";
 import TableSetting from "./TableSetting.vue";
 import TableLibrary from "./TableLibrary.vue";
 import RelationLine from "./RelationLine.vue";
 import Table from "./Table.vue";
-import {mapState} from "vuex";
 import DataSourceSelect from '../DataSourceSelect'
 import OperaDataSourceWindow from '../OperaDataSourceWindow'
-import { fetchAll, updateById } from '@/api/project.database.model'
-import { fetchDatabases } from '@/api/project.database'
-import { fetchTables } from '@/api/database.util'
+import { updateById } from '@/api/project.database.model'
 import DesignerV2 from "@/components/database/query-model/DesignerV2.vue";
 
 export default {
@@ -96,7 +94,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['globalLoading', 'databases', 'currentProject', 'currentDatabase', 'currentDatabaseDetail']),
+    ...mapState(['globalLoading', 'databases', 'currentProject', 'currentDatabase']),
     // 当前表
     currentTable () {
       if (this.currentModel == null || this.currentModel.previewTableId == null) {
@@ -134,6 +132,8 @@ export default {
     }
   },
   methods: {
+    ...mapActions(['fetchTables']),
+    ...mapGetters(['getCurrentDatabaseDetail']),
     // 处理模型删除
     handleModelDeleted (model) {
       if (this.currentModel === model) {
@@ -159,150 +159,12 @@ export default {
           this.$tip.apiFailed(e)
         })
     },
-    // 表设置更改
-    handleSettingChange () {
-      this.saveModel()
-      this.$refs.designer.render()
-    },
     // 开始拖动表放置在设计器中
     handleDragStart (tableName) {
       if (this.currentModel == null) {
         return
       }
       this.currentModel.dragData = this.tables.find(t => t.name === tableName)
-    },
-    // 查询数据库表
-    fetchTables (withModels = true) {
-      // 此处不可直接使用currentDatabaseDetail，因为在进入页面时，currentDatabaseDetail可能还为被赋值
-      const targetDatabase = this.databases.find(d => d.id === this.currentDatabase)
-      if (targetDatabase == null) {
-        return
-      }
-      this.loading.tables = true
-      fetchTables ({
-        host: targetDatabase.host,
-        port: targetDatabase.port,
-        user: targetDatabase.username,
-        password: targetDatabase.password,
-        database: targetDatabase.schema
-      })
-        .then(tables => {
-          this.connectError = null
-          this.tables = tables.map(t => {
-            return {
-              ...t,
-              alias: t.name,
-              fields: t.fields.map(f => {
-                return {
-                  ...f,
-                  isVirtual: false
-                }
-              })
-            }
-          })
-          // 查询模型
-          if (withModels) {
-            this.fetchModels()
-          }
-        })
-        .catch(e => {
-          this.connectError = e.message
-        })
-        .finally(() => {
-          this.loading.tables = false
-        })
-    },
-    // 查询模型
-    fetchModels () {
-      const database = this.databases.find(db => db.id === this.currentDatabase)
-      const models = database.models
-      const deletedTables = []
-      this.queryModels = models.map(model => {
-        // 是否展示SQL预览窗口
-        model.__visibleSQLPreviewWindow = false
-        // 默认选择关联线类型为join
-        model.__lineType = 'join'
-        // 调整tables数据
-        model.tables = model.tables.map(table => {
-          const dbTable = this.tables.find(tb => tb.name.toLowerCase() === table.name.toLowerCase())
-          // 如果表不存在 && 不是虚拟表，则返回null（表已被删除）
-          if (dbTable == null && !table.isVirtual) {
-            deletedTables.push(table)
-            return table
-          }
-          // 同步字段信息
-          let fields = table.fields
-          if (dbTable != null) {
-            fields = dbTable.fields
-            // 同步模型字段信息
-            fields = fields.map(dbField => {
-              const modelField = table.fields.find(mf => mf.name === dbField.name)
-              return this.__modelField2field(modelField, dbField)
-            })
-            // 过滤掉已删除的字段（为null的字段）
-            fields = fields.filter(f => f != null)
-          }
-          return {
-            ...table,
-            fields
-          }
-        })
-        // 删除了主表
-        if (deletedTables.find(t => t.type === 'MAIN') != null) {
-          model.tables = []
-          model.joins = []
-          model.aggregates = []
-        }
-        // 子表不存在
-        else {
-          for (const table of deletedTables) {
-            // 删除join关系
-            model.joins = model.joins.filter(join => {
-              if (join.table === table.id) {
-                return false
-              }
-              if (join.targetTable === table.id) {
-                return false
-              }
-              return true
-            })
-            // 删除聚合关系
-            model.aggregates = model.aggregates.filter(agg => {
-              if (agg.table === table.id) {
-                return false
-              }
-              if (agg.targetTable === table.id) {
-                return false
-              }
-              return true
-            })
-            // 删除表
-            const index = model.tables.findIndex(t => t.id === table.id)
-            if (index !== -1) {
-              model.tables.splice(index, 1)
-            }
-          }
-        }
-        // join处理
-        model.joins.map(join => {
-          return this.__modelJoin2join(model, join)
-        })
-        model.joins = model.joins.filter(join => join != null)
-        // 聚合函数处理
-        model.aggregates.map(agg => {
-          return this.__modelAggregate2Aggregate(model, agg)
-        })
-        model.aggregates = model.aggregates.filter(agg => agg != null)
-        return model
-      })
-      // 默认选择第一个
-      if (this.queryModels.length > 0) {
-        this.currentModel = this.queryModels[0]
-      }
-      // 没有模型，则清空模型选择
-      else {
-        this.currentModel = null
-      }
     },
     // 获取模型设置
     __getModelSettings (currentModel) {
@@ -365,79 +227,6 @@ export default {
         // 聚合关系
         aggregates
       }
-    },
-    // 模型字段转字段详情, modelField: 查询模型中的字段信息，dbField: 数据库字段信息
-    __modelField2field (modelField, dbField) {
-      // 没有模型字段，但有表字段（新增的表字段或未展示的字段）
-      if (dbField != null && modelField == null) {
-        return {
-          ...dbField,
-          visible: true,
-          alias: dbField.name,
-          isVirtual: false
-        }
-      }
-      // 没有对应的数据库表字段，说明字段已删除
-      if (dbField == null && !modelField.isVirtual) {
-        return null
-      }
-      // 整合模型字段和表字段信息
-      return {
-        ...modelField,
-        alias: modelField.alias,
-        isVirtual: modelField.isVirtual,
-        type: modelField.isVirtual ? modelField.type : dbField.type,
-        comment: modelField.isVirtual ? modelField.comment : dbField.comment,
-        visible: modelField.visible == null ? true : modelField.visible
-      }
-    },
-    // 模型join转join详情
-    __modelJoin2join (model, modelJoin) {
-      const table = model.tables.find(t => t.id === modelJoin.table)
-      const targetTable = model.tables.find(t => t.id === modelJoin.targetTable)
-      if (table == null || targetTable == null) {
-        return null
-      }
-      modelJoin.table = table
-      modelJoin.targetTable = targetTable
-      const ons = []
-      for (const on of modelJoin.ons) {
-        const field = table.fields.find(f => f.name.toLowerCase() === on.field.toLowerCase())
-        const targetField = targetTable.fields.find(f => f.name.toLowerCase() === on.targetField.toLowerCase())
-        if (field == null || targetField == null) {
-          continue
-        }
-        ons.push({
-          field,
-          targetField,
-          relation: on.relation
-        })
-      }
-      if (ons.length === 0) {
-        return null
-      }
-      modelJoin.ons = ons
-      return modelJoin
-    },
-    // 模型join转join详情
-    __modelAggregate2Aggregate (model, modelAggregate) {
-      // 查询表信息
-      const table = model.tables.find(t => t.id === modelAggregate.table)
-      const targetTable = model.tables.find(t => t.id === modelAggregate.targetTable)
-      if (table == null || targetTable == null) {
-        return null
-      }
-      modelAggregate.table = table
-      modelAggregate.targetTable = targetTable
-      // 查询字段信息
-      const field = table.fields.find(f => f.name.toLowerCase() === modelAggregate.field.toLowerCase())
-      const targetField = targetTable.fields.find(f => f.name.toLowerCase() === modelAggregate.targetField.toLowerCase())
-      if (field == null || targetField == null) {
-        return null
-      }
-      modelAggregate.field = field
-      modelAggregate.targetField = targetField
-      return modelAggregate
     }
   }
 }

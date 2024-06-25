@@ -56,7 +56,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['models']),
+    ...mapState(['models', 'globalLoading']),
     // 获取模型字段变量组，组中包含了表字段的扩展变量
     fieldVariableGroup () {
       return this.variable.children || []
@@ -67,6 +67,18 @@ export default {
         return null
       }
       return this.models.find(model => model.id === this.modelValue)
+    }
+  },
+  watch: {
+    // 当查询模型加载完成时，重新触发一次选中，避免选中了不存在的模型
+    'globalLoading.models': {
+      immediate: true,
+      handler (newValue) {
+        console.log('模型加载完成', newValue, this.modelValue)
+        if (!newValue) {
+          this.handleChange(this.modelValue)
+        }
+      }
     }
   },
   methods: {

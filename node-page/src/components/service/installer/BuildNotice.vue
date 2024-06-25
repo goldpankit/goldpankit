@@ -23,7 +23,7 @@
     </ul>
     <!-- 执行SQL构建脚本窗口 -->
     <el-dialog
-      v-if="currentBuild != null && currentDatabaseDetail != null"
+      v-if="currentBuild != null && getCurrentDatabaseDetail() != null"
       title="执行构建脚本"
       v-model="exactConfirmData.visible"
       class="exact-confirm-script-dialog"
@@ -92,7 +92,7 @@
 </template>
 
 <script>
-import { mapMutations, mapState } from 'vuex'
+import {mapGetters, mapMutations, mapState} from 'vuex'
 import DataSourceSelect from '@/components/database/DataSourceSelect'
 import { build } from '@/api/service.compile'
 import ScriptPreviewDialog from "@/components/service/installer/ScriptPreviewDialog.vue";
@@ -117,7 +117,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['currentProject', 'currentDatabase', 'currentDatabaseDetail', 'installData']),
+    ...mapState(['currentProject', 'currentDatabase', 'installData']),
     builds () {
       if (this.installData == null) {
         return []
@@ -126,14 +126,16 @@ export default {
     },
     // 执行的数据库名称
     currentDatabaseText () {
-      if (this.currentDatabaseDetail == null) {
+      const currentDatabaseDetail = this.getCurrentDatabaseDetail()
+      if (currentDatabaseDetail == null) {
         return ''
       }
-      return `${this.currentDatabaseDetail.host}:${this.currentDatabaseDetail.port}/${this.currentDatabaseDetail.schema}`
+      return `${currentDatabaseDetail.host}:${currentDatabaseDetail.port}/${currentDatabaseDetail.schema}`
     }
   },
   methods: {
     ...mapMutations(['setInstallData']),
+    ...mapGetters(['getCurrentDatabaseDetail']),
     // 取消构建
     cancelBuild () {
       if (this.currentBuild.__executing) {

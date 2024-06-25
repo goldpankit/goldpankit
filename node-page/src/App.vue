@@ -23,7 +23,7 @@ import en from 'element-plus/dist/locale/en.mjs'
 export default {
   components: {Toolbar, MergeWindow, BuildNotice, HelpCenter},
   computed: {
-    ...mapState(['currentProjectDetail', 'currentDatabaseDetail']),
+    ...mapState(['currentProjectDetail', 'currentDatabase']),
     locale () {
       const i18nLocal = this.$i18n.locale
       if (i18nLocal === 'en') {
@@ -37,8 +37,8 @@ export default {
     currentProjectDetail () {
       this.fetchDatabases()
     },
-    // 当前数据库变化时，重新加载表集合，重载表时会自动更新模型
-    currentDatabaseDetail () {
+    // 切换数据库时，重新加载表集合，加载表结合会自动更新模型集合
+    currentDatabase () {
       this.fetchTables()
     }
   },
@@ -46,8 +46,12 @@ export default {
     ...mapActions(['fetchDatabases', 'fetchTables'])
   },
   created () {
+    // 进入系统时查询数据库列表
     this.fetchDatabases()
-    this.fetchTables()
+      .then(() => {
+        // 数据库加载完成后，获取数据库表（如果当前选择了数据库），获取数据库时会自动更新模型集合
+        this.fetchTables()
+      })
   }
 }
 </script>

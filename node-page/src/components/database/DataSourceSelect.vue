@@ -75,7 +75,7 @@ export default {
     }
   },
   methods: {
-    ...mapMutations(['setCurrentDatabase', 'setCurrentDatabaseDetail']),
+    ...mapMutations(['setCurrentDatabase']),
     ...mapActions(['fetchDatabases']),
     // 打开创建数据库窗口
     openCreateDatabaseWindow () {
@@ -91,14 +91,12 @@ export default {
       const targetDataSource = this.databases.find(item => item.id === databaseId)
       if (databaseId == null || targetDataSource == null) {
         this.setCurrentDatabase(null)
-        this.setCurrentDatabaseDetail(null)
         this.$emit('update:modelValue', null)
         this.$emit('change', null)
         return
       }
       // 设置当前选中的数据库信息
       this.setCurrentDatabase(databaseId)
-      this.setCurrentDatabaseDetail(targetDataSource)
       this.$emit('update:modelValue', databaseId)
       this.$emit('change', databaseId)
     },
