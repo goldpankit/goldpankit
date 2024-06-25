@@ -1,7 +1,7 @@
 module.exports = {
   // 生成id
   generateId () {
-    const idNumber = '' + Math.round(Math.random() * 8) + Date.now() + Math.round(Math.random() * 8)
+    const idNumber = '' + Math.round(Math.random() * 10000) + Date.now() + Math.round(Math.random() * 10000)
     return this.__to36(idNumber)
   },
   // 转为36进制
@@ -9,9 +9,9 @@ module.exports = {
     const symbols = '0123456789abcdefghijklmnopqrstuvwxyz';
     let result = '';
     do {
-      result = symbols[num % 36] + result;
-      num = Math.floor(num / 36);
+      result = symbols[num % symbols.length] + result;
+      num = Math.floor(num / symbols.length);
     } while (num > 0);
-    return result;
+    return result.toUpperCase();
   }
 }

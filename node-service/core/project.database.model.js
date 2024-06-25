@@ -56,12 +56,12 @@ module.exports = {
       database.models = []
     }
     // 验证模型是否存在
-    const model = database.models.find(m => m.id === newModel.id)
-    if (model == null) {
+    const modelIndex = database.models.findIndex(m => m.id === newModel.id)
+    if (modelIndex === -1) {
       return Promise.reject(new Error(`找不到模型，请刷新后重试！模型ID: ${newModel.id}`))
     }
     // 修改信息
-    Object.assign(model, newModel)
+    database.models[modelIndex] = newModel
     // 保存
     projectDatabase.saveDatabase(projectId, database)
   }
