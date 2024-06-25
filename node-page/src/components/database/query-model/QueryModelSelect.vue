@@ -74,11 +74,14 @@ export default {
     'globalLoading.models': {
       immediate: true,
       handler (newValue) {
-        console.log('模型加载完成', newValue, this.modelValue)
         if (!newValue) {
           this.handleChange(this.modelValue)
         }
       }
+    },
+    // 模型集合数量发生变化时，重新触发一次选中，避免选中了不存在的模型
+    'models.length' () {
+      this.handleChange(this.modelValue)
     }
   },
   methods: {

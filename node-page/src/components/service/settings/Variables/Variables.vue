@@ -270,7 +270,7 @@ export default {
           .finally(() => {
             this.timeout.save = null
           })
-      }, 1000)
+      }, 300)
     },
     // 获取变量配置
     fetchVariables () {

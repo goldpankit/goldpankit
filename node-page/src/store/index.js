@@ -3,7 +3,7 @@ import { getToken } from '@/api/user.token'
 import { getLoginInfo, logout } from '@/api/user.login'
 import { getBalance } from '@/api/user'
 import { fetchDatabases } from '@/api/project.database';
-import {fetchTables} from "@/api/database.util";
+import { fetchTables } from '@/api/database.util'
 // 获取本地项目
 let currentProject = null
 const currentProjectStr = window.localStorage.getItem('CURRENT_PROJECT')
@@ -224,6 +224,7 @@ export default new Vuex.Store({
         setTimeout(() => {
           if (state.currentProject == null || state.currentProject === '') {
             commit('setDatabases', [])
+            state.globalLoading.databases = false
             resolve([])
             return
           }
@@ -237,6 +238,7 @@ export default new Vuex.Store({
               reject(e)
             })
             .finally(() => {
+              console.log('进来了')
               state.globalLoading.databases = false
             })
         }, 300)
@@ -262,6 +264,7 @@ export default new Vuex.Store({
         })
           .then(tables => {
             commit('setTables', tables)
+            // 在获取表集合之后设置内存模型，表会影响模型的结构
             commit('setModels', currentDatabaseDetail.models)
             resolve(tables)
           })
