@@ -158,6 +158,7 @@ export default {
           field.alias = `${newValue}_${field.name}`
         }
       }
+      this.$emit('field:change')
     },
     // 创建虚拟字段
     createVirtualField () {
