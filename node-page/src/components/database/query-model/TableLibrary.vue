@@ -110,7 +110,11 @@ export default {
     return {
       newModel: {
         name: '',
-        comment: ''
+        comment: '',
+        // 是否展示SQL预览窗口
+        __visibleSQLPreviewWindow: false,
+        // 关联线类型，默认为join
+        __lineType: 'join'
       },
       editModel: {
         id: null,

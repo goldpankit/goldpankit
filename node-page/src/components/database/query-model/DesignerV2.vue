@@ -20,7 +20,7 @@
     <TableSetting
       v-if="model != null"
       ref="tableSetting"
-      :visible="model.visibleSQLPreviewWindow"
+      :visible="model.__visibleSQLPreviewWindow"
       :table="mainTable"
       :joins="mainTableJoins"
       :aggregates="mainTableAggregates"
@@ -78,9 +78,9 @@ export default {
     mainTable () {
       this.refreshSQL()
     },
-    'model.lineType' () {
+    'model.__lineType' () {
       if (MD != null) {
-        MD.lineType(this.model.lineType)
+        MD.lineType(this.model.__lineType)
       }
     }
   },
@@ -133,13 +133,20 @@ export default {
       const mousePos = MD.stage.getPointerPosition()
       const tableX = mousePos.x - MD.TABLE_WIDTH / 2
       const tableY = mousePos.y
+      // 判断表类型
+      const tableType = this.model.tables.length === 0 ? 'MAIN' : 'SUB'
+      // 创建新表对象
       const newTable = {
         ...this.model.dragData,
         // 字段
         fields: this.model.dragData.fields.map(f => {
+          let alias = `${this.model.dragData.alias}_${f.name}`
+          if (tableType === 'MAIN') {
+            alias = `${f.name}`
+          }
           return {
             ...f,
-            alias: f.name,
+            alias: alias,
             visible: true,
             isVirtual: false
           }
@@ -147,7 +154,7 @@ export default {
         // 非虚拟表
         isVirtual: false,
         // 第一个表标记为主表
-        type: this.model.tables.length === 0 ? 'MAIN' : 'SUB',
+        type: tableType,
         x: tableX,
         y: tableY,
         // 增加设计器元素ID
@@ -200,11 +207,7 @@ export default {
       if (this.mainTable == null) {
         return
       }
-      this.model.visibleSQLPreviewWindow = true
-    },
-    // 创建虚拟字段
-    createVirtualField ({ field }) {
-      console.log('创建虚拟字段', field)
+      this.model.__visibleSQLPreviewWindow = true
     },
     // 删除表
     __deleteTable (table) {
@@ -344,11 +347,11 @@ export default {
     // 绑定创建关联线事件
     MD.on('line:created', ({ table, targetTable, field, targetField }) => {
       // 添加关联线
-      if (this.model.lineType === 'join') {
+      if (this.model.__lineType === 'join') {
         this.__addJoinLine({ table, targetTable, field, targetField })
       }
       // 如果为聚合函数关联
-      if (this.model.lineType === 'aggregate') {
+      if (this.model.__lineType === 'aggregate') {
         this.__addAggregateLine({ table, targetTable, field, targetField })
       }
       // 刷新SQL
@@ -360,7 +363,7 @@ export default {
     MD.on('stage:click', (e) => {
       // 关闭SQL查看，添加this.model判断，避免没有模型选中时报错
       if (e.target.nodeType === 'Stage' && this.model) {
-         this.model.visibleSQLPreviewWindow = false
+         this.model.__visibleSQLPreviewWindow = false
       }
     })
 

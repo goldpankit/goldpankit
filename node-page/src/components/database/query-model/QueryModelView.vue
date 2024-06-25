@@ -27,11 +27,11 @@
 <!--        <div v-if="currentModel != null" class="toolbar">-->
 <!--          &lt;!&ndash; 线条类型 &ndash;&gt;-->
 <!--          <ul class="line-types">-->
-<!--            <li :class="{selected: currentModel.lineType === 'join'}" @click="currentModel.lineType = 'join'">-->
+<!--            <li :class="{selected: currentModel.lineType === 'join'}" @click="currentModel.__lineType = 'join'">-->
 <!--              <em class="join-line"></em>-->
 <!--              <label>{{$t('database.joinLine')}}</label>-->
 <!--            </li>-->
-<!--            <li :class="{selected: currentModel.lineType === 'aggregate'}" @click="currentModel.lineType = 'aggregate'">-->
+<!--            <li :class="{selected: currentModel.lineType === 'aggregate'}" @click="currentModel.__lineType = 'aggregate'">-->
 <!--              <em class="aggregate-line"></em>-->
 <!--              <label>{{$t('database.aggregateLine')}}</label>-->
 <!--            </li>-->
@@ -223,9 +223,9 @@ export default {
       const deletedTables = []
       this.queryModels = models.map(model => {
         // 是否展示SQL预览窗口
-        model.visibleSQLPreviewWindow = false
+        model.__visibleSQLPreviewWindow = false
         // 默认选择关联线类型为join
-        model.lineType = 'join'
+        model.__lineType = 'join'
         // 调整tables数据
         model.tables = model.tables.map(table => {
           const dbTable = this.tables.find(tb => tb.name.toLowerCase() === table.name.toLowerCase())

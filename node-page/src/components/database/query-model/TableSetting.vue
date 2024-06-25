@@ -38,9 +38,7 @@ export default {
       default: true
     },
     // 表
-    table: {
-      required: true
-    },
+    table: {},
     // 表join信息
     joins: {
       type: Array
@@ -55,6 +53,9 @@ export default {
     // 展示字段
     visibleFields () {
       let fields = new Set()
+      if (this.table == null) {
+        return [...fields]
+      }
       // 当前表的字段
       for (const field of this.table.fields) {
         field.table = this.table
@@ -100,6 +101,12 @@ export default {
     },
     // 获取sql语句
     __getSql () {
+      if (this.table == null) {
+        return {
+          fields: [],
+          sql: ''
+        }
+      }
       let sqlLines = []
       const fields = []
       sqlLines.push('SELECT')

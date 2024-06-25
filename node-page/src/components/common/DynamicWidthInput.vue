@@ -19,6 +19,7 @@ export default {
   data () {
     return {
       value: this.modelValue,
+      oldValue: this.modelValue,
       changeTimeout: null
     }
   },
@@ -38,7 +39,12 @@ export default {
         clearTimeout(this.changeTimeout)
       }
       this.changeTimeout = setTimeout(() => {
-        this.$emit('change', e.target.innerText)
+        console.log('this.oldValue', this.oldValue)
+        this.$emit('change', {
+          oldValue: this.oldValue,
+          newValue: e.target.innerText
+        })
+        this.oldValue = e.target.innerText
       }, 300)
     },
     // 失去焦点时修改焦点值，避免别名、字段名等信息通过v-model直接修改后导致表格重新渲染（会导致输入不连贯）

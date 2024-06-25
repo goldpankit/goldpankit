@@ -60,7 +60,7 @@
         @field:delete="deleteVirtualField(index)"
         @update:visible="fieldVisibleChange"
       >
-        <DynamicWidthInput v-model="field.table.alias" @change="handleChange"/>
+        <DynamicWidthInput v-model="field.table.alias" @change="handleTableAliasChange(field.table, $event)"/>
         <span>.</span>
         <!-- 非虚拟字段 -->
         <template v-if="!field.isVirtual">
@@ -150,6 +150,14 @@ export default {
     // 修改设置
     handleChange () {
       this.$emit('field:change')
+    },
+    // 修改了表别名，则同步字段别名
+    handleTableAliasChange (table, { oldValue, newValue }) {
+      for (const field of table.fields) {
+        if (field.alias === `${oldValue}_${field.name}`) {
+          field.alias = `${newValue}_${field.name}`
+        }
+      }
     },
     // 创建虚拟字段
     createVirtualField () {
