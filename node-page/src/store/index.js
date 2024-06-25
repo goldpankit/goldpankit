@@ -117,13 +117,16 @@ export default new Vuex.Store({
           model.aggregates = []
         }
         // join处理（移除掉无效的join）
-        model.joins.map(join => {
+        model.joins = model.joins.map(join => {
           const table = model.tables.find(table => table.id === join.table)
           const targetTable = model.tables.find(table => table.id === join.targetTable)
           // 如果join的表在模型中不存在，则删除该join
           if (table == null || targetTable == null) {
             return null
           }
+          // 补充join表信息
+          join.table = table
+          join.targetTable = targetTable
           // 如果join的所有on不成立（on的相关字段不存在），则删除该join
           const ons = join.ons.map(on => {
             const field = table.fields.find(field => field.name === on.field)
@@ -131,12 +134,17 @@ export default new Vuex.Store({
             if (field == null || targetField == null) {
               return null
             }
+            // 补充on字段信息
+            on.field = field
+            on.targetField = targetField
+            return on
           })
           if (ons.filter(on => on != null).length === 0) {
             return null
           }
           return join
         })
+        model.joins = model.joins.filter(join => join != null)
         // // 聚合函数处理（移除掉无效的聚合）
         // model.aggregates.map(agg => {
         // })
@@ -159,7 +167,6 @@ export default new Vuex.Store({
       }
     },
     setCurrentDatabase (state, database) {
-      console.log('选中数据库', database)
       state.currentDatabase = database
       window.localStorage.removeItem('CURRENT_DATABASE')
       if (database != null && database !== '') {

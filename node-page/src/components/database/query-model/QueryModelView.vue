@@ -35,7 +35,7 @@
 <!--        </div>-->
         <!-- 设计器 -->
         <DesignerV2 :model="currentModel" @change="saveModel"/>
-        <div v-if="queryModels.length === 0" class="no-model-tip">
+        <div v-if="models.length === 0" class="no-model-tip">
           <div class="tip-wrap">
             <h4>{{$t('database.queryModelEmptyTipTitle')}}</h4>
             <p>{{$t('database.queryModelEmptyTip')}}</p>
@@ -84,10 +84,6 @@ export default {
       },
       // 字段高度
       fieldHeight: 30,
-      // 查询模型
-      queryModels: [],
-      // 表集合
-      tables: [],
       // 当前选中的数据库连接失败消息
       connectError: null,
       // 当前选中的模型
@@ -95,7 +91,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['globalLoading', 'databases', 'currentProject', 'currentDatabase', 'currentDatabaseConnect']),
+    ...mapState(['globalLoading', 'databases', 'tables', 'models', 'currentProject', 'currentDatabase', 'currentDatabaseConnect']),
     // 当前表
     currentTable () {
       if (this.currentModel == null || this.currentModel.previewTableId == null) {
@@ -126,11 +122,11 @@ export default {
     // 处理模型删除
     handleModelDeleted (model) {
       if (this.currentModel === model) {
-        if (this.queryModels.length > 0) {
-          this.currentModel = this.queryModels[0]
+        if (this.models.length > 0) {
+          this.currentModel = this.models[0]
         }
       }
-      if (this.queryModels.length === 0) {
+      if (this.models.length === 0) {
         this.currentModel = null
       }
     },
@@ -150,6 +146,7 @@ export default {
     },
     // 开始拖动表放置在设计器中
     handleDragStart (tableName) {
+      console.log('tableName', tableName)
       if (this.currentModel == null) {
         return
       }
@@ -163,18 +160,12 @@ export default {
           id: item.id,
           name: item.name,
           alias: item.alias,
-          comment: item.comment,
-          isVirtual: item.isVirtual,
           type: item.type,
           fields: item.fields.map(f => {
-            const obj = {}
-            for (const key in f) {
-              if (key === 'table' || key.startsWith('__')) {
-                continue
-              }
-              obj[key] = f[key]
+            return {
+              name: f.name,
+              alias: f.alias
             }
-            return obj
           }),
           x: item.x,
           y: item.y
