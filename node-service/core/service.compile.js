@@ -91,7 +91,7 @@ class Kit {
           const dbConfig = projectDatabase.getProjectDatabaseConfigByIdWithDefaultBlankArray(project.id)
           // - 从变量中获取数据库参数
           const databaseVariable = dto.variables.find(v=>v.inputType === 'datasource')
-          if (databaseVariable.value != null && databaseVariable.value !== '') {
+          if (databaseVariable != null && databaseVariable.value != null && databaseVariable.value !== '') {
             // 从全局数据库中找到数据库信息
             const db = projectDatabase.getDatabase(project.id, databaseVariable.value)
             if (db != null) {
@@ -394,9 +394,9 @@ class Kit {
         return Promise.reject(response.INSTALL.MISSING_PROJECT)
       }
       // 获取项目安装的服务
-      let projectService = null
+      let projectInstallService = null
       if (project.service != null && project.service[dto.service] != null) {
-        projectService = project.service[dto.service]
+        projectInstallService = project.service[dto.service]
       }
       // 获取数据库信息
       const database = projectDatabase.getDatabase(projectId, dto.database)
@@ -405,7 +405,6 @@ class Kit {
       let serviceVars = null
       return Promise.all(variables)
         .then(vars => {
-          console.log('vars', vars)
           serviceVars = vars
           // 执行安装
           return serviceApi.install({
@@ -415,7 +414,7 @@ class Kit {
             plugin: dto.plugin,
             version: dto.version,
             // 项目使用的服务版本，安装服务时应该为null
-            projectServiceVersion: projectService == null ? null : projectService.version,
+            projectServiceVersion: projectInstallService == null ? null : projectInstallService.version,
             operaType: dto.operaType,
             variables: vars
           })

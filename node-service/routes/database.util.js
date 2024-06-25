@@ -35,7 +35,7 @@ request
   .post('/db/mysql/exec')
   .data(req => {
     // 查找项目数据库配置
-    let database = projectDatabase.getDatabase(req.body.projectId, req.body.database)
+    let database = projectDatabase.getDatabase(req.body.projectId, req.body.databaseId)
     // 没有找到项目数据库，读取config字段
     if (database == null) {
       database = req.body.config
