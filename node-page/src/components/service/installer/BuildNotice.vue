@@ -181,7 +181,7 @@ export default {
       // 如果执行的是SQL脚本，则需要验证数据库名称是否匹配
       if (buildItem.type === 'MySQL') {
         if (this.currentDatabaseText !== this.exactConfirmData.value) {
-          this.exactConfirmData.error = '数据库名称错误'
+          this.exactConfirmData.error = '数据库全路径未匹配'
           return
         }
       }
