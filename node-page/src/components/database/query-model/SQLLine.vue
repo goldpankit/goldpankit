@@ -47,6 +47,7 @@ export default {
   letter-spacing: 1px;
   justify-content: space-between;
   color: var(--color-gray);
+  position: relative;
   &.sql-line__hide {
     .code {
       opacity: .35;
@@ -91,13 +92,18 @@ export default {
   }
   // 操作
   .opera {
-    margin-left: 20px;
+    position: absolute;
+    top: 0;
+    right: 0;
     flex-shrink: 0;
     display: flex;
     opacity: 0;
     transition: all ease .3s;
+    background-color: rgba(0, 0, 0, .2);
+    border-radius: 5px;
     li {
       &:deep(.el-button) {
+        margin: 0;
         height: auto;
         padding: 5px;
         border: 1px solid transparent;
