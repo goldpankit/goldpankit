@@ -114,18 +114,11 @@ export default {
     }
   },
   watch: {
-    // 选择的模型发生变化后，刷新表字段
+    // 选择的模型发生变化后，刷新表字段，使用immediate在首次进入时也会刷新表，进一步触发字段选中
     model: {
       immediate: true,
       handler () {
         this.refreshTables()
-      }
-    },
-    // 已选字段名称发生变化时，刷新已选字段
-    modelValue: {
-      immediate: true,
-      handler () {
-        // this.selectFields(this.modelValue)
       }
     }
   },
