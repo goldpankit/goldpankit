@@ -121,6 +121,7 @@ export default {
       handler () {
         if (this.models.length > 0) {
           this.currentModel = this.models[0]
+          console.log('this.currentModel', this.currentModel)
         } else {
           this.currentModel = null
         }
@@ -174,7 +175,9 @@ export default {
           fields: item.fields.map(f => {
             return {
               name: f.name,
-              alias: f.alias
+              alias: f.alias,
+              // 对于字段是否展示，只有不展示时才添加visible，
+              visible: f.visible ? undefined : f.visible
             }
           }),
           x: item.x,

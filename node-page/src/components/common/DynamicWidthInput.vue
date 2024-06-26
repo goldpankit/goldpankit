@@ -39,7 +39,6 @@ export default {
         clearTimeout(this.changeTimeout)
       }
       this.changeTimeout = setTimeout(() => {
-        console.log('this.oldValue', this.oldValue)
         this.$emit('change', {
           oldValue: this.oldValue,
           newValue: e.target.innerText
@@ -67,5 +66,6 @@ export default {
   cursor: text;
   padding: 2px 5px;
   color: var(--font-color);
+  white-space: nowrap;
 }
 </style>

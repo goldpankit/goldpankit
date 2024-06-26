@@ -94,7 +94,7 @@ export default new Vuex.Store({
             const field =  {
               ...dbField,
               // 增加显示状态
-              visible: modelField == null ? true : modelField.visible === true,
+              visible: modelField == null ? true : modelField.visible !== false,
               // 增加别名
               alias: modelField == null ? `${table.alias}_${dbField.name}` : modelField.alias
             }

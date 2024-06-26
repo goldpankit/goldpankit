@@ -137,10 +137,15 @@ export default {
       const tableType = this.model.tables.length === 0 ? 'MAIN' : 'SUB'
       // 创建新表对象
       const newTable = {
-        ...this.model.dragData,
+        // 增加设计器元素ID
+        id: generateId(),
+        name: this.model.dragData.name,
+        alias: this.model.dragData.name,
+        // 第一个表标记为主表
+        type: tableType,
         // 字段
         fields: this.model.dragData.fields.map(f => {
-          let alias = `${this.model.dragData.alias}_${f.name}`
+          let alias = `${this.model.dragData.name}_${f.name}`
           if (tableType === 'MAIN') {
             alias = `${f.name}`
           }
@@ -153,14 +158,9 @@ export default {
         }),
         // 非虚拟表
         isVirtual: false,
-        // 第一个表标记为主表
-        type: tableType,
+        // 坐标
         x: tableX,
-        y: tableY,
-        // 增加设计器元素ID
-        id: generateId(),
-        // 添加joins，用于存放join关系
-        joins: []
+        y: tableY
       }
       // 添加到模型表中
       this.model.tables.push(newTable)
