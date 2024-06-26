@@ -109,6 +109,7 @@ export default {
         // 添加JOIN线
         for (const join of this.model.joins) {
           for (const on of join.ons) {
+            console.log('创建join线时的主表', join.table)
             MD.createLine({
               lineType: 'join',
               field: on.field,

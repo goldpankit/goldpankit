@@ -119,6 +119,7 @@ export default new Vuex.Store({
         // join处理（移除掉无效的join）
         model.joins = model.joins.map(join => {
           const table = model.tables.find(table => table.id === join.table)
+          console.log('主表', table)
           const targetTable = model.tables.find(table => table.id === join.targetTable)
           // 如果join的表在模型中不存在，则删除该join
           if (table == null || targetTable == null) {

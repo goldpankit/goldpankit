@@ -29,7 +29,7 @@
           <DynamicWidthInput v-model="getAggregate(field).targetTable.alias" @change="handleChange"/>
         </SQLLine>
         <!-- 聚合表JOIN -->
-        <SQLJoin :indent-level="3" :joins="joins" :table="getAggregate(field).targetTable"/>
+        <SQLJoin :indent-level="3" :joins="repairedJoins" :table="getAggregate(field).targetTable"/>
         <!-- 聚合表别名的等信息 -->
         <SQLLine
           indent="20"
@@ -88,7 +88,7 @@
       <DynamicWidthInput v-model="table.alias" @change="handleChange"/>
     </SQLLine>
     <!-- JOIN语句 -->
-    <SQLJoin :joins="joins" :table="table" @change="handleChange"/>
+    <SQLJoin :joins="repairedJoins" :table="table" @change="handleChange"/>
   </div>
 </template>
 
@@ -122,8 +122,18 @@ export default {
   },
   computed: {
     // 获取到当前表的joins
-    currentTableJoins () {
-      return this.joins.filter(join => join.table.id === this.table.id)
+    repairedJoins () {
+      return this.joins.map(join => {
+        const copyJoin = { ...join }
+        // 将主表始终赋值给join.table
+        if (copyJoin.targetTable.id === this.table.id) {
+          const mainTable = copyJoin.targetTable
+          copyJoin.targetTable = copyJoin.table
+          copyJoin.table = mainTable
+        }
+        console.log('copyJoin', copyJoin)
+        return copyJoin
+      })
     },
     // 展示字段
     visibleFields () {
@@ -131,19 +141,12 @@ export default {
       // 当前表的字段
       for (const field of this.table.fields) {
         field.table = this.table
-        field.alias = field.alias || field.name
         fields.add(field)
       }
-      // join表字段
-      for (const join of this.joins) {
-        // 不是当前表的join关系，不做处理
-        if (join.table.id !== this.table.id) {
-          continue
-        }
-        // 拿到join的表
+      // join表字段（repairedJoins永远都是主表关联子表）
+      for (const join of this.repairedJoins) {
         for (const field of join.targetTable.fields) {
           field.table = join.targetTable
-          field.alias = field.alias || field.name
           fields.add(field)
         }
       }

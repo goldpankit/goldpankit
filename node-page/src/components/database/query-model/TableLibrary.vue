@@ -137,7 +137,7 @@ export default {
       return {
         name: [
           { required: true, message: this.$t('form.isRequired', { value: this.$t('database.modelName') }) },
-          { validator: (rule, value, callback) => checkTableName(rule, value, callback, this.$t('form.isIncorrect', { field: this.$t('database.modelName') })) },
+          { validator: (rule, value, callback) => checkTableName(rule, value, callback, '模型名称必须以字母开头，长度必须大于1，且只能包含字母、数字和下划线！' ) },
         ]
       }
     },

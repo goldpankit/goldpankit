@@ -1,6 +1,6 @@
 <template>
   <ul class="joins" :style="{'padding-left': indent}">
-    <li v-for="join in currentTableJoins">
+    <li v-for="join in joins">
       <SQLLine>
         <SQLLineKeywordSelect
           v-model="join.joinType"
@@ -69,17 +69,13 @@ export default {
   computed: {
     indent () {
       return `${(this.indentLevel -1) * 20}px`
-    },
-    // 获取到当前表的joins
-    currentTableJoins () {
-      return this.joins.filter(join => join.table.id === this.table.id)
-    },
+    }
   },
   methods: {
     // 修改设置
     handleChange () {
       this.$emit('change')
-    },
+    }
   }
 }
 </script>
