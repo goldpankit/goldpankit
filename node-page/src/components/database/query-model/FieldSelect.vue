@@ -6,7 +6,6 @@
       :hide-after="0"
       :persistent="false"
       @hide="close"
-      @show="handleShow"
     >
       <template #reference>
         <ul
@@ -126,15 +125,11 @@ export default {
     modelValue: {
       immediate: true,
       handler () {
-        this.setSelectedFieldObjects(this.modelValue)
+        // this.selectFields(this.modelValue)
       }
     }
   },
   methods: {
-    // 打开表字段选择，打开时刷新表字段
-    handleShow () {
-      this.refreshTables()
-    },
     // 聚焦选择
     focus () {
       this.focused = true
@@ -162,19 +157,19 @@ export default {
       // 触发input事件
       this.handleInput(table, values)
     },
-    // 处理输入
-    handleInput (table, fieldNames) {
-      // 处理选中全部
-      const tableSelectedFields = fieldNames.filter(f => f.startsWith(`${table.id}.`))
+    /**
+     * 处理字段选中
+     *
+     * @param table 字段所在表
+     * @param allSelectedFieldNames 所有选中的字段名称['表ID.表字段', ...]
+     */
+    handleInput (table, allSelectedFieldNames) {
+      // 获取到当前表选中的字段
+      const tableSelectedFields = allSelectedFieldNames.filter(f => f.startsWith(`${table.id}.`))
+      // 如果选中的字段数 = 表的字段数（这里表的字段已经为全部显示的字段），则视为选中了全部
       table.checkedAll = tableSelectedFields.length === table.fields.length
-      // 获取所有选中的字段
-      let selectedFields = this.__getSelectedFieldsObjects(fieldNames)
-      // 此处给this.selectedFields赋值，不能修改引用地址，否则排序后无法获取到最新排序内容
-      this.selectedFields.splice(0, this.selectedFields.length)
-      this.selectedFields.push.apply(this.selectedFields, selectedFields)
-      // 触发事件
-      this.$emit('update:modelValue', fieldNames)
-      this.$emit('fields:change', this.selectedFields)
+      // 选择字段
+      this.selectFields(allSelectedFieldNames)
     },
     // 鼠标悬浮字段
     handleFieldEnter (field) {
@@ -221,29 +216,35 @@ export default {
           })
         }
       }
+      this.selectFields(this.modelValue)
     },
-    // 设置选中的字段对象
-    setSelectedFieldObjects (fieldNames) {
+    // 选择字段，如果字段不存在会清空选择
+    selectFields (fieldNames) {
+      // 先获取到新的选中字段，在此之前不要清空当前已选字段信息，避免填写的字段配置被直接清空
+      const newSelectedFieldsObjects = this.__getExistsSelectedFieldsObjects(fieldNames)
       // 此处给this.selectedFields赋值，不能修改引用地址，否则排序后无法获取到最新排序内容
       this.selectedFields.splice(0, this.selectedFields.length)
-      this.selectedFields.push.apply(this.selectedFields, this.__getSelectedFieldsObjects(fieldNames))
+      this.selectedFields.push.apply(this.selectedFields, newSelectedFieldsObjects)
+      // 触发事件
+      this.$emit('update:modelValue', this.selectedFields.map(f => f.table.id + '.' + f.name))
+      this.$emit('fields:change', this.selectedFields)
     },
-    // 获取选中的字段对象
-    __getSelectedFieldsObjects (fieldNames) {
-      return fieldNames
+    // 获取已存在并选中的字段对象
+    __getExistsSelectedFieldsObjects (fieldNames) {
+      // 已存在并选中的字段对象
+      const existsSelectedFields = fieldNames
         // 找到field对象并填充table字段
         .map(name => {
           // 选中的value值类似为xxxx.NAME，其中xxxx为表ID，NAME为字段名称
           const tableId = name.split('.')[0]
           const fieldName = name.split('.')[1]
           // 找到字段所在的表
-          const table = this.model.tables.find(t => t.id === tableId)
+          const table = this.tables.find(t => t.id === tableId)
           if (table == null) {
             return null
           }
-          // 找到字段
-          const visibleFields = table.fields.filter(f => f.visible)
-          const field = visibleFields.find(field => field.name === fieldName)
+          // 找到字段（table.fields为全部显示的字段）
+          const field = table.fields.find(field => field.name === fieldName)
           if (field == null) {
             return null
           }
@@ -255,6 +256,25 @@ export default {
         })
         // 过滤掉未找到的对象
         .filter(field => field != null)
+      // 构建新选择的字段数组
+      const newSelectedFields = []
+      for (const existsSelectedField of existsSelectedFields) {
+        // 从当前已选中的字段中获取与当前字段匹配的字段
+        const currentIndex = this.selectedFields.findIndex(selectedField => {
+          return selectedField.table.id === existsSelectedField.table.id && selectedField.name === existsSelectedField.name
+        })
+        // 如果在已选中未找到字段信息，则为新选的字段
+        if (currentIndex === -1) {
+          newSelectedFields.push(existsSelectedField)
+          continue
+        }
+        // 如果在已选中找到了字段，则更新别名和table，只有别名和table会发生变化
+        const currentField = this.selectedFields[currentIndex]
+        currentField.alias = existsSelectedField.alias
+        currentField.table = existsSelectedField.table
+        newSelectedFields.push(currentField)
+      }
+      return newSelectedFields
     }
   }
 }

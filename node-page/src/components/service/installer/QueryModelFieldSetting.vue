@@ -134,10 +134,10 @@ export default {
       }
       return '120px'
     },
-    // 刷新设置
+    // 刷新字段设置内容
     refresh () {
-      // 刷新字段选择器的选中数据
-      this.$refs.fieldSelect.setSelectedFieldObjects(this.selectedFields)
+      // 字段选择器：刷新模型表，刷新后会自动更新字段选择，影响列表中的字段
+      this.$refs.fieldSelect.refreshTables()
     }
   },
   created () {
