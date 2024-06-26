@@ -23,7 +23,7 @@
     </el-button>
     <p></p>
     <!-- 查询模型设计窗口 -->
-    <QueryModelWindow ref="queryModelWindow"/>
+    <QueryModelWindow ref="queryModelWindow" @close="refreshFieldSetting"/>
   </div>
   <!-- 数据库连接失败提示 -->
   <p v-if="currentDatabaseConnect.error != null" class="connect-error">数据库连接失败：{{ currentDatabaseConnect.error }}</p>
@@ -31,6 +31,7 @@
   <ul v-if="currentModel != null && fieldVariableGroup.length > 0" class="field-settings">
     <li v-for="group of fieldVariableGroup" :key="group.label">
       <QueryModelFieldSetting
+        :ref="`${group.name}FieldSetting`"
         :value-key="valueKey"
         :model="currentModel"
         :group="group"
@@ -103,6 +104,12 @@ export default {
       }
       this.$emit('update:modelValue', value)
       this.$emit('change')
+    },
+    // 刷新各字段变量组的字段设置
+    refreshFieldSetting () {
+      for (const fieldGroup of this.fieldVariableGroup) {
+        this.$refs[`${fieldGroup.name}FieldSetting`][0].refresh()
+      }
     }
   }
 }

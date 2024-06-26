@@ -66,7 +66,7 @@
       <!-- 选项设置 -->
       <OptionSettingWindow ref="optionSettingWindow" @change="handleChange"/>
     </el-form-item>
-    <el-form-item :label="$t('service.settings.variable.defaultValue')">
+    <el-form-item label="默认值">
       <VariableInput
         :variable="variable"
         value-key="defaultValue"
@@ -87,7 +87,7 @@
         rootVariable.inputType !== 'query_model' &&
         rootVariable.inputType !== 'table'
       "
-      :label="$t('service.settings.variable.compiler')"
+      label="编译器"
     >
       <CompilerSelect v-model="variable.compiler" @change="handleChange"/>
     </el-form-item>

@@ -1,4 +1,23 @@
 /**
+ * 拷贝数据
+ * @param data 待拷贝的数据
+ * @param ignores 忽略的字段
+ * @returns {any}
+ */
+export function copyData (data, ignores = []) {
+  if (ignores.length === 0) {
+    return JSON.parse(JSON.stringify(data))
+  }
+  const newData = {}
+  for (const key in data) {
+    if (ignores.includes(key)) {
+      continue
+    }
+    newData[key] = copyData(data[key])
+  }
+  return JSON.parse(JSON.stringify(newData))
+}
+/**
  * 为对象、数组、字符串等数据去空
  *
  * @param data 数据

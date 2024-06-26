@@ -100,9 +100,13 @@ import DynamicWidthInput from "../../common/DynamicWidthInput.vue";
 import SQLJoin from "./SQLJoin.vue";
 
 export default {
-  name: "SQL",
+  name: 'SQL',
   components: {SQLJoin, DynamicWidthInput, SQLLine, SQLLineKeywordSelect},
   props: {
+    // 模型
+    model: {
+      required: true
+    },
     // 表
     table: {
       required: true
@@ -153,7 +157,14 @@ export default {
     },
     // 修改了表别名，则同步字段别名
     handleTableAliasChange (table, { oldValue, newValue }) {
-      for (const field of table.fields) {
+      const targetTable = this.model.tables.find(t => t.id === table.id)
+      // 主表字段，不做处理
+      if (targetTable.type === 'MAIN') {
+        this.$emit('field:change')
+        return
+      }
+      // 子表字段，则自动更新字段别名
+      for (const field of targetTable.fields) {
         if (field.alias === `${oldValue}_${field.name}`) {
           field.alias = `${newValue}_${field.name}`
         }

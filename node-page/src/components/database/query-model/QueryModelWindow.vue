@@ -18,14 +18,13 @@
 </template>
 
 <script>
-
-import QueryModelView from "./QueryModelView.vue";
-import DataSourceSelect from "../DataSourceSelect.vue";
-import {mapState} from "vuex";
+import QueryModelView from './QueryModelView'
+import DataSourceSelect from '../DataSourceSelect'
+import { mapState } from 'vuex'
 
 export default {
-  name: "QueryModelWindow",
-  components: {DataSourceSelect, QueryModelView},
+  name: 'QueryModelWindow',
+  components: { DataSourceSelect, QueryModelView },
   data () {
     return {
       visible: false
@@ -52,9 +51,6 @@ export default {
   min-width: 1000px;
   display: flex;
   flex-direction: column;
-  //width: 98% !important;
-  //height: 98% !important;
-  //top: 1%;
 
   .el-dialog__header {
     --header-height: 63px;

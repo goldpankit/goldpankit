@@ -1,6 +1,7 @@
 <template>
   <h5>{{group.label}}</h5>
   <QueryModelFieldSelect
+    ref="fieldSelect"
     v-model="selectedFields"
     :model="model"
     placeholder="Select fields"
@@ -132,6 +133,11 @@ export default {
         return '150px'
       }
       return '120px'
+    },
+    // 刷新设置
+    refresh () {
+      // 刷新字段选择器的选中数据
+      this.$refs.fieldSelect.setSelectedFieldObjects(this.selectedFields)
     }
   },
   created () {

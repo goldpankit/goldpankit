@@ -121,7 +121,6 @@ export default {
       handler () {
         if (this.models.length > 0) {
           this.currentModel = this.models[0]
-          console.log('this.currentModel', this.currentModel)
         } else {
           this.currentModel = null
         }

@@ -9,6 +9,7 @@
     </div>
     <div class="wrap" v-if="table != null">
       <SQL
+        :model="model"
         :table="table"
         :joins="joins"
         :aggregates="aggregates"
@@ -32,10 +33,14 @@ import {formatSql} from "@/api/database.util";
 
 export default {
   name: "TableSetting",
-  components: {SQL, QueryResultPreview, SQLLineKeywordSelect, DynamicWidthInput, SQLLine},
+  components: { SQL, QueryResultPreview, SQLLineKeywordSelect, DynamicWidthInput, SQLLine},
   props: {
     visible: {
       default: true
+    },
+    // 模型
+    model: {
+      required: true
     },
     // 表
     table: {},

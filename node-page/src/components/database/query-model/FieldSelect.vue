@@ -6,6 +6,7 @@
       :hide-after="0"
       :persistent="false"
       @hide="close"
+      @show="handleShow"
     >
       <template #reference>
         <ul
@@ -84,8 +85,10 @@
 </template>
 
 <script>
+import { copyData } from '@/utils/util'
+
 export default {
-  name: "QueryModelFieldSelect",
+  name: 'QueryModelFieldSelect',
   props: {
     modelValue: {},
     model: {
@@ -112,22 +115,26 @@ export default {
     }
   },
   watch: {
+    // 选择的模型发生变化后，刷新表字段
     model: {
       immediate: true,
       handler () {
-        this.__handleTables()
+        this.refreshTables()
       }
     },
+    // 已选字段名称发生变化时，刷新已选字段
     modelValue: {
       immediate: true,
       handler () {
-        // 此处给this.selectedFields赋值，不能修改引用地址，否则排序后无法获取到最新排序内容
-        this.selectedFields.splice(0, this.selectedFields.length)
-        this.selectedFields.push.apply(this.selectedFields, this.__getSelectedFieldsObjects(this.modelValue))
+        this.setSelectedFieldObjects(this.modelValue)
       }
-    },
+    }
   },
   methods: {
+    // 打开表字段选择，打开时刷新表字段
+    handleShow () {
+      this.refreshTables()
+    },
     // 聚焦选择
     focus () {
       this.focused = true
@@ -197,10 +204,12 @@ export default {
       this.handleFieldLeave()
     },
     // 获取表数据
-    __handleTables () {
+    refreshTables () {
       this.tables = []
       for (const table of this.model.tables) {
+        // 只获取显示的字段列表
         const visibleFields = table.fields.filter(f => f.visible)
+        // 如果表存在显示的字段，则纳入可选择的表中
         if (visibleFields.length > 0) {
           this.tables.push({
             id: table.id,
@@ -213,6 +222,12 @@ export default {
         }
       }
     },
+    // 设置选中的字段对象
+    setSelectedFieldObjects (fieldNames) {
+      // 此处给this.selectedFields赋值，不能修改引用地址，否则排序后无法获取到最新排序内容
+      this.selectedFields.splice(0, this.selectedFields.length)
+      this.selectedFields.push.apply(this.selectedFields, this.__getSelectedFieldsObjects(fieldNames))
+    },
     // 获取选中的字段对象
     __getSelectedFieldsObjects (fieldNames) {
       return fieldNames
@@ -223,18 +238,20 @@ export default {
           const fieldName = name.split('.')[1]
           // 找到字段所在的表
           const table = this.model.tables.find(t => t.id === tableId)
+          if (table == null) {
+            return null
+          }
           // 找到字段
-          const field = table.fields.find(field => field.name === fieldName)
+          const visibleFields = table.fields.filter(f => f.visible)
+          const field = visibleFields.find(field => field.name === fieldName)
           if (field == null) {
             return null
           }
-          // 拷贝表和字段（此处需保证每次选择的都是独立的字段和表信息，防止数据污染导致莫名其妙的BUG）
-          const tableDump = JSON.parse(JSON.stringify(table))
-          const fieldDump = JSON.parse(JSON.stringify(field))
-          // 填充表信息（表信息中不要再包含字段信息，避免数据循环依赖）
-          delete tableDump.fields
-          fieldDump.table = tableDump
-          return fieldDump
+          // 拷贝表和字段，去掉fields和table，避免table.fields与field.table循环引用
+          const copyTable = copyData(table, ['fields'])
+          const copyField = copyData(field, ['table'])
+          copyField.table = copyTable
+          return copyField
         })
         // 过滤掉未找到的对象
         .filter(field => field != null)

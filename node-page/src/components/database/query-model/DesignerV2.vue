@@ -21,6 +21,7 @@
       v-if="model != null"
       ref="tableSetting"
       :visible="model.__visibleSQLPreviewWindow"
+      :model="model"
       :table="mainTable"
       :joins="mainTableJoins"
       :aggregates="mainTableAggregates"
@@ -72,11 +73,18 @@ export default {
     }
   },
   watch: {
-    model () {
-      this.init()
+    // 此处需要监听第一次，避免页面刷新后，通过模型选择器打开设计器无法初始化
+    model: {
+      immediate: true,
+      handler () {
+        this.init()
+      }
     },
-    mainTable () {
-      this.refreshSQL()
+    mainTable: {
+      immediate: true,
+      handler () {
+        this.refreshSQL()
+      }
     },
     'model.__lineType' () {
       if (MD != null && this.model != null) {
