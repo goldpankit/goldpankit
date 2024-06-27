@@ -582,7 +582,7 @@ class Kit {
               .then(value => {
                 // 补充动态字段，children为字段变量组
                 if (variable.children != null && variable.children.length > 0) {
-                  this.#paddingFieldVariablesWithResolve(project, database, variable, value, null, resolve, reject)
+                  this.#paddingFieldVariablesWithResolve(project, database, variable, value, null, null, null, resolve, reject)
                   return
                 }
                 resolve({
@@ -675,7 +675,7 @@ class Kit {
             }
             // 处理字段变量
             if (variable.children != null && variable.children.length > 0) {
-              this.#paddingFieldVariablesWithResolve(project, database, variable, value, model, resolve, reject)
+              this.#paddingFieldVariablesWithResolve(project, database, variable, value, model, mainTable, joins, resolve, reject)
               return
             }
             resolve({
@@ -832,11 +832,34 @@ class Kit {
    *   ]
    * }
    */
-  #paddingFieldVariablesWithResolve (project, database, variable, value, model, resolve, reject) {
+  #paddingFieldVariablesWithResolve (project, database, variable, value, model, mainTable, joins, resolve, reject) {
     const groupPromises = []
     if (variable.children != null && variable.children.length > 0) {
       for (const group of variable.children) {
-        value[group.name] = group.value === undefined ? group.defaultValue : group.value
+        let selectedFields = group.value === undefined ? group.defaultValue : group.value
+        // 如果查询模型不为空，此项操作为为查询模型的字段变量组填充值
+        if (model != null) {
+          selectedFields = selectedFields
+            .map(field => {
+              // 获取到字段所在的表信息
+              const fieldTable = model.tables.find(t => t.id === field.table.id)
+              // 如果表中该字段已被移除，则不做处理
+              if (fieldTable.fields.find(f => f.name === field.name) == null) {
+                return null
+              }
+              // 字段的表一定存在于主表或joins表中，如果不存在，说明join已失效，那么对应的字段也需要失效
+              if (
+                fieldTable.id !== mainTable.id && // 不是主表
+                joins.find(join => join.table.id === fieldTable.id || join.targetTable.id === fieldTable.id) == null // 也不是joins中的表
+              ) {
+                return null
+              }
+              return field
+            })
+            .filter(field => field != null)
+        }
+        // 过滤掉已被删除的字段
+        value[group.name] = selectedFields
         // group.children为字段变量组中的变量设定（例如查询条件queryFields中的字段定义）
         groupPromises.push(Promise.all(this.#getVariables(project, database, group.children, false))
           .then(vars => {
@@ -878,7 +901,11 @@ class Kit {
                * 非虚拟字段
                */
               if (!field.isVirtual) {
-                field.statements = `${field.name} AS ${field.alias}`
+                let aliasSql = ` AS \`${field.alias}\``
+                if (field.name === field.alias) {
+                  aliasSql = ''
+                }
+                field.statements = `\`${field.name}\`${aliasSql}`
                 continue
               }
               /**
@@ -941,6 +968,13 @@ class Kit {
             const fieldTable = model.tables.find(t => t.id === field.table.id)
             // 如果表中该字段已被移除，则不做处理
             if (fieldTable.fields.find(f => f.name === field.name) == null) {
+              continue
+            }
+            // 字段的表一定存在于主表或joins表中，如果不存在，说明join已失效，那么对应的字段也需要失效
+            if (
+              fieldTable.id !== mainTable.id && // 不是主表
+              joins.find(join => join.table.id === fieldTable.id || join.targetTable.id === fieldTable.id) == null // 也不是joins中的表
+            ) {
               continue
             }
             // 生成字段别名
