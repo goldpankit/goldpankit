@@ -59,7 +59,7 @@ export default {
     },
     // 删除项目
     deleteProject (project) {
-      this.deleteConfirm(this.$t('project.deleteTip', {value: `「${project.name}」`}))
+      this.deleteConfirm(`确定要删除「${project.name}」吗？删除后不可恢复！`)
         .then(() => {
           deleteProject(project.id)
             .then(() => {

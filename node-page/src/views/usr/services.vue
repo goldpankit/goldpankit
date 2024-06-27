@@ -52,14 +52,14 @@
             <!-- 只有自己的服务才存在操作 -->
             <ul v-if="service.user != null && userInfo.id === service.user.id" class="opera">
               <li>
-                <el-button v-if="service.type === 'MAIN'" @click="openSettings(service)">
+                <el-button type="primary" size="default" v-if="service.type === 'MAIN'" @click="openSettings(service)">
                   {{$t('service.serviceSettings')}}
                 </el-button>
-                <el-button v-else @click="openSettings(service)">
+                <el-button v-else type="primary" size="default" @click="openSettings(service)">
                   {{$t('plugin.settings')}}
                 </el-button>
               </li>
-              <li><el-button text type="danger" @click="deleteService(service)">{{$t('common.delete')}}</el-button></li>
+              <li><el-button type="important2" size="default" @click="deleteService(service)">删除</el-button></li>
             </ul>
           </li>
         </ul>
@@ -140,7 +140,11 @@ export default {
           plugin: service.name
         }
       }
-      this.deleteConfirm(this.$t('service.confirmDeleteTip'))
+      let message = `确认删除「${service.label}」插件吗？删除后不可恢复！`
+      if (service.type === 'MAIN') {
+        message = `确认删除「${service.label}」服务吗？删除后不可恢复！`
+      }
+      this.deleteConfirm(message)
         .then(() => {
           deleteService({
             id: service.id,
@@ -153,7 +157,7 @@ export default {
                 this.pagination.page -= 1
               }
               this.fetchPage()
-              this.$tip.success(this.$t('common.deleteSuccessfully'))
+              this.$tip.success('删除成功')
             })
             .catch(e => {
               this.$tip.apiFailed(e)

@@ -196,7 +196,7 @@ router.beforeEach((to, from, next) => {
       next({
         name: 'SignIn',
         query: {
-          redirect_uri: to.path
+          redirect_uri: to.fullPath
         }
       })
     })
