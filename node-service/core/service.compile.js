@@ -550,25 +550,25 @@ class Kit {
     }
     // 扩展变量
     const extVariables = []
-    return variables.map(item => {
-      return new Promise((resolve, reject) => {
+    return variables.map(variable => {
+      return new Promise(async (resolve, reject) => {
         try {
           // 如果类型为数据源，则查询出库信息
-          if (item.inputType === 'datasource') {
-            const databaseId = item.value === undefined ?  item.defaultValue : item.value
+          if (variable.inputType === 'datasource') {
+            const databaseId = variable.value === undefined ?  variable.defaultValue : variable.value
             const database = projectDatabase.getDatabase(project.id, databaseId)
             resolve({
-              ...item,
+              ...variable,
               value: database
             })
             return
           }
           // 输入类型为表，则查询出表信息
-          if (item.inputType === 'table') {
-            const tableName = item.value === undefined ? item.defaultValue : item.value
+          if (variable.inputType === 'table') {
+            const tableName = variable.value === undefined ? variable.defaultValue : variable.value
             if (database == null || tableName == null || tableName === '') {
               resolve({
-                ...item,
+                ...variable,
                 value: null
               })
             }
@@ -578,15 +578,15 @@ class Kit {
               user: database.username,
               password: database.password,
               database: database.schema
-            }, item.value === undefined ? item.defaultValue : item.value)
+            }, variable.value === undefined ? variable.defaultValue : variable.value)
               .then(value => {
                 // 补充动态字段，children为字段变量组
-                if (item.children != null && item.children.length > 0) {
-                  this.#paddingFieldVariablesWithResolve(project, database, item, value, null, resolve, reject)
+                if (variable.children != null && variable.children.length > 0) {
+                  this.#paddingFieldVariablesWithResolve(project, database, variable, value, null, resolve, reject)
                   return
                 }
                 resolve({
-                  ...item,
+                  ...variable,
                   value
                 })
               })
@@ -596,82 +596,100 @@ class Kit {
             return
           }
           // 如果类型为查询模型，则查询出模型信息
-          if (item.inputType === 'query_model') {
-            const modelId = item.value === undefined ? item.defaultValue : item.value
+          if (variable.inputType === 'query_model') {
+            // 获取模型ID，如果为编译代码，value为undefined
+            const modelId = variable.value === undefined ? variable.defaultValue : variable.value
             if (modelId == null || modelId === '') {
               resolve({
-                ...item,
+                ...variable,
                 value: null
               })
               return
             }
+            // 从数据库中获取模型对象
             const model = database.models.find(m => m.id === modelId)
             if (model == null) {
-              reject(`Can not found ${item.label} value.`)
-              return
+              return reject(`「${variable.label}」参数错误，找不到查询模型！`)
             }
-            // 主表
-            const mainTable = model.tables.find(t => t.type === 'MAIN')
-            // 子表
-            const subTables = model.tables.filter(t => t.type !== 'MAIN')
-            // JOIN
-            const joins = model.joins.map(join => {
-              const table = model.tables.find(t => t.id === join.table)
-              const targetTable = model.tables.find(t => t.id === join.targetTable)
-              const ons = join.ons.map(on => {
-                // 左字段
-                const field = table.fields.find(f => f.name === on.field)
-                field.table = {
-                  ...table,
-                  fields: undefined
-                }
-                // 右字段
-                const targetField = targetTable.fields.find(f => f.name === on.targetField)
-                targetField.table = {
-                  ...targetTable,
-                  fields: undefined
-                }
-                return {
-                  ...on,
-                  field,
-                  targetField,
-                }
-              })
+            // 获取数据库表（没有时会连接数据库）
+            let tables = database.tables
+            if (tables == null) {
+              tables = await mysql.getTables({
+                host: database.host,
+                port: database.port,
+                user: database.username,
+                password: database.password,
+                database: database.schema
+              }, true)
+              database.tables = tables
+            }
+            /*
+            补充模型中的tables信息
+            模型中的表信息结构为{id, name, alias, type, fields, x, y}，其中fields的结构为[{ name, alias, visible? }]，在编译代码时需要完整的字段信息，所以需要补充字段信息
+            */
+            model.tables = model.tables.map(simpleTable => {
+              // 在数据库表中未找到模型中的表
+              const tableDetail = tables.find(t => t.name === simpleTable.name)
+              if (tableDetail == null) {
+                return null
+              }
               return {
-                ...join,
-                table,
-                targetTable,
-                ons
+                id: simpleTable.id,
+                type: simpleTable.type,
+                name: tableDetail.name,
+                alias: simpleTable.alias,
+                comment: tableDetail.comment,
+                fields: tableDetail.fields.map(fieldDetail => {
+                  // 从模型中获取当前字段（获取不到时，说明数据库中当前表新增了字段）
+                  const simpleField = simpleTable.fields.find(f => f.name === fieldDetail.name)
+                  return {
+                    ...fieldDetail,
+                    // 标记为非虚拟字段（此字段暂不可缺少）
+                    isVirtual: false,
+                    // 为字段补充别名，默认为（表别名_字段名）
+                    alias: simpleField == null ? `${t.alias}_${fieldDetail.name}` : simpleField.alias
+                  }
+                })
               }
             })
+            // 如果模型中存在数据库不存在的表，作出提示
+            if (model.tables.filter(t => t == null).length > 0) {
+              return reject(`「${variable.label}」参数所使用的「${model.name}」模型中包含了已被移除的数据库表，请确认模型是否正确！`)
+            }
+            // 找到主表
+            const mainTable = model.tables.find(t => t.type === 'MAIN')
+            // 找到所有的子表
+            const subTables = model.tables.filter(t => t.type !== 'MAIN')
+            // 补充并修复join信息（即补充join的表信息和字段信息，修复join的table1和table2，让table2始终为被关联的表）
+            const joins = this.#getPaddingAndRepairedJoins(model, mainTable, model.joins)
             // 语句
-            const statement = this.#getQueryModelStatement(item, model, mainTable, joins)
             const value = {
               name: model.name,
               comment: model.comment,
               mainTable,
               subTables,
-              // 仅保留模型主表的join语句
-              joins: joins.filter(join => join.table === mainTable),
-              statement
+              // join关联
+              joins,
+              // 语句
+              statement: this.#getQueryModelStatement(variable, model, mainTable, joins)
             }
             // 处理字段变量
-            if (item.children != null && item.children.length > 0) {
-              this.#paddingFieldVariablesWithResolve(project, database, item, value, model, resolve, reject)
+            if (variable.children != null && variable.children.length > 0) {
+              this.#paddingFieldVariablesWithResolve(project, database, variable, value, model, resolve, reject)
               return
             }
             resolve({
-              ...item,
+              ...variable,
               value
             })
             return
           }
           // 如果为服务变量组，则修改子变量值
-          if (item.type === 'group') {
-            Promise.all(this.#getVariables(project, database, item.children, false))
+          if (variable.type === 'group') {
+            Promise.all(this.#getVariables(project, database, variable.children, false))
               .then(vars => {
                 resolve({
-                  ...item,
+                  ...variable,
                   children: vars
                 })
               })
@@ -681,30 +699,111 @@ class Kit {
             return
           }
           // 如果输入类型为select，扩展出Settings选项设置变量
-          if (item.inputType === 'select') {
-            const value = item.value === undefined ? item.defaultValue : item.value
+          if (variable.inputType === 'select') {
+            const value = variable.value === undefined ? variable.defaultValue : variable.value
             extVariables.push({
-              name: `${item.name}Settings`,
+              name: `${variable.name}Settings`,
               type: 'ext', // 标记为扩展变量
               value: value.settings
             })
             // select的存储结构为{value: null, settings: {}}，所以value最终为value.value
             resolve({
-              ...item,
+              ...variable,
               value: value.value
             })
             return
           }
           // 其他
           resolve({
-            ...item,
-            value: item.value === undefined ? item.defaultValue : item.value
+            ...variable,
+            value: variable.value === undefined ? variable.defaultValue : variable.value
           })
         } catch (e) {
           reject(e)
         }
       })
     }).concat(extVariables)
+  }
+
+  /**
+   * 获取补充并修复后的joins关系
+   * 补充：补充join的table1和table2为具体的表信息；补充on中的table、targetTable、field、targetField为具体的表或字段信息
+   * 修复：使得join.table2一直为被关联的表，且table2在已修复的joins中不可重复（注意这里的重复指的是table.id不重复，使得可以关联多张相同的表）
+   * e.g A.a1 => B.b1, B.b2 => C.c1，此时应得到joins为[{ table1:A, table2:B }, {table1: B, table2: C}]，可的语句为JOIN B, JOIN C
+   * @returns {*}
+   */
+  #getPaddingAndRepairedJoins (model, mainTable, joins) {
+    // 已修复的join
+    let repairedJoins = []
+    /*
+    如果joins中没有主表，则视为没有关联关系
+    e.g 存在主表M1，子表S1和S2，S1和S2建立了关联关系，但并没有与M1建立关联关系，此时不产生SQL语句。因为SQL语句展示的是当前表的关联关系
+    */
+    if (!joins.find(join => join.table1 === mainTable.id || join.table2 === mainTable.id)) {
+      return []
+    }
+    for (const join of joins) {
+      // 此处只需复制join的引用，需要保留join内部对象的引用，避免表和字段发生变化时未能及时修改join中的信息
+      const copyJoin = { ...join }
+      copyJoin.table1 = model.tables.find(t => t.id === join.table1)
+      copyJoin.table2 = model.tables.find(t => t.id === join.table2)
+      // 主表关联了子表，不做处理
+      if (join.table1.id === mainTable.id) {
+        repairedJoins.push(copyJoin)
+        continue
+      }
+      // 子表关联了主表，则table2为主表，则将table2变为table1（此时table1为子表）
+      if (join.table2.id === mainTable.id) {
+        const mainTable = copyJoin.table1
+        copyJoin.table2 = copyJoin.table1
+        copyJoin.table1 = mainTable
+        repairedJoins.push(copyJoin)
+        continue
+      }
+      // 子表关联了子表，则判断已修复的joins中，是否存在当前table2，如果存在，则将table1作为table2
+      const existJoin = repairedJoins.find(join => join.table2.id === copyJoin.table2.id)
+      if (existJoin) {
+        const table2 = copyJoin.table1
+        copyJoin.table2 = copyJoin.table1
+        copyJoin.table1 = table2
+      }
+      repairedJoins.push(copyJoin)
+    }
+    // 为join中的on补充表和字段信息
+    repairedJoins = repairedJoins.map(join => {
+      join.ons = join.ons.map(on => {
+        // 找到on的关联表和被关联表
+        const onTable = model.tables.find(t => t.id === on.table)
+        const onTargetTable = model.tables.find(t => t.id === on.targetTable)
+        if (onTable == null || onTargetTable == null) {
+          return null
+        }
+        // 找到on的关联字段和被关联字段
+        const field = onTable.fields.find(f => f.name === on.field)
+        const targetField = onTargetTable.fields.find(f => f.name === on.targetField)
+        if (field == null || targetField == null) {
+          return null
+        }
+        // 添加字段信息
+        return {
+          ...on,
+          table: onTable,
+          targetTable: onTargetTable,
+          field,
+          targetField
+        }
+      })
+      // 过滤掉无效的on
+      join.ons = join.ons.filter(on => on != null)
+      // 如果没有有效的on，则返回null
+      if (join.ons.length === 0) {
+        return null
+      }
+      return join
+    })
+    // 过滤掉无效的join
+    repairedJoins = repairedJoins.filter(join => join != null)
+    return repairedJoins
   }
 
   /**
@@ -832,13 +931,25 @@ class Kit {
     if (variable.children != null && variable.children.length > 0) {
       for (const group of variable.children) {
         statement[group.name] = []
-        const fields = group.value === undefined ? group.defaultValue : group.value
-        for (let i = 0; i < fields.length; i++) {
-          const field = fields[i]
+        // 获取变量组已选中的字段
+        const selectedFields = group.value === undefined ? group.defaultValue : group.value
+        for (let i = 0; i < selectedFields.length; i++) {
+          const field = selectedFields[i]
           // 非虚拟字段
           if (!field.isVirtual) {
-            let sql = `\`${field.table.alias}\`.\`${field.name}\` AS \`${field.alias}\``
-            if (i < fields.length - 1) {
+            // 获取到字段所在的表信息
+            const fieldTable = model.tables.find(t => t.id === field.table.id)
+            // 如果表中该字段已被移除，则不做处理
+            if (fieldTable.fields.find(f => f.name === field.name) == null) {
+              continue
+            }
+            // 生成字段别名
+            let aliasSql = ` AS \`${field.alias}\``
+            if (field.name === field.alias) {
+              aliasSql = ''
+            }
+            let sql = `\`${field.table.alias}\`.\`${field.name}\`${aliasSql}`
+            if (i < selectedFields.length - 1) {
               sql += ','
             }
             statement[group.name].push(sql)
@@ -849,7 +960,7 @@ class Kit {
           // - 没有聚合信息
           if (agg == null) {
             let sql = `\`${field.table.alias}\`.\`${field.name}\` AS \`${field.alias}\``
-            if (i < fields.length - 1) {
+            if (i < selectedFields.length - 1) {
               sql += ','
             }
             statement[group.name].push(sql)
@@ -864,7 +975,7 @@ class Kit {
             function: agg.function
           }
           const lines = this.#getAggregateSQL(field, agg, joins)
-          if (i < fields.length - 1) {
+          if (i < selectedFields.length - 1) {
             lines[lines.length - 1] += ','
           }
           statement[group.name] = statement[group.name].concat(lines)
@@ -901,13 +1012,12 @@ class Kit {
    */
   #getJoinSQL (table, joins, indent) {
     const joinLines = []
-    const currentTableJoins = joins.filter(join => join.table.id === table.id)
-    for (const join of currentTableJoins) {
-      joinLines.push(`${indent}${join.joinType} \`${join.targetTable.name}\` \`${join.targetTable.alias}\``)
+    for (const join of joins) {
+      joinLines.push(`${indent}${join.joinType} \`${join.table2.name}\` \`${join.table2.alias}\``)
       for (let i = 0; i < join.ons.length; i++) {
         const on = join.ons[i]
         let relationText = i === 0 ? 'ON ': `${on.relation} `
-        joinLines.push(`  ${indent}${relationText}\`${join.targetTable.alias}\`.\`${on.targetField.name}\` = \`${join.table.alias}\`.\`${on.field.name}\``)
+        joinLines.push(`  ${indent}${relationText}\`${on.table.alias}\`.\`${on.field.name}\` = \`${on.targetTable.alias}\`.\`${on.targetField.name}\``)
       }
     }
     return joinLines
