@@ -10,8 +10,8 @@
           @change="handleChange"
         />
         <span class="hidden">{{join.joinType}}</span>
-        <span>{{join.table2.name}}</span>
-        <DynamicWidthInput v-model="join.table2.alias" @change="handleChange"/>
+        <span>{{join.targetTable.name}}</span>
+        <DynamicWidthInput v-model="join.targetTable.alias" @change="handleChange"/>
         <em>ON</em>
         <SQLLineKeywordSelect
           v-model="join.relation"

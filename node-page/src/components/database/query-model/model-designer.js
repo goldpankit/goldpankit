@@ -475,36 +475,36 @@ class ModelDesigner {
         if (fieldGroup.__lines && fieldGroup.__lines.length > 0) {
           for (const line of fieldGroup.__lines) {
             // 完全重复，A.a1 => B.b1，再次操作为A.a1 => B.b1
-            if (line.table1 === tableGroup && line.table2 === targetTableGroup && line.field1 === fieldGroup && line.field2 === targetFieldGroup) {
+            if (line.table === tableGroup && line.targetTable === targetTableGroup && line.field1 === fieldGroup && line.field2 === targetFieldGroup) {
               return reject(new Error('请勿重复关联！'))
             }
             // 反向重复，A.a1 => B.b1，再次操作为B.b1 => A.a1
-            if (line.table1 === targetTableGroup && line.table2 === tableGroup && line.field1 === targetFieldGroup && line.field2 === fieldGroup) {
+            if (line.table === targetTableGroup && line.targetTable === tableGroup && line.field1 === targetFieldGroup && line.field2 === fieldGroup) {
               return reject(new Error('请勿重复关联！'))
             }
           }
         }
         // 计算线坐标点
         const points = this.computeLinePoints({
-          table1: tableGroup,
+          table: tableGroup,
           field1: fieldGroup,
-          table2: targetTableGroup,
+          targetTable: targetTableGroup,
           field2: targetFieldGroup
         })
         // 计算删除球坐标点
         const controlPoints = this.computeLineControlPoints({
           linePoints: points,
-          table1: tableGroup,
-          table2: targetTableGroup
+          table: tableGroup,
+          targetTable: targetTableGroup
         })
         // 创建线
         fieldGroup.__lines = fieldGroup.__lines || []
         targetFieldGroup.__lines = targetFieldGroup.__lines || []
         const line = {
           lineType: lineType,
-          table1: tableGroup,
+          table: tableGroup,
           field1: fieldGroup,
-          table2: targetTableGroup,
+          targetTable: targetTableGroup,
           field2: targetFieldGroup,
           // 线条
           line: new Konva.Line({
@@ -563,8 +563,8 @@ class ModelDesigner {
           // line.line.dash([5, 5])
           line.control.zIndex(this.MAX_Z_INDEX)
           line.control.fill(this.LINE_CONTROL_HOVER_COLOR)
-          line.table1.zIndex(this.MAX_Z_INDEX)
-          line.table2.zIndex(this.MAX_Z_INDEX)
+          line.table.zIndex(this.MAX_Z_INDEX)
+          line.targetTable.zIndex(this.MAX_Z_INDEX)
           // 修改手势为手指
           this.stage.container().style.cursor = 'pointer'
         })
@@ -575,8 +575,8 @@ class ModelDesigner {
           line.line.dash([])
           line.control.zIndex(2)
           line.control.fill(line.lineType === 'join' ? this.LINE_CONTROL_COLOR : this.LINE_AGG_CONTROL_COLOR)
-          line.table1.zIndex(this.TABLE_Z_INDEX)
-          line.table2.zIndex(this.TABLE_Z_INDEX)
+          line.table.zIndex(this.TABLE_Z_INDEX)
+          line.targetTable.zIndex(this.TABLE_Z_INDEX)
           this.stage.container().style.cursor = 'default'
         })
         // 恢复目标字段的背景色
@@ -709,19 +709,19 @@ class ModelDesigner {
    * 计算关联线坐标点
    * @param field1
    * @param field2
-   * @param table1
-   * @param table2
+   * @param table
+   * @param targetTable
    * @returns {number[]}
    */
-  computeLinePoints ({ field1, field2, table1, table2 }) {
+  computeLinePoints ({ field1, field2, table, targetTable }) {
     // 两表间的最小距离
-    let leftTable = table1 // 最左侧的表
-    let topTable = table1 // 最高的表
-    if (table1.absolutePosition().x > table2.absolutePosition().x) {
-      leftTable = table2
+    let leftTable = table // 最左侧的表
+    let topTable = table // 最高的表
+    if (table.absolutePosition().x > targetTable.absolutePosition().x) {
+      leftTable = targetTable
     }
-    if (table1.absolutePosition().y > table2.absolutePosition().y) {
-      topTable = table2
+    if (table.absolutePosition().y > targetTable.absolutePosition().y) {
+      topTable = targetTable
     }
     let topTablePosition = topTable.absolutePosition()
     let leftField = field1
@@ -812,17 +812,17 @@ class ModelDesigner {
    * 计算关联线控制点
    *
    * @param linePoints 关联线的坐标
-   * @param table1 表1元素
-   * @param table2 表2元素
+   * @param table 表1元素
+   * @param targetTable 表2元素
    * @returns {{x: number, y: *}}
    */
-  computeLineControlPoints ({ linePoints, table1, table2 }) {
+  computeLineControlPoints ({ linePoints, table, targetTable }) {
     // 获取第一个点x轴坐标
     const firstPointX = linePoints[0]
     // 情况1: 最后一个点在左表左侧
-    let leftTable = table1 // 最右侧的表
-    if (table1.absolutePosition().x > table2.absolutePosition().x) {
-      leftTable = table2
+    let leftTable = table // 最右侧的表
+    if (table.absolutePosition().x > targetTable.absolutePosition().x) {
+      leftTable = targetTable
     }
     let offset = firstPointX >= leftTable.absolutePosition().x + this.TABLE_WIDTH ? 20 : -20
     return {

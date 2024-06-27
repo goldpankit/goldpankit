@@ -660,7 +660,7 @@ class Kit {
             const mainTable = model.tables.find(t => t.type === 'MAIN')
             // 找到所有的子表
             const subTables = model.tables.filter(t => t.type !== 'MAIN')
-            // 补充并修复join信息（即补充join的表信息和字段信息，修复join的table1和table2，让table2始终为被关联的表）
+            // 补充并修复join信息（即补充join的表信息和字段信息，修复join的table和targetTable，让targetTable始终为被关联的表）
             const joins = this.#getPaddingAndRepairedJoins(model, mainTable, model.joins)
             // 语句
             const value = {
@@ -727,9 +727,9 @@ class Kit {
 
   /**
    * 获取补充并修复后的joins关系
-   * 补充：补充join的table1和table2为具体的表信息；补充on中的table、targetTable、field、targetField为具体的表或字段信息
-   * 修复：使得join.table2一直为被关联的表，且table2在已修复的joins中不可重复（注意这里的重复指的是table.id不重复，使得可以关联多张相同的表）
-   * e.g A.a1 => B.b1, B.b2 => C.c1，此时应得到joins为[{ table1:A, table2:B }, {table1: B, table2: C}]，可的语句为JOIN B, JOIN C
+   * 补充：补充join的table和targetTable为具体的表信息；补充on中的table、targetTable、field、targetField为具体的表或字段信息
+   * 修复：使得join.targetTable一直为被关联的表，且targetTable在已修复的joins中不可重复（注意这里的重复指的是table.id不重复，使得可以关联多张相同的表）
+   * e.g A.a1 => B.b1, B.b2 => C.c1，此时应得到joins为[{ table:A, targetTable:B }, {table: B, targetTable: C}]，可的语句为JOIN B, JOIN C
    * @returns {*}
    */
   #getPaddingAndRepairedJoins (model, mainTable, joins) {
@@ -739,33 +739,33 @@ class Kit {
     如果joins中没有主表，则视为没有关联关系
     e.g 存在主表M1，子表S1和S2，S1和S2建立了关联关系，但并没有与M1建立关联关系，此时不产生SQL语句。因为SQL语句展示的是当前表的关联关系
     */
-    if (!joins.find(join => join.table1 === mainTable.id || join.table2 === mainTable.id)) {
+    if (!joins.find(join => join.table === mainTable.id || join.targetTable === mainTable.id)) {
       return []
     }
     for (const join of joins) {
       // 此处只需复制join的引用，需要保留join内部对象的引用，避免表和字段发生变化时未能及时修改join中的信息
       const copyJoin = { ...join }
-      copyJoin.table1 = model.tables.find(t => t.id === join.table1)
-      copyJoin.table2 = model.tables.find(t => t.id === join.table2)
+      copyJoin.table = model.tables.find(t => t.id === join.table)
+      copyJoin.targetTable = model.tables.find(t => t.id === join.targetTable)
       // 主表关联了子表，不做处理
-      if (join.table1.id === mainTable.id) {
+      if (join.table.id === mainTable.id) {
         repairedJoins.push(copyJoin)
         continue
       }
-      // 子表关联了主表，则table2为主表，则将table2变为table1（此时table1为子表）
-      if (join.table2.id === mainTable.id) {
-        const mainTable = copyJoin.table1
-        copyJoin.table2 = copyJoin.table1
-        copyJoin.table1 = mainTable
+      // 子表关联了主表，则targetTable为主表，则将targetTable变为table（此时table为子表）
+      if (join.targetTable.id === mainTable.id) {
+        const mainTable = copyJoin.table
+        copyJoin.targetTable = copyJoin.table
+        copyJoin.table = mainTable
         repairedJoins.push(copyJoin)
         continue
       }
-      // 子表关联了子表，则判断已修复的joins中，是否存在当前table2，如果存在，则将table1作为table2
-      const existJoin = repairedJoins.find(join => join.table2.id === copyJoin.table2.id)
+      // 子表关联了子表，则判断已修复的joins中，是否存在当前targetTable，如果存在，则将table作为targetTable
+      const existJoin = repairedJoins.find(join => join.targetTable.id === copyJoin.targetTable.id)
       if (existJoin) {
-        const table2 = copyJoin.table1
-        copyJoin.table2 = copyJoin.table1
-        copyJoin.table1 = table2
+        const targetTable = copyJoin.table
+        copyJoin.targetTable = copyJoin.table
+        copyJoin.table = targetTable
       }
       repairedJoins.push(copyJoin)
     }
@@ -1013,7 +1013,7 @@ class Kit {
   #getJoinSQL (table, joins, indent) {
     const joinLines = []
     for (const join of joins) {
-      joinLines.push(`${indent}${join.joinType} \`${join.table2.name}\` \`${join.table2.alias}\``)
+      joinLines.push(`${indent}${join.joinType} \`${join.targetTable.name}\` \`${join.targetTable.alias}\``)
       for (let i = 0; i < join.ons.length; i++) {
         const on = join.ons[i]
         let relationText = i === 0 ? 'ON ': `${on.relation} `

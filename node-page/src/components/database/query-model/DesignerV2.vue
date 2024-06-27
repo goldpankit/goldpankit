@@ -241,10 +241,10 @@ export default {
           }
           // 删除join关系
           this.model.joins = this.model.joins.filter(join => {
-            if (join.table1.id === table.id) {
+            if (join.table.id === table.id) {
               return false
             }
-            if (join.table2.id === table.id) {
+            if (join.targetTable.id === table.id) {
               return false
             }
             return true
@@ -270,7 +270,7 @@ export default {
     __deleteLine ({ table, targetTable, field, targetField }) {
       // 查找对应join
       const joinIndex = this.model.joins.findIndex(join => {
-        return (join.table1.id === table.id || join.table1.id === targetTable.id) && (join.table2.id === table.id || join.table2.id === targetTable.id)
+        return (join.table.id === table.id || join.table.id === targetTable.id) && (join.targetTable.id === table.id || join.targetTable.id === targetTable.id)
       })
       // 删除join线
       if (joinIndex !== -1) {
@@ -301,14 +301,14 @@ export default {
     __addJoinLine ({ table, targetTable, field, targetField }) {
       // 查找JOIN关系是否已存在
       let join = this.model.joins.find(join =>
-        (join.table1.id === table.id || join.table1.id === targetTable.id) &&
-        (join.table2.id === table.id || join.table2.id === targetTable.id)
+        (join.table.id === table.id || join.table.id === targetTable.id) &&
+        (join.targetTable.id === table.id || join.targetTable.id === targetTable.id)
       )
       // 不存在JOIN关系，则添加JOIN关系
       if (join == null) {
         join = {
-          table1: table,
-          table2: targetTable,
+          table: table,
+          targetTable: targetTable,
           joinType: 'INNER JOIN',
           relation: 'ONE-TO-ONE',
           ons: []

@@ -187,8 +187,8 @@ export default {
       const joins = currentModel.joins.map(item => {
         return {
           ...item,
-          table1: item.table1.id,
-          table2: item.table2.id,
+          table: item.table.id,
+          targetTable: item.targetTable.id,
           ons: item.ons.map(on => {
             return {
               table: on.table.id,
