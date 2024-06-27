@@ -109,13 +109,12 @@ export default {
         // 添加JOIN线
         for (const join of this.model.joins) {
           for (const on of join.ons) {
-            console.log('创建join线时的主表', join.table)
             MD.createLine({
               lineType: 'join',
               field: on.field,
               targetField: on.targetField,
-              table: join.table,
-              targetTable: join.targetTable
+              table: on.table,
+              targetTable: on.targetTable
             })
           }
         }
@@ -242,10 +241,10 @@ export default {
           }
           // 删除join关系
           this.model.joins = this.model.joins.filter(join => {
-            if (join.table.id === table.id) {
+            if (join.table1.id === table.id) {
               return false
             }
-            if (join.targetTable.id === table.id) {
+            if (join.table2.id === table.id) {
               return false
             }
             return true
@@ -271,7 +270,7 @@ export default {
     __deleteLine ({ table, targetTable, field, targetField }) {
       // 查找对应join
       const joinIndex = this.model.joins.findIndex(join => {
-        return join.table.id === table.id && join.targetTable.id === targetTable.id
+        return (join.table1.id === table.id || join.table1.id === targetTable.id) && (join.table2.id === table.id || join.table2.id === targetTable.id)
       })
       // 删除join线
       if (joinIndex !== -1) {
@@ -301,15 +300,15 @@ export default {
     // 添加join关系
     __addJoinLine ({ table, targetTable, field, targetField }) {
       // 查找JOIN关系是否已存在
-      let join = this.model.joins.find(
-        r => r.table.id === table.id &&
-          r.targetTable.id === targetTable.id
+      let join = this.model.joins.find(join =>
+        (join.table1.id === table.id || join.table1.id === targetTable.id) &&
+        (join.table2.id === table.id || join.table2.id === targetTable.id)
       )
       // 不存在JOIN关系，则添加JOIN关系
       if (join == null) {
         join = {
-          table,
-          targetTable,
+          table1: table,
+          table2: targetTable,
           joinType: 'INNER JOIN',
           relation: 'ONE-TO-ONE',
           ons: []
@@ -318,6 +317,8 @@ export default {
       }
       // 添加ON条件
       join.ons.push({
+        table,
+        targetTable,
         field,
         targetField,
         relation: 'AND'
@@ -346,28 +347,11 @@ export default {
     // 初始化设计器
     MD.createBackground()
     MD.createPreview('.preview-stage', 200, 150)
-
     // 绑定change事件
     MD.on('change', () => {
       // 触发change事件，保存模型数据
       this.$emit('change')
     })
-
-    // 绑定创建关联线事件
-    MD.on('line:created', ({ table, targetTable, field, targetField }) => {
-      // 添加关联线
-      if (this.model.__lineType === 'join') {
-        this.__addJoinLine({ table, targetTable, field, targetField })
-      }
-      // 如果为聚合函数关联
-      if (this.model.__lineType === 'aggregate') {
-        this.__addAggregateLine({ table, targetTable, field, targetField })
-      }
-      // 刷新SQL
-      this.refreshSQL()
-      this.$emit('change')
-    })
-
     // 绑定全局点击
     MD.on('stage:click', (e) => {
       // 关闭SQL查看，添加this.model判断，避免没有模型选中时报错
@@ -375,16 +359,28 @@ export default {
          this.model.__visibleSQLPreviewWindow = false
       }
     })
-
-    // 绑定创建关联线失败事件
-    MD.on('line:create:error', (err) => {
-      this.$tip.warning(err.message)
-    })
-
     // 删除表事件
     MD.on('table:delete', ({ table }) => {
       this.__deleteTable(table)
       this.refreshSQL()
+    })
+    // 绑定创建关联线事件
+    MD.on('line:created', ({ table, targetTable, field, targetField }) => {
+      // 添加关联线
+      if (this.model.__lineType === 'join') {
+        this.__addJoinLine({table, targetTable, field, targetField})
+      }
+      // 如果为聚合函数关联
+      if (this.model.__lineType === 'aggregate') {
+        this.__addAggregateLine({table, targetTable, field, targetField})
+      }
+      // 刷新SQL
+      this.refreshSQL()
+      this.$emit('change')
+    })
+    // 绑定创建关联线失败事件
+    MD.on('line:create:error', (err) => {
+      this.$tip.warning(err.message)
     })
     // 删除关联线事件
     MD.on('line:deleted', ({ table, targetTable, field, targetField }) => {

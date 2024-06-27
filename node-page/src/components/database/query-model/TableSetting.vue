@@ -69,14 +69,12 @@ export default {
       }
       // join表字段
       for (const join of this.joins) {
-        // 不是当前表的join关系，不做处理
-        if (join.table.id !== this.table.id) {
-          continue
+        for (const field of join.table1.fields) {
+          field.table = join.table1
+          fields.add(field)
         }
-        // 拿到join的表
-        for (const field of join.targetTable.fields) {
-          field.table = join.targetTable
-          field.alias = field.alias || field.name
+        for (const field of join.table2.fields) {
+          field.table = join.table2
           fields.add(field)
         }
       }
@@ -149,13 +147,12 @@ export default {
     // 获取JOIN语句
     __getJoinSql (table, joins) {
       const joinLines = []
-      const currentTableJoins = joins.filter(join => join.table.id === table.id)
-      for (const join of currentTableJoins) {
-        joinLines.push(`${join.joinType} \`${join.targetTable.name}\` \`${join.targetTable.alias}\``)
+      for (const join of joins) {
+        joinLines.push(`${join.joinType} \`${join.table2.name}\` \`${join.table2.alias}\``)
         for (let i = 0; i < join.ons.length; i++) {
           const on = join.ons[i]
           let relationText = i === 0 ? 'ON ': `${on.relation} `
-          joinLines.push(`${relationText}\`${join.targetTable.alias}\`.\`${on.targetField.name}\` = \`${join.table.alias}\`.\`${on.field.name}\``)
+          joinLines.push(`${relationText}\`${on.table.alias}\`.\`${on.field.name}\` = \`${on.targetTable.alias}\`.\`${on.targetField.name}\``)
         }
       }
       return joinLines

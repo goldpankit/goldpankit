@@ -118,24 +118,27 @@ export default new Vuex.Store({
         }
         // join处理（移除掉无效的join）
         model.joins = model.joins.map(join => {
-          const table = model.tables.find(table => table.id === join.table)
-          console.log('主表', table)
-          const targetTable = model.tables.find(table => table.id === join.targetTable)
+          const table1 = model.tables.find(table => table.id === join.table1)
+          const table2 = model.tables.find(table => table.id === join.table2)
           // 如果join的表在模型中不存在，则删除该join
-          if (table == null || targetTable == null) {
+          if (table1 == null || table2 == null) {
             return null
           }
           // 补充join表信息
-          join.table = table
-          join.targetTable = targetTable
+          join.table1 = table1
+          join.table2 = table2
           // 如果join的所有on不成立（on的相关字段不存在），则删除该join
           const ons = join.ons.map(on => {
-            const field = table.fields.find(field => field.name === on.field)
-            const targetField = targetTable.fields.find(field => field.name === on.targetField)
+            const onTable = model.tables.find(table => table.id === on.table)
+            const onTargetTable = model.tables.find(table => table.id === on.targetTable)
+            const field = onTable.fields.find(field => field.name === on.field)
+            const targetField = onTargetTable.fields.find(field => field.name === on.targetField)
             if (field == null || targetField == null) {
               return null
             }
-            // 补充on字段信息
+            // 补充on信息
+            on.table = onTable
+            on.targetTable = onTargetTable
             on.field = field
             on.targetField = targetField
             return on

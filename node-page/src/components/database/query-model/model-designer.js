@@ -319,19 +319,21 @@ class ModelDesigner {
           targetFieldBackgroundRect: fieldBackground
         })
           .then(() => {
-            // 触发line:created事件
-            this.events['line:created'] && this.events['line:created']({
-              table: this.currentDragTable,
-              field: this.currentDragField,
-              targetTable: table,
-              targetField: field
-            })
+            try { // 触发line:created事件
+              this.events['line:created'] && this.events['line:created']({
+                table: this.currentDragTable,
+                field: this.currentDragField,
+                targetTable: table,
+                targetField: field
+              })
+            } catch (e) {
+              throw e
+            }
           })
           .catch(e => {
+            console.error('创建关联线出现错误', e)
             // 触发line:create:error事件
-            this.events['line:create:error'] && this.events['line:create:error']({
-              message: e.message,
-            })
+            this.events['line:create:error'] && this.events['line:create:error'](e)
           })
       })
       // 添加到字段分组
@@ -458,110 +460,118 @@ class ModelDesigner {
    */
   createLine = ({ lineType, field, targetField, table, targetTable, targetFieldBackgroundRect }) => {
     return new Promise((resolve ,reject) => {
-      lineType = lineType || this.#lineType
-      // 找到表对象和字段对象
-      const tableGroup = this.elementLayer.findOne(`#${table.id}`)
-      const targetTableGroup = this.elementLayer.findOne(`#${targetTable.id}`)
-      const fieldGroup = tableGroup.findOne(`#${field.name}`)
-      const targetFieldGroup = targetTableGroup.findOne(`#${targetField.name}`)
-      // 字段已被关联，不允许继续关联
-      if (fieldGroup.__line != null || targetFieldGroup.__line != null) {
+      try {
+        lineType = lineType || this.#lineType
+        // 找到表对象和字段对象
+        const tableGroup = this.elementLayer.findOne(`#${table.id}`)
+        const targetTableGroup = this.elementLayer.findOne(`#${targetTable.id}`)
+        const fieldGroup = tableGroup.findOne(`#${field.name}`)
+        const targetFieldGroup = targetTableGroup.findOne(`#${targetField.name}`)
+        // 字段已被关联，不允许继续关联
+        if (fieldGroup.__line != null || targetFieldGroup.__line != null) {
+          // 恢复背景色
+          if (targetFieldBackgroundRect) {
+            targetFieldBackgroundRect.fill(this.TABLE_FIELD_BACKGROUND_COLOR)
+          }
+          return reject(new Error('一个字段不允许关联多个字段'))
+        }
+        // 计算线坐标点
+        const points = this.computeLinePoints({
+          table1: tableGroup,
+          field1: fieldGroup,
+          table2: targetTableGroup,
+          field2: targetFieldGroup
+        })
+        // 计算删除球坐标点
+        const controlPoints = this.computeLineControlPoints({
+          linePoints: points,
+          table1: tableGroup,
+          table2: targetTableGroup
+        })
+        // 创建线
+        const line = fieldGroup.__line = targetFieldGroup.__line = {
+          lineType: lineType,
+          table1: tableGroup,
+          field1: fieldGroup,
+          table2: targetTableGroup,
+          field2: targetFieldGroup,
+          // 线条
+          line: new Konva.Line({
+            name: `field_line_${Math.round(Math.random() * 10000)}`,
+            points: points,
+            stroke: this.LINE_COLOR,
+            strokeWidth: 2,
+            lineCap: 'round',
+            lineJoin: 'round',
+            zIndex: 1
+          }),
+          // 删除球
+          control: new Konva.Circle({
+            name: `field_line_control_${Math.round(Math.random() * 10000)}`,
+            x: controlPoints.x,
+            y: controlPoints.y,
+            radius: 10,
+            fill: lineType === 'join' ? this.LINE_CONTROL_COLOR : this.LINE_AGG_CONTROL_COLOR,
+            draggable: false,
+            zIndex: 2
+          })
+        }
+        this.elementLayer.add(line.line)
+        this.elementLayer.add(line.control)
+        // 点击删除控制点，删除关联线
+        line.control.on('click', () => {
+          fieldGroup.__line.line.destroy()
+          fieldGroup.__line.control.destroy()
+          fieldGroup.__line = targetFieldGroup.__line = null
+          // 重新绘制预览
+          this.redrawPreview()
+          // 触发line:deleted事件
+          this.events['line:deleted'] && this.events['line:deleted']({
+            field,
+            targetField,
+            table,
+            targetTable
+          })
+        })
+        // 悬浮在控制点时更改颜色和关联线颜色
+        line.control.on('mouseover', () => {
+          line.line.stroke(this.LINE_HOVER_COLOR)
+          line.line.zIndex(this.MAX_Z_INDEX)
+          // line.line.dash([5, 5])
+          line.control.zIndex(this.MAX_Z_INDEX)
+          line.control.fill(this.LINE_CONTROL_HOVER_COLOR)
+          line.table1.zIndex(this.MAX_Z_INDEX)
+          line.table2.zIndex(this.MAX_Z_INDEX)
+          // 修改手势为手指
+          this.stage.container().style.cursor = 'pointer'
+        })
+        // 离开小球时恢复小球颜色和关联线颜色
+        line.control.on('mouseout', () => {
+          line.line.stroke(this.LINE_COLOR)
+          line.line.zIndex(1)
+          line.line.dash([])
+          line.control.zIndex(2)
+          line.control.fill(line.lineType === 'join' ? this.LINE_CONTROL_COLOR : this.LINE_AGG_CONTROL_COLOR)
+          line.table1.zIndex(this.TABLE_Z_INDEX)
+          line.table2.zIndex(this.TABLE_Z_INDEX)
+          this.stage.container().style.cursor = 'default'
+        })
+        // 恢复目标字段的背景色
+        if (targetFieldBackgroundRect) {
+          targetFieldBackgroundRect.fill(this.TABLE_FIELD_BACKGROUND_COLOR)
+        }
+        // 重置table的zIndex，让表都能覆盖在line上
+        this.tables.forEach(t => t.zIndex(this.TABLE_Z_INDEX))
+        // 重新绘制预览
+        this.redrawPreview()
+        resolve()
+      } catch (e) {
         // 恢复背景色
         if (targetFieldBackgroundRect) {
           targetFieldBackgroundRect.fill(this.TABLE_FIELD_BACKGROUND_COLOR)
         }
-        return reject(new Error('一个字段不允许关联多个字段'))
+        reject(e)
       }
-      // 计算线坐标点
-      const points = this.computeLinePoints({
-        table1: tableGroup,
-        field1: fieldGroup,
-        table2: targetTableGroup,
-        field2: targetFieldGroup
-      })
-      // 计算删除球坐标点
-      const controlPoints = this.computeLineControlPoints({
-        linePoints: points,
-        table1: tableGroup,
-        table2: targetTableGroup
-      })
-      // 创建线
-      const line = fieldGroup.__line = targetFieldGroup.__line = {
-        lineType: lineType,
-        table1: tableGroup,
-        field1: fieldGroup,
-        table2: targetTableGroup,
-        field2: targetFieldGroup,
-        // 线条
-        line: new Konva.Line({
-          name: `field_line_${Math.round(Math.random() * 10000)}`,
-          points: points,
-          stroke: this.LINE_COLOR,
-          strokeWidth: 2,
-          lineCap: 'round',
-          lineJoin: 'round',
-          zIndex: 1
-        }),
-        // 删除球
-        control: new Konva.Circle({
-          name: `field_line_control_${Math.round(Math.random() * 10000)}`,
-          x: controlPoints.x,
-          y: controlPoints.y,
-          radius: 10,
-          fill: lineType === 'join' ? this.LINE_CONTROL_COLOR : this.LINE_AGG_CONTROL_COLOR,
-          draggable: false,
-          zIndex: 2
-        })
-      }
-      this.elementLayer.add(line.line)
-      this.elementLayer.add(line.control)
-      // 点击删除控制点，删除关联线
-      line.control.on('click', () => {
-        fieldGroup.__line.line.destroy()
-        fieldGroup.__line.control.destroy()
-        fieldGroup.__line = targetFieldGroup.__line = null
-        // 重新绘制预览
-        this.redrawPreview()
-        // 触发line:deleted事件
-        this.events['line:deleted'] && this.events['line:deleted']({
-          field,
-          targetField,
-          table,
-          targetTable
-        })
-      })
-      // 悬浮在控制点时更改颜色和关联线颜色
-      line.control.on('mouseover', () => {
-        line.line.stroke(this.LINE_HOVER_COLOR)
-        line.line.zIndex(this.MAX_Z_INDEX)
-        // line.line.dash([5, 5])
-        line.control.zIndex(this.MAX_Z_INDEX)
-        line.control.fill(this.LINE_CONTROL_HOVER_COLOR)
-        line.table1.zIndex(this.MAX_Z_INDEX)
-        line.table2.zIndex(this.MAX_Z_INDEX)
-        // 修改手势为手指
-        this.stage.container().style.cursor = 'pointer'
-      })
-      // 离开小球时恢复小球颜色和关联线颜色
-      line.control.on('mouseout', () => {
-        line.line.stroke(this.LINE_COLOR)
-        line.line.zIndex(1)
-        line.line.dash([])
-        line.control.zIndex(2)
-        line.control.fill(line.lineType === 'join' ? this.LINE_CONTROL_COLOR : this.LINE_AGG_CONTROL_COLOR)
-        line.table1.zIndex(this.TABLE_Z_INDEX)
-        line.table2.zIndex(this.TABLE_Z_INDEX)
-        this.stage.container().style.cursor = 'default'
-      })
-      // 恢复目标字段的背景色
-      if (targetFieldBackgroundRect) {
-        targetFieldBackgroundRect.fill(this.TABLE_FIELD_BACKGROUND_COLOR)
-      }
-      // 重置table的zIndex，让表都能覆盖在line上
-      this.tables.forEach(t => t.zIndex(this.TABLE_Z_INDEX))
-      // 重新绘制预览
-      this.redrawPreview()
-      resolve()
     })
   }
 

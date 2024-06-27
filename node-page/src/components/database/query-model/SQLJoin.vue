@@ -10,8 +10,8 @@
           @change="handleChange"
         />
         <span class="hidden">{{join.joinType}}</span>
-        <span>{{join.targetTable.name}}</span>
-        <DynamicWidthInput v-model="join.targetTable.alias" @change="handleChange"/>
+        <span>{{join.table2.name}}</span>
+        <DynamicWidthInput v-model="join.table2.alias" @change="handleChange"/>
         <em>ON</em>
         <SQLLineKeywordSelect
           v-model="join.relation"
@@ -30,13 +30,13 @@
             width="45px"
             @change="handleChange"
           />
-          <DynamicWidthInput v-model="join.targetTable.alias" @change="handleChange"/>
-          <span>.</span>
-          <span>{{on.targetField.name}}</span>
-          <span>=</span>
-          <DynamicWidthInput v-model="join.table.alias" @change="handleChange"/>
+          <DynamicWidthInput v-model="on.table.alias" @change="handleChange"/>
           <span>.</span>
           <span>{{on.field.name}}</span>
+          <span>=</span>
+          <DynamicWidthInput v-model="on.targetTable.alias" @change="handleChange"/>
+          <span>.</span>
+          <span>{{on.targetField.name}}</span>
         </SQLLine>
       </ul>
     </li>
