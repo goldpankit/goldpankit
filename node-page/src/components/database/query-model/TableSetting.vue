@@ -117,7 +117,6 @@ export default {
         }
         repairedJoins.push(copyJoin)
       }
-      console.log('repairedJoins', repairedJoins)
       return repairedJoins
     }
   },

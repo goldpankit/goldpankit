@@ -42,7 +42,7 @@ export default {
 <style lang="scss">
 .service-code-error-window {
   .el-dialog__header,.el-dialog__body {
-    padding: 0;
+    padding: 0 !important;
     margin-right: 0;
   }
   .window-header-wrap {
