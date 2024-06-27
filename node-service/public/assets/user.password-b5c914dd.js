@@ -1,0 +1,1 @@
+import{z as e}from"./index-d9f3c27d.js";function o(s){return e.post("/usr/password/update",s,{baseURL:"/remote-api"})}function t(s){return e.post("/usr/password/updateByMobileOTP",s,{baseURL:"/remote-api"})}function r(s){return e.post("/usr/password/sendUpdatePasswordMobileOTP",s,{baseURL:"/remote-api"})}export{t as a,r as s,o as u};

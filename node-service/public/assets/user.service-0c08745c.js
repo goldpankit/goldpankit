@@ -1,0 +1,1 @@
+import{z as r}from"./index-d9f3c27d.js";function s(e){return r.post("/usr/service/page",e,{baseURL:"/remote-api"})}function a(e){return r.post("/usr/service/create",e,{baseURL:"/remote-api"})}function c(e){return r.post("/usr/service/delete",e)}export{a as c,c as d,s as f};

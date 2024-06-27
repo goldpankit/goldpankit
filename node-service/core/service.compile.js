@@ -441,10 +441,6 @@ class Kit {
     return variables.map(v => {
       return {
         name: v.name,
-        type: v.type,
-        label: v.label,
-        inputType: v.inputType,
-        compiler: v.compiler,
         value: this.#getInstallVariableValue(v)
       }
     })
@@ -475,7 +471,14 @@ class Kit {
         const settings = {}
         if (variable.children != null && variable.children.length > 0) {
           variable.children.map(group => {
-            settings[group.name] = group.value
+            settings[group.name] = group.value.map(selectedField => {
+              return {
+                ...selectedField,
+                // 清空非必要字段
+                type: undefined,
+                origin: undefined
+              }
+            })
           })
         }
         return {
