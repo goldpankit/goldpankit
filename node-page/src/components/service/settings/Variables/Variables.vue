@@ -467,8 +467,14 @@ export default {
         // 1. 递归处理字段变量，即copyVariable.children.children
         if (copyVariable.children != null && copyVariable.children.length > 0) {
           copyVariable.children = copyVariable.children.map(group => {
-            group.children = group.children.map(v => {
-              return this.__getSaveVariable(v)
+            group.children = group.children.map(selectedField => {
+              return {
+                ...this.__getSaveVariable(selectedField),
+                // 清理不必要字段，其它字段均有可能作为变量存在
+                origin: undefined,
+                // 查询模型时，模型中的field会有table字段
+                table: undefined
+              }
             })
             return group
           })

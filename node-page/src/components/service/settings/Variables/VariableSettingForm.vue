@@ -1,12 +1,12 @@
 <template>
   <el-form :model="variable">
-    <el-form-item :label="$t('service.settings.variable.label')" required>
+    <el-form-item label="变量提示" required>
       <el-input v-model="variable.label" @input="handleChange"/>
     </el-form-item>
-    <el-form-item :label="$t('service.settings.variable.name')" required>
+    <el-form-item label="变量名" required>
       <el-input v-model="variable.name" @input="handleChange"/>
     </el-form-item>
-    <el-form-item :label="$t('service.settings.variable.inputType')" required>
+    <el-form-item label="输入类型" required>
       <InputTypeSelect
         v-model="variable.inputType"
         :with-group="withGroup"
@@ -15,15 +15,14 @@
     </el-form-item>
     <el-form-item
       v-if="variable.inputType === 'select' || variable.inputType === 'checkbox' || variable.inputType === 'radio'"
-      :label="$t('service.settings.variable.options')"
       class="item-options"
       required
     >
       <template #label>
         <div>
-          <label>{{$t('service.settings.variable.options')}}</label>
+          <label>值选项列表</label>
           <div class="opera">
-            <el-button type="primary" @click="createOption">{{$t('common.add')}}</el-button>
+            <el-button size="default" type="primary" @click="createOption">添加</el-button>
           </div>
         </div>
       </template>
@@ -37,7 +36,7 @@
         <el-table-column width="25px">
           <SortableButton/>
         </el-table-column>
-        <el-table-column :label="'*' + $t('service.settings.variable.optionLabel')" min-width="200px">
+        <el-table-column label="*名称" min-width="200px">
           <template #default="{ row }">
             <el-input v-model="row.label" type="textarea" :rows="1" @input="handleChange"/>
           </template>
