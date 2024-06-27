@@ -74,18 +74,14 @@ export default {
   },
   watch: {
     // 此处需要监听第一次，避免页面刷新后，通过模型选择器打开设计器无法初始化
+    // 刷新表时，会重新加载模型，引起model的引用发生变化，从而触发此监听重新初始化模型视图
     model: {
       immediate: true,
       handler () {
         this.init()
       }
     },
-    mainTable: {
-      immediate: true,
-      handler () {
-        this.refreshSQL()
-      }
-    },
+    // 关联线类型发生变化是，为MD设置关联线类型
     'model.__lineType' () {
       if (MD != null && this.model != null) {
         MD.lineType(this.model.__lineType)
@@ -102,6 +98,7 @@ export default {
         if (this.model == null) {
           return
         }
+        console.log('init', this.model.joins.length)
         // 添加表
         for (const table of this.model.tables) {
           MD.createTable(table, table.x, table.y)
@@ -128,6 +125,8 @@ export default {
             targetTable: aggregate.targetTable
           })
         }
+        // 刷新SQL
+        this.refreshSQL()
       })
     },
     // 拖拽表
@@ -172,8 +171,8 @@ export default {
       }
       // 添加到模型表中
       this.model.tables.push(newTable)
-      // 创建表设计
-      MD.createTable(newTable, tableX, tableY)
+      // 创建表元素
+      MD.createTable(newTable, tableX, tableY, true)
     },
     // 获取最新SQL语句
     refreshSQL () {

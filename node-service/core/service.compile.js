@@ -647,7 +647,7 @@ class Kit {
                     // 标记为非虚拟字段（此字段暂不可缺少）
                     isVirtual: false,
                     // 为字段补充别名，默认为（表别名_字段名）
-                    alias: simpleField == null ? `${t.alias}_${fieldDetail.name}` : simpleField.alias
+                    alias: simpleField == null ? `${simpleTable.alias}_${fieldDetail.name}` : simpleField.alias
                   }
                 })
               }

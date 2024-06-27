@@ -154,9 +154,10 @@ class ModelDesigner {
    * @param table
    * @param x
    * @param y
+   * @param isChange 是否触发change事件
    * @returns {Group}
    */
-  createTable (table, x, y) {
+  createTable (table, x, y, isChange=false) {
     // 创建表分组
     const tableGroup = new Konva.Group({
       id: table.id,
@@ -400,7 +401,9 @@ class ModelDesigner {
     this.elementLayer.add(tableGroup)
     this.redrawPreview()
     // 触发change事件
-    this.events.change && this.events.change()
+    if (isChange) {
+      this.events.change && this.events.change()
+    }
     return tableGroup
   }
 

@@ -74,7 +74,8 @@ export default new Vuex.Store({
       存储模型：指的是模型数据存储在项目kit.db.json文件中，文件中的模型数据可能和表不统一
     */
     setModels (state, value) {
-      state.models = state.models = value.map(model => {
+      state.models = value.map(databaseModel => {
+        const model = JSON.parse(JSON.stringify(databaseModel))
         // 是否展示SQL预览窗口：用于模型设计器页面控制SQL预览窗口的打开和关闭
         model.__visibleSQLPreviewWindow = false
         // 默认选择关联线类型为join：用于模型设计器页面判断关联线的类型
