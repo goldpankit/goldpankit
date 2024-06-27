@@ -265,8 +265,11 @@ export default {
       })
         .then(data => {
           this.visible = false
-          this.setCurrentDatabase(data)
+          // 查询最新的数据库
           this.fetchDatabases()
+            .then(() => {
+              this.$emit('create:completed', data)
+            })
           this.$emit('success', data)
         })
         .catch(e => {

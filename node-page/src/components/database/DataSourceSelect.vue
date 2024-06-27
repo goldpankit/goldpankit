@@ -34,7 +34,7 @@
       </template>
     </el-select>
     <el-button v-if="withCreateButton" class="button-icon" type="primary" icon="Plus" @click="openCreateDatabaseWindow"></el-button>
-    <OperaDataSourceWindow ref="operaDataSourceWindow"/>
+    <OperaDataSourceWindow ref="operaDataSourceWindow" @create:completed="handleDatabaseCreated"/>
   </div>
 </template>
 
@@ -77,6 +77,13 @@ export default {
   methods: {
     ...mapMutations(['setCurrentDatabase']),
     ...mapActions(['fetchDatabases']),
+    /*
+    创建新的数据库成功后默认选中，globalLoading.databases的监听也会触发一次change，但modelValue没有发生变化，依然会选中当前modelValue的值
+    此项处理，无论是先触发还是后触发，都会让新建的数据库作为当前选中值
+    */
+    handleDatabaseCreated (newDatabaseId) {
+      this.handleChange(newDatabaseId)
+    },
     // 打开创建数据库窗口
     openCreateDatabaseWindow () {
       if (this.currentProject == null || this.currentProject === '') {
