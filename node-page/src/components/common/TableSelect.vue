@@ -79,9 +79,12 @@ export default {
   },
   watch: {
     // 当表集合加载完成时，触发一次表选择，防止选中了不存在的表
-    'globalLoading.tables' (newValue) {
-      if (!newValue) {
-        this.handleChange(this.modelValue)
+    'globalLoading.tables': {
+      immediate: true,
+      handler (newValue) {
+        if (!newValue) {
+          this.handleChange(this.modelValue)
+        }
       }
     }
   },
@@ -89,6 +92,10 @@ export default {
     ...mapActions(['fetchTables']),
     // 切换表选择
     handleChange (value) {
+      // 如果正在加载表，则不做处理，避免加载表时间过长时，导致tables中还没有表或是其它数据库的表，引起值清空
+      if (this.globalLoading.tables) {
+        return
+      }
       // 清空表字段变量组的值（可能是默认值，取决于valueKey属性）
       this.fieldVariableGroup.forEach(group => {
         group[this.valueKey] = []

@@ -263,17 +263,19 @@ export default new Vuex.Store({
     // 获取数据库表
     fetchTables ({ state, commit, getters }) {
       return new Promise((resolve, reject) => {
+        state.globalLoading.tables = true
+        state.globalLoading.models = true
         // 清空数据库连接错误信息
         state.currentDatabaseConnect.error = null
         // 如果不存在没有选中数据库，则清空表集合
         const currentDatabaseDetail = getters.getCurrentDatabaseDetail
         if (currentDatabaseDetail == null) {
+          state.globalLoading.tables = false
+          state.globalLoading.models = false
           commit('setTables', [])
           commit('setModels', [])
           return resolve([])
         }
-        state.globalLoading.tables = true
-        state.globalLoading.models = true
         fetchTables({
           host: currentDatabaseDetail.host,
           port: currentDatabaseDetail.port,
