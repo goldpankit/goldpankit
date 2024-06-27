@@ -174,7 +174,11 @@ export default {
       sqlLines[sqlLines.length - 1] = sqlLines[sqlLines.length - 1].substring(0, sqlLines[sqlLines.length - 1].length - 1)
       // from 表
       if (!this.table.isVirtual) {
-        sqlLines.push(`FROM \`${this.table.name}\` AS \`${this.table.alias}\``)
+        let tableAlias = ` AS \`${this.table.alias}\``
+        if (this.table.name === this.table.alias) {
+          tableAlias = ''
+        }
+        sqlLines.push(`FROM \`${this.table.name}\`${tableAlias}`)
       }
       // join关系
       sqlLines = sqlLines.concat(this.__getJoinSql(this.table, this.repairedJoins))
@@ -187,7 +191,11 @@ export default {
     __getJoinSql (table, joins) {
       const joinLines = []
       for (const join of joins) {
-        joinLines.push(`${join.joinType} \`${join.targetTable.name}\` \`${join.targetTable.alias}\``)
+        let joinTableAlias = ` \`${join.targetTable.alias}\``
+        if (join.targetTable.name === join.targetTable.alias) {
+          joinTableAlias = ''
+        }
+        joinLines.push(`${join.joinType} \`${join.targetTable.name}\`${joinTableAlias}`)
         for (let i = 0; i < join.ons.length; i++) {
           const on = join.ons[i]
           let relationText = i === 0 ? 'ON ': `${on.relation} `

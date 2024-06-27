@@ -665,7 +665,6 @@ class Kit {
             const subTables = model.tables.filter(t => t.type !== 'MAIN')
             // 补充并修复join信息（即补充join的表信息和字段信息，修复join的table和targetTable，让targetTable始终为被关联的表）
             const joins = this.#getPaddingAndRepairedJoins(model, mainTable, model.joins)
-            // 语句
             const value = {
               name: model.name,
               comment: model.comment,
@@ -673,7 +672,7 @@ class Kit {
               subTables,
               // join关联
               joins,
-              // 语句
+              // SQL语句
               statement: this.#getQueryModelStatement(variable, model, mainTable, joins)
             }
             // 处理字段变量
@@ -949,8 +948,12 @@ class Kit {
    * @param joins join关系列表
    */
   #getQueryModelStatement (variable, model, mainTable, joins) {
+    let tableAlias = ` \`${mainTable.alias}\``
+    if (mainTable.alias === mainTable.name) {
+      tableAlias = ''
+    }
     const statement = {
-      from: `FROM \`${mainTable.name}\` \`${mainTable.alias}\``,
+      from: `FROM \`${mainTable.name}\`${tableAlias}`,
       joins: this.#getJoinSQL(mainTable, joins, ''),
     }
     // 虚拟表from语句为空
@@ -1050,7 +1053,11 @@ class Kit {
   #getJoinSQL (table, joins, indent) {
     const joinLines = []
     for (const join of joins) {
-      joinLines.push(`${indent}${join.joinType} \`${join.targetTable.name}\` \`${join.targetTable.alias}\``)
+      let joinTableAlias = ` \`${join.targetTable.alias}\``
+      if (join.targetTable.alias === join.targetTable.name) {
+        joinTableAlias = ''
+      }
+      joinLines.push(`${indent}${join.joinType} \`${join.targetTable.name}\`${joinTableAlias}`)
       for (let i = 0; i < join.ons.length; i++) {
         const on = join.ons[i]
         let relationText = i === 0 ? 'ON ': `${on.relation} `
