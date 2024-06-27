@@ -11,8 +11,9 @@
       <SQL
         :model="model"
         :table="table"
-        :joins="joins"
+        :repaired-joins="repairedJoins"
         :aggregates="aggregates"
+        :visible-fields="visibleFields"
         @field:change="$emit('field:change', $event)"
         @field:created="$emit('field:created', $event)"
         @field:deleted="$emit('field:deleted', $event)"
@@ -58,17 +59,13 @@ export default {
     // 展示字段
     visibleFields () {
       let fields = new Set()
-      if (this.table == null) {
-        return [...fields]
-      }
       // 当前表的字段
       for (const field of this.table.fields) {
         field.table = this.table
-        field.alias = field.alias || field.name
         fields.add(field)
       }
       // join表字段
-      for (const join of this.joins) {
+      for (const join of this.repairedJoins) {
         for (const field of join.table1.fields) {
           field.table = join.table1
           fields.add(field)
@@ -79,6 +76,49 @@ export default {
         }
       }
       return [...fields]
+    },
+    /**
+     * 修复表joins关系，使得join.table2一直为待关联的表，且table2在已修复的joins中不可重复（注意这里的重复指的是table.id不重复，使得可以关联多张相同的表）
+     * e.g A.a1 => B.b1, B.b2 => C.c1，此时应得到joins为[{ table1:A, table2:B }, {table1: B, table2: C}]，可的语句为JOIN B, JOIN C
+     * @returns {*}
+     */
+    repairedJoins () {
+      // 已修复的join
+      const repairedJoins = []
+      /*
+      如果joins中没有主表，则视为没有关联关系
+      e.g 存在主表M1，子表S1和S2，S1和S2建立了关联关系，但并没有与M1建立关联关系，此时不产生SQL语句。因为SQL语句展示的是当前表的关联关系
+      */
+      if (!this.joins.find(join => join.table1.id === this.table.id || join.table2.id === this.table.id)) {
+        return []
+      }
+      for (const join of this.joins) {
+        // 此处只需复制join的引用，需要保留join内部对象的引用，避免表和字段发生变化时未能及时修改join中的信息
+        const copyJoin = { ...join }
+        // 主表关联了子表，不做处理
+        if (join.table1.id === this.table.id) {
+          repairedJoins.push(copyJoin)
+          continue
+        }
+        // 子表关联了主表，则table2为主表，则将table2变为table1（此时table1为子表）
+        if (join.table2.id === this.table.id) {
+          const mainTable = copyJoin.table1
+          copyJoin.table2 = copyJoin.table1
+          copyJoin.table1 = mainTable
+          repairedJoins.push(copyJoin)
+          continue
+        }
+        // 子表关联了子表，则判断已修复的joins中，是否存在当前table2，如果存在，则将table1作为table2
+        const existJoin = repairedJoins.find(join => join.table2.id === copyJoin.table2.id)
+        if (existJoin) {
+          const table2 = copyJoin.table1
+          copyJoin.table2 = copyJoin.table1
+          copyJoin.table1 = table2
+        }
+        repairedJoins.push(copyJoin)
+      }
+      console.log('repairedJoins', repairedJoins)
+      return repairedJoins
     }
   },
   methods: {
@@ -123,7 +163,7 @@ export default {
           sqlLines.push('(SELECT')
           sqlLines.push(`${agg.function}(${agg.targetTable.alias}.${agg.targetField.name})`)
           sqlLines.push(`FROM \`${agg.targetTable.name}\` AS \`${agg.targetTable.alias}\``)
-          sqlLines = sqlLines.concat(this.__getJoinSql(agg.targetTable, this.joins))
+          sqlLines = sqlLines.concat(this.__getJoinSql(agg.targetTable, this.repairedJoins))
           sqlLines.push(`) AS \`${agg.field.alias}\`,`)
           fields.push(`\`${agg.field.alias}\``)
         } else {
@@ -138,7 +178,7 @@ export default {
         sqlLines.push(`FROM \`${this.table.name}\` AS \`${this.table.alias}\``)
       }
       // join关系
-      sqlLines = sqlLines.concat(this.__getJoinSql(this.table, this.joins))
+      sqlLines = sqlLines.concat(this.__getJoinSql(this.table, this.repairedJoins))
       return {
         fields,
         sql: sqlLines.join('\n')

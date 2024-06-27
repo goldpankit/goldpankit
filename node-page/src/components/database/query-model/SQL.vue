@@ -107,82 +107,22 @@ export default {
     model: {
       required: true
     },
-    // 表
+    // 查询的目标表（仅查询该表SQL）
     table: {
       required: true
     },
-    // JOIN关系
-    joins: {
+    // 已修复的JOIN关系数组
+    repairedJoins: {
+      type: Array,
       required: true
+    },
+    // 显示的字段
+    visibleFields: {
+      type: Array
     },
     // 聚合信息
     aggregates: {
       required: true
-    }
-  },
-  computed: {
-    /**
-     * 修复表joins关系，使得join.table2一直为待关联的表，且table2在已修复的joins中不可重复（注意这里的重复指的是table.id不重复，使得可以关联多张相同的表）
-     * e.g A.a1 => B.b1, B.b2 => C.c1，此时应得到joins为[{ table1:A, table2:B }, {table1: B, table2: C}]，可的语句为JOIN B, JOIN C
-     * @returns {*}
-     */
-    repairedJoins () {
-      // 已修复的join
-      const repairedJoins = []
-      /*
-      如果joins中没有主表，则视为没有关联关系
-      e.g 存在主表M1，子表S1和S2，S1和S2建立了关联关系，但并没有与M1建立关联关系，此时不产生SQL语句。因为SQL语句展示的是当前表的关联关系
-      */
-      if (!this.joins.find(join => join.table1.id === this.table.id || join.table2.id === this.table.id)) {
-        return []
-      }
-      for (const join of this.joins) {
-        // 此处只需复制join的引用，需要保留join内部对象的引用，避免表和字段发生变化时未能及时修改join中的信息
-        const copyJoin = { ...join }
-        // 主表关联了子表，不做处理
-        if (join.table1.id === this.table.id) {
-          repairedJoins.push(copyJoin)
-          continue
-        }
-        // 子表关联了主表，则table2为主表，则将table2变为table1（此时table1为子表）
-        if (join.table2.id === this.table.id) {
-          const mainTable = copyJoin.table1
-          copyJoin.table2 = copyJoin.table1
-          copyJoin.table1 = mainTable
-          repairedJoins.push(copyJoin)
-          continue
-        }
-        // 子表关联了子表，则判断已修复的joins中，是否存在当前table2，如果存在，则将table1作为table2
-        const existJoin = repairedJoins.find(join => join.table2.id === copyJoin.table2.id)
-        if (existJoin) {
-          const table2 = copyJoin.table1
-          copyJoin.table2 = copyJoin.table1
-          copyJoin.table1 = table2
-        }
-        repairedJoins.push(copyJoin)
-      }
-      return repairedJoins
-    },
-    // 展示字段
-    visibleFields () {
-      let fields = new Set()
-      // 当前表的字段
-      for (const field of this.table.fields) {
-        field.table = this.table
-        fields.add(field)
-      }
-      // join表字段
-      for (const join of this.repairedJoins) {
-        for (const field of join.table1.fields) {
-          field.table = join.table1
-          fields.add(field)
-        }
-        for (const field of join.table2.fields) {
-          field.table = join.table2
-          fields.add(field)
-        }
-      }
-      return [...fields]
     }
   },
   methods: {

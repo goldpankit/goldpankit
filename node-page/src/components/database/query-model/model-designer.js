@@ -370,11 +370,13 @@ class ModelDesigner {
       const fields = tableGroup.find('.field')
       fields.forEach((field) => {
         // 调整箭头位置
-        if (field.__line) {
-          const linePoints = this.computeLinePoints(field.__line)
-          field.__line.line.points(linePoints)
-          const controlPoints = this.computeLineControlPoints({ linePoints, ...field.__line })
-          field.__line.control.position(controlPoints)
+        if (field.__lines && field.__lines.length > 0) {
+          for (const line of field.__lines) {
+            const linePoints = this.computeLinePoints(line)
+            line.line.points(linePoints)
+            const controlPoints = this.computeLineControlPoints({ linePoints, ...line })
+            line.control.position(controlPoints)
+          }
         }
       })
       table.x = tableGroup.absolutePosition().x
@@ -418,12 +420,14 @@ class ModelDesigner {
       const fields = tableGroup.find('.field')
       // 删除字段和对应字段的关联线
       for (const field of fields) {
-        if (!field.__line) {
+        if (!field.__lines || field.__lines.length === 0) {
           continue
         }
-        field.__line.line.destroy()
-        field.__line.control.destroy()
-        field.__line.field1.__line = field.__line.field2.__line = null
+        for (const line of field.__lines) {
+          line.line.destroy()
+          line.control.destroy()
+        }
+        field.__lines = []
       }
       // 删除表
       this.tables = this.tables.filter(t => t !== tableGroup)
@@ -467,13 +471,18 @@ class ModelDesigner {
         const targetTableGroup = this.elementLayer.findOne(`#${targetTable.id}`)
         const fieldGroup = tableGroup.findOne(`#${field.name}`)
         const targetFieldGroup = targetTableGroup.findOne(`#${targetField.name}`)
-        // 字段已被关联，不允许继续关联
-        if (fieldGroup.__line != null || targetFieldGroup.__line != null) {
-          // 恢复背景色
-          if (targetFieldBackgroundRect) {
-            targetFieldBackgroundRect.fill(this.TABLE_FIELD_BACKGROUND_COLOR)
+        // 不允许重复关联
+        if (fieldGroup.__lines && fieldGroup.__lines.length > 0) {
+          for (const line of fieldGroup.__lines) {
+            // 完全重复，A.a1 => B.b1，再次操作为A.a1 => B.b1
+            if (line.table1 === tableGroup && line.table2 === targetTableGroup && line.field1 === fieldGroup && line.field2 === targetFieldGroup) {
+              return reject(new Error('请勿重复关联！'))
+            }
+            // 反向重复，A.a1 => B.b1，再次操作为B.b1 => A.a1
+            if (line.table1 === targetTableGroup && line.table2 === tableGroup && line.field1 === targetFieldGroup && line.field2 === fieldGroup) {
+              return reject(new Error('请勿重复关联！'))
+            }
           }
-          return reject(new Error('一个字段不允许关联多个字段'))
         }
         // 计算线坐标点
         const points = this.computeLinePoints({
@@ -489,7 +498,9 @@ class ModelDesigner {
           table2: targetTableGroup
         })
         // 创建线
-        const line = fieldGroup.__line = targetFieldGroup.__line = {
+        fieldGroup.__lines = fieldGroup.__lines || []
+        targetFieldGroup.__lines = targetFieldGroup.__lines || []
+        const line = {
           lineType: lineType,
           table1: tableGroup,
           field1: fieldGroup,
@@ -516,13 +527,25 @@ class ModelDesigner {
             zIndex: 2
           })
         }
+        fieldGroup.__lines.push(line)
+        targetFieldGroup.__lines.push(line)
         this.elementLayer.add(line.line)
         this.elementLayer.add(line.control)
         // 点击删除控制点，删除关联线
         line.control.on('click', () => {
-          fieldGroup.__line.line.destroy()
-          fieldGroup.__line.control.destroy()
-          fieldGroup.__line = targetFieldGroup.__line = null
+          // 销毁关联线元素
+          line.line.destroy()
+          line.control.destroy()
+          // 从关联字段的关联线中删除
+          const fieldLineIndex = fieldGroup.__lines.indexOf(line)
+          if (fieldLineIndex !== -1) {
+            fieldGroup.__lines.splice(fieldLineIndex, 1)
+          }
+          // 从被关联字段的关联线中删除
+          const targetFieldLineIndex = targetFieldGroup.__lines.indexOf(line)
+          if (targetFieldLineIndex !== -1) {
+            targetFieldGroup.__lines.splice(targetFieldLineIndex, 1)
+          }
           // 重新绘制预览
           this.redrawPreview()
           // 触发line:deleted事件
