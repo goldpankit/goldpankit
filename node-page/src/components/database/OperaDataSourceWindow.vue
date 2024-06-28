@@ -264,7 +264,7 @@ export default {
       })
         .then(data => {
           // 查询最新的数据库
-          return this.fetchDatabases()
+          this.fetchDatabases()
             .then(() => {
               this.visible = false
               this.$emit('create:completed', data)
