@@ -441,6 +441,7 @@ class Kit {
     return variables.map(v => {
       return {
         name: v.name,
+        inputType: v.inputType,
         value: this.#getInstallVariableValue(v)
       }
     })
