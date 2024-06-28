@@ -51,8 +51,8 @@
       </el-form-item>
     </el-form>
     <div class="opera">
-      <el-button @click="cancelCreate">取消</el-button>
-      <el-button type="primary" @click="confirm">{{ form.id ? '确认修改' : '确认添加' }}</el-button>
+      <el-button  :disabled="isWorking" @click="cancelCreate">取消</el-button>
+      <el-button type="primary" @click="confirm" :disabled="isWorking">{{ form.id ? '确认修改' : '确认添加' }}</el-button>
     </div>
     <!-- 创建数据库窗口 -->
     <CreateDatabaseDialog ref="createDatabaseDialog"/>
@@ -163,17 +163,16 @@ export default {
           })
         })
         .catch(e => {
-          console.error(e)
           this.$tip.apiFailed('找不到项目信息！')
         })
     },
     // 确认创建
     confirm () {
+      if (this.isWorking) {
+        return
+      }
       this.$refs.form.validate()
         .then(() => {
-          if (this.isWorking) {
-            return
-          }
           this.isWorking = true
           // 密码不去空
           const password = this.form.password
@@ -264,19 +263,24 @@ export default {
         database: form
       })
         .then(data => {
-          this.visible = false
           // 查询最新的数据库
-          this.fetchDatabases()
+          return this.fetchDatabases()
             .then(() => {
+              this.visible = false
               this.$emit('create:completed', data)
+              this.$emit('success', data)
+              setTimeout(() => {
+                this.isWorking = false
+              }, 300)
             })
-          this.$emit('success', data)
+            .catch(e => {
+              this.isWorking = false
+              this.$tip.apiFailed(e)
+            })
         })
         .catch(e => {
-          this.$tip.apiFailed(e)
-        })
-        .finally(() => {
           this.isWorking = false
+          this.$tip.apiFailed(e)
         })
     },
     // 确认修改
@@ -290,17 +294,19 @@ export default {
           this.fetchDatabases()
             .then(() => {
               this.visible = false
+              setTimeout(() => {
+                this.isWorking = false
+              }, 300)
               this.$emit('success', data)
             })
             .catch(e => {
+              this.isWorking = false
               this.$tip.apiFailed(e)
             })
         })
         .catch(e => {
-          this.$tip.apiFailed(e)
-        })
-        .finally(() => {
           this.isWorking = false
+          this.$tip.apiFailed(e)
         })
     }
   }

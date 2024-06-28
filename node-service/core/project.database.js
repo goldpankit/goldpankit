@@ -31,7 +31,7 @@ module.exports = {
     }
     // 添加
     const databases = this.getProjectDatabaseConfigByIdWithDefaultBlankArray(projectId)
-    databases.push(newDatabase)
+    databases.unshift(newDatabase)
     // 保存
     fs.rewrite(this.getDatabaseConfigPath(projectId), fs.toJSONFileString(databases))
     return Promise.resolve(newDatabase.id)

@@ -5,7 +5,7 @@
       <FormTip>
         当前数据库信息保存在「<em>{{project.name}}</em>」项目的<em>kit.db.json</em>文件中。
       </FormTip>
-      <div v-loading="loading" class="database-list-wrap">
+      <div v-loading="loading.project || loading.databases" class="database-list-wrap">
         <ul class="toolbar">
           <li>
             <el-button type="primary" @click="$refs.operaDataSourceWindow.open(project.id)">{{$t('database.addNewDatabase')}}</el-button>
@@ -47,7 +47,10 @@ export default {
   },
   data () {
     return {
-      loading: true,
+      loading: {
+        project: false,
+        databases: false
+      },
       project: null,
       databases: []
     }
@@ -55,35 +58,34 @@ export default {
   methods: {
     // 查询项目信息
     fetchProject () {
-      this.loading = true
+      this.loading.project = true
       fetchById(this.$route.params.projectId)
         .then(data => {
           this.project = data
           this.fetchDatabases()
         })
-        .catch(e => {
+        .catch(() => {
           this.loading = false
-          console.error('找不到项目信息！', e)
           this.$tip.apiFailed('找不到项目信息！')
           this.$routers.push({ name: 'Desktop'})
+        })
+        .finally(() => {
+          this.loading.project = false
         })
     },
     // 查询数据库
     fetchDatabases () {
+      this.loading.databases = true
       fetchDatabases(this.$route.params.projectId)
         .then(data => {
           setTimeout(() => {
             this.databases = data
-            this.loading = false
+            this.loading.databases = false
           }, 500)
         })
         .catch(e => {
           this.$tip.apiFailed(e)
-        })
-        .finally(() => {
-          setTimeout(() => {
-            this.loading = false
-          }, 500)
+          this.loading.databases = false
         })
     },
     // 修改数据库

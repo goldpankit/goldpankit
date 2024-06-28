@@ -40,7 +40,7 @@ module.exports = {
     }
     // 添加模型
     newModel.id = utils.generateId()
-    database.models.push(newModel)
+    database.models.unshift(newModel)
     // 保存
     projectDatabase.saveDatabase(projectId, database)
     return newModel.id
