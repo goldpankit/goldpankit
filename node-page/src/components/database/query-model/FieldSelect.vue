@@ -28,9 +28,6 @@
           >
             <p>
               {{field.table.alias}}.{{field.name}}
-              <template v-if="field.alias !== field.name">
-                <em>AS</em> <b>{{field.alias}}</b>
-              </template>
             </p>
             <p v-if="field.comment != null && field.comment !== ''">{{field.comment}}</p>
           </li>

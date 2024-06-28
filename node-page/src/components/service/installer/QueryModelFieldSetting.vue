@@ -26,9 +26,6 @@
       <template #default="{row}">
         <p>
           {{row.table.alias}}.{{row.name}}
-          <template v-if="row.alias !== row.name">
-            <em>AS</em> <b>{{row.alias}}</b>
-          </template>
         </p>
         <p>{{row.comment}}</p>
       </template>
