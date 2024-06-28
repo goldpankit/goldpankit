@@ -96,10 +96,12 @@ export default {
       if (this.globalLoading.tables) {
         return
       }
-      // 清空表字段变量组的值（可能是默认值，取决于valueKey属性）
-      this.fieldVariableGroup.forEach(group => {
-        group[this.valueKey] = []
-      })
+      // 如果和当前选择的模型不一致，则清空模型字段变量组的值（可能是默认值，取决于valueKey属性）
+      if (this.modelValue !== value) {
+        this.fieldVariableGroup.forEach(group => {
+          group[this.valueKey] = []
+        })
+      }
       // 如果未找到对应的表，则清空选择
       if (this.tables.find(table => table.name === value) == null) {
         this.$emit('update:modelValue', null)

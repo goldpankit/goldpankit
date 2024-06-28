@@ -92,6 +92,10 @@ export default {
   methods: {
     // 切换模型选择
     handleChange (value) {
+      // 如果正在加载模型，则不做处理，避免加载模型时间过长时，导致models中还没有模型或是其它数据库的模型，引起值清空
+      if (this.globalLoading.models) {
+        return
+      }
       // 如果和当前选择的模型不一致，则清空模型字段变量组的值（可能是默认值，取决于valueKey属性）
       if (this.modelValue !== value) {
         this.fieldVariableGroup.forEach(group => {
