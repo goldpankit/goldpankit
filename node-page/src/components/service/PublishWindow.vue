@@ -21,7 +21,7 @@
     </el-form>
     <template #footer>
       <span class="dialog-footer">
-        <el-button @click="visible = false">{{$t('common.cancel')}}</el-button>
+        <el-button :disabled="isWorking" @click="visible = false">{{$t('common.cancel')}}</el-button>
         <el-button type="primary" :disabled="isWorking" @click="publish">
           {{$t('service.settings.publish')}}
         </el-button>

@@ -127,6 +127,9 @@ html {
     .el-dialog__body {
       padding: var(--el-dialog-padding-primary);
     }
+    .el-dialog__footer {
+      padding: var(--el-dialog-padding-primary);
+    }
   }
   // popover提示
   .global-popover {
