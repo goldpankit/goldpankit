@@ -441,6 +441,7 @@ class Kit {
     return variables.map(v => {
       return {
         name: v.name,
+        // 用于在初始化工作台时，获取到数据库变量，从而初始化选中项目数据库
         inputType: v.inputType,
         value: this.#getInstallVariableValue(v)
       }
