@@ -472,9 +472,9 @@ export default {
     // 提示空变量
     __tipEmptyVariable (variable, groupName) {
       if (groupName != null) {
-        this.$tip.warning(`「${groupName}」中缺少「${variable.label}」`)
+        this.$tip.warning(`请填写「${groupName}」中「${variable.label}」参数`)
       } else {
-        this.$tip.warning(`缺少「${variable.label}」`)
+        this.$tip.warning(`请填写「${variable.label}」参数`)
       }
     },
     // 获取安装变量值

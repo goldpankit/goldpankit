@@ -289,7 +289,7 @@ export default {
     }
   },
   methods: {
-    ...mapMutations(['setCurrentProject']),
+    ...mapMutations(['setCurrentProject', 'setCurrentDatabase']),
     // 升级
     upgrade () {
       window.open(`/space/${this.space}/${this.service.name}/install?major=${this.majorVersion}`)
@@ -380,6 +380,12 @@ export default {
           // 查询插件
           if (withSubServices) {
             this.searchPlugins()
+          }
+          // 获取服务的数据库变量（如果有）
+          const serviceVariables = this.installedService[serviceName].variables || []
+          const databaseVariable = serviceVariables.find(variable => variable.inputType === 'datasource')
+          if (databaseVariable != null) {
+            this.setCurrentDatabase(databaseVariable.value)
           }
         })
         .catch(e => {
