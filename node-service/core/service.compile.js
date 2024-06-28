@@ -477,8 +477,14 @@ class Kit {
               return {
                 ...selectedField,
                 // 清空非必要字段
+                // - type无需保存
                 type: undefined,
-                origin: undefined
+                // - 字段会有origin，表示原始字段信息
+                origin: undefined,
+                // - 模型中的字段会有table，不能清空，否则无法标记出字段属于哪张表
+                // table: undefined,
+                // - visible用于在SQL窗口中控制是否展示，此处需要优化，这个字段压根就不应该传过来，会导致字段中存在visible变量时被清空
+                visible: undefined
               }
             })
           })
@@ -873,7 +879,8 @@ class Kit {
               if (dbField == null) {
                 return null
               }
-              // 此处存在引用问题，不可修改selectedField的引用（字段均不要修改引用）
+              // 在使用配置文件中的参数时，字段中是不含有type属性的，此处需要补充。模型字段始终都会有该属性，无需补充
+              // 此处还存在引用问题，不可修改selectedField的引用（字段均不要修改引用）
               selectedField.type = dbField.type
               return selectedField
             })
