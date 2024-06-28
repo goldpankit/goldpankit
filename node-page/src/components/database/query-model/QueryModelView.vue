@@ -34,7 +34,12 @@
 <!--          </ul>-->
 <!--        </div>-->
         <!-- 设计器 -->
-        <DesignerV2 :model="currentModel" @change="saveModel"/>
+        <DesignerV2
+          :model="currentModel"
+          :drag-table="dragTable"
+          @change="saveModel"
+          @model:created="currentModel = $event"
+        />
         <div v-if="models.length === 0" class="no-model-tip">
           <div class="tip-wrap">
             <h4>{{$t('database.queryModelEmptyTipTitle')}}</h4>
@@ -87,6 +92,8 @@ export default {
       fieldHeight: 30,
       // 当前选中的数据库连接失败消息
       connectError: null,
+      // 当前拖拽的表
+      dragTable: null,
       // 当前选中的模型
       currentModel: null
     }
@@ -138,10 +145,11 @@ export default {
     },
     // 开始拖动表放置在设计器中
     handleDragStart (tableName) {
-      if (this.currentModel == null) {
-        return
-      }
-      this.currentModel.dragData = this.tables.find(t => t.name === tableName)
+      // if (this.currentModel == null) {
+      //   return
+      // }
+      // this.currentModel.dragData = this.tables.find(t => t.name === tableName)
+      this.dragTable = this.tables.find(t => t.name === tableName)
     },
     // 获取模型设置
     __getModelSettings (currentModel) {

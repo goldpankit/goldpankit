@@ -31,18 +31,23 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import * as monaco from 'monaco-editor'
 import ModelDesigner from './model-designer'
 import { generateId } from '@/utils/generator'
 import SQL from "@/components/database/query-model/SQL.vue";
 import TableSetting from "@/components/database/query-model/TableSetting.vue";
+import { create } from "@/api/project.database.model";
 
 let MD = null
 export default {
   name: 'DesignerV2',
-  components: {TableSetting, SQL },
+  components: { TableSetting, SQL },
   props: {
-    model: {}
+    // 模型对象
+    model: {},
+    // 拖拽的表对象
+    dragTable: {}
   },
   data () {
     return {
@@ -52,6 +57,7 @@ export default {
     }
   },
   computed: {
+    ...mapState(['models', 'currentProject', 'currentDatabase']),
     // 主表
     mainTable () {
       if (this.model == null) {
@@ -129,29 +135,28 @@ export default {
       })
     },
     // 拖拽表
-    handleDrop (e) {
-      if (this.model == null) {
-        this.$tip.warning('请先选择或创建模型！')
-        return
-      }
+    async handleDrop (e) {
       // 获取坐标
       MD.stage.setPointersPositions(e)
       const mousePos = MD.stage.getPointerPosition()
       const tableX = mousePos.x - MD.TABLE_WIDTH / 2
       const tableY = mousePos.y
       // 判断表类型
-      const tableType = this.model.tables.length === 0 ? 'MAIN' : 'SUB'
+      let tableType = 'SUB'
+      if (this.model == null || this.model.tables.length === 0) {
+        tableType = 'MAIN'
+      }
       // 创建新表对象
       const newTable = {
         // 增加设计器元素ID
         id: generateId(),
-        name: this.model.dragData.name,
-        alias: this.model.dragData.name,
+        name: this.dragTable.name,
+        alias: this.dragTable.name,
         // 第一个表标记为主表
         type: tableType,
         // 字段
-        fields: this.model.dragData.fields.map(f => {
-          let alias = `${this.model.dragData.name}_${f.name}`
+        fields: this.dragTable.fields.map(f => {
+          let alias = `${this.dragTable.name}_${f.name}`
           if (tableType === 'MAIN') {
             alias = `${f.name}`
           }
@@ -167,6 +172,14 @@ export default {
         // 坐标
         x: tableX,
         y: tableY
+      }
+      // 如果模型为null，则根据表名创建模型
+      if (this.model == null) {
+        const model = await this.__createModel(this.dragTable)
+        model.tables.push(newTable)
+        // created事件会选中模型，模型发生变化后会重新初始化视图
+        this.$emit('model:created', model)
+        return
       }
       // 添加到模型表中
       this.model.tables.push(newTable)
@@ -214,6 +227,35 @@ export default {
         return
       }
       this.model.__visibleSQLPreviewWindow = true
+    },
+    // 创建模型
+    async __createModel (table) {
+      const newModel = {
+        // 模型名称
+        name: table.name,
+        // 备注
+        comment: table.comment,
+        // 模型设计的数据库表
+        tables: [],
+        // join关联关系
+        joins: [],
+        // 聚合关联关系
+        aggregates: [],
+      }
+      const modelId = await create ({
+        projectId: this.currentProject,
+        databaseId: this.currentDatabase,
+        model: newModel
+      })
+      // 拷贝模型，避免内存模型引用当前this.newModel
+      const copyModel = JSON.parse(JSON.stringify(newModel))
+      copyModel.id = modelId
+      // 补充关联线类型，默认为join
+      copyModel.__lineType = 'join'
+      // 补充是否展示SQL预览窗口
+      copyModel.__visibleSQLPreviewWindow = false
+      this.models.unshift(copyModel)
+      return copyModel
     },
     // 删除表
     __deleteTable (table) {
