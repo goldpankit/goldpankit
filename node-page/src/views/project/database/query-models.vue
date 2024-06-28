@@ -24,8 +24,7 @@ export default {
         this.setCurrentProjectDetail(project)
         this.setCurrentDatabase(this.$route.query.db)
       })
-      .catch(e => {
-        console.error('找不到项目信息', e)
+      .catch(() => {
         this.$tip.apiFailed('找不到项目信息！')
         this.$router.push({ name: 'Desktop' })
       })

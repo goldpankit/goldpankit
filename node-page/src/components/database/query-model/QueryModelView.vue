@@ -1,19 +1,19 @@
 <template>
-  <div class="database-query-models">
+  <div v-loading="globalLoading.models || loading.page" class="database-query-models">
     <div v-if="currentDatabase == null || currentDatabase === ''" class="no-datasource-tip">
       <div class="tip-wrap">
         <h4>请先选择一个数据库</h4>
         <DataSourceSelect :model-value="currentDatabase" :with-block="true"/>
       </div>
     </div>
-    <div v-else-if="currentDatabaseConnect.error != null" class="connect-error-tip">
+    <div v-else-if="currentDatabaseConnect.error != null && !globalLoading.models && !loading.page" class="connect-error-tip">
       <div class="tip-wrap">
         <h4>数据库连接失败</h4>
         <p>{{currentDatabaseConnect.error}}</p>
         <el-button @click="$refs.operaDataSourceWindow.open(currentProject, getCurrentDatabaseDetail())">修改数据库信息</el-button>
       </div>
     </div>
-    <template v-else>
+    <template v-else-if="!globalLoading.models && !loading.page">
       <TableLibrary
         @table:drag="handleDragStart"
         v-model:current-model="currentModel"
@@ -49,7 +49,7 @@
 </template>
 
 <script>
-import {mapState, mapGetters, mapActions} from 'vuex'
+import {mapState, mapGetters, mapActions, mapMutations} from 'vuex'
 import QueryModelDesigner from "./Designer.vue";
 import TableSetting from "./TableSetting.vue";
 import TableLibrary from "./TableLibrary.vue";
@@ -80,6 +80,7 @@ export default {
   data () {
     return {
       loading: {
+        page: true,
         tables: false
       },
       // 字段高度
@@ -91,28 +92,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['globalLoading', 'databases', 'tables', 'models', 'currentProject', 'currentDatabase', 'currentDatabaseConnect']),
-    // 当前表
-    currentTable () {
-      if (this.currentModel == null || this.currentModel.previewTableId == null) {
-        return null
-      }
-      return this.currentModel.tables.find(t => t.id === this.currentModel.previewTableId)
-    },
-    // 当前模型joins
-    joins () {
-      if (this.currentTable == null) {
-        return []
-      }
-      return this.currentModel.joins
-    },
-    // 当前模型的聚合信息
-    aggregates () {
-      if (this.currentTable == null || this.currentTable.type !== 'MAIN') {
-        return []
-      }
-      return this.currentModel.aggregates
-    }
+    ...mapState(['globalLoading', 'databases', 'tables', 'models', 'currentProject', 'currentDatabase', 'currentDatabaseConnect'])
   },
   watch: {
     // 模型加载完成后，默认选中第一个模型
@@ -128,6 +108,7 @@ export default {
     }
   },
   methods: {
+    ...mapMutations(['clearConnectError']),
     ...mapActions(['fetchTables']),
     ...mapGetters(['getCurrentDatabaseDetail']),
     // 处理模型删除
@@ -222,6 +203,16 @@ export default {
         aggregates
       }
     }
+  },
+  created () {
+    /*
+    延迟300毫秒是为了优化页面加载体验，避免从数据库连接失败页面=>返回到桌面页=>进入一个成功连接的查询模型页时出现闪屏
+    因为连接错误页面会在currentDatabaseConnect.error不为null时展示，当从一个连接失败的页面进入到一个连接成功的页面时，currentDatabaseConnect.error值并没有被清空，
+    所以会率先展示连接失败页，然后再进入loading效果，引起失败页面闪现的问题
+    */
+    setTimeout(() => {
+      this.loading.page = false
+    }, 300)
   }
 }
 </script>

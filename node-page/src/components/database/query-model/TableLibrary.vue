@@ -148,6 +148,7 @@ export default {
     // 创建查询模型
     createQueryModel () {
       this.$refs.routerViewWindow.push('create-model')
+      // 重新构建新模型数据
       for (const key in this.newModel) {
         this.newModel[key] = this.modelTemplate[key]
       }

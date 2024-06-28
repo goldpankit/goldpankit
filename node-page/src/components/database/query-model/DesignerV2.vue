@@ -98,7 +98,6 @@ export default {
         if (this.model == null) {
           return
         }
-        console.log('init', this.model.joins.length)
         // 添加表
         for (const table of this.model.tables) {
           MD.createTable(table, table.x, table.y)

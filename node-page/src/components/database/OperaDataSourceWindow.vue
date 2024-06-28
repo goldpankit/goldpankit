@@ -294,10 +294,10 @@ export default {
           this.fetchDatabases()
             .then(() => {
               this.visible = false
+              this.$emit('success', data)
               setTimeout(() => {
                 this.isWorking = false
               }, 300)
-              this.$emit('success', data)
             })
             .catch(e => {
               this.isWorking = false

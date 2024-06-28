@@ -50,6 +50,9 @@ export default new Vuex.Store({
     installData: null
   },
   mutations: {
+    clearConnectError (state) {
+      state.currentDatabaseConnect.error = null
+    },
     setHelpCode (state, value) {
       state.help.code = value
     },
@@ -158,6 +161,9 @@ export default new Vuex.Store({
       })
     },
     setCurrentProject(state, project) {
+      if (state.currentProject != null && project != null && project === state.currentProject) {
+        return
+      }
       state.currentProject = project
       window.localStorage.removeItem('CURRENT_PROJECT')
       if (project != null) {
@@ -165,6 +171,9 @@ export default new Vuex.Store({
       }
     },
     setCurrentProjectDetail(state, project) {
+      if (state.currentProjectDetail != null && project != null && project.id === state.currentProjectDetail.id) {
+        return
+      }
       state.currentProjectDetail = project
       window.localStorage.removeItem('CURRENT_PROJECT_DETAIL')
       if (project != null) {
@@ -172,6 +181,9 @@ export default new Vuex.Store({
       }
     },
     setCurrentDatabase (state, database) {
+      if (state.currentDatabase != null && database != null && database === state.currentDatabase) {
+        return
+      }
       state.currentDatabase = database
       window.localStorage.removeItem('CURRENT_DATABASE')
       if (database != null && database !== '') {
@@ -263,6 +275,9 @@ export default new Vuex.Store({
     // 获取数据库表
     fetchTables ({ state, commit, getters }) {
       return new Promise((resolve, reject) => {
+        if (state.globalLoading.tables) {
+          return reject()
+        }
         state.globalLoading.tables = true
         state.globalLoading.models = true
         // 清空数据库连接错误信息
@@ -287,18 +302,22 @@ export default new Vuex.Store({
             commit('setTables', tables)
             // 在获取表集合之后设置内存模型，表会影响模型的结构
             commit('setModels', currentDatabaseDetail.models)
+            setTimeout(() => {
+              state.globalLoading.tables = false
+              state.globalLoading.models = false
+            }, 500)
             resolve(tables)
           })
           .catch(e => {
             console.error('获取表失败', e)
             commit('setTables', [])
             commit('setModels', [])
-            state.currentDatabaseConnect.error = e.message
+            setTimeout(() => {
+              state.currentDatabaseConnect.error = e.message
+              state.globalLoading.tables = false
+              state.globalLoading.models = false
+            }, 500)
             reject(e)
-          })
-          .finally(() => {
-            state.globalLoading.tables = false
-            state.globalLoading.models = false
           })
       })
     }
