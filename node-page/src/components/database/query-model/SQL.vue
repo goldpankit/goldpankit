@@ -15,17 +15,16 @@
             :width="`${__getAggregateFunctionWidth(getAggregate(field).function)}px`"
             @change="handleChange"
           />
-          <span class="hidden">{{getAggregate(field).function}}</span>
           <span>(</span>
           <DynamicWidthInput v-model="getAggregate(field).targetTable.alias" @change="handleChange"/>
           <span>.</span>
-          <span>{{getAggregate(field).targetField.name}}</span>
+          <span>{{ getAggregate(field).targetField.name }}</span>
           <span>)</span>
         </SQLLine>
         <!-- 聚合表 -->
         <SQLLine indent="40" :visible="field.visible">
           <em>FROM</em>
-          <span>{{getAggregate(field).targetTable.name}}</span>
+          <span>{{ getAggregate(field).targetTable.name }}</span>
           <DynamicWidthInput v-model="getAggregate(field).targetTable.alias" @change="handleChange"/>
         </SQLLine>
         <!-- 聚合表JOIN -->
@@ -41,7 +40,7 @@
           <span>)</span>
           <span>AS</span>
           <DynamicWidthInput v-model="field.alias"/>
-          <span>{{visibleFields.length === index + 1 ? '' : ','}}</span>
+          <span>{{ visibleFields.length === index + 1 ? '' : ',' }}</span>
           <!-- 虚拟字段展示类型和注释 -->
           <template v-if="field.isVirtual">
             <span class="comment">#</span>
@@ -64,17 +63,17 @@
         <span>.</span>
         <!-- 非虚拟字段 -->
         <template v-if="!field.isVirtual">
-          <span>{{field.name}}</span>
+          <span>{{ field.name }}</span>
           <span>AS</span>
           <DynamicWidthInput v-model="field.alias" @change="handleChange"/>
-          <span>{{visibleFields.length === index + 1 ? '' : ','}}</span>
+          <span>{{ visibleFields.length === index + 1 ? '' : ',' }}</span>
         </template>
         <!-- 虚拟字段 -->
         <template v-else>
           <DynamicWidthInput :model-value="field.name" v-model:blur-model-value="field.name" @blur="handleChange"/>
           <span>AS</span>
           <DynamicWidthInput :model-value="field.alias" v-model:blur-model-value="field.alias" @blur="handleChange"/>
-          <span>{{visibleFields.length === index + 1 ? '' : ','}}</span>
+          <span>{{ visibleFields.length === index + 1 ? '' : ',' }}</span>
           <span class="comment">#</span>
           <DynamicWidthInput v-model="field.type" class="comment" @change="handleChange"/>
           <DynamicWidthInput v-model="field.comment" class="comment" @change="handleChange"/>
@@ -83,7 +82,7 @@
     </template>
     <SQLLine v-if="!table.isVirtual">
       <em>FROM</em>
-      <span>{{table.name}}</span>
+      <span>{{ table.name }}</span>
       <span>AS</span>
       <DynamicWidthInput v-model="table.alias" @change="handleChange"/>
     </SQLLine>
@@ -127,11 +126,11 @@ export default {
   },
   methods: {
     // 修改设置
-    handleChange () {
+    handleChange() {
       this.$emit('field:change')
     },
     // 修改了表别名，则同步字段别名
-    handleTableAliasChange (table, { oldValue, newValue }) {
+    handleTableAliasChange(table, {oldValue, newValue}) {
       const targetTable = this.model.tables.find(t => t.id === table.id)
       // 主表字段，不做处理
       if (targetTable.type === 'MAIN') {
@@ -147,7 +146,7 @@ export default {
       this.$emit('field:change')
     },
     // 创建虚拟字段
-    createVirtualField () {
+    createVirtualField() {
       const newField = {
         name: 'virtual1',
         alias: 'virtual1',
@@ -157,11 +156,11 @@ export default {
         visible: true
       }
       this.table.fields.push(newField)
-      this.$emit('field:created', { field: newField })
+      this.$emit('field:created', {field: newField})
       this.$emit('field:change')
     },
     // 获取字段聚合信息
-    getAggregate (field) {
+    getAggregate(field) {
       const aggregate = this.aggregates.find(agg => agg.field.name === field.name)
       if (aggregate == null) {
         return null
@@ -169,18 +168,18 @@ export default {
       return aggregate
     },
     // 字段显示改变
-    fieldVisibleChange () {
+    fieldVisibleChange() {
       this.$emit('field:change')
     },
     // 删除虚拟字段
-    deleteVirtualField (index) {
+    deleteVirtualField(index) {
       const field = this.table.fields[index]
       this.table.fields.splice(index, 1)
-      this.$emit('field:deleted', { index, field })
+      this.$emit('field:deleted', {index, field})
       this.$emit('field:change')
     },
     // 获取聚合函数宽度
-    __getAggregateFunctionWidth (functionName) {
+    __getAggregateFunctionWidth(functionName) {
       const widths = {
         COUNT: 65,
         SUM: 44,

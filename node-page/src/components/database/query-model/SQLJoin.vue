@@ -9,7 +9,6 @@
           class="keyword"
           @change="handleChange"
         />
-        <span class="hidden">{{join.joinType}}</span>
         <span>{{join.targetTable.name}}</span>
         <DynamicWidthInput v-model="join.targetTable.alias" @change="handleChange"/>
         <em>ON</em>
