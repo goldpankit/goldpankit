@@ -23,7 +23,7 @@
       </li>
     </ul>
     <Empty v-else :description="$t('project.noProjects')"/>
-    <OperaProjectWindow ref="operaProjectWindow" @success="search"/>
+    <OperaProjectWindow ref="operaProjectWindow" @success="fetchAll"/>
   </div>
 </template>
 
