@@ -260,14 +260,13 @@ export default new Vuex.Store({
           fetchDatabases(state.currentProject)
             .then(data => {
               commit('setDatabases', data)
+              state.globalLoading.databases = false
               resolve(data)
             })
             .catch(e => {
               console.error('获取项目数据库失败', e)
-              reject(e)
-            })
-            .finally(() => {
               state.globalLoading.databases = false
+              reject(e)
             })
         }, 300)
       })

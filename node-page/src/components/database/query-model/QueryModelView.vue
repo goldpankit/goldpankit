@@ -44,7 +44,7 @@
       </div>
     </template>
     <!-- 用于发起修改数据库信息窗口 -->
-    <OperaDataSourceWindow ref="operaDataSourceWindow" @success="fetchTables"/>
+    <OperaDataSourceWindow ref="operaDataSourceWindow"/>
   </div>
 </template>
 

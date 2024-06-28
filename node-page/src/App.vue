@@ -45,7 +45,7 @@ export default {
     },
     // 数据库列表加载完成后，如果存在选中的数据库，则获取表集合
     'globalLoading.databases' () {
-      if (this.currentDatabase != null) {
+      if (!this.globalLoading.databases && this.currentDatabase != null) {
         this.fetchTables()
           .catch(() => {})
       }
