@@ -153,7 +153,7 @@ class MySQL {
                   return
                 }
                 if (tables == null || tables.length === 0) {
-                  reject(`can not found table ${table}.`)
+                  reject(`找不到数据库表 ${table}`)
                   return
                 }
                 resolve({conn, config, tables})

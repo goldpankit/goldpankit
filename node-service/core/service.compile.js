@@ -841,14 +841,14 @@ class Kit {
     if (variable.children != null && variable.children.length > 0) {
       for (const group of variable.children) {
         let selectedFields = group.value === undefined ? group.defaultValue : group.value
-        // 如果查询模型不为空，此项操作为为查询模型的字段变量组填充值
+        // 如果查询模型不为空，说明是为模型补充动态变量组信息，此处用于过滤掉不存在的字段
         if (model != null) {
           selectedFields = selectedFields
-            .map(field => {
+            .map(selectedField => {
               // 获取到字段所在的表信息
-              const fieldTable = model.tables.find(t => t.id === field.table.id)
+              const fieldTable = model.tables.find(t => t.id === selectedField.table.id)
               // 如果表中该字段已被移除，则不做处理
-              if (fieldTable.fields.find(f => f.name === field.name) == null) {
+              if (fieldTable.fields.find(f => f.name === selectedField.name) == null) {
                 return null
               }
               // 字段的表一定存在于主表或joins表中，如果不存在，说明join已失效，那么对应的字段也需要失效
@@ -858,11 +858,27 @@ class Kit {
               ) {
                 return null
               }
-              return field
+              return selectedField
             })
             .filter(field => field != null)
         }
-        // 过滤掉已被删除的字段
+        // 否则是为表补充动态变量组信息，此处用于过滤掉不存在的字段
+        else {
+          const tableFields = value.fields
+          // 过滤掉已被删除的字段
+          selectedFields = selectedFields
+            .map(selectedField => {
+              // 获取数据库表中对应的字段
+              const dbField = tableFields.find(f => f.name === selectedField.name)
+              if (dbField == null) {
+                return null
+              }
+              // 此处存在引用问题，不可修改selectedField的引用（字段均不要修改引用）
+              selectedField.type = dbField.type
+              return selectedField
+            })
+            .filter(field => field != null)
+        }
         value[group.name] = selectedFields
         // group.children为字段变量组中的变量设定（例如查询条件queryFields中的字段定义）
         groupPromises.push(Promise.all(this.#getVariables(project, database, group.children, false))
@@ -872,7 +888,8 @@ class Kit {
           })
           .catch(e => {
             return Promise.reject(e)
-          }))
+          })
+        )
       }
     }
     Promise.all(groupPromises)
@@ -883,14 +900,14 @@ class Kit {
            *   输入类型为select的字段变量，得到的value格式为{value: null, settings: {}}
            *   所以需要修改字段值为value.value，并且为字段增加xxxSettings为value.settings
            */
-          for (const v of group.children) {
-            if (v.inputType !== 'select') {
+          for (const groupVariable of group.children) {
+            if (groupVariable.inputType !== 'select') {
               continue
             }
             for (const field of value[group.name]) {
-              const varValue = field[v.name]
-              field[v.name] = varValue.value
-              field[`${v.name}Settings`] = varValue.settings
+              const varValue = field[groupVariable.name]
+              field[groupVariable.name] = varValue.value
+              field[`${groupVariable.name}Settings`] = varValue.settings
             }
           }
           /**
