@@ -69,7 +69,10 @@ export default {
       immediate: true,
       handler (newValue) {
         if (!newValue) {
-          this.handleChange(this.modelValue)
+          // 此处使用nextTick，等上一次handleChange完成后再执行，避免此处的handleChange与handleDatabaseCreated中的handleChange同时执行
+          this.$nextTick(() => {
+            this.handleChange(this.modelValue)
+          })
         }
       }
     }
