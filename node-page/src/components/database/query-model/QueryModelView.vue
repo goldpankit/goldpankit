@@ -38,7 +38,7 @@
           :model="currentModel"
           :drag-table="dragTable"
           @change="saveModel"
-          @model:created="currentModel = $event"
+          @model:created="handleDesignerCreatedModel"
         />
         <div v-if="models.length === 0" class="no-model-tip">
           <div class="tip-wrap">
@@ -118,6 +118,11 @@ export default {
     ...mapMutations(['clearConnectError']),
     ...mapActions(['fetchTables']),
     ...mapGetters(['getCurrentDatabaseDetail']),
+    // 处理设计器中因未选择模型自动创建的模型
+    handleDesignerCreatedModel (newModel) {
+      this.currentModel = newModel
+      this.saveModel()
+    },
     // 处理模型删除
     handleModelDeleted (model) {
       if (this.currentModel === model) {
