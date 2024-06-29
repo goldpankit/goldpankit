@@ -79,7 +79,7 @@ module.exports = {
   writeFiles (files, project, service = null, versionPath = []) {
     const currentFiles = this.getFiles(project.codespace)
     const hasFile = currentFiles.filter(file => file !== Const.SERVICE_CONFIG_FILE).length > 0
-    log.debug(`${project.name}: preparing to process ${files.length} files.`)
+    log.debug(`${project.name}: 准备处理 ${files.length} 个文件`)
     const diffFiles = []
     let fileCount = 0
     for (const file of files) {
@@ -90,7 +90,7 @@ module.exports = {
       // 获取相对路径
       const relativePath = file.filepath
       // kit.json为项目配置文件，不允许操作
-      if (relativePath === Const.SERVICE_CONFIG_FILE) {
+      if (relativePath === Const.PROJECT_CONFIG_FILE) {
         continue
       }
       // 获取写入文件路径
@@ -99,6 +99,14 @@ module.exports = {
       // 如果为已删除文件，且本地存在该文件，加入删除队列，此时file.content为null
       if (file.operaType === 'DELETED') {
         if (this.exists(filepath)) {
+          /*
+          如果编译的文件中存在路径相同且operaType为ADD的，则不做删除处理
+          原因：假设文件使用了变量A来作为文件名，此时修改文件名使用了变量B，且变量A与变量B产生的结果是一致的，那么编译文件列表中会存在删除了该文件又新增了该文件，
+          所以标记为删除文件时，需要判断是否同一路径又存在ADD的文件，如果是，那么该文件不应做删除处理。
+          */
+          if (files.find(f => f.filepath === relativePath)) {
+            continue
+          }
           // 虽然在此之前已经将目录类型的文件continue了，但已删除的文件接口中未能获取filetype，导致已删除的目录未得到处理，此处临时做处理
           if (this.isDirectory(filepath)) {
             continue
@@ -230,7 +238,7 @@ module.exports = {
         content: buffer.toString(encode)
       }
     } catch (e) {
-      console.log(`读取${filepath}文件失败`, e)
+      log.error(`读取${filepath}文件失败`, e)
     }
   },
   readJSONFile(filepath) {
