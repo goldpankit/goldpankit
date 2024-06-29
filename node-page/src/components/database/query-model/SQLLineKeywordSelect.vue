@@ -1,5 +1,12 @@
 <template>
-  <el-select class="sql-line-keyword-select" size="default" :style="{ width }">
+  <el-select
+    class="sql-line-keyword-select"
+    size="default"
+    :model-value="modelValue"
+    :style="{ width }"
+    @update:modelValue="handleInput"
+    @change="$emit('change', $event)"
+  >
     <el-option
       v-for="item in data"
       :key="item"
@@ -12,14 +19,20 @@
 <script>
 
 export default {
-  name: "SQLLineKeywordSelect",
+  name: 'SQLLineKeywordSelect',
   props: {
+    modelValue: {},
     width: {
       default: '120px'
     },
     data: {
       type: Array,
       required: true
+    }
+  },
+  methods: {
+    handleInput (value) {
+      this.$emit('update:modelValue', value)
     }
   }
 }

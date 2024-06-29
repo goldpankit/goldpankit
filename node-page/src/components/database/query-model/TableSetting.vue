@@ -93,29 +93,46 @@ export default {
         return []
       }
       for (const join of this.joins) {
-        // 此处只需复制join的引用，需要保留join内部对象的引用，避免表和字段发生变化时未能及时修改join中的信息
+        /*
+        此处拷贝一份join，避免影响原来的join
+        且只需复制join的引用，需要保留join内部对象的引用，避免表和字段发生变化时未能及时修改join中的信息
+        */
         const copyJoin = { ...join }
+        /*
+        监听copyJoin属性的变化，一旦发生变化，赋值给join
+        为什么监听？因为此处为computed，对象属性不可被赋值，永远都是计算得来，而这里的对象属性joinType和relation会在SQL预览窗口中进行修改，所以需要进行监听后赋值给对应的join
+        这样在重新计算后，才能正确获取joinType和relation
+        */
+        const copyJoinProxy = new Proxy(copyJoin, {
+          set: (target, key, value) => {
+            target[key] = value
+            if (key === 'joinType' || key === 'relation') {
+              join[key] = value
+            }
+            return true
+          }
+        })
         // 主表关联了子表，不做处理
         if (join.table.id === this.table.id) {
-          repairedJoins.push(copyJoin)
+          repairedJoins.push(copyJoinProxy)
           continue
         }
         // 子表关联了主表，则targetTable为主表，则将targetTable变为table（此时table为子表）
         if (join.targetTable.id === this.table.id) {
-          const mainTable = copyJoin.table
-          copyJoin.targetTable = copyJoin.table
-          copyJoin.table = mainTable
-          repairedJoins.push(copyJoin)
+          const mainTable = copyJoinProxy.table
+          copyJoinProxy.targetTable = copyJoinProxy.table
+          copyJoinProxy.table = mainTable
+          repairedJoins.push(copyJoinProxy)
           continue
         }
         // 子表关联了子表，则判断已修复的joins中，是否存在当前targetTable，如果存在，则将table作为targetTable
-        const existJoin = repairedJoins.find(join => join.targetTable.id === copyJoin.targetTable.id)
+        const existJoin = repairedJoins.find(join => join.targetTable.id === copyJoinProxy.targetTable.id)
         if (existJoin) {
-          const targetTable = copyJoin.table
-          copyJoin.targetTable = copyJoin.table
-          copyJoin.table = targetTable
+          const targetTable = copyJoinProxy.table
+          copyJoinProxy.targetTable = copyJoinProxy.table
+          copyJoinProxy.table = targetTable
         }
-        repairedJoins.push(copyJoin)
+        repairedJoins.push(copyJoinProxy)
       }
       return repairedJoins
     }

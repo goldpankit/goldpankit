@@ -1,13 +1,13 @@
 <template>
   <ul class="joins" :style="{'padding-left': indent}">
-    <li v-for="join in joins">
+    <li v-for="(join, index) in joins" :key="index">
       <SQLLine>
         <SQLLineKeywordSelect
           v-model="join.joinType"
           width="105px"
           :data="['INNER JOIN', 'LEFT JOIN', 'RIGHT JOIN', 'OUTER JOIN']"
           class="keyword"
-          @change="handleChange"
+          @change="handleChange($event, join)"
         />
         <span>{{join.targetTable.name}}</span>
         <DynamicWidthInput v-model="join.targetTable.alias" @change="emitTableAliasChange(join.targetTable, $event)"/>
@@ -21,7 +21,7 @@
         />
       </SQLLine>
       <ul class="join-ons">
-        <SQLLine v-for="(on,index) in join.ons" indent="20">
+        <SQLLine v-for="(on,index) in join.ons" :key="index" indent="20">
           <SQLLineKeywordSelect
             v-if="index !== 0"
             v-model="on.relation"
@@ -72,8 +72,8 @@ export default {
   },
   methods: {
     // 修改设置
-    handleChange () {
-      this.$emit('change')
+    handleChange (value) {
+      this.$emit('change', value)
     },
     // 触发表别名修改事件
     emitTableAliasChange (table, value) {
