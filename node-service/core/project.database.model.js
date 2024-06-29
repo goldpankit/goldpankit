@@ -39,7 +39,10 @@ module.exports = {
       return Promise.reject(new Error('模型名称不可重复！'))
     }
     // 添加模型
-    newModel.id = utils.generateId()
+    newModel = {
+      id: utils.generateId(),
+      ...newModel
+    }
     database.models.unshift(newModel)
     // 保存
     projectDatabase.saveDatabase(projectId, database)
@@ -61,7 +64,7 @@ module.exports = {
       return Promise.reject(new Error(`找不到模型，请刷新后重试！模型ID: ${newModel.id}`))
     }
     // 修改信息
-    database.models[modelIndex] = newModel
+    Object.assign(database.models[modelIndex], newModel)
     // 保存
     projectDatabase.saveDatabase(projectId, database)
   }

@@ -624,7 +624,7 @@ class Kit {
               return reject(`「${variable.label}」参数错误，找不到查询模型！`)
             }
             if (model.tables == null) {
-              log.error(`模型中缺少tables属性`, model)
+              log.error(`模型中缺少tables属性！模型ID：${modelId}，请检查kit.db.json文件中该模型配置是否正确！`)
               return reject(`「${variable.label}」参数错误，模型缺少关联表！`)
             }
             // 获取数据库表（没有时会连接数据库）
@@ -674,6 +674,9 @@ class Kit {
             }
             // 找到主表
             const mainTable = model.tables.find(t => t.type === 'MAIN')
+            if (mainTable == null) {
+              return reject(`「${variable.label}」参数所使用的「${model.name}」模型中缺少主表，请确认模型是否正确！`)
+            }
             // 找到所有的子表
             const subTables = model.tables.filter(t => t.type !== 'MAIN')
             // 补充并修复join信息（即补充join的表信息和字段信息，修复join的table和targetTable，让targetTable始终为被关联的表）
