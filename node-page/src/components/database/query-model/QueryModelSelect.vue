@@ -114,7 +114,11 @@ export default {
     // 刷新各字段变量组的字段设置
     refreshFieldSetting () {
       for (const fieldGroup of this.fieldVariableGroup) {
-        this.$refs[`${fieldGroup.name}FieldSetting`][0].refresh()
+        // 没有选中模型时，不存在字段设置
+        const ref = this.$refs[`${fieldGroup.name}FieldSetting`]
+        if (ref && ref[0]){
+          ref[0].refresh()
+        }
       }
     }
   }
