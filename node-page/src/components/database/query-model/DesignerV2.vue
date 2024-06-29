@@ -102,6 +102,8 @@ export default {
         MD.redraw()
         MD.redrawPreview()
         if (this.model == null) {
+          // 刷新SQL
+          this.refreshSQL()
           return
         }
         // 添加表
