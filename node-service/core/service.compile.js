@@ -13,6 +13,7 @@ const serviceTranslator = require('./service.translator')
 const path = require('path')
 const ignore = require("ignore");
 const env = require('../env').getConfig()
+const log = require('./utils/log')
 
 class Kit {
   constructor() {
@@ -125,7 +126,7 @@ class Kit {
             })
         })
         .catch(e => {
-          console.log('安装出现异常', e)
+          log.error('安装出现异常', e)
           reject(e)
         })
     })
@@ -175,12 +176,12 @@ class Kit {
               })
             })
             .catch(e => {
-              console.log('获取构建出现异常', e)
+              log.error('获取构建出现异常', e)
               reject(e)
             })
         })
         .catch(e => {
-          console.log('卸载出现异常', e)
+          log.error('卸载出现异常', e)
           reject(e)
         })
     })
@@ -221,12 +222,12 @@ class Kit {
                 reject(e)
               })
           } catch (e) {
-            console.log('编译成功，写入文件出现异常', e)
+            log.error('编译成功，写入文件出现异常', e)
             reject(e)
           }
         })
         .catch(e => {
-          console.log('编译出现异常', e)
+          log.error('编译出现异常', e)
           reject(e)
         })
     })
@@ -263,7 +264,7 @@ class Kit {
             })
         })
         .catch(e => {
-          console.log('编译出现异常', e)
+          log.error('编译出现异常', e)
           reject(e)
         })
     })
@@ -621,6 +622,10 @@ class Kit {
             const model = database.models.find(m => m.id === modelId)
             if (model == null) {
               return reject(`「${variable.label}」参数错误，找不到查询模型！`)
+            }
+            if (model.tables == null) {
+              log.error(`模型中缺少tables属性`, model)
+              return reject(`「${variable.label}」参数错误，模型缺少关联表！`)
             }
             // 获取数据库表（没有时会连接数据库）
             let tables = database.tables

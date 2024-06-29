@@ -25,15 +25,31 @@ module.exports = {
     console.log(this.__prefix(), colors('yellow', '[WARN]'), message)
   },
   // 错误消息
-  error (e) {
-    // 字符串
-    if (typeof e === 'string') {
-      console.log(this.__prefix(), colors('red', '[ERR]'), e)
-      return
-    }
-    // 异常对象
-    if (e.code == null) {
-      console.log(this.__prefix(), colors('red', '[ERR]'), e.message, e)
+  error (message, e) {
+    try {
+      // 字符串
+      if (typeof message === 'string') {
+        if (e == null) {
+          console.log(this.__prefix(), colors('red', '[ERR]'), message)
+        } else {
+          console.log(this.__prefix(), colors('red', '[ERR]'), message, e)
+        }
+        return
+      }
+      // 异常对象
+      if (message instanceof Error) {
+        console.log(this.__prefix(), colors('red', '[ERR]'), message)
+        return
+      }
+      // 接口响应
+      if (message.code != null) {
+        console.log(this.__prefix(), colors('red', '[ERR]'), `${message.code}: ${message.message}`)
+        return
+      }
+      // 其它
+      console.log(this.__prefix(), colors('red', '[ERR]'), message)
+    } catch (e) {
+      console.error('输出错误消息出现了异常', e)
     }
   },
   // 成功消息

@@ -11,7 +11,6 @@ const routers = require('./routes/index');
 const log = require('./core/utils/log')
 const client = require('./core/client')
 const { createProxyMiddleware } = require('http-proxy-middleware');
-
 const app = express();
 // 开启日志
 if (env.debug) {
