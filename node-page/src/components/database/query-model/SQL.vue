@@ -87,7 +87,12 @@
       <DynamicWidthInput v-model="table.alias" @change="handleChange"/>
     </SQLLine>
     <!-- JOIN语句 -->
-    <SQLJoin :joins="repairedJoins" :table="table" @change="handleChange"/>
+    <SQLJoin
+      :joins="repairedJoins"
+      :table="table"
+      @change="handleChange"
+      @table:alias:change="handleTableAliasChange($event.table, $event.value)"
+    />
   </div>
 </template>
 

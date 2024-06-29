@@ -10,7 +10,7 @@
           @change="handleChange"
         />
         <span>{{join.targetTable.name}}</span>
-        <DynamicWidthInput v-model="join.targetTable.alias" @change="handleChange"/>
+        <DynamicWidthInput v-model="join.targetTable.alias" @change="emitTableAliasChange(join.targetTable, $event)"/>
         <em>ON</em>
         <SQLLineKeywordSelect
           v-model="join.relation"
@@ -29,11 +29,11 @@
             width="45px"
             @change="handleChange"
           />
-          <DynamicWidthInput v-model="on.table.alias" @change="handleChange"/>
+          <DynamicWidthInput v-model="on.table.alias" @change="emitTableAliasChange(on.table, $event)"/>
           <span>.</span>
           <span>{{on.field.name}}</span>
           <span>=</span>
-          <DynamicWidthInput v-model="on.targetTable.alias" @change="handleChange"/>
+          <DynamicWidthInput v-model="on.targetTable.alias" @change="emitTableAliasChange(on.targetTable, $event)"/>
           <span>.</span>
           <span>{{on.targetField.name}}</span>
         </SQLLine>
@@ -49,7 +49,7 @@ import SQLLine from "./SQLLine.vue";
 import DynamicWidthInput from "../../common/DynamicWidthInput.vue";
 
 export default {
-  name: "SQLJoin",
+  name: 'SQLJoin',
   components: {DynamicWidthInput, SQLLine, SQLLineKeywordSelect},
   props: {
     // 表
@@ -74,6 +74,13 @@ export default {
     // 修改设置
     handleChange () {
       this.$emit('change')
+    },
+    // 触发表别名修改事件
+    emitTableAliasChange (table, value) {
+      this.$emit('table:alias:change', {
+        table,
+        value
+      })
     }
   }
 }
