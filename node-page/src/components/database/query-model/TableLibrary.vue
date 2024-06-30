@@ -179,7 +179,8 @@ export default {
           model: this.editModel
         })
           .then(() => {
-            Object.assign(this.currentModel, this.editModel)
+            const targetModel = this.models.find(model => model.id === this.editModel.id)
+            Object.assign(targetModel, this.editModel)
             this.$refs.routerViewWindow.back()
           })
           .catch(e => {
