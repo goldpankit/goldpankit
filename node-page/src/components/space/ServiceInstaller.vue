@@ -191,6 +191,7 @@ export default {
       }
       return 'padding-top: 0; border-top: 0;margin-top: 0;'
     },
+    // 服务和插件的唯一标志
     unique () {
       return [this.space, this.service, this.plugin, this.selectedVersion]
     }
@@ -202,6 +203,7 @@ export default {
         this.selectedVersion = newValue
       }
     },
+    // 如果切换了服务或插件，则重新获取服务或插件的版本信息，随后会重新初始化变量信息
     unique () {
       this.fetchVersion()
     },
@@ -213,10 +215,6 @@ export default {
     },
     // 项目配置发生变化后重新初始化变量值
     projectConfig () {
-      this.initVariables()
-    },
-    // 切换了插件后重新初始化变量值
-    plugin () {
       this.initVariables()
     }
   },
@@ -516,8 +514,14 @@ export default {
               if (plugin != null) {
                 // 拿到最后一个变量（变量名可重复，后者覆盖前者）
                 const targetVar = plugin.variables.findLast(v => v.name === variable.name)
-                if (targetVar != null) {
-                  value = targetVar.value
+                if (targetVar != null && targetVar.value != null) {
+                  /*
+                  此处需要拷贝一份value
+                  原因：项目没变的情况下，读取到的plugin为同一个引用，所以targetVar也为同一个引用，value赋值为targetVar时，targetVar.value和value为同一个引用。
+                  在表字段或查询字段配置的情况下，会更改value中的值，不拷贝的情况下会影响targetVar的值，这样重新从plugin中获取到的值发生了变化，引起初始化结果不正确。
+                  场景：切换插件
+                  */
+                  value = JSON.parse(JSON.stringify(targetVar.value))
                 }
               }
             }

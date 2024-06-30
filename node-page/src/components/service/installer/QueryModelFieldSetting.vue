@@ -83,6 +83,7 @@ export default {
     }
   },
   watch: {
+    // 切换了模型，重新初始化选中字段
     model () {
       this.initSelectedFields()
     }
