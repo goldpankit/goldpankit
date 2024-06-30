@@ -19,7 +19,7 @@
       </div>
     </div>
     <div class="content-wrap" :style="contentWrapStyle">
-      <template v-if="withProject || serviceVariables.length > 0">
+      <template v-if="withProject || variables.length > 0">
         <p class="install-tip">安装提示: 填写以下信息并点击「立即安装」按钮即可安装代码到您项目目录中。</p>
         <div class="form-wrap">
           <el-form>
@@ -41,7 +41,7 @@
               />
             </el-form-item>
             <!-- 服务或插件的动态参数 -->
-            <template v-for="variable in serviceVariables">
+            <template v-for="variable in variables">
               <el-form-item
                 v-if="!variable.hidden"
                 :key="variable.name"
@@ -183,10 +183,6 @@ export default {
     // 安装的是否为插件
     isPlugin () {
       return this.plugin != null
-    },
-    // 服务变量集
-    serviceVariables () {
-      return this.variables
     },
     // content-wrap样式
     contentWrapStyle () {
@@ -657,7 +653,6 @@ export default {
         variable.value = value
         return variable
       }
-
       /**
        * value为null，读取变量默认值
        */

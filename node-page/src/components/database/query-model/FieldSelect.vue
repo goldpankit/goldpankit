@@ -17,7 +17,7 @@
           }"
           @click="focus"
         >
-          <li v-if="selectedFields.length === 0" class="placeholder">请选择</li>
+          <li v-if="selectedFields.length === 0" class="placeholder">请选择字段</li>
           <li
             v-else
             v-for="field of selectedFields"
@@ -30,6 +30,9 @@
               {{field.table.alias}}.{{field.name}}
             </p>
             <p v-if="field.comment != null && field.comment !== ''">{{field.comment}}</p>
+            <span class="button-close" @click.stop="deleteField(field.table.id, field.name)">
+              <el-icon><Close/></el-icon>
+            </span>
           </li>
         </ul>
       </template>
@@ -92,6 +95,15 @@ export default {
     },
     multiple: {
       default: true
+    },
+    /*
+    默认选中的字段对象数组，用于初始化已选字段的配置
+    处理场景：从kit.json中读取了字段配置，为了避免选中了不存在的字段，所以会率先调用一次selectedFields
+    每次选择字段时也会触发该方法，为了避免每次选中字段后影响了其它字段的配置信息，会与当前已选中字段对象进行对比，如果不存在则视为选择动作添加了字段
+    此时如果selectedFields中为空数组，那么始终都是添加字段，该字段在组件初始化时被赋值到selectedFields字段中，以避免初始化时没有丢失字段的配置信息
+    */
+    defaultSelectedFieldObjects: {
+      type: Array
     }
   },
   data () {
@@ -101,7 +113,7 @@ export default {
       // 表
       tables: [],
       // 已选中的字段
-      selectedFields: [],
+      selectedFields: this.defaultSelectedFieldObjects,
       // 当前悬浮的表
       currentHoverTable: null,
       // 当前悬浮的字段
@@ -130,6 +142,14 @@ export default {
         return `${field.table.id}.${field.name}`
       }))
       this.$emit('fields:change', this.selectedFields)
+    },
+    // 删除字段选中
+    deleteField (tableId, fieldName) {
+      const table = this.model.tables.find(t => t.id === tableId)
+      const newSelectedFields = this.modelValue.filter(field => {
+        return `${table.id}.${fieldName}` !== field
+      })
+      this.handleInput(table, newSelectedFields)
     },
     // 全选
     handleCheckAllChange (table, checkedAll) {
@@ -281,6 +301,7 @@ export default {
     flex-wrap: wrap;
     padding: 5px 10px 0 10px;
     transition: border-color ease .15s;
+    cursor: pointer;
     &:hover {
       border-color: var(--input-border-hover-color);
     }
@@ -290,15 +311,29 @@ export default {
     li {
       height: initial;
       line-height: initial;
-      padding: 5px 10px;
-      background-color: var(--primary-color-match-1);
+      padding: 5px 30px 5px 10px;
+      background-color: #f2f2f2;
       margin-right: 5px;
       margin-bottom: 5px;
       border-radius: 5px;
       font-size: var(--font-size-mini);
-      cursor: default;
-      &:hover {
-        background-color: var(--primary-color-match-1-transition);
+      position: relative;
+      .button-close {
+        width: 14px;
+        height: 14px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: absolute;
+        top: 50%;
+        right: 5px;
+        border-radius: 50%;
+        background-color: transparent;
+        transform: translateY(-50%);
+        &:hover {
+          background-color: #999;
+          color: #fff;
+        }
       }
       // 占位字符
       &.placeholder {
@@ -311,7 +346,7 @@ export default {
       &.field-light {
         transition: all ease .15s;
         animation: shine 0.3s 3;
-        background-color: var(--primary-color-match-1-transition);
+        background-color: var(--primary-color-match-1);
       }
       // 关键字
       em {
@@ -323,13 +358,13 @@ export default {
   }
   @keyframes shine {
     0% {
-      background-color: var(--primary-color-match-1-transition);
-    }
-    50% {
       background-color: var(--primary-color-match-1);
     }
+    50% {
+      background-color: var(--primary-color-match-1-light);
+    }
     100% {
-      background-color: var(--primary-color-match-1-transition);
+      background-color: var(--primary-color-match-1);
     }
   }
 }

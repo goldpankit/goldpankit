@@ -4,7 +4,7 @@
     ref="fieldSelect"
     v-model="selectedFields"
     :model="model"
-    placeholder="Select fields"
+    :default-selected-field-objects="defaultSelectedFieldObjects"
     @fields:change="handleSelect"
   />
   <el-table
@@ -76,7 +76,10 @@ export default {
   },
   data () {
     return {
-      selectedFields: []
+      // 选中的字段
+      selectedFields: [],
+      // 默认选中的字段对象数组
+      defaultSelectedFieldObjects: []
     }
   },
   watch: {
@@ -93,9 +96,11 @@ export default {
     // 初始化字段选择
     initSelectedFields () {
       this.selectedFields = []
+      this.defaultSelectedFieldObjects = []
       const fields = this.group[this.valueKey]
       if (fields != null && fields.length > 0) {
         this.selectedFields = fields.map(f => `${f.table.id}.${f.name}`)
+        this.defaultSelectedFieldObjects = JSON.parse(JSON.stringify(fields))
       }
     },
     // 字段选择
