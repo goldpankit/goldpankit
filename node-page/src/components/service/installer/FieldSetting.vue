@@ -4,7 +4,7 @@
     @update:modelValue="handleSelect"
     :model-value="group[valueKey]"
     :table="table"
-    placeholder="选择表字段"
+    placeholder="请选择字段"
   />
   <el-table size="small" :data="group[valueKey]">
     <el-table-column label="字段名" width="100px" prop="name" fixed></el-table-column>
