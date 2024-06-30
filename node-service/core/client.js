@@ -16,12 +16,12 @@ module.exports = {
             return
           }
           // 执行升级命令
-          const upgradeCommand = `npm install goldpankit@${latestVersion.versionNo} -g --registry https://registry.npmjs.org`
-          const upgradeCommandTip = `npm install goldpankit@${latestVersion.versionNo} -g --registry https://registry.npmjs.org\nOR\nsudo npm install goldpankit@${latestVersion.versionNo} -g --registry https://registry.npmjs.org`
-          log.tip(`正在使用命令 '${upgradeCommand}' 进行自动升级, 请稍等！`)
+          const upgradeCommand = `npm uninstall goldpankit -g && npm install goldpankit@${latestVersion.versionNo} -g --registry https://registry.npmjs.org`
+          const upgradeCommandTip = `npm uninstall goldpankit -g\nnpm install goldpankit@${latestVersion.versionNo} -g --registry https://registry.npmjs.org\nOR\nnpm uninstall goldpankit -g\nsudo npm install goldpankit@${latestVersion.versionNo} -g --registry https://registry.npmjs.org`
+          log.tip(`正在自动升级, 请稍等...`)
           node.exec(process.cwd(), upgradeCommand)
             .then(() => {
-              log.success(`升级完成，最新版本为 ${latestVersion.versionNo}。现在你可以重新执行 'kit' 命令来打开kit。如果反复出现此消息，请尝试手动执行以下命令！。\n\`\`\`\n${upgradeCommandTip}\n\`\`\``)
+              log.success(`已升级至 v${latestVersion.versionNo}。现在你可以重新执行 'kit' 命令来打开KIT。如果反复出现此消息，请尝试手动执行以下命令：\n\`\`\`shell\n${upgradeCommandTip}\n\`\`\``)
               resolve(true)
             })
             .catch(e => {
@@ -30,7 +30,7 @@ module.exports = {
             })
         })
         .catch(() => {
-          reject('获取最新的版本信息失败，请稍后重试！')
+          reject('服务异常，请稍后重试！')
         })
     })
   }

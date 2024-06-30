@@ -76,7 +76,7 @@ if (env.env === 'develop') {
   autoopen.findAvailablePort(80, (port) => {
     // 开启应用监听
     app.listen(port, () => {
-      log.success(`Server is listening on port ${port}`)
+      log.success(`KIT已启动，端口号：${port}`)
       autoopen.open(port)
     })
   })
@@ -92,7 +92,7 @@ if (env.env === 'develop') {
       autoopen.findAvailablePort(80, (port) => {
         // 开启应用监听
         app.listen(port, () => {
-          log.success(`Server is listening on port ${port}`)
+          log.success(`KIT已启动，端口号：${port}`)
           autoopen.open(port)
         })
       })

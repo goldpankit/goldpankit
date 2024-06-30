@@ -58,6 +58,6 @@ module.exports = {
   },
   // 日志前缀
   __prefix () {
-    return colors('grey', getTimestamp()) + colors('cyan', ' [gold pan kit] ')
+    return colors('grey', getTimestamp()) + colors('cyan', ' [GOLD PAN KIT] ')
   }
 }

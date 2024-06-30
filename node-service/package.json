@@ -1,7 +1,7 @@
 {
   "name": "goldpankit",
-  "version": "2.9.1",
-  "description": "GoldPanKit is a brand new development kit designed to explore revolutionary ways to enhance development efficiency.",
+  "version": "2.9.2",
+  "description": "GoldPanKit是一款极速研发套件，可在套件中快速构建各类技术框架和项目。开源作者可发布自己的项目，并为其设定金额，实现开源项目的盈利。",
   "main": "app.js",
   "keywords": [
     "代码生成",
