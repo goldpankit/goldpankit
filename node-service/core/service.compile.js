@@ -861,8 +861,10 @@ class Kit {
             .map(selectedField => {
               // 获取到字段所在的表信息
               const fieldTable = model.tables.find(t => t.id === selectedField.table.id)
+              // 获取在数据库中对应的字段信息
+              const dbField = fieldTable.fields.find(f => f.name === selectedField.name)
               // 如果表中该字段已被移除，则不做处理
-              if (fieldTable.fields.find(f => f.name === selectedField.name) == null) {
+              if (dbField == null) {
                 return null
               }
               // 字段的表一定存在于主表或joins表中，如果不存在，说明join已失效，那么对应的字段也需要失效
@@ -872,6 +874,9 @@ class Kit {
               ) {
                 return null
               }
+              // 在使用配置文件中的参数时，字段中是不含有type属性的，此处需要补充。
+              // 此处还存在引用问题，不可修改selectedField的引用（字段均不要修改引用）
+              selectedField.type = dbField.type
               return selectedField
             })
             .filter(field => field != null)
@@ -887,7 +892,7 @@ class Kit {
               if (dbField == null) {
                 return null
               }
-              // 在使用配置文件中的参数时，字段中是不含有type属性的，此处需要补充。模型字段始终都会有该属性，无需补充
+              // 在使用配置文件中的参数时，字段中是不含有type属性的，此处需要补充。
               // 此处还存在引用问题，不可修改selectedField的引用（字段均不要修改引用）
               selectedField.type = dbField.type
               return selectedField
