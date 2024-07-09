@@ -117,11 +117,11 @@ export default {
           repairedJoins.push(copyJoinProxy)
           continue
         }
-        // 子表关联了主表，则targetTable为主表，则将targetTable变为table（此时table为子表）
+        // 子表关联了主表，则targetTable为主表，则将table作为targetTable（此时table为子表）
         if (join.targetTable.id === this.table.id) {
-          const mainTable = copyJoinProxy.table
-          copyJoinProxy.targetTable = copyJoinProxy.table
-          copyJoinProxy.table = mainTable
+          const targetTable = copyJoinProxy.table
+          copyJoinProxy.table = copyJoinProxy.targetTable
+          copyJoinProxy.targetTable = targetTable
           repairedJoins.push(copyJoinProxy)
           continue
         }
@@ -129,8 +129,8 @@ export default {
         const existJoin = repairedJoins.find(join => join.targetTable.id === copyJoinProxy.targetTable.id)
         if (existJoin) {
           const targetTable = copyJoinProxy.table
-          copyJoinProxy.targetTable = copyJoinProxy.table
-          copyJoinProxy.table = targetTable
+          copyJoinProxy.table = copyJoinProxy.targetTable
+          copyJoinProxy.targetTable = targetTable
         }
         repairedJoins.push(copyJoinProxy)
       }

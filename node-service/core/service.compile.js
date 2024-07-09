@@ -751,6 +751,7 @@ class Kit {
    * @returns {*}
    */
   #getPaddingAndRepairedJoins (model, mainTable, joins) {
+    console.log('主表', mainTable.id)
     // 已修复的join
     let repairedJoins = []
     /*
@@ -766,15 +767,15 @@ class Kit {
       copyJoin.table = model.tables.find(t => t.id === join.table)
       copyJoin.targetTable = model.tables.find(t => t.id === join.targetTable)
       // 主表关联了子表，不做处理
-      if (join.table.id === mainTable.id) {
+      if (copyJoin.table.id === mainTable.id) {
         repairedJoins.push(copyJoin)
         continue
       }
-      // 子表关联了主表，则targetTable为主表，则将targetTable变为table（此时table为子表）
-      if (join.targetTable.id === mainTable.id) {
-        const mainTable = copyJoin.table
-        copyJoin.targetTable = copyJoin.table
-        copyJoin.table = mainTable
+      // 子表关联了主表，则targetTable为主表，则将table作为targetTable（此时table为子表）
+      if (copyJoin.targetTable.id === mainTable.id) {
+        const targetTable = copyJoin.table
+        copyJoin.table = copyJoin.targetTable
+        copyJoin.targetTable = targetTable
         repairedJoins.push(copyJoin)
         continue
       }
@@ -782,8 +783,8 @@ class Kit {
       const existJoin = repairedJoins.find(join => join.targetTable.id === copyJoin.targetTable.id)
       if (existJoin) {
         const targetTable = copyJoin.table
-        copyJoin.targetTable = copyJoin.table
-        copyJoin.table = targetTable
+        copyJoin.table = copyJoin.targetTable
+        copyJoin.targetTable = targetTable
       }
       repairedJoins.push(copyJoin)
     }
@@ -1091,6 +1092,7 @@ class Kit {
    */
   #getJoinSQL (table, joins, indent) {
     const joinLines = []
+    const copyJoins = JSON.parse(JSON.stringify(joins))
     for (const join of joins) {
       let joinTableAlias = ` \`${join.targetTable.alias}\``
       if (join.targetTable.alias === join.targetTable.name) {
