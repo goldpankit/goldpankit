@@ -400,17 +400,55 @@ export default {
               if (!fieldVariable.required) {
                 continue
               }
-              const emptyField = fieldGroupValue.find(field => isEmptyValue(field[fieldVariable.name]))
-              if (emptyField != null) {
-                this.$tip.warning(
-                  this.$t('service.fieldMissingValueTip',
+              // select需要进一步验证选项设置是否填写
+              if (fieldVariable.inputType === 'select') {
+                // 未填写的设置变量
+                let emptySetting = null
+                let emptyField = null
+                for (const field of fieldGroupValue) {
+                  // 获取到当前选中的选项
+                  const selectedOption = fieldVariable.options.find(option => option.value === field[fieldVariable.name].value)
+                  // 如果没有选中
+                  if (selectedOption == null) {
+                    this.$tip.warning(`在「${fieldGroup.label}」中，「${field.name}」字段缺少「${fieldVariable.label}」`)
+                    return false
+                  }
+                  /*
+                  获取到选项设置，例如输入类型为“字典”，则要求输入字典编码，则settings为
+                  [
                     {
-                      fieldGroupLabel:fieldGroup.label,
-                      emptyFieldName: emptyField.name,
-                      fieldVariableLabel: fieldVariable.label
+                      defaultValue: "",
+                      inputType: "input",
+                      label: "字典编码",
+                      name: "code",
+                      required: true
                     }
-                  )
-                )
+                  ]
+                  */
+                  const settings = selectedOption.settings
+                  for (const setting of settings) {
+                    if (!setting.required) {
+                      continue
+                    }
+                    // 从字段中获取设置值
+                    const settingValue = field[fieldVariable.name].settings[setting.name]
+                    if (isEmptyValue(settingValue)) {
+                      emptySetting = setting
+                      emptyField = field
+                    }
+                  }
+                }
+                if (emptySetting != null) {
+                  this.$tip.warning(`在「${fieldGroup.label}」中，${emptyField.name}」字段缺少「${emptySetting.label}」的设定`)
+                  return false
+                }
+              }
+              // 其它
+              const emptyField = fieldGroupValue.find(field => {
+                return isEmptyValue(field[fieldVariable.name])
+              })
+              if (emptyField != null) {
+                this.$tip.warning(`在「${fieldGroup.label}」中，「${emptyField.name}」字段缺少「${fieldVariable.label}」`)
                 return false
               }
             }
@@ -431,15 +469,7 @@ export default {
             if (selectedOption.settings.length > 0) {
               for (const optionSett of selectedOption.settings) {
                 if (isEmptyValue(selected.settings[optionSett.name])) {
-                  this.$tip.warning(
-                    this.$t(
-                      'service.variableMissingSettingTip',
-                      {
-                        variable: variable.label,
-                        settingLabel: optionSett.label
-                      }
-                    )
-                  )
+                  this.$tip.warning(`「${variable.label}」缺少「${optionSett.label}」设定`)
                   return false
                 }
               }
