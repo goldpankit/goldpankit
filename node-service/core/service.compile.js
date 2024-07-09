@@ -751,7 +751,6 @@ class Kit {
    * @returns {*}
    */
   #getPaddingAndRepairedJoins (model, mainTable, joins) {
-    console.log('主表', mainTable.id)
     // 已修复的join
     let repairedJoins = []
     /*
