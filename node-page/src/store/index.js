@@ -71,9 +71,9 @@ export default new Vuex.Store({
       state.tables = value
     },
     /*
-      设置模型数据
+      设置内存模型数据
       根据存储模型中的结构更新内存模型数据（表集合会影响模型内容，例如修改了表，那么存储模型中不存在的表和字段在内存模型中则应该作出对应修改或移除）
-      内存模型：指的是模型数据存储在js运行内存中，对模型修改时，内存模型会实时更新
+      内存模型：指的是模型数据存储在js运行内存中，这里的模型字段、表、join关系均为对象，对模型修改时，内存模型会实时更新
       存储模型：指的是模型数据存储在项目kit.db.json文件中，文件中的模型数据可能和表不统一
     */
     setModels (state, value) {
@@ -247,7 +247,7 @@ export default new Vuex.Store({
       })
     },
     // 获取本地数据库列表
-    fetchDatabases ({ state, commit }) {
+    fetchDatabases ({ state, commit }, callback) {
       return new Promise((resolve, reject) => {
         state.globalLoading.databases = true
         setTimeout(() => {
@@ -262,6 +262,7 @@ export default new Vuex.Store({
               commit('setDatabases', data)
               state.globalLoading.databases = false
               resolve(data)
+              callback && callback()
             })
             .catch(e => {
               console.error('获取项目数据库失败', e)
@@ -272,7 +273,7 @@ export default new Vuex.Store({
       })
     },
     // 获取数据库表
-    fetchTables ({ state, commit, getters }) {
+    fetchTables ({ state, commit, getters, dispatch }) {
       return new Promise((resolve, reject) => {
         if (state.globalLoading.tables) {
           return reject()
@@ -281,43 +282,49 @@ export default new Vuex.Store({
         state.globalLoading.models = true
         // 清空数据库连接错误信息
         state.currentDatabaseConnect.error = null
-        // 如果不存在没有选中数据库，则清空表集合
-        const currentDatabaseDetail = getters.getCurrentDatabaseDetail
-        if (currentDatabaseDetail == null) {
-          state.globalLoading.tables = false
-          state.globalLoading.models = false
-          commit('setTables', [])
-          commit('setModels', [])
-          return resolve([])
-        }
-        fetchTables({
-          host: currentDatabaseDetail.host,
-          port: currentDatabaseDetail.port,
-          user: currentDatabaseDetail.username,
-          password: currentDatabaseDetail.password,
-          database: currentDatabaseDetail.schema
-        })
-          .then(tables => {
-            commit('setTables', tables)
-            // 在获取表集合之后设置内存模型，表会影响模型的结构
-            commit('setModels', currentDatabaseDetail.models)
-            setTimeout(() => {
-              state.globalLoading.tables = false
-              state.globalLoading.models = false
-            }, 500)
-            resolve(tables)
-          })
-          .catch(e => {
-            console.error('获取表失败', e)
+        /*
+        此处需要重新更新数据库信息，避免使用了旧的模型数据
+        场景：在模型中拖拽一个新表 => 刷新表 => 模型中的新表丢失（但刷新后没问题，因为刷新时会重新加载数据库）
+        */
+        dispatch('fetchDatabases', () => {
+          // 如果不存在没有选中数据库，则清空表集合
+          const currentDatabaseDetail = getters.getCurrentDatabaseDetail
+          if (currentDatabaseDetail == null) {
+            state.globalLoading.tables = false
+            state.globalLoading.models = false
             commit('setTables', [])
             commit('setModels', [])
-            setTimeout(() => {
-              state.currentDatabaseConnect.error = e.message
-              state.globalLoading.tables = false
-              state.globalLoading.models = false
-            }, 500)
-            reject(e)
+            return resolve([])
+          }
+          fetchTables({
+            host: currentDatabaseDetail.host,
+            port: currentDatabaseDetail.port,
+            user: currentDatabaseDetail.username,
+            password: currentDatabaseDetail.password,
+            database: currentDatabaseDetail.schema
           })
+            .then(tables => {
+              commit('setTables', tables)
+              // 在获取表集合之后设置内存模型，表会影响模型的结构
+              commit('setModels', currentDatabaseDetail.models)
+              setTimeout(() => {
+                state.globalLoading.tables = false
+                state.globalLoading.models = false
+              }, 500)
+              resolve(tables)
+            })
+            .catch(e => {
+              console.error('获取表失败', e)
+              commit('setTables', [])
+              commit('setModels', [])
+              setTimeout(() => {
+                state.currentDatabaseConnect.error = e.message
+                state.globalLoading.tables = false
+                state.globalLoading.models = false
+              }, 500)
+              reject(e)
+            })
+        })
       })
     }
   },

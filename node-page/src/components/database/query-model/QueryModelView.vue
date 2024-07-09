@@ -107,7 +107,16 @@ export default {
       immediate: true,
       handler () {
         if (this.models.length > 0) {
-          this.currentModel = this.models[0]
+          // 刷新表时，this.currentModel为上一次选中的模型，在刷新表以后自动默认选中
+          if (this.currentModel != null) {
+            const targetModel = this.models.find(model => model.id === this.currentModel.id)
+            if (targetModel != null) {
+              this.currentModel = targetModel
+            }
+          }
+          if (this.currentModel == null) {
+            this.currentModel = this.models[0]
+          }
         } else {
           this.currentModel = null
         }

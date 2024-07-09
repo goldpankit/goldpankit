@@ -95,7 +95,7 @@ export default {
     }
   },
   methods: {
-    // 初始化表
+    // 初始化模型
     init () {
       this.$nextTick(() => {
         // 重绘
