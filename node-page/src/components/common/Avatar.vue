@@ -28,5 +28,6 @@ export default {
 <style scoped lang="scss">
 .avatar {
   border-radius: 50%;
+  flex-shrink: 0;
 }
 </style>
