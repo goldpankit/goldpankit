@@ -382,6 +382,7 @@ class ModelDesigner {
       })
       table.x = tableGroup.absolutePosition().x
       table.y = tableGroup.absolutePosition().y
+      tableGroup.zIndex(this.TABLE_Z_INDEX)
     })
     // 为表添加拖拽结束事件
     tableGroup.on('dragend', () => {
