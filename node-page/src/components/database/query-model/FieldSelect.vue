@@ -53,7 +53,10 @@
               v-model="table.checkedAll"
               @change="handleCheckAllChange(table, $event)"
             >
-              <h4>{{table.name}} AS {{table.alias}}</h4>
+              <h4>
+                {{table.name}}
+                <template v-if="table.name !== table.alias">AS {{table.alias}}</template>
+              </h4>
             </el-checkbox>
           </div>
           <div class="table__fields-wrap">
