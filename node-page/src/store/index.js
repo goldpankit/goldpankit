@@ -273,7 +273,7 @@ export default new Vuex.Store({
       })
     },
     // 获取数据库表
-    fetchTables ({ state, commit, getters, dispatch }) {
+    fetchTables ({ state, commit, getters, dispatch }, refreshDatabase = true) {
       return new Promise((resolve, reject) => {
         if (state.globalLoading.tables) {
           return reject()
@@ -282,12 +282,8 @@ export default new Vuex.Store({
         state.globalLoading.models = true
         // 清空数据库连接错误信息
         state.currentDatabaseConnect.error = null
-        /*
-        此处需要重新更新数据库信息，避免使用了旧的模型数据
-        场景：在模型中拖拽一个新表 => 刷新表 => 模型中的新表丢失（但刷新后没问题，因为刷新时会重新加载数据库）
-        */
-        dispatch('fetchDatabases', () => {
-          // 如果不存在没有选中数据库，则清空表集合
+        const innerFetchTables = () => {
+          // 如果没有选中数据库，则清空表集合
           const currentDatabaseDetail = getters.getCurrentDatabaseDetail
           if (currentDatabaseDetail == null) {
             state.globalLoading.tables = false
@@ -324,7 +320,16 @@ export default new Vuex.Store({
               }, 500)
               reject(e)
             })
-        })
+        }
+        /*
+        此处需要重新更新数据库信息，避免使用了旧的模型数据
+        场景：在模型中拖拽一个新表 => 刷新表 => 模型中的新表丢失（但刷新后没问题，因为刷新时会重新加载数据库）
+        */
+        if (refreshDatabase) {
+          dispatch('fetchDatabases', innerFetchTables)
+          return
+        }
+        innerFetchTables()
       })
     }
   },

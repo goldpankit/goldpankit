@@ -46,7 +46,8 @@ export default {
     // 数据库列表加载完成后，如果存在选中的数据库，则获取表集合
     'globalLoading.databases' () {
       if (!this.globalLoading.databases && this.currentDatabase != null) {
-        this.fetchTables()
+        // 查询表时无需刷新数据库（默认情况下，查询表时会刷新数据库，避免查询模型更改后，刷新表未能及时刷新数据库中的查询模型信息）
+        this.fetchTables(false)
           .catch(() => {})
       }
     }
