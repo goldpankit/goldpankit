@@ -4,7 +4,7 @@
       <h1>Gold Pan Kit</h1>
       <div class="decoration" :class="{ 'no-animation': !withAnimation }">
         <em></em>
-        <i v-if="withAnimation">加油，刘大逵</i>
+        <i v-if="withAnimation">一分钟搭建框架</i>
       </div>
     </div>
     <div v-if="withVersion" class="version">

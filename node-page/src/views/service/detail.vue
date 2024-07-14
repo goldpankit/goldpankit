@@ -21,9 +21,9 @@
         <!-- 维度 -->
         <div class="dimension-wrap">
           <ul class="dimensions">
-            <li :class="{ selected: currentTab === 'readme' }" @click="currentTab = 'readme'">{{$t('common.readme')}}</li>
-            <li :class="{ selected: currentTab === 'extends' }" @click="currentTab = 'extends'">{{$t('service.subServices')}}</li>
-            <li :class="{ selected: currentTab === 'structure' }" @click="currentTab = 'structure'">{{$t('service.structure')}}</li>
+            <li :class="{ selected: currentTab === 'readme' }" @click="currentTab = 'readme'">说明</li>
+            <li :class="{ selected: currentTab === 'extends' }" @click="currentTab = 'extends'">插件</li>
+            <li :class="{ selected: currentTab === 'structure' }" @click="currentTab = 'structure'">代码结构</li>
 <!--            <li class="disabled" :class="{ selected: currentTab === 'issues' }">{{$t('common.issues')}}</li>-->
           </ul>
           <div v-if="majorVersionDetail != null" class="detail">
