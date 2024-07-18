@@ -37,13 +37,13 @@ export default ({ mode }) => {
         },
         [remoteApiPrefix]: {
           // target: 'http://localhost:10088',
-          target: 'http://112.74.58.58',
+          target: 'http://client-api.goldpankit.com',
           changeOrigin: true,
           rewrite: (path) => path.replace(new RegExp(`^${remoteApiPrefix}`), "")
         },
         ['/resource']: {
           // target: 'http://localhost:10088/resource',
-          target: 'http://112.74.58.58/resource',
+          target: 'http://client-api.goldpankit.com/resource',
           changeOrigin: true,
           rewrite: (path) => path.replace(new RegExp(`^/resource`), "")
         }

@@ -1,6 +1,6 @@
 {
   "name": "goldpankit",
-  "version": "2.9.4",
+  "version": "2.9.5",
   "description": "GoldPanKit是一款极速研发套件，可在套件中快速构建各类技术框架和项目。开源作者可发布自己的项目，并为其设定金额，实现开源项目的盈利。",
   "main": "app.js",
   "keywords": [
@@ -18,7 +18,8 @@
     "start": "node app.js"
   },
   "bin": {
-    "kit": "app.js"
+    "kit": "app.js",
+    "gpk": "app.js"
   },
   "author": "Caesar Liu",
   "license": "ISC",
@@ -40,5 +41,10 @@
     "opn": "^6.0.0",
     "path": "^0.12.7",
     "sql-formatter": "^12.2.4"
+  },
+  "volta": {
+    "node": "18.15.0",
+    "npm": "8.19.4",
+    "yarn": "1.22.21"
   }
 }

@@ -10,7 +10,7 @@ const config = {
     remoteApi: "http://localhost:10088"
   },
   production: {
-    remoteApi: "http://112.74.58.58"
+    remoteApi: "http://client-api.goldpankit.com"
   }
 }
 module.exports = {
