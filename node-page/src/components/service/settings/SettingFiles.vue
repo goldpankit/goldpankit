@@ -177,15 +177,19 @@ export default {
       return (node.compiler != null && node.compiler !== '') ||
           (node.withoutIfNotExists != null && node.withoutIfNotExists !== false) ||
           (node.enableExpress != null && node.enableExpress !== '') ||
-          (node.variables.length > 0)
+          this.__hasFlagFile(node.children)
     },
-    // 排序后
-    handleSorted (newVariables) {
-      this.currentNode.variables = []
-      this.$nextTick(() => {
-        this.currentNode.variables = newVariables
-        this.saveFileSetting()
-      })
+    __hasFlagFile (children) {
+      if (children == null || children.length === 0) {
+        return false
+      }
+      for (const node of children) {
+        const isFlagNode = this.isFlagFile(node)
+        if (isFlagNode) {
+          return true
+        }
+      }
+      return false
     }
   },
   created () {

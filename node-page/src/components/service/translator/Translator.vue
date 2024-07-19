@@ -3,7 +3,7 @@
     <div class="translator-item">
       <h3>文件路径翻译函数</h3>
       <p class="code">
-        <em>function</em> translate&nbsp;<em>(</em>filepath: 文件路径, filename: 文件名, suffix: 文件后缀<em>)</em> <em>{</em>
+        <em>function</em> translate&nbsp;<em>(</em>filepath<span>: 文件路径</span>, filename<span>: 文件名</span>, suffix<span>: 文件后缀</span><em>)</em> <em>{</em>
         <el-button
           type="primary"
           @click="filepathCodeEditor.fullscreen = !filepathCodeEditor.fullscreen"
@@ -15,7 +15,7 @@
     <div class="translator-item">
       <h3>文件内容翻译函数</h3>
       <p class="code">
-        <em>function</em> translate&nbsp;<em>(</em>filepath: 文件路径, filename: 文件名, suffix: 文件后缀, content: 文件内容<em>)</em> <em>{</em>
+        <em>function</em> translate&nbsp;<em>(</em>filepath<span>: 文件路径</span>, filename<span>: 文件名</span>, suffix<span>: 文件后缀</span>, setting<span>: 文件设置</span>,<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;content<span>: 文件内容</span><em>)</em> <em>{</em>
         <el-button
           type="primary"
           @click="contentCodeEditor.fullscreen = !contentCodeEditor.fullscreen"
@@ -134,11 +134,17 @@ export default {
     .code {
       font-size: 15px;
       position: relative;
-      padding: 10px 0;
-      // 全屏图标
+      padding: 20px 80px 20px 0;
+      line-height: 25px;
+      word-break: break-all;
+      // 关键字
       em {
         color: #0000ff;
         font-style: normal;
+      }
+      // 注释
+      span {
+        color: #999;
       }
       & > .el-button {
         position: absolute;
