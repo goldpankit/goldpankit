@@ -1,16 +1,14 @@
 const serviceConf = require('./service.config')
-const serviceFile = require('./service.file')
 const fs = require("./utils/fs");
 const path = require('path')
 const ignore = require("ignore");
-const Const = require("./constants/constants");
 
 class Translator {
     constructor() {
     }
 
     /**
-     * 根据翻译器配置翻译空间代码
+     * 根据翻译器配置翻译代码
      * dto = {
      *   space: '',
      *   service: '',
@@ -20,11 +18,17 @@ class Translator {
     translate (dto) {
         // 获取服务配置
         const serviceConfig = serviceConf.getServiceConfig(dto)
-        // 获取翻译器配置
-        if (serviceConfig.translator == null || serviceConfig.translator.settings.length === 0) {
+        if (serviceConfig.translator == null) {
             return
         }
-        const translators = serviceConfig.translator.settings
+        // 获取翻译器代码
+        const hasFilepathTranslator = serviceConfig.translator.filepath != null && serviceConfig.translator.filepath.trim() !== ''
+        const hasContentTranslator = serviceConfig.translator.content != null && serviceConfig.translator.content.trim() !== ''
+        if (!hasFilepathTranslator && !hasContentTranslator) {
+            return
+        }
+        let filepathTranslateCode = hasFilepathTranslator ? serviceConfig.translator.filepath : ''
+        let contentTranslateCode = hasContentTranslator ? serviceConfig.translator.content : ''
         const targetDirectory = path.join(serviceConfig.codespace, serviceConfig.translator.output)
         const ignoreInstance = ignore().add(fs.getIgnoreFileConfig(serviceConfig.codespace))
         const files = fs.getFilesWithChildren(serviceConfig.codespace, ignoreInstance)
@@ -40,31 +44,21 @@ class Translator {
             // 服务空间相对路径
             let relativePath = fs.getRelativePath(absolutePath, serviceConfig.codespace)
             // 翻译路径
-            // 服务空间相对路径为xxx-vue的翻译空间相对路径可能为${path}-vue，此处需要获取翻译空间相对路径，
-            // 获取配置信息时需要根据翻译相对路径来获取，因为在进行服务文件配置时，配置的是翻译后的文件路径
-            // 在翻译路径时，构建虚拟文件，content设置为空，文件设置给定一个空对象（减少使用方的判断）
-            let translateFilepathFile = {
-                filepath: relativePath
+            let translatedFilepath = relativePath
+            if (hasFilepathTranslator) {
+                translatedFilepath = this.#translateFilepath(filepathTranslateCode, relativePath)
             }
-            let translatedFilepath = this.#translate(translators, translateFilepathFile, {}).filepath
-            // 根据翻译路径获取文件设置
-            const fileSetting = serviceFile.getFileSetting(serviceConfig.codespace, translatedFilepath)
-            // 修改文件编译器设置为真实编译器
-            fileSetting.compiler = fileSetting._actualCompiler
-            delete fileSetting._actualCompiler
             // 翻译文件内容
-            let translateContentFile = {
-                filepath: relativePath,
-                content: fileInfo.content
-            }
-            let translatedContent = ''
+            let translatedContent = fileInfo.content
             // 文本文件进行翻译
             if (fileInfo.encode === 'utf-8') {
-                translatedContent = this.#translate(translators, translateContentFile, fileSetting).content
+                if (hasContentTranslator) {
+                    translatedContent = this.#translateContent(contentTranslateCode, relativePath, fileInfo.content)
+                }
             }
             // 二进制文件不做翻译，将其转为Buffer对象
             else {
-                translatedContent = Buffer.from(translateContentFile.content, 'base64')
+                translatedContent = Buffer.from(fileInfo.content, 'base64')
             }
             // 写入翻译文件
             fs.createFile(path.join(targetDirectory, translatedFilepath), translatedContent, true)
@@ -73,54 +67,50 @@ class Translator {
         }
     }
 
-    // 根据翻译器列表对文件进行翻译
-    #translate (translators, file, fileSetting) {
-        let relativePath = file.filepath
-        for (const translator of translators) {
-            // 不满足翻译器路径的直接跳过
-            if (!new RegExp(translator.path).test(relativePath)) {
-                continue
-            }
-            // 正则翻译
-            if (translator.type === 'pattern') {
-                file = this.#translateByPattern(file.filepath, file.content, translator)
-            }
-            // 自定义代码翻译
-            else if (translator.type === 'code') {
-                file = this.#translateByCode(file.filepath, file.content, fileSetting, translator.code)
-                if (file == null || (file.filepath == null && file.content == null)) {
-                    throw new Error('translator must return filepath and content like return { filepath, content }.')
-                }
-            }
+    // 翻译路径
+    #translateFilepath (translateCode, filepath) {
+        // 获取文件名称
+        const filename = fs.getFilename(filepath)
+        // 获取文件后缀
+        let suffix = null
+        let lastPointIndex = filename.lastIndexOf('.')
+        if (lastPointIndex !== -1) {
+            suffix = filename.substring(lastPointIndex + 1)
         }
-        return file
+        // 文件名为.开头，视为后缀为null
+        if (filename.lastIndexOf('.') === filename.indexOf('.')) {
+            suffix = null
+        }
+        const newFilepath = new Function(`return (function ({ filepath, filename, suffix }) {
+          ${translateCode}
+        })`)()({ filepath, filename, suffix })
+        if (newFilepath == null || typeof newFilepath !== 'string' || newFilepath.trim() === '') {
+            throw new Error('文件路径翻译失败，函数返回值必须为一个非空字符串')
+        }
+        return newFilepath
     }
 
-    /**
-     * 根据代码翻译
-     * 注意：此处使用eval实现，在翻译器自定义代码中可访问以下参数
-     * @param filepath 当前翻译的文件相对路径（相对服务空间）
-     * @param content 当前翻译的文件内容
-     * @param fileSetting 文件设置
-     * @param code 翻译器代码
-     */
-    #translateByCode(filepath, content, fileSetting, code) {
-        return eval(`(function translate() {
-          ${code}
-        })()`)
-    }
-
-    // 根据正则表达式翻译
-    #translateByPattern (filepath, content, translator) {
-        if (filepath != null && filepath !== '') {
-            filepath = filepath.replace(new RegExp(translator.source, 'g'), translator.target)
+    // 翻译路径
+    #translateContent (translateCode, filepath, content) {
+        // 获取文件名称
+        const filename = fs.getFilename(filepath)
+        // 获取文件后缀
+        let suffix = null
+        let lastPointIndex = filename.lastIndexOf('.')
+        if (lastPointIndex !== -1) {
+            suffix = filename.substring(lastPointIndex + 1)
         }
-        if (content != null && content !== '') {
-            content = content.replace(new RegExp(translator.source, 'g'), translator.target)
+        // 文件名为.开头，视为后缀为null
+        if (filename.lastIndexOf('.') === filename.indexOf('.')) {
+            suffix = null
         }
-        return {
-            filepath, content
+        const newContent = new Function(`return (function ({ filepath, filename, suffix, content }) {
+          ${translateCode}
+        })`)()({ filepath, filename, suffix, content })
+        if (newContent == null || typeof newContent !== 'string') {
+            throw new Error('文件内容翻译失败，函数返回值必须为一个字符串')
         }
+        return newContent
     }
 }
 module.exports = new Translator()

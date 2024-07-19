@@ -120,7 +120,7 @@ module.exports = {
     const serviceConfig = this.getServiceConfig({ space, service})
     // 获取文件真实存放的路径
     let fileStoragePath = serviceConfig.codespace
-    if (serviceConfig.translator.settings.length > 0) {
+    if (serviceConfig.translator.filepath != null && serviceConfig.translator.filepath !== '') {
       fileStoragePath = path.join(fileStoragePath, serviceConfig.translator.output)
       if (!fs.exists(fileStoragePath)) {
         serviceTranslator.translate({ space, service })
@@ -164,7 +164,7 @@ module.exports = {
     const serviceConfig = this.getServiceConfig({ space: dto.space, service: dto.service, plugin: dto.plugin })
     let fileStoragePath = serviceConfig.codespace
     // 如果存在翻译器，自动翻译，且服务代码空间指定为翻译代码空间
-    if (serviceConfig.translator.settings.length > 0) {
+    if (serviceConfig.translator.filepath != null && serviceConfig.translator.filepath !== '') {
       fileStoragePath = path.join(fileStoragePath, Const.TRANSLATOR.DEFAULT_OUTPUT_PATH)
       serviceTranslator.translate({ space: dto.space, service: dto.service, plugin: dto.plugin })
     }

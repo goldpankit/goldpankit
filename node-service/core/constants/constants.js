@@ -27,9 +27,8 @@ module.exports = {
     variables: [], // 服务变量列表
     translator: { // 翻译器
       output: '', // 翻译输出路径
-      settings: [ // 翻译器列表，将代码翻译成模版
-        // {path: '*', source: 'ruoyi', target: '${projectEnName}' },
-      ]
+      filepath: '', // 路径翻译代码
+      content: '' // 内容翻译代码
     },
     settings: [], // 文件设置列表，设置内容见SERVICE_FILE_CONFIG_CONTENT
     introduce: '', // 服务简介

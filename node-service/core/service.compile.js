@@ -330,8 +330,12 @@ class Kit {
         // 获取服务信息
         const serviceConfig = service.getServiceConfig({space: dto.space, service: dto.service, plugin: dto.plugin})
         // 如果存在翻译器，则先进行翻译
-        if (serviceConfig.translator.settings.length > 0) {
-          serviceTranslator.translate({space: dto.space, service: dto.service, plugin: dto.plugin})
+        if (serviceConfig.translator != null) {
+          serviceTranslator.translate({
+            space: dto.space,
+            service: dto.service,
+            plugin: dto.plugin
+          })
         }
         // 获取文件列表
         const files = this.#getFileConfigList(dto.space, dto.service, dto.plugin)
@@ -503,7 +507,7 @@ class Kit {
     const serviceConfig = service.getServiceConfig({ space: space, service: serviceName, plugin: plugin})
     // 获取文件真实存放的路径
     let fileStoragePath = serviceConfig.codespace
-    if (serviceConfig.translator.settings.length > 0) {
+    if (serviceConfig.translator.filepath != null && serviceConfig.translator.filepath !== '') {
       fileStoragePath = path.join(fileStoragePath, serviceConfig.translator.output)
       if (!fs.exists(fileStoragePath)) {
         fs.createDirectory(fileStoragePath, true)
