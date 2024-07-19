@@ -1,4 +1,5 @@
 const serviceConf = require('./service.config')
+const serviceFile = require('./service.file')
 const fs = require("./utils/fs");
 const path = require('path')
 const ignore = require("ignore");
@@ -48,12 +49,17 @@ class Translator {
             if (hasFilepathTranslator) {
                 translatedFilepath = this.#translateFilepath(filepathTranslateCode, relativePath)
             }
+            // 根据翻译路径获取文件设置
+            const fileSetting = serviceFile.getFileSetting(serviceConfig.codespace, translatedFilepath)
+            // 修改文件编译器设置为真实编译器
+            fileSetting.compiler = fileSetting._actualCompiler
+            delete fileSetting._actualCompiler
             // 翻译文件内容
             let translatedContent = fileInfo.content
             // 文本文件进行翻译
             if (fileInfo.encode === 'utf-8') {
                 if (hasContentTranslator) {
-                    translatedContent = this.#translateContent(contentTranslateCode, relativePath, fileInfo.content)
+                    translatedContent = this.#translateContent(contentTranslateCode, relativePath, fileInfo.content, fileSetting)
                 }
             }
             // 二进制文件不做翻译，将其转为Buffer对象
@@ -91,7 +97,7 @@ class Translator {
     }
 
     // 翻译路径
-    #translateContent (translateCode, filepath, content) {
+    #translateContent (translateCode, filepath, content, fileSetting) {
         // 获取文件名称
         const filename = fs.getFilename(filepath)
         // 获取文件后缀
@@ -104,9 +110,9 @@ class Translator {
         if (filename.lastIndexOf('.') === filename.indexOf('.')) {
             suffix = null
         }
-        const newContent = new Function(`return (function ({ filepath, filename, suffix, content }) {
+        const newContent = new Function(`return (function ({ filepath, filename, suffix, setting, content }) {
           ${translateCode}
-        })`)()({ filepath, filename, suffix, content })
+        })`)()({ filepath, filename, suffix, setting: fileSetting, content })
         if (newContent == null || typeof newContent !== 'string') {
             throw new Error('文件内容翻译失败，函数返回值必须为一个字符串')
         }
