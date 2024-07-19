@@ -403,6 +403,9 @@ export default {
     margin: 0 auto;
     padding: 30px 0;
     :deep(.el-form) {
+      .el-form-item__label {
+        font-weight: bold;
+      }
       .codespace-wrap {
         width: 100%;
         display: flex;
