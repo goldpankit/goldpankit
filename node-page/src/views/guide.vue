@@ -76,7 +76,7 @@
             <el-timeline-item timestamp="2023/5/20" placement="top">
               <el-card>
                 <h4>获天使轮投资</h4>
-                <p>2023年5月20日获得了「清华海峡院北京办公室副主任彭一波」先生110万元的资金与资源，并纳入「清华海峡院」专利项目。</p>
+                <p>2023年5月20日获得了「清华海峡院高端装备技术研究中心」天使轮投资，并纳入「清华海峡院」专利项目。</p>
               </el-card>
             </el-timeline-item>
             <el-timeline-item timestamp="2023/8/17" placement="top">
