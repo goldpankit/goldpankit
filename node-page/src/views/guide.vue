@@ -91,6 +91,12 @@
                 <p>经过近一年的更新迭代，2024年7月10日发布KIT稳定版本2.9.3。</p>
               </el-card>
             </el-timeline-item>
+            <el-timeline-item timestamp="2024/7/19" placement="top">
+              <el-card>
+                <h4>官网上线</h4>
+                <p>缩减KIT本身的功能，成就线上版本！2024年7月19日，KIT官网正式上线。</p>
+              </el-card>
+            </el-timeline-item>
           </el-timeline>
         </div>
       </div>
