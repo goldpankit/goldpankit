@@ -23,7 +23,7 @@
       <el-dialog
         v-if="currentOption != null"
         v-model="optionSettingData.visible"
-        :title="`${currentOption.label}${$t('service.settingsForSelectType')}`"
+        :title="`${currentOption.label}设置`"
         :append-to-body="true"
       >
         <el-form>
