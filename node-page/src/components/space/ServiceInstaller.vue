@@ -12,8 +12,7 @@
         </el-select>
       </div>
       <div v-if="withInstallButton" class="install">
-        <el-button v-if="userInfo == null" type="important" @click="$router.push({name: 'SignIn'})">登录后可安装服务</el-button>
-        <el-button v-else type="important" @click="install" :disabled="isWorking.install">
+        <el-button type="important" @click="install" :disabled="isWorking.install">
           {{ isWorking.install ? $t('service.installing') : $t('service.install') }}
         </el-button>
       </div>

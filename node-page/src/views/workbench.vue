@@ -113,45 +113,37 @@
                 </el-scrollbar>
               </div>
               <div v-if="selectedPluginDimension === 'install'" class="opera">
-                <template v-if="userInfo == null">
+                <template v-if="installed">
                   <el-button
+                    v-if="hasNewVersion(selectedPlugin)"
                     type="primary"
-                    @click="$router.push({ name: 'SignIn' })"
-                  >登录后可安装插件</el-button>
-                </template>
-                <template v-else>
-                  <template v-if="installed">
-                    <el-button
-                      v-if="hasNewVersion(selectedPlugin)"
-                      type="primary"
-                      icon="Upload"
-                      :disabled="isWorking.install"
-                      @click="install"
-                    >{{$t('service.upgrade')}}</el-button>
-                    <el-button
-                      v-else
-                      type="primary"
-                      :disabled="isWorking.install"
-                      @click="install"
-                    >
-                      {{ isWorking.install ? $t('service.installing') : $t('service.reinstall')}}
-                    </el-button>
-                    <el-button
-                      :disabled="isWorking.uninstall"
-                      @click="uninstall"
-                    >
-                      {{ isWorking.uninstall ? $t('service.uninstalling') : $t('service.uninstall')}}
-                    </el-button>
-                  </template>
+                    icon="Upload"
+                    :disabled="isWorking.install"
+                    @click="install"
+                  >{{$t('service.upgrade')}}</el-button>
                   <el-button
                     v-else
                     type="primary"
                     :disabled="isWorking.install"
                     @click="install"
                   >
-                    {{ isWorking.install ? $t('service.installing') : $t('service.install')}}
+                    {{ isWorking.install ? $t('service.installing') : $t('service.reinstall')}}
+                  </el-button>
+                  <el-button
+                    :disabled="isWorking.uninstall"
+                    @click="uninstall"
+                  >
+                    {{ isWorking.uninstall ? $t('service.uninstalling') : $t('service.uninstall')}}
                   </el-button>
                 </template>
+                <el-button
+                  v-else
+                  type="primary"
+                  :disabled="isWorking.install"
+                  @click="install"
+                >
+                  {{ isWorking.install ? $t('service.installing') : $t('service.install')}}
+                </el-button>
               </div>
               <div v-if="selectedPluginDimension === 'install'" class="opera-tip">
                 <el-icon><InfoFilled /></el-icon>

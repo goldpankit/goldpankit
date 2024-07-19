@@ -47,7 +47,7 @@
               <h4>{{getUserDisplayName(service.user)}}</h4>
             </div>
             <p class="introduce">
-              {{service.user.introduce === '' || service.user.introduce == null ? 'No introduce' : service.user.introduce }}
+              {{service.user.introduce === '' || service.user.introduce == null ? '这个发布者很神秘～' : service.user.introduce }}
             </p>
           </div>
           <!-- 安装服务 -->
@@ -76,7 +76,7 @@
                   service: service.name
                 }
               })"
-            >{{$t('plugin.create2')}}</el-button>
+            >创建插件</el-button>
 <!--            <el-button-->
 <!--              type="primary"-->
 <!--              size="large"-->
