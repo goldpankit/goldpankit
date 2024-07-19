@@ -73,13 +73,7 @@
           </div>
         </el-form-item>
         <el-form-item :label="$t('service.settings.translator.translator')" prop="translator">
-          <TranslatorList
-            :space="space"
-            :service="service"
-            :plugin="plugin"
-            :translator="form.translator"
-            @save="saveConfig"
-          />
+          <Translator :data="form.translator" @save="saveConfig"/>
         </el-form-item>
         <el-form-item :label="$t('service.settings.installBuilds')" prop="builds">
           <BuildList :builds="form.builds" :service-config="serviceConfig" @save="saveConfig"/>
@@ -113,7 +107,6 @@ import CompilerSelect from "@/components/common/CompilerSelect.vue";
 import DatabaseTypeSelect from "@/components/database/DatabaseTypeSelect.vue";
 import DirectorySelect from "@/components/common/DirectorySelect.vue";
 import BuildList from "@/components/service/build/BuildList.vue";
-import TranslatorList from "@/components/service/translator/TranslatorList.vue";
 import {
   fetchConfig as fetchServiceConfig,
   initialize as initService,
@@ -127,10 +120,11 @@ import {
 import {gitClone} from "@/api/service";
 import {checkVersionNumber} from "@/utils/form.check";
 import FormItemTip from "@/components/common/FormItemTip.vue";
+import Translator from "@/components/service/translator/Translator.vue";
 
 export default {
   name: "BasicSetting",
-  components: {FormItemTip, TranslatorList, BuildList, DirectorySelect, DatabaseTypeSelect, CompilerSelect},
+  components: {Translator, FormItemTip, BuildList, DirectorySelect, DatabaseTypeSelect, CompilerSelect},
   props: {
     space: {
       required: true
@@ -204,6 +198,18 @@ export default {
           this.form.label = this.serviceConfig.label || this.serviceConfig.name || this.form.label
         }
         this.form[key] = this.serviceConfig[key] || this.form[key]
+      }
+      /*
+      处理翻译器（翻译器在2.9.6由 translator: { output: '', settings: [翻译器列表] }
+      改为 translator: { output: '', filepath: '路径翻译代码', content: '内容翻译代码' }，
+      此处兼容2.9.6之前缺少filepath和content属性的情况
+      */
+      if (this.form.translator != null) {
+        this.form.translator.filepath = this.form.translator.filepath || ''
+        this.form.translator.content = this.form.translator.content || ''
+        if (this.form.translator.settings) {
+          delete this.form.translator.settings
+        }
       }
       this.originForm = JSON.parse(JSON.stringify(this.form))
     },
@@ -359,22 +365,6 @@ export default {
       saveConfig({
         ...unique,
         ...this.form,
-        translator: {
-          ...this.form.translator,
-          settings: this.form.translator.settings
-            .filter(t => (t.type === 'code' && t.code.trim().length > 0) ||
-              (t.type === 'pattern' && t.source.trim() !== '' && t.target.trim() !== ''))
-            .map(t => {
-              return {
-                name: t.name,
-                path: t.path.trim().length === 0 ? '.*' : t.path,
-                type: t.type,
-                source: t.type === 'pattern' ? t.source : '',
-                target: t.type === 'pattern' ? t.target : '',
-                code: t.type === 'code' ? t.code : ''
-              }
-            })
-        },
         builds: this.form.builds.map(item => {
           return {
             name: item.name,
