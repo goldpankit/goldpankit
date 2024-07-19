@@ -24,7 +24,7 @@
       <div class="content-wrap">
         <el-form v-if="currentNode != null">
           <el-form-item :label="$t('service.settings.file.compiler')">
-            <CompilerSelect v-model="currentNode.compiler" :with-follow-service="true" @change="saveFileSetting"/>
+            <CompilerSelect v-model="currentNode.compiler" @change="saveFileSetting"/>
           </el-form-item>
           <el-form-item label="只有文件在项目中存在时才生效">
             <el-switch
