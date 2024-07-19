@@ -33,6 +33,26 @@
 
 <script>
 import * as monaco from "monaco-editor";
+
+/**
+ * 解决
+ * Error: Unexpected usage
+ *     at _EditorSimpleWorker.loadForeignModule (editorSimpleWorker.js:504:31)
+ *     at webWorker.js:38:30
+ *     at async tsMode.js:88:16
+ *     at errors.js:15:27
+ */
+import editorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker";
+import tsWorker from "monaco-editor/esm/vs/language/typescript/ts.worker?worker";
+self.MonacoEnvironment={
+  getWorker(_, label){
+    if (label === "typescript" || label === "javascript") {
+      return new tsWorker();
+    }
+    return new editorWorker();
+  }
+}
+
 export default {
   name: 'Translator',
   props: {
@@ -77,6 +97,7 @@ export default {
           language: 'javascript',
           readOnly: false,
           automaticLayout: true,
+          fontSize: 15,
           minimap: {
             enabled: true
           }
@@ -85,6 +106,7 @@ export default {
       // - 内容变更后触发v-model修改
       editor.onDidChangeModelContent(e => {
         this.data[valueKey] = editor.getValue()
+        this.handleSave()
       })
     }
   },
@@ -110,8 +132,9 @@ export default {
       font-size: 13px;
     }
     .code {
-      font-size: 13px;
+      font-size: 15px;
       position: relative;
+      padding: 10px 0;
       // 全屏图标
       em {
         color: #0000ff;
@@ -119,13 +142,13 @@ export default {
       }
       & > .el-button {
         position: absolute;
-        top: 0;
+        top: 10px;
         right: 0;
       }
     }
     // 编辑器
     .editor {
-      height: 35px;
+      height: 150px;
       &.fullscreen {
         position: fixed;
         top: 0;
