@@ -81,10 +81,10 @@ class Translator {
         let suffix = null
         let lastPointIndex = filename.lastIndexOf('.')
         if (lastPointIndex !== -1) {
-            suffix = filename.substring(lastPointIndex + 1)
+            suffix = filename.substring(lastPointIndex)
         }
         // 文件名为.开头，视为后缀为null
-        if (filename.lastIndexOf('.') === filename.indexOf('.')) {
+        if (filename.lastIndexOf('.') === 0) {
             suffix = null
         }
         const newFilepath = new Function(`return (function ({ filepath, filename, suffix }) {
@@ -104,10 +104,10 @@ class Translator {
         let suffix = null
         let lastPointIndex = filename.lastIndexOf('.')
         if (lastPointIndex !== -1) {
-            suffix = filename.substring(lastPointIndex + 1)
+            suffix = filename.substring(lastPointIndex)
         }
         // 文件名为.开头，视为后缀为null
-        if (filename.lastIndexOf('.') === filename.indexOf('.')) {
+        if (filename.lastIndexOf('.') === 0) {
             suffix = null
         }
         const newContent = new Function(`return (function ({ filepath, filename, suffix, setting, content }) {
