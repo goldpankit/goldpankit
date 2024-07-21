@@ -40,15 +40,15 @@
 </template>
 
 <script>
-import {fetchFiles} from "../../api/local.file";
-import {sortFiles} from "../../utils/file";
-import path from "../../utils/path";
+import {fetchFiles} from '@/api/local.file';
+import {sortFiles} from '@/utils/file';
+import path from '@/utils/path'
 
 export default {
-  name: "ServiceFileSelectWindow",
+  name: 'ServiceFileSelectWindow',
   props: {
     title: {
-      default: 'Select Service File'
+      default: '选择文件'
     },
     serviceConfig: {
       required: true
@@ -64,6 +64,7 @@ export default {
   },
   methods: {
     open () {
+      console.log('open')
       this.visible = true
       this.paths = [this.__getProjectName()]
       this.__fetchFiles()
@@ -128,7 +129,8 @@ export default {
       }
       paths.shift()
       let absolutePath = path.join([this.serviceConfig.codespace, ...paths])
-      if (this.serviceConfig.translator.settings.length > 0) {
+      if ((this.serviceConfig.translator.filepath != null && this.serviceConfig.translator.filepath.trim() !== '') ||
+        (this.serviceConfig.translator.content != null && this.serviceConfig.translator.content.trim() !== '')) {
         absolutePath = path.join([this.serviceConfig.codespace, this.serviceConfig.translator.output, ...paths])
       }
       return absolutePath

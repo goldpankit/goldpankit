@@ -5,36 +5,34 @@
       <p v-else>{{$t('service.settings.build.buildTip')}}</p>
       <el-button type="primary" @click="create">{{$t('common.create')}}</el-button>
     </div>
-    <el-collapse v-if="builds.length > 0" v-model="actives" @change="handleChange">
-      <el-collapse-item
+    <template v-if="builds.length > 0">
+      <ul
         v-for="(build,index) in builds"
         :key="build.id"
-        :name="build.id"
       >
-        <template #title>
+        <li>
           <div class="title-wrap">
-            <div v-if="build.__readonly" class="view">
-              <p class="name">{{build.name}}</p>
-              <p class="type">{{build.type}}</p>
-            </div>
-            <div v-else class="edit">
-              <el-form :model="build">
-                <el-form-item :label="$t('common.name')" required>
-                  <el-input class="name" v-model="build.name" @click.stop @keypress.stop @input="handleSave"/>
-                </el-form-item>
-                <el-form-item :label="$t('common.type')" required>
-                  <BuildCommandTypeSelect class="type" v-model="build.type" @change="handleSave"/>
-                </el-form-item>
-              </el-form>
-            </div>
+            <el-form :model="build">
+              <el-form-item label="名称" required>
+                <el-input
+                  class="name"
+                  v-model="build.name"
+                  @click.stop
+                  @keypress="handleKeypress"
+                  @input="handleSave"
+                />
+              </el-form-item>
+              <el-form-item label="类型" class="build-type" required>
+                <BuildCommandTypeSelect class="type" v-model="build.type" @change="handleSave"/>
+              </el-form-item>
+            </el-form>
             <!-- 操作 -->
             <div class="opera">
-              <el-button icon="Delete" @click.stop="deleteBuild(index)">{{$t('common.delete')}}</el-button>
+              <el-button icon="Delete" link type="danger" @click.stop="deleteBuild(index)">{{$t('common.delete')}}</el-button>
             </div>
           </div>
-        </template>
-        <!-- 命令输入 -->
-        <el-tabs v-model="build.contentType">
+          <!-- 命令输入 -->
+          <el-tabs v-model="build.contentType">
           <el-tab-pane name="string" :label="$t('service.settings.build.input')">
             <el-input
               v-model="build.content"
@@ -51,8 +49,9 @@
             </div>
           </el-tab-pane>
         </el-tabs>
-      </el-collapse-item>
-    </el-collapse>
+        </li>
+      </ul>
+    </template>
     <Empty v-else/>
     <!-- 服务文件选择 -->
     <ServiceFileSelectWindow
@@ -109,6 +108,10 @@ export default {
     },
   },
   methods: {
+    handleKeypress (e) {
+      console.log(e.keyCode)
+      e.stopPropagation()
+    },
     handleFileChange (value) {
       this.selectFileData.currentBuild.__filepath = value
       this.handleSave()
@@ -126,13 +129,6 @@ export default {
         __filepath: ''
       })
       this.actives.push(id)
-    },
-    // 打开/隐藏
-    handleChange (actives) {
-      for (const build of this.builds) {
-        const exists = actives.find(id => id === build.id) != null
-        build.__readonly = !exists
-      }
     },
     // 保存
     handleSave () {
@@ -188,59 +184,53 @@ export default {
       font-weight: bold;
     }
   }
-  .el-collapse {
-    border-top: 0;
-    .title-wrap {
-      width: 100%;
-      display: flex;
-      align-items: center;
+  & > ul {
+    & > li {
+      margin-bottom: 20px;
     }
-    .view,.edit {
+  }
+  .title-wrap {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    .el-form {
       display: flex;
-      :deep(.el-form) {
-        display: flex;
-        .el-form-item {
-          flex-direction: row;
-          .name {
-            .el-input__inner {
-              color: var(--primary-color-match-2);
-              font-weight: bold;
-            }
+      .el-form-item {
+        flex-direction: row;
+        .name {
+          .el-input__inner {
+            color: var(--primary-color-match-2);
+            font-weight: bold;
+          }
+        }
+        // 构建类型
+        &.build-type {
+          margin-left: 20px;
+          .build-command-type-select {
+            width: 120px;
           }
         }
       }
-      .name {
-        width: 150px;
-        font-weight: bold;
-        color: var(--primary-color-match-2);
-        margin-right: 10px;
-        text-overflow: ellipsis;
-        overflow: hidden;
-        word-wrap: break-word;
-        white-space: nowrap;
-      }
-      .type {
-        width: 100px;
-      }
     }
-    // 选择文件空提示
-    .select-holder {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 80px;
-      cursor: pointer;
-      .holder {
-        font-size: var(--font-size-middle);
-        color: var(--color-gray);
-      }
+  }
+  // 选择文件空提示
+  .select-holder {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 80px;
+    cursor: pointer;
+    .holder {
+      font-size: var(--font-size-middle);
+      color: var(--color-gray);
     }
-    // 操作
-    .opera {
-      margin-left: 10px;
-      display: flex;
-      align-items: center;
-    }
+  }
+  // 操作
+  .opera {
+    margin-left: 10px;
+    display: flex;
+    align-items: center;
   }
 }
 </style>
