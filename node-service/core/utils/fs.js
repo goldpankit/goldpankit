@@ -184,29 +184,31 @@ module.exports = {
   /**
    * 获取文件和子文件
    * @param absolutePath 绝对路径
-   * @param ignoreInstance 文件忽略处理对象
+   * @param parentIgnoreInstance 上级文件忽略实例，用于在当前目录下没有配置.gitignore时使用
    * @returns {*[]}
    */
-  getFilesWithChildren (absolutePath, ignoreInstance = null) {
+  getFilesWithChildren (absolutePath, parentIgnoreInstance = null) {
+    /*
+    创建ignore实例
+    如果当前目录下没有.gitignore文件配置，则以父级的ignore实例作为当前目录的ignore实例
+    */
+    const ignoreFileConfig = this.getIgnoreFileConfig(absolutePath)
+    let ignoreInstance = parentIgnoreInstance
+    if (ignoreInstance == null || ignoreFileConfig.trim() !== '') {
+      ignoreInstance = ignore().add(ignoreFileConfig)
+    }
     let filePool = [];
     const files = fs.readdirSync(absolutePath);
     files.forEach(file => {
       const fullpath = path.join(absolutePath, file)
-      const fixedIgnoreInstance = ignore().add(Const.IGNORE_FILES)
       // 忽略目录，目录需要在路径后增加'/'
       if (this.isDirectory(fullpath)) {
-        if (fixedIgnoreInstance.ignores(file + '/')) {
-          return
-        }
-        if (ignoreInstance != null && ignoreInstance.ignores(file + '/')) {
+        if (ignoreInstance.ignores(file + '/')) {
           return
         }
       }
       // 忽略文件
-      if (fixedIgnoreInstance.ignores(file)) {
-        return
-      }
-      if (ignoreInstance != null && ignoreInstance.ignores(file)) {
+      if (ignoreInstance.ignores(file)) {
         return
       }
       // 全路径
@@ -240,6 +242,13 @@ module.exports = {
     } catch (e) {
       log.error(`读取${filepath}文件失败`, e)
     }
+  },
+  readAddFileArray (codespace) {
+    const filepath = path.join(codespace, '.kit.addfile')
+    if (!this.exists(filepath)) {
+      return []
+    }
+    return fs.readFileSync(filepath).toString().split('\n')
   },
   readJSONFile(filepath) {
     if (!this.exists(filepath)) {

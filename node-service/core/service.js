@@ -169,8 +169,7 @@ module.exports = {
       serviceTranslator.translate({ space: dto.space, service: dto.service, plugin: dto.plugin })
     }
     // 获取文件
-    const ignoreInstance = ignore().add(fs.getIgnoreFileConfig(serviceConfig.codespace))
-    let files = fs.getFilesWithChildren(fileStoragePath, ignoreInstance)
+    let files = fs.getFilesWithChildren(fileStoragePath)
     // 验证文件数量
     if (files.length > env.limitFiles) {
       return Promise.reject(`The number of files exceeds the limit of ${env.limitFiles}.`)
@@ -228,11 +227,20 @@ module.exports = {
    * @param directoryPath 当前查询的目录路径
    * @param fileStoragePath 真实服务代码空间路径（存在翻译器时真实代码空间不是codespace）
    * @param codespace 服务代码空间路径
+   * @param parentIgnoreInstance 上级文件忽略实例，用于在当前目录下没有配置.gitignore时使用
    */
-  __getFileTree (directoryPath, fileStoragePath, codespace) {
+  __getFileTree (directoryPath, fileStoragePath, codespace, parentIgnoreInstance = null) {
     let filePool = []
     const files = fs.getFiles(directoryPath)
-    const ignoreInstance = ignore().add(fs.getIgnoreFileConfig(codespace))
+    /*
+    创建ignore实例
+    如果当前目录下没有.gitignore文件配置，则以父级的ignore实例作为当前目录的ignore实例
+    */
+    const ignoreFileConfig = fs.getIgnoreFileConfig(directoryPath)
+    let ignoreInstance = parentIgnoreInstance
+    if (ignoreInstance == null || ignoreFileConfig.trim() !== '') {
+      ignoreInstance = ignore().add(ignoreFileConfig)
+    }
     files.forEach(file => {
       const fullpath = path.join(directoryPath, file)
       // 忽略目录，目录需要在路径后增加'/'
@@ -262,7 +270,7 @@ module.exports = {
       }
       filePool.push(fileObject);
       if (fileObject.type === 'DIRECTORY') {
-        fileObject.children = this.__getFileTree(fullpath, fileStoragePath, codespace);
+        fileObject.children = this.__getFileTree(fullpath, fileStoragePath, codespace, ignoreInstance);
       }
     });
     return filePool

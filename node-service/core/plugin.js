@@ -168,8 +168,7 @@ module.exports = {
       serviceTranslator.translate({ space: dto.space, service: dto.service, plugin: dto.plugin })
     }
     // 获取文件
-    const ignoreInstance = ignore().add(fs.getIgnoreFileConfig(pluginConfig.codespace))
-    let files = fs.getFilesWithChildren(fileStoragePath, ignoreInstance)
+    let files = fs.getFilesWithChildren(fileStoragePath)
     // 验证文件数量
     if (files.length > env.limitFiles) {
       return Promise.reject(`The number of files exceeds the limit of ${env.limitFiles}.`)

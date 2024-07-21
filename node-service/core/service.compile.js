@@ -513,8 +513,7 @@ class Kit {
         fs.createDirectory(fileStoragePath, true)
       }
     }
-    const ignoreInstance = ignore().add(fs.getIgnoreFileConfig(serviceConfig.codespace))
-    const fullpaths = fs.getFilesWithChildren(fileStoragePath, ignoreInstance)
+    const fullpaths = fs.getFilesWithChildren(fileStoragePath)
     const configs = []
     for (const fullpath of fullpaths) {
       // 获取文件配置

@@ -31,8 +31,7 @@ class Translator {
         let filepathTranslateCode = hasFilepathTranslator ? serviceConfig.translator.filepath : ''
         let contentTranslateCode = hasContentTranslator ? serviceConfig.translator.content : ''
         const targetDirectory = path.join(serviceConfig.codespace, serviceConfig.translator.output)
-        const ignoreInstance = ignore().add(fs.getIgnoreFileConfig(serviceConfig.codespace))
-        const files = fs.getFilesWithChildren(serviceConfig.codespace, ignoreInstance)
+        const files = fs.getFilesWithChildren(serviceConfig.codespace)
         // 删除已翻译目录
         fs.deleteDirectory(targetDirectory, true)
         // 循环文件逐个翻译
