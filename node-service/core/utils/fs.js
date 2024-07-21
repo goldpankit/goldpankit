@@ -192,10 +192,10 @@ module.exports = {
     创建ignore实例
     如果当前目录下没有.gitignore文件配置，则以父级的ignore实例作为当前目录的ignore实例
     */
-    const ignoreFileConfig = this.getIgnoreFileConfig(absolutePath)
     let ignoreInstance = parentIgnoreInstance
-    if (ignoreInstance == null || ignoreFileConfig.trim() !== '') {
-      ignoreInstance = ignore().add(ignoreFileConfig)
+    const ignoreFileConfig = this.getIgnoreFileConfig(absolutePath)
+    if (ignoreInstance == null || ignoreFileConfig.ignoreFileConfig != null) {
+      ignoreInstance = ignore().add(ignoreFileConfig.all)
     }
     let filePool = [];
     const files = fs.readdirSync(absolutePath);
@@ -340,11 +340,20 @@ module.exports = {
    * @param codespace 代码空间
    */
   getIgnoreFileConfig (codespace) {
+    const defaultIgnoreFileConfig = `${Const.SERVICE_CONFIG_DIRECTORY}/\n${Const.IGNORE_FILES.join('\n')}`
     // 直接读取.gitignore文件路径
     const ignoreFileConfigPath = path.join(codespace, '.gitignore')
     if (this.exists(ignoreFileConfigPath)) {
-      return this.readFile(ignoreFileConfigPath).content
+      const ignoreFileConfig = this.readFile(ignoreFileConfigPath).content
+      return {
+        defaultIgnoreFileConfig,
+        ignoreFileConfig,
+        all: `${defaultIgnoreFileConfig}\n${ignoreFileConfig}`
+      }
     }
-    return ''
+    return {
+      defaultIgnoreFileConfig,
+      all: defaultIgnoreFileConfig
+    }
   }
 }

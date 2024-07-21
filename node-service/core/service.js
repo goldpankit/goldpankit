@@ -238,8 +238,8 @@ module.exports = {
     */
     const ignoreFileConfig = fs.getIgnoreFileConfig(directoryPath)
     let ignoreInstance = parentIgnoreInstance
-    if (ignoreInstance == null || ignoreFileConfig.trim() !== '') {
-      ignoreInstance = ignore().add(ignoreFileConfig)
+    if (ignoreInstance == null || ignoreFileConfig.ignoreFileConfig != null) {
+      ignoreInstance = ignore().add(ignoreFileConfig.all)
     }
     files.forEach(file => {
       const fullpath = path.join(directoryPath, file)

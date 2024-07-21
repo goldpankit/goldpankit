@@ -223,11 +223,20 @@ module.exports = {
    * @param directoryPath 当前查询的目录路径
    * @param fileStoragePath 真实服务代码空间路径（存在翻译器时真实代码空间不是codespace）
    * @param codespace 服务代码空间路径
+   * @param parentIgnoreInstance 上级文件忽略实例，用于在当前目录下没有配置.gitignore时使用
    */
-  __getFileTree (directoryPath, fileStoragePath, codespace) {
+  __getFileTree (directoryPath, fileStoragePath, codespace, parentIgnoreInstance = null) {
     let filePool = []
     const files = fs.getFiles(directoryPath)
-    const ignoreInstance = ignore().add(fs.getIgnoreFileConfig(codespace))
+    /*
+    创建ignore实例
+    如果当前目录下没有.gitignore文件配置，则以父级的ignore实例作为当前目录的ignore实例
+    */
+    const ignoreFileConfig = fs.getIgnoreFileConfig(directoryPath)
+    let ignoreInstance = parentIgnoreInstance
+    if (ignoreInstance == null || ignoreFileConfig.ignoreFileConfig != null) {
+      ignoreInstance = ignore().add(ignoreFileConfig.all)
+    }
     files.forEach(file => {
       const fullpath = path.join(directoryPath, file)
       const fixedIgnoreInstance = ignore().add(Const.IGNORE_FILES)
@@ -248,7 +257,7 @@ module.exports = {
         return
       }
       // 获取文件配置
-      const relativePath = fs.getRelativePath(fullpath, fileStoragePath)
+      const relativePath = fs.getRelativePath(fullpath, fileStoragePath, ignoreInstance)
       const fileSettings = this.getFileSetting(codespace, relativePath)
       // 构建文件对象
       const isDirectory = fs.isDirectory(fullpath)
