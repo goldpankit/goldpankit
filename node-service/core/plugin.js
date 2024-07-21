@@ -119,7 +119,8 @@ module.exports = {
     const pluginConfig = this.getPluginConfig({ space, service, plugin })
     // 获取文件真实存放的路径
     let fileStoragePath = pluginConfig.codespace
-    if (pluginConfig.translator.filepath != null && pluginConfig.translator.filepath !== '') {
+    if ((pluginConfig.translator.filepath != null && pluginConfig.translator.filepath !== '')||
+      (pluginConfig.translator.content != null && pluginConfig.translator.content !== '')) {
       fileStoragePath = path.join(fileStoragePath, pluginConfig.translator.output)
       if (!fs.exists(fileStoragePath)) {
         serviceTranslator.translate({ space, service, plugin })
@@ -163,7 +164,8 @@ module.exports = {
     const pluginConfig = this.getPluginConfig({ space: dto.space, service: dto.service, plugin: dto.plugin })
     let fileStoragePath = pluginConfig.codespace
     // 如果存在翻译器，自动翻译，且服务代码空间指定为翻译代码空间
-    if (pluginConfig.translator.filepath != null && pluginConfig.translator.filepath !== '') {
+    if ((pluginConfig.translator.filepath != null && pluginConfig.translator.filepath !== '')||
+      (pluginConfig.translator.content != null && pluginConfig.translator.content !== '')) {
       fileStoragePath = path.join(fileStoragePath, Const.TRANSLATOR.DEFAULT_OUTPUT_PATH)
       serviceTranslator.translate({ space: dto.space, service: dto.service, plugin: dto.plugin })
     }

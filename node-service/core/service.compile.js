@@ -507,7 +507,8 @@ class Kit {
     const serviceConfig = service.getServiceConfig({ space: space, service: serviceName, plugin: plugin})
     // 获取文件真实存放的路径
     let fileStoragePath = serviceConfig.codespace
-    if (serviceConfig.translator.filepath != null && serviceConfig.translator.filepath !== '') {
+    if ((serviceConfig.translator.filepath != null && serviceConfig.translator.filepath !== '') ||
+      (serviceConfig.translator.content != null && serviceConfig.translator.content !== '')) {
       fileStoragePath = path.join(fileStoragePath, serviceConfig.translator.output)
       if (!fs.exists(fileStoragePath)) {
         fs.createDirectory(fileStoragePath, true)
@@ -516,6 +517,9 @@ class Kit {
     const fullpaths = fs.getFilesWithChildren(fileStoragePath)
     const configs = []
     for (const fullpath of fullpaths) {
+      if (fullpath.endsWith('pom.xml')) {
+        console.log(fullpath)
+      }
       // 获取文件配置
       const relativePath = fs.getRelativePath(fullpath, fileStoragePath)
       const fileSettings = service.getFileSetting(serviceConfig.codespace, relativePath)
