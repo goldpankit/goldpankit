@@ -517,9 +517,6 @@ class Kit {
     const fullpaths = fs.getFilesWithChildren(fileStoragePath)
     const configs = []
     for (const fullpath of fullpaths) {
-      if (fullpath.endsWith('pom.xml')) {
-        console.log(fullpath)
-      }
       // 获取文件配置
       const relativePath = fs.getRelativePath(fullpath, fileStoragePath)
       const fileSettings = service.getFileSetting(serviceConfig.codespace, relativePath)
