@@ -95,6 +95,7 @@ export default {
         {
           value: this.data[valueKey],
           language: 'javascript',
+          tabSize: 2,
           readOnly: false,
           automaticLayout: true,
           fontSize: 15,
