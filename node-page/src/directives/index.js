@@ -15,6 +15,7 @@ export default {
           sortBody = el
         }
         Sortable.create(sortBody, {
+          handle: params.value.handle == null ? undefined : params.value.handle,
           onEnd ({ newIndex, oldIndex}) {
             if (newIndex === oldIndex) {
               return

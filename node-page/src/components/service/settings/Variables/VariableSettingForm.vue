@@ -29,16 +29,17 @@
       <el-table
         :data="variable.options"
         v-sortable:config="{
+          handle: '.sortable-button',
           data: variable.options,
           onChange: handleOptionSorted
         }"
       >
-        <el-table-column width="25px">
+        <el-table-column class-name="table-column-sortable" width="30px" fixed>
           <SortableButton/>
         </el-table-column>
         <el-table-column label="*名称" min-width="200px">
           <template #default="{ row }">
-            <el-input v-model="row.label" type="textarea" :rows="1" @input="handleChange"/>
+            <el-input v-model="row.label" size="large" type="textarea" :rows="1" @input="handleChange"/>
           </template>
         </el-table-column>
         <el-table-column :label="'*' + $t('service.settings.variable.optionValue')" min-width="120px">

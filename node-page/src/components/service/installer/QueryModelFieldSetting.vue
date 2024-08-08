@@ -15,11 +15,12 @@
       return `${row.table.id}.${row.name}@${row.alias}`
     }"
     v-sortable:config="{
+      handle: '.sortable-button',
       data: group[valueKey],
       onChange: handleSort
     }"
   >
-    <el-table-column width="25px" fixed>
+    <el-table-column class-name="table-column-sortable" width="30px" fixed>
       <SortableButton/>
     </el-table-column>
     <el-table-column label="字段名" width="150px" prop="name" fixed>

@@ -6,7 +6,19 @@
     :table="table"
     placeholder="请选择字段"
   />
-  <el-table size="small" :data="group[valueKey]">
+  <el-table
+    size="small"
+    :data="group[valueKey]"
+    row-key="name"
+    v-sortable:config="{
+      handle: '.sortable-button',
+      data: group[valueKey],
+      onChange: handleSort
+    }"
+  >
+    <el-table-column class-name="table-column-sortable" width="30px" fixed>
+      <SortableButton/>
+    </el-table-column>
     <el-table-column label="字段名" width="100px" prop="name" fixed></el-table-column>
     <el-table-column
       v-for="variable in group.children"
@@ -38,10 +50,11 @@ import MySqlFieldSelect from '@/components/database/MySqlFieldSelect'
 import TableFieldVariableInput from './TableFieldVariableInput'
 import VariableRemarkIcon from '@/components/service/installer/VariableRemarkIcon'
 import { getDefaultEmptyValue, isEmptyValue } from '@/utils/variable'
+import SortableButton from "@/components/common/SortableButton.vue";
 
 export default {
   name: 'FieldSetting',
-  components: { VariableRemarkIcon, TableFieldVariableInput, MySqlFieldSelect },
+  components: {SortableButton, VariableRemarkIcon, TableFieldVariableInput, MySqlFieldSelect },
   props: {
     // 表对象
     table: {
@@ -68,6 +81,11 @@ export default {
     }
   },
   methods: {
+    // 处理排序
+    handleSort (newFields) {
+      console.log('newFields', newFields)
+      this.handleSelect(newFields)
+    },
     /**
      * 触发选中
      * 添加字段原始信息，方便后期获取；将字段变量组中的动态变量添加到字段中
@@ -94,6 +112,7 @@ export default {
         }
       }
       this.group[this.valueKey] = copyFields
+      console.log('this.group[this.valueKey]', this.group[this.valueKey])
       this.emitChange()
     },
     emitChange () {

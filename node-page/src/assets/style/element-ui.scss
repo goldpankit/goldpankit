@@ -52,6 +52,15 @@ body.theme-light {
     --el-disabled-text-color: var(--color-light);
     font-weight: bold;
   }
+  // 表格
+  .el-table {
+    .table-column-sortable {
+      width: 25px;
+      .cell {
+        padding: 0;
+      }
+    }
+  }
   // 输入框
   .el-input, .el-textarea {
     --el-input-focus-border-color: var(--input-border-color);
