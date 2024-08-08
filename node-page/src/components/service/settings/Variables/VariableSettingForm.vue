@@ -1,7 +1,7 @@
 <template>
   <el-form :model="variable">
     <el-form-item label="变量提示" required>
-      <el-input v-model="variable.label" @input="handleChange"/>
+      <el-input ref="labelInput" v-model="variable.label" @input="handleChange"/>
     </el-form-item>
     <el-form-item label="变量名" required>
       <el-input v-model="variable.name" @input="handleChange"/>
@@ -143,6 +143,10 @@ export default {
     }
   },
   methods: {
+    // 聚焦
+    focus () {
+      this.$refs.labelInput.focus()
+    },
     handleChange () {
       this.$emit('change')
     },
@@ -195,10 +199,12 @@ export default {
         remark: '',
         settings: []
       })
+      this.handleChange()
     },
     // 删除选项
     deleteOption (index) {
       this.variable.options.splice(index, 1)
+      this.handleChange()
     },
     // 处理输入类型变更
     handleInputTypeChange () {

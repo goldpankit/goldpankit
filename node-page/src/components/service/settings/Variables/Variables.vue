@@ -12,7 +12,7 @@
         :default-expand-all="true"
         :highlight-current="true"
         :data="variables"
-        node-key="name"
+        node-key="id"
         @node-click="selectVariable"
         draggable
         :allow-drop="allowDrop"
@@ -41,12 +41,13 @@
     </div>
     <div class="variable-setting">
       <div class="title">
-        <h4>{{$t('service.settings.variable.variableSetting')}}</h4>
+        <h4>变量设置</h4>
         <el-button v-if="currentVariable != null" size="default" type="danger" link @click="deleteVariable">删除变量</el-button>
       </div>
       <div class="content-wrap">
         <template v-if="currentVariable != null">
           <VariableSettingForm
+            ref="variableSettingForm"
             v-if="currentVariable.type === 'variable'"
             :variable="currentVariable"
             :variable-group="currentGroup"
@@ -61,8 +62,8 @@
         </template>
         <template v-else>
           <div class="variable-holder">
-            <h5>{{$t('service.settings.variable.variableHolderTitle')}}</h5>
-            <p>{{$t('service.settings.variable.variableHolderTip')}}</p>
+            <h5>变量和变量组设置</h5>
+            <p>点击左侧变量来打开变量或变量组设置。如无法获取变量值，请留意{{ plugin == null ? '服务' : '插件'}}设置中选择的编译器。</p>
           </div>
         </template>
       </div>
@@ -186,7 +187,6 @@ export default {
         else {
           this.currentRootVariable = node.data
         }
-
       })
     },
     // 添加子节点
@@ -228,6 +228,18 @@ export default {
         this.variables.push(newVar)
       }
       this.saveVariables()
+      // 选中新变量
+      this.$nextTick(() => {
+        const targetNode = this.$refs.tree.getNode(newVar)
+        // 选中变量
+        this.selectVariable(newVar, targetNode)
+        // 选中节点
+        this.$refs.tree.setCurrentKey(newVar.id)
+        // 聚焦
+        this.$nextTick(() => {
+          this.$refs.variableSettingForm.focus()
+        })
+      })
     },
     // 添加变量组
     createGroup (variable, defaultValue) {

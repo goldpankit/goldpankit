@@ -9,7 +9,7 @@
       >{{option.label}}</li>
     </ul>
   </template>
-  <p v-else>Please add options first.</p>
+  <p v-else>请先添加选项！</p>
 </template>
 
 <script>
