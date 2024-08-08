@@ -6,7 +6,9 @@
       <li v-for="(build,index) in builds" :key="build.name">
         <div class="title">
           <h3>{{index + 1}}、{{build.name}}</h3>
-          <el-button type="text" size="small" @click="$refs.scriptPreviewDialog.open(build)">查看构建脚本</el-button>
+          <template v-if="build.type !== 'Markdown'">
+            <el-button type="text" size="small" @click="$refs.scriptPreviewDialog.open(build)">查看构建脚本</el-button>
+          </template>
         </div>
         <div v-if="build.type === 'MySQL'" class="target-datasource">
           <DataSourceSelect
@@ -16,8 +18,15 @@
           />
         </div>
         <div class="opera">
-          <el-button type="primary" @click="ignore(build)">忽略此项构建</el-button>
-          <el-button type="important2" :disabled="build.__executing" @click="execute(build)">执行该脚本</el-button>
+          <!-- Markdown操作 -->
+          <template v-if="build.type === 'Markdown'">
+            <el-button type="primary" @click="showMarkdown(build)">查看</el-button>
+          </template>
+          <!-- Node和MySql操作 -->
+          <template v-else>
+            <el-button type="primary" @click="ignore(build)">忽略此项构建</el-button>
+            <el-button type="important2" :disabled="build.__executing" @click="execute(build)">执行该脚本</el-button>
+          </template>
         </div>
       </li>
     </ul>
@@ -88,18 +97,36 @@
       @ignore="ignore"
       @execute="execute"
     />
+    <!-- 查看markdown构建窗口 -->
+    <el-dialog
+      v-if="currentBuild != null"
+      :title="currentBuild.name"
+      v-model="confirmData.visibleMarkdown"
+      class="confirm-script-dialog"
+      width="750px"
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
+      :show-close="false"
+      append-to-body
+    >
+      <MarkdownEditor v-model="currentBuild.content" :readonly="true" :without-padding="true"/>
+      <div class="opera">
+        <el-button @click="confirmData.visibleMarkdown = false">关闭</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import {mapGetters, mapMutations, mapState} from 'vuex'
 import DataSourceSelect from '@/components/database/DataSourceSelect'
+import MarkdownEditor from '@/components/common/MarkdownEditor'
 import { build } from '@/api/service.compile'
 import ScriptPreviewDialog from "@/components/service/installer/ScriptPreviewDialog.vue";
 
 export default {
   name: "BuildNotice",
-  components: {ScriptPreviewDialog, DataSourceSelect },
+  components: {ScriptPreviewDialog, DataSourceSelect, MarkdownEditor },
   data () {
     return {
       executing: false,
@@ -112,7 +139,9 @@ export default {
         error: ''
       },
       confirmData: {
-        visible: false
+        visible: false,
+        // 展示markdown构建窗口
+        visibleMarkdown: false
       }
     }
   },
@@ -175,7 +204,7 @@ export default {
         this.exactConfirmData.visible = true
         return
       }
-      // 其它脚本构建
+      // 展示构建窗口
       this.confirmData.visible = true
     },
     // 确认执行
@@ -211,6 +240,11 @@ export default {
         .finally(() => {
           buildItem.__executing = false
         })
+    },
+    // 查看Markdown构建
+    showMarkdown (build) {
+      this.currentBuild = build
+      this.confirmData.visibleMarkdown = true
     }
   }
 }
