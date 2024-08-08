@@ -22,6 +22,7 @@ export default {
 
 <style scoped lang="scss">
 .kit-toolbar {
+  display: none;
   position: absolute;
   right: 50px;
   bottom: 50px;
