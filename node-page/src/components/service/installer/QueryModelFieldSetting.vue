@@ -93,7 +93,7 @@ export default {
     // 处理排序
     handleSort () {
       this.initSelectedFields()
-      this.emitChange()
+      this.$refs.fieldSelect.selectFields(this.selectedFields)
     },
     // 初始化字段选择
     initSelectedFields () {

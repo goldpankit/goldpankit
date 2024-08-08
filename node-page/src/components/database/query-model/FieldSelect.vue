@@ -11,10 +11,6 @@
         <ul
           class="selected-preview"
           :class="{'is-focus': focused}"
-          v-sortable:config="{
-            data: selectedFields,
-            onChange: handleFieldSorted
-          }"
           @click="focus"
         >
           <li v-if="selectedFields.length === 0" class="placeholder">请选择字段</li>
@@ -138,13 +134,6 @@ export default {
     // 聚焦选择
     focus () {
       this.focused = true
-    },
-    // 处理字段排序
-    handleFieldSorted () {
-      this.$emit('update:modelValue', this.selectedFields.map(field => {
-        return `${field.table.id}.${field.name}`
-      }))
-      this.$emit('fields:change', this.selectedFields)
     },
     // 删除字段选中
     deleteField (tableId, fieldName) {
