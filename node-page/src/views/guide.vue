@@ -70,7 +70,7 @@
             <el-timeline-item timestamp="2023/5/9" placement="top">
               <el-card>
                 <h4>获用户投资</h4>
-                <p>2023年5月9日，因项目资金短缺，向用户发起融资。共获得了崔易、朱晨辉、赵鹏、林郴、常洋、赵浩、曹宝红、侯泽为、李寻飞9人累计4万元的投资款。</p>
+                <p>2022年5月9日，因项目资金短缺，向用户发起融资。共获得了崔易、朱晨辉、赵鹏、林郴、常洋、赵浩、曹宝红、侯泽为、李寻飞9人累计4万元的投资款。</p>
               </el-card>
             </el-timeline-item>
             <el-timeline-item timestamp="2023/5/20" placement="top">
