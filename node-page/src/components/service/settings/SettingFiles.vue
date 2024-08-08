@@ -32,7 +32,7 @@
               @change="saveFileSetting"
             />
           </el-form-item>
-          <el-form-item :label="$t('service.settings.file.enableExpress')">
+          <el-form-item label="启用表达式">
             <el-input
               v-model="currentNode.enableExpress"
               type="textarea"
@@ -40,6 +40,8 @@
               :placeholder="$t('service.settings.file.enableExpressHolder')"
               @input="saveFileSetting"
             />
+            <FormItemTip v-if="currentNode.type === 'FILE'" content="当表达式结果为true字符串时，才会保留该文件！"/>
+            <FormItemTip v-else content="当表达式结果为true字符串时，会保留该目录下的子文件/目录，但依然会移除该目录！否则整个目录都会被删除！"/>
           </el-form-item>
         </el-form>
         <div v-else class="setting-holder">
@@ -54,9 +56,10 @@
 </template>
 
 <script>
-import CompilerSelect from "@/components/common/CompilerSelect.vue";
-import InputTypeSelect from "@/components/common/InputTypeSelect.vue";
-import SortableButton from "@/components/common/SortableButton.vue";
+import CompilerSelect from '@/components/common/CompilerSelect'
+import InputTypeSelect from '@/components/common/InputTypeSelect'
+import SortableButton from '@/components/common/SortableButton'
+import FormItemTip from '@/components/common/FormItemTip'
 import {sortFiles} from "@/utils/file";
 import {
   fetchFiles as fetchServiceFiles,
@@ -69,7 +72,7 @@ import {
 
 export default {
   name: "SettingFiles",
-  components: {SortableButton, CompilerSelect, InputTypeSelect},
+  components: {SortableButton, CompilerSelect, InputTypeSelect, FormItemTip},
   props: {
     space: {
       required: true
