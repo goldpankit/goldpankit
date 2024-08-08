@@ -23,7 +23,7 @@
                 />
               </el-form-item>
               <el-form-item label="类型" class="build-type" required>
-                <BuildCommandTypeSelect class="type" v-model="build.type" @change="handleSave"/>
+                <BuildCommandTypeSelect class="type" v-model="build.type" @change="handleChangeType(build, $event)"/>
               </el-form-item>
             </el-form>
             <!-- 操作 -->
@@ -31,24 +31,28 @@
               <el-button icon="Delete" link type="danger" @click.stop="deleteBuild(index)">{{$t('common.delete')}}</el-button>
             </div>
           </div>
-          <!-- 命令输入 -->
-          <el-tabs v-model="build.contentType">
-          <el-tab-pane name="string" :label="$t('service.settings.build.input')">
-            <el-input
-              v-model="build.content"
-              type="textarea"
-              :placeholder="$t('service.settings.build.buildCommand')"
-              :rows="5"
-              @input="handleSave"
-            />
-          </el-tab-pane>
-          <el-tab-pane name="file" :label="$t('service.settings.build.file')">
-            <div class="select-holder" @click="openSelectFileWindow(build)">
-              <p v-if="build.__filepath == null || build.__filepath === ''" class="holder">{{$t('common.clickToSelectFile')}}</p>
-              <p v-else>{{build.__filepath}}</p>
-            </div>
-          </el-tab-pane>
-        </el-tabs>
+          <!-- 文本/文件 -->
+          <el-tabs v-if="build.type !== 'Markdown'" v-model="build.contentType">
+            <el-tab-pane name="string" label="文本">
+              <el-input
+                v-model="build.content"
+                type="textarea"
+                :placeholder="$t('service.settings.build.buildCommand')"
+                :rows="5"
+                @input="handleSave"
+              />
+            </el-tab-pane>
+            <el-tab-pane name="file" label="文件">
+              <div class="select-holder" @click="openSelectFileWindow(build)">
+                <p v-if="build.__filepath == null || build.__filepath === ''" class="holder">{{$t('common.clickToSelectFile')}}</p>
+                <p v-else>{{build.__filepath}}</p>
+              </div>
+            </el-tab-pane>
+          </el-tabs>
+          <!-- Markdown -->
+          <div v-else class="markdown-wrap">
+            <MarkdownEditor v-model="build.content" placeholder="输入内容将作为构建步骤进行展示" @input="handleSave"/>
+          </div>
         </li>
       </ul>
     </template>
@@ -63,14 +67,15 @@
 </template>
 
 <script>
-import BuildCommandTypeSelect from "./BuildCommandTypeSelect.vue";
-import Empty from "../../common/Empty.vue";
-import DirectorySelect from "../../common/DirectorySelect.vue";
-import ServiceFileSelectWindow from "../../common/ServiceFileSelectWindow.vue";
+import BuildCommandTypeSelect from './BuildCommandTypeSelect.vue'
+import Empty from '@/components/common/Empty'
+import DirectorySelect from '@/components/common/DirectorySelect'
+import MarkdownEditor from '@/components/common/MarkdownEditor'
+import ServiceFileSelectWindow from '@/components/common/ServiceFileSelectWindow'
 
 export default {
   name: "BuildList",
-  components: {ServiceFileSelectWindow, DirectorySelect, Empty, BuildCommandTypeSelect},
+  components: {ServiceFileSelectWindow, DirectorySelect, MarkdownEditor, Empty, BuildCommandTypeSelect},
   props: {
     builds: {
       required: true,
@@ -129,6 +134,13 @@ export default {
         __filepath: ''
       })
       this.actives.push(id)
+    },
+    // 处理类型变更
+    handleChangeType (build, type) {
+      if (type === 'Markdown') {
+        build.contentType = 'string'
+      }
+      this.handleSave()
     },
     // 保存
     handleSave () {
@@ -189,6 +201,7 @@ export default {
       margin-bottom: 20px;
     }
   }
+  // 标题部分
   .title-wrap {
     width: 100%;
     display: flex;
@@ -198,7 +211,9 @@ export default {
       display: flex;
       .el-form-item {
         flex-direction: row;
+        // 名称
         .name {
+          width: 300px;
           .el-input__inner {
             color: var(--primary-color-match-2);
             font-weight: bold;
@@ -208,7 +223,7 @@ export default {
         &.build-type {
           margin-left: 20px;
           .build-command-type-select {
-            width: 120px;
+            width: 150px;
           }
         }
       }
@@ -225,6 +240,10 @@ export default {
       font-size: var(--font-size-middle);
       color: var(--color-gray);
     }
+  }
+  // markdown
+  .markdown-wrap {
+    height: 280px;
   }
   // 操作
   .opera {

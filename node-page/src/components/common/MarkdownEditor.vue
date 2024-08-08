@@ -28,7 +28,7 @@
 import { uploadImage } from '@/api/common'
 
 export default {
-  name: "MarkdownEditor",
+  name: 'MarkdownEditor',
   props: {
     modelValue: {
       required: true

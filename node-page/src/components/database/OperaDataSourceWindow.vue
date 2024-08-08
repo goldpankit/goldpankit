@@ -12,9 +12,9 @@
       数据库信息仅保存在「<em>{{project.name}}</em>」项目的<em>kit.db.json</em>文件中，请放心填写！
     </FormTip>
     <el-form ref="form" :model="form" :rules="rules">
-      <el-form-item label="数据库名称" prop="name" required>
-        <el-input v-model="form.name"/>
-      </el-form-item>
+<!--      <el-form-item label="数据库名称" prop="name" required>-->
+<!--        <el-input v-model="form.name"/>-->
+<!--      </el-form-item>-->
       <el-form-item label="数据库类型" prop="type" required>
         <DatabaseTypeSelect v-model="form.type" :multiple="false"/>
       </el-form-item>
@@ -30,9 +30,9 @@
       <el-form-item label="密码" prop="password" required>
         <el-input type="password" v-model="form.password" show-password/>
       </el-form-item>
-      <el-form-item label="数据库名称" prop="schema" required>
+      <el-form-item label="库名" prop="schema" required>
         <div class="database-input">
-          <el-input v-model="form.schema"/>
+          <el-input v-model="form.schema" @input="form.name = form.schema"/>
           <el-button type="primary" @click="openCreateDatabaseDialog">创建该库</el-button>
         </div>
       </el-form-item>
