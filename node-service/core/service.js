@@ -212,6 +212,8 @@ module.exports = {
       publishDescription: dto.publishDescription,
       introduce: serviceConfig.introduce,
       description: serviceConfig.readme,
+      // 预置插件，v2.11.0增加
+      presetPlugins: serviceConfig.presetPlugins,
       files
     }
     return serviceApi.publish(publishParams)
