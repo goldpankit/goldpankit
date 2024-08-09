@@ -1,6 +1,6 @@
 {
   "name": "node-page",
-  "version": "2.9.6",
+  "version": "2.10.0",
   "scripts": {
     "serve": "vite",
     "build": "vite build",
