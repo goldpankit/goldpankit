@@ -54,6 +54,10 @@
         <el-form-item :label="$t('service.settings.introduce')" prop="introduce" required>
           <el-input type="textarea" :rows="5" v-model="form.introduce" @input="saveConfig"/>
         </el-form-item>
+        <el-form-item label="预置插件" prop="presetPlugins" required>
+          <PluginSelector v-model="form.presetPlugins" :space="space" :service="service" major-version="v4" @change="saveConfig"/>
+          <FormItemTip content="预置插件会在安装服务时自动安装！"/>
+        </el-form-item>
 <!--        <el-form-item :label="$t('service.settings.charge')" prop="prices[0].type" required>-->
 <!--          <el-radio-group v-model="form.prices[0].type" @change="changePriceType">-->
 <!--            <el-radio-button-->
@@ -103,28 +107,29 @@
 </template>
 
 <script>
-import CompilerSelect from "@/components/common/CompilerSelect.vue";
-import DatabaseTypeSelect from "@/components/database/DatabaseTypeSelect.vue";
-import DirectorySelect from "@/components/common/DirectorySelect.vue";
-import BuildList from "@/components/service/build/BuildList.vue";
+import CompilerSelect from '@/components/common/CompilerSelect'
+import DatabaseTypeSelect from '@/components/database/DatabaseTypeSelect'
+import DirectorySelect from '@/components/common/DirectorySelect'
+import BuildList from '@/components/service/build/BuildList'
+import PluginSelector from '@/components/service/PluginSelector'
 import {
   fetchConfig as fetchServiceConfig,
   initialize as initService,
   saveConfig as saveServiceConfig
-} from "@/api/service";
+} from '@/api/service'
 import {
   fetchConfig as fetchPluginConfig,
   initialize as initPlugin,
   saveConfig as savePluginConfig
-} from "@/api/plugin";
-import {gitClone} from "@/api/service";
-import {checkVersionNumber} from "@/utils/form.check";
-import FormItemTip from "@/components/common/FormItemTip.vue";
-import Translator from "@/components/service/translator/Translator.vue";
+} from '@/api/plugin'
+import { gitClone } from '@/api/service'
+import { checkVersionNumber } from '@/utils/form.check'
+import FormItemTip from '@/components/common/FormItemTip'
+import Translator from '@/components/service/translator/Translator'
 
 export default {
   name: "BasicSetting",
-  components: {Translator, FormItemTip, BuildList, DirectorySelect, DatabaseTypeSelect, CompilerSelect},
+  components: {Translator, FormItemTip, BuildList, DirectorySelect, DatabaseTypeSelect, CompilerSelect, PluginSelector},
   props: {
     space: {
       required: true
@@ -157,6 +162,7 @@ export default {
         receivable: false,
         compiler: '',
         introduce: '',
+        presetPlugins: [],
         // 仓库地址
         repository: '',
         // 仓库标签
@@ -210,6 +216,12 @@ export default {
         if (this.form.translator.settings) {
           delete this.form.translator.settings
         }
+      }
+      /*
+       2.11.0增加插件预置presetPlugins列表
+      */
+      if (this.form.presetPlugins === undefined) {
+        this.form.presetPlugins = []
       }
       this.originForm = JSON.parse(JSON.stringify(this.form))
     },
