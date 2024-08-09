@@ -16,6 +16,7 @@ module.exports = {
     repository: '', // 仓库
     branch: '', // 仓库分支
     supportedDatabases: [], // 支持的数据库列表
+    presetPlugins: [], // 预置插件列表
     prices: [ // 价格定义
       {
         type: 'FREE',
