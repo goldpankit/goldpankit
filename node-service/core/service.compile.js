@@ -103,10 +103,20 @@ class Kit {
             }
           }
           fs.createFile(projectDatabase.getDatabaseConfigPath(project.id), fs.toJSONFileString(dbConfig), true)
-          // 获取构建详情并返回
+
+          // 获取服务的构建详情（也可能是插件的构建详情）
           const builds = data.version.builds == null || data.version.builds === '' ? [] : JSON.parse(data.version.builds)
-          serviceBuild.getBuildDetails('INSTALL', project, builds, diffFiles, data.version.compiler, variables)
-            .then(builds => {
+          const getBuildsDetailsPromises = [serviceBuild
+            .getBuildDetails('INSTALL', project, builds, diffFiles, data.version.compiler, variables)]
+          // 获取预置插件的构建详情
+          for (const presetPlugin of data.presetPlugins) {
+            getBuildsDetailsPromises.push(serviceBuild
+              .getBuildDetails('INSTALL', project, JSON.parse(presetPlugin.builds), diffFiles, presetPlugin.compiler, presetPlugin.variables))
+          }
+          // 获取构建详情并返回
+          Promise.all(getBuildsDetailsPromises)
+            .then(buildsList => {
+              const builds = buildsList.flat()
               // 返回构建信息
               const result = {
                 projectId: project.id,
