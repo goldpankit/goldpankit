@@ -238,6 +238,10 @@ export default {
     // 项目配置发生变化后重新初始化变量值
     projectConfig () {
       this.initVariables()
+    },
+    // 切换版本后，刷新预置插件
+    selectedVersion () {
+      this.fetchPresetPlugins()
     }
   },
   methods: {
