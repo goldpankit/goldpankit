@@ -351,9 +351,13 @@ class Kit {
             serviceApi.compile({
               space: dto.space,
               service: dto.service,
+              // 服务的主版本号，用于自动编译预置插件时根据主版本号查询最新的预置插件版本（v2.11.0增加）
+              majorVersion: serviceConfig.version.split('.')[0],
               projectServiceVersion: projectInstallService == null ? null : projectInstallService.version,
               minServiceVersion: serviceConfig.minServiceVersion,
               defaultCompiler: serviceConfig.compiler,
+              // 预置插件，用于编译时自动编译预置插件（v2.11.0增加）
+              presetPlugins: serviceConfig.presetPlugins,
               variables: vars,
               files
             })
