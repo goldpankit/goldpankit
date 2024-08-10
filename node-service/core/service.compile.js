@@ -68,6 +68,16 @@ class Kit {
             if (projectConfig != null && projectConfig.services != null) {
               config.plugins = projectConfig.services
             }
+            // 补充预置插件安装信息到到plugins中
+            for (const presetPlugin of data.presetPlugins) {
+              config.plugins[presetPlugin.name] = {
+                version: presetPlugin.version,
+                variables: this.#getSimpleMainServiceVariables(presetPlugin.variables).map(variable => {
+                  variable.value = this.#getPresetPluginVariableValue(variable)
+                  return variable
+                })
+              }
+            }
           }
           // 安装的是插件
           else {
@@ -535,6 +545,15 @@ class Kit {
         }
       }
       return variable.value
+  }
+
+  // 获取预置插件的简化变量值（预置插件的变量值是完整的变量数据，因为是从后端返回的，后端需要完整的变量数据）
+  #getPresetPluginVariableValue (variable) {
+    // 数据库，直接返回库ID
+    if (variable.inputType === 'datasource') {
+      return variable.value == null ? null : variable.value.id
+    }
+    return variable.value
   }
 
   // 获取文件配置列表
