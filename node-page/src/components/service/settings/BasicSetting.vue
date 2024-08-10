@@ -55,7 +55,13 @@
           <el-input type="textarea" :rows="5" v-model="form.introduce" @input="saveConfig"/>
         </el-form-item>
         <el-form-item label="预置插件" prop="presetPlugins" required>
-          <PluginSelector v-model="form.presetPlugins" :space="space" :service="service" major-version="v4" @change="saveConfig"/>
+          <PluginSelector
+            v-model="form.presetPlugins"
+            :space="space"
+            :service="service"
+            :major-version="majorVersion"
+            @change="saveConfig"
+          />
           <FormItemTip content="预置插件会在安装服务时自动安装！"/>
         </el-form-item>
 <!--        <el-form-item :label="$t('service.settings.charge')" prop="prices[0].type" required>-->
@@ -193,6 +199,13 @@ export default {
     // 是否可克隆
     clonable () {
       return this.form.repository.trim() !== '' && this.form.branch.trim() !== ''
+    },
+    // 主版本
+    majorVersion () {
+      if (this.form.version.trim() === '') {
+        return ''
+      }
+      return this.form.version.split('.')[0]
     }
   },
   methods: {

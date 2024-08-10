@@ -72,6 +72,13 @@ export default {
       return this.plugins.filter(p => p.supportedPreset)
     }
   },
+  watch: {
+    majorVersion () {
+      this.fetchList()
+      this.$emit('update:modelValue', [])
+      this.$emit('change', [])
+    }
+  },
   methods: {
     // 选中和取消选中
     switchPlugin (plugin) {
@@ -92,6 +99,10 @@ export default {
     },
     // 获取插件列表
     fetchList() {
+      if (this.majorVersion === '') {
+        this.plugins = []
+        return
+      }
       this.loading = true
       fetchList({
         space: this.space,
@@ -100,7 +111,6 @@ export default {
       })
         .then(plugins => {
           this.plugins = plugins
-          console.log('plugins', plugins)
         })
         .catch(e => {
           this.$tip.apiFailed(e)
