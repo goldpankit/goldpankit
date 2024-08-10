@@ -2,9 +2,9 @@
   <div class="plugin-selector">
     <ul class="tabs">
       <li :class="{selected: currentTab === 'all'}" @click="currentTab = 'all'">插件市场</li>
-      <li :class="{selected: currentTab === 'selected'}" @click="currentTab = 'selected'">已选择</li>
+      <li :class="{selected: currentTab === 'selected'}" @click="currentTab = 'selected'">已选择({{ selectedCount }})</li>
     </ul>
-    <ul class="plugin-list">
+    <ul v-if="filteredPlugins.length > 0" class="plugin-list">
       <li v-for="plugin in filteredPlugins" :key="plugin.id" @click="switchPlugin(plugin)">
         <span class="checkbox" :class="{ checked: modelValue.find(p => p.name === plugin.name) != null }"><em></em></span>
         <div class="info">
@@ -14,14 +14,17 @@
         </div>
       </li>
     </ul>
+    <Empty v-else :description="emptyTip"/>
   </div>
 </template>
 
 <script>
-import {fetchList} from "@/api/plugin";
+import { fetchList } from '@/api/plugin'
+import Empty from '@/components/common/Empty'
 
 export default {
   name: 'PluginSelector',
+  components: { Empty },
   props: {
     // 选中的插件标识符
     modelValue: {
@@ -49,6 +52,18 @@ export default {
     }
   },
   computed: {
+    // 已选插件
+    selectedCount () {
+      return this.plugins
+        .filter(p => p.supportedPreset && this.modelValue.findIndex(selectedPlugin => selectedPlugin.name === p.name) !== -1).length
+    },
+    // 空提示
+    emptyTip () {
+      if (this.currentTab === 'selected') {
+        return '暂未选择插件'
+      }
+      return '该服务下暂无插件可选择'
+    },
     // 过滤后的插件
     filteredPlugins () {
       if (this.currentTab === 'selected') {
