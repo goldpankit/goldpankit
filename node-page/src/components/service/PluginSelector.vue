@@ -1,7 +1,11 @@
 <template>
   <div class="plugin-selector">
-    <ul>
-      <li v-for="plugin in plugins" :key="plugin.id" @click="switchPlugin(plugin)">
+    <ul class="tabs">
+      <li :class="{selected: currentTab === 'all'}" @click="currentTab = 'all'">插件市场</li>
+      <li :class="{selected: currentTab === 'selected'}" @click="currentTab = 'selected'">已选择</li>
+    </ul>
+    <ul class="plugin-list">
+      <li v-for="plugin in filteredPlugins" :key="plugin.id" @click="switchPlugin(plugin)">
         <span class="checkbox" :class="{ checked: modelValue.find(p => p.name === plugin.name) != null }"><em></em></span>
         <div class="info">
           <h6>{{ plugin.label }}</h6>
@@ -40,7 +44,17 @@ export default {
   data () {
     return {
       loading: false,
+      currentTab: 'selected',
       plugins: [],
+    }
+  },
+  computed: {
+    // 过滤后的插件
+    filteredPlugins () {
+      if (this.currentTab === 'selected') {
+        return this.plugins.filter(p => p.supportedPreset && this.modelValue.findIndex(selectedPlugin => selectedPlugin.name === p.name) !== -1)
+      }
+      return this.plugins.filter(p => p.supportedPreset)
     }
   },
   methods: {
@@ -71,6 +85,7 @@ export default {
       })
         .then(plugins => {
           this.plugins = plugins
+          console.log('plugins', plugins)
         })
         .catch(e => {
           this.$tip.apiFailed(e)
@@ -89,12 +104,23 @@ export default {
 <style scoped lang="scss">
 .plugin-selector {
   width: 100%;
-  padding: 10px;
+  padding: 0 10px 10px 10px;
   border: 1px solid #eee;
   border-radius: 5px;
   max-height: 350px;
   overflow-y: auto;
-  ul {
+  ul.tabs {
+    display: flex;
+    border-bottom: 1px solid #eee;
+    li {
+      padding: 5px 15px;
+      cursor: pointer;
+      &.selected {
+        font-weight: bold;
+      }
+    }
+  }
+  ul.plugin-list {
     li {
       display: flex;
       align-items: center;
@@ -106,6 +132,7 @@ export default {
       }
       // 选中信息
       .checkbox {
+        flex-shrink: 0;
         width: 16px;
         height: 16px;
         border: 1px solid #ccc;
