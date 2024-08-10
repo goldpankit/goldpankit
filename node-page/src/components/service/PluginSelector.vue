@@ -154,7 +154,7 @@ export default {
     li {
       display: flex;
       align-items: center;
-      padding: 10px;
+      padding: 20px 10px;
       border-bottom: 1px dashed #eee;
       cursor: pointer;
       position: relative;
@@ -200,7 +200,7 @@ export default {
       // 操作
       .opera {
         position: absolute;
-        top: 0;
+        top: 5px;
         right: 10px;
         .el-button {
           color: var(--primary-color-match-2);

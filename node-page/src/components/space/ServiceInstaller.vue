@@ -250,6 +250,9 @@ export default {
     ...mapGetters(['getCurrentDatabaseDetail']),
     // 获取预置插件
     fetchPresetPlugins () {
+      if (this.isPlugin) {
+        return
+      }
       fetchPresetPlugins({
         space: this.space,
         service: this.service,
