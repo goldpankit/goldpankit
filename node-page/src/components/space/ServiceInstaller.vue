@@ -76,6 +76,17 @@
                 />
               </el-form-item>
             </template>
+            <el-form-item v-if="!isPlugin" label="选择插件">
+              <PluginSelector
+                v-model="selectedPlugins"
+                :space="space"
+                :service="service"
+                :major-version="majorVersion"
+              />
+              <FormItemTip
+                content="插件是一个具体功能或技术集成的代码，选择对应的插件后，将自动产生对应代码！"
+              />
+            </el-form-item>
           </el-form>
         </div>
       </template>
@@ -108,10 +119,13 @@ import ServiceCodeErrorWindow from "../service/ServiceCodeErrorWindow.vue";
 import FormItemTip from "../common/FormItemTip.vue";
 import VipExpiredWindow from "@/components/usr/VipExpiredWindow.vue";
 import VariableRemarkIcon from "@/components/service/installer/VariableRemarkIcon.vue";
+import PluginSelector from "@/components/service/PluginSelector.vue";
+import {fetchPresetPlugins} from "@/api/service";
 
 export default {
   name: "ServiceInstaller",
   components: {
+    PluginSelector,
     VariableRemarkIcon,
     VipExpiredWindow,
     FormItemTip,
@@ -173,6 +187,8 @@ export default {
       versionData: null,
       // 变量
       variables: [],
+      // 选择的插件
+      selectedPlugins: [],
       // 已选版本
       selectedVersion: null,
     }
@@ -193,6 +209,13 @@ export default {
     // 服务和插件的唯一标志
     unique () {
       return [this.space, this.service, this.plugin, this.selectedVersion]
+    },
+    // 主版本
+    majorVersion () {
+      if (this.selectedVersion.trim() === '') {
+        return ''
+      }
+      return this.selectedVersion.split('.')[0]
     }
   },
   watch: {
@@ -221,6 +244,20 @@ export default {
     ...mapMutations(['setInstallData']),
     ...mapActions(['refreshBalance']),
     ...mapGetters(['getCurrentDatabaseDetail']),
+    // 获取预置插件
+    fetchPresetPlugins () {
+      fetchPresetPlugins({
+        space: this.space,
+        service: this.service,
+        version: this.version
+      })
+        .then(plugins => {
+          this.selectedPlugins = plugins
+        })
+        .catch(e => {
+          this.$tip.apiFailed(e)
+        })
+    },
     // 获取版本信息
     fetchVersion () {
       fetchVersion({
@@ -232,6 +269,7 @@ export default {
         .then(data => {
           this.versionData = data
           this.initVariables()
+          this.fetchPresetPlugins()
         })
         .catch(e => {
           this.$tip.apiFailed(e)

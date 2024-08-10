@@ -1,5 +1,11 @@
 import request from "../utils/request";
 
+// 从GIT中克隆服务代码
+export function fetchPresetPlugins (data) {
+  return request.post('/service/preset/plugins', data, {
+    baseURL: import.meta.env.VITE_REMOTE_API_PREFIX
+  })
+}
 
 // 从GIT中克隆服务代码
 export function gitClone (data) {
