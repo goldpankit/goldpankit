@@ -54,7 +54,8 @@
         <el-form-item :label="$t('service.settings.introduce')" prop="introduce" required>
           <el-input type="textarea" :rows="5" v-model="form.introduce" @input="saveConfig"/>
         </el-form-item>
-        <el-form-item label="预置插件" prop="presetPlugins" required>
+        <!-- 预置插件只有服务发布才存在 -->
+        <el-form-item v-if="plugin == null" label="预置插件" prop="presetPlugins" required>
           <PluginSelector
             v-model="form.presetPlugins"
             :space="space"
