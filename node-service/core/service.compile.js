@@ -201,9 +201,18 @@ class Kit {
           try {
             // 写入文件
             const diffFiles = fs.writeFiles(data.files, data.project)
-            // 获取构建详情并返回
-            serviceBuild.getBuildDetails('COMPILE', data.project, data.serviceConfig.builds, diffFiles, data.serviceConfig.compiler, data.variables)
-              .then(builds => {
+            // 获取服务的构建详情
+            const getBuildsDetailsPromises = [serviceBuild
+              .getBuildDetails('COMPILE', data.project, data.serviceConfig.builds, diffFiles, data.serviceConfig.compiler, data.variables)]
+            // 获取预置插件的构建详情
+            for (const presetPlugin of data.presetPlugins) {
+              getBuildsDetailsPromises.push(serviceBuild
+                .getBuildDetails('COMPILE', data.project, JSON.parse(presetPlugin.builds), diffFiles, presetPlugin.compiler, presetPlugin.variables))
+            }
+            Promise.all(getBuildsDetailsPromises)
+              .then(buildsList => {
+                // 将服务构建和预置插件构建合并到一个数组中
+                const builds = buildsList.flat()
                 // 返回构建信息
                 const result = {
                   projectId: data.project.id,
@@ -363,7 +372,8 @@ class Kit {
             })
               .then(data => {
                 resolve({
-                  files: data,
+                  files: data.files,
+                  presetPlugins: data.presetPlugins,
                   project,
                   database,
                   serviceConfig,
