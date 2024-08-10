@@ -333,6 +333,7 @@ export default {
         service: this.service,
         plugin: this.plugin,
         version: this.selectedVersion,
+        plugins: this.selectedPlugins,
         variables
       })
         .then(installData => {

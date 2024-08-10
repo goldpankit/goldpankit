@@ -12,19 +12,24 @@
           <p>最新版本：{{ plugin.lastVersion }}</p>
           <p>{{ plugin.introduce }}</p>
         </div>
+        <div class="opera">
+          <el-button size="default" type="text" @click.stop="$refs.markdownWindow.open(plugin.label, plugin.description)">查看介绍</el-button>
+        </div>
       </li>
     </ul>
     <Empty v-else :description="emptyTip"/>
+    <MarkdownWindow ref="markdownWindow"/>
   </div>
 </template>
 
 <script>
 import { fetchList } from '@/api/plugin'
 import Empty from '@/components/common/Empty'
+import MarkdownWindow from '@/components/common/MarkdownWindow'
 
 export default {
   name: 'PluginSelector',
-  components: { Empty },
+  components: { Empty, MarkdownWindow },
   props: {
     // 选中的插件标识符
     modelValue: {
@@ -132,7 +137,7 @@ export default {
   padding: 0 10px 10px 10px;
   border: 1px solid #eee;
   border-radius: 5px;
-  max-height: 350px;
+  max-height: 500px;
   overflow-y: auto;
   ul.tabs {
     display: flex;
@@ -149,9 +154,13 @@ export default {
     li {
       display: flex;
       align-items: center;
-      padding: 10px 0;
+      padding: 10px;
       border-bottom: 1px dashed #eee;
       cursor: pointer;
+      position: relative;
+      &:hover {
+        background: #fafafa;
+      }
       &:last-of-type {
         border-bottom: 0;
       }
@@ -186,6 +195,18 @@ export default {
         }
         p {
           color: var(--color-gray);
+        }
+      }
+      // 操作
+      .opera {
+        position: absolute;
+        top: 0;
+        right: 10px;
+        .el-button {
+          color: var(--primary-color-match-2);
+          &:hover {
+            color: var(--primary-color-match-2-transition);
+          }
         }
       }
     }
