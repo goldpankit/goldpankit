@@ -50,6 +50,8 @@ class DiffGroup {
   diffLines;
   // 定位行
   positionLines;
+  // 表达式组
+  expressGroup;
   // 表达式行
   expressLines;
   // 表达式配置
@@ -58,11 +60,12 @@ class DiffGroup {
   direction;
 
   constructor(diffLines, direction, positionLines, expressGroup) {
-    this.config = expressGroup.config
-    this.expressLines = expressGroup.lines
     this.direction = direction
     this.positionLines = positionLines
     this.diffLines = diffLines
+    this.expressGroup = expressGroup
+    this.config = expressGroup.config
+    this.expressLines = expressGroup.lines
   }
 }
 
@@ -104,40 +107,46 @@ class DiffExpress {
       const normalizedContent = this.#normalizeContent(content)
       const contentLines = this.#getLines(normalizedContent)
       const diffGroups = this.getDiffGroups(normalizedExpress, contentLines)
+      // 如果为反向合并，则将差异组反序（按照原来的合并逻辑进行反向处理，例如原逻辑为先增后减，则反向逻辑就应该为先减后增，并把增改为减，把减改为增）
+      if (reverse) {
+        diffGroups.reverse()
+      }
       // 解析失败的组
       const errorGroups = []
       // 解析组
       for (const diffGroup of diffGroups) {
+        // 获取实时差异组，以支持差异组的连续生效
+        const realtimeDiffGroup = this.getDiffGroup(diffGroup.expressGroup, contentLines)
         // 如果组存在错误，则直接加入错误组
-        if (diffGroup.error) {
-          errorGroups.push(diffGroup)
+        if (realtimeDiffGroup.error) {
+          errorGroups.push(realtimeDiffGroup)
           continue
         }
         if (reverse) {
           // 验证是否已反向合并过
-          if (this.#isReversed(diffGroup, contentLines)) {
+          if (this.#isReversed(realtimeDiffGroup, contentLines)) {
             continue
           }
         } else {
           // 验证是否已合并过
-          if (this.#isMerged(diffGroup, contentLines)) {
+          if (this.#isMerged(realtimeDiffGroup, contentLines)) {
             continue
           }
         }
         // 如果差异行在顶部
-        if (diffGroup.direction === 'TOP') {
-          // 解析组内新增行
-          this.#mergeInsertLines(diffGroup, contentLines, errorGroups, reverse)
+        if (realtimeDiffGroup.direction === DIRECTION.TOP) {
           // 解析组内删除行
-          this.#mergeDeleteLines(diffGroup, contentLines, errorGroups)
+          this.#mergeDeleteLines(realtimeDiffGroup, contentLines, errorGroups)
+          // 解析组内新增行
+          this.#mergeInsertLines(realtimeDiffGroup, contentLines, errorGroups, reverse)
           continue
         }
         // 如果差异行在底部或中间
-        if (diffGroup.direction === 'BOTTOM' || diffGroup.direction === DIRECTION.CENTER) {
+        if (diffGroup.direction === DIRECTION.BOTTOM || diffGroup.direction === DIRECTION.CENTER) {
           // 解析组内删除行
-          this.#mergeDeleteLines(diffGroup, contentLines, errorGroups)
+          this.#mergeDeleteLines(realtimeDiffGroup, contentLines, errorGroups)
           // 解析组内新增行
-          this.#mergeInsertLines(diffGroup, contentLines, errorGroups, reverse)
+          this.#mergeInsertLines(realtimeDiffGroup, contentLines, errorGroups, reverse)
         }
       }
       // 如果存在解析失败的组，则把解析失败的组构建为差异字符串后返回
@@ -300,7 +309,7 @@ class DiffExpress {
       if (expressGroup.lines.length === 0) {
         continue
       }
-      diffGroups.unshift(this.getDiffGroup(expressGroup, contentLines))
+      diffGroups.push(this.getDiffGroup(expressGroup, contentLines))
     }
     return diffGroups
   }

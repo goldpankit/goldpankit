@@ -1,4 +1,8 @@
 /...
-+1
-2
+  "dependencies": {
+-    "vue": "^3.4.29"
+...
+  "dependencies": {
++    "vue": "^3.4.29",
++    "vue-router": "^4.3.3"
 .../
