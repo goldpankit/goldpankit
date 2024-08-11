@@ -142,7 +142,7 @@ class DiffExpress {
           continue
         }
         // 如果差异行在底部或中间
-        if (diffGroup.direction === DIRECTION.BOTTOM || diffGroup.direction === DIRECTION.CENTER) {
+        if (realtimeDiffGroup.direction === DIRECTION.BOTTOM || realtimeDiffGroup.direction === DIRECTION.CENTER) {
           // 解析组内删除行
           this.#mergeDeleteLines(realtimeDiffGroup, contentLines, errorGroups)
           // 解析组内新增行
@@ -328,6 +328,7 @@ class DiffExpress {
       return {
         error: true,
         message: 'no position lines.',
+        expressGroup,
         expressLines: expressLines,
         config: expressGroup.config,
       }
@@ -338,6 +339,7 @@ class DiffExpress {
       return {
         error: true,
         message: 'no diff lines.',
+        expressGroup,
         expressLines: expressLines,
         config: expressGroup.config,
       }
