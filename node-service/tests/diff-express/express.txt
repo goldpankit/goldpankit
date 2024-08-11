@@ -1,7 +1,16 @@
 /...
-定位行
-+新增行A
-...
-新增行A
-+新增行B，可基于第一个差异组新增的行A进行定位
+  header .wrapper {
+    display: flex;
+    place-items: flex-start;
+    flex-wrap: wrap;
+  }
++
++  nav {
++    text-align: left;
++    margin-left: -1rem;
++    font-size: 1rem;
++
++    padding: 1rem 0;
++    margin-top: 1rem;
++  }
 .../

@@ -1,3 +1,4 @@
+const util = require('./util')
 // 差异行操作类型
 const OPERA_TYPE = {
   DELETE: 'DELETE', // 删除行
@@ -252,7 +253,7 @@ class DiffExpress {
     deleteLines.reverse()
     /**
      * 如果新增的行都存在于目标内容中，或者已经删除的行不存在于
-     * 目标内容中，都说明已经卸载过或未安装过，此时无需在合并
+     * 目标内容中，都说明已经编译过或安装过，此时无需再合并
      */
     if (insertLines.length > 0) {
       return this.#existsLines(insertLines, contentLines)
@@ -454,7 +455,7 @@ class DiffExpress {
     // 获取新行的内容（差异行都是从后往前处理的，这里要做一下反转）
     const copyNewLines = JSON.parse(JSON.stringify(newLines.map(item => item.content.substring(1).trim())))
     copyNewLines.reverse()
-    return content.indexOf(this.#linesToText(copyNewLines)) !== -1
+    return util.containsLines(copyNewLines, this.#getLines(content))
   }
 
   /**
