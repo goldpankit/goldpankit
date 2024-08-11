@@ -65,9 +65,9 @@ export default {
     // 空提示
     emptyTip () {
       if (this.currentTab === 'selected') {
-        return '暂未选择插件，可在插件市场选择'
+        return '可在插件市场选择需要的插件！'
       }
-      return '该服务下暂无插件可选择'
+      return '暂无插件！'
     },
     // 过滤后的插件
     filteredPlugins () {
