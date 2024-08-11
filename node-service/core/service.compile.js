@@ -465,6 +465,7 @@ class Kit {
             version: dto.version,
             // 项目使用的服务版本，安装服务时应该为null
             projectServiceVersion: projectInstallService == null ? null : projectInstallService.version,
+            plugins: dto.plugins,
             operaType: dto.operaType,
             variables: vars
           })
