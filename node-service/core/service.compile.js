@@ -367,6 +367,13 @@ class Kit {
         if (project.service != null) {
           projectInstallService = project.service[dto.service]
         }
+        // 获取项目已安装的插件
+        let installedPlugins = []
+        if (project.plugins != null) {
+          for (const pluginName in project.plugins) {
+            installedPlugins.push({ name: pluginName })
+          }
+        }
         // 获取服务信息
         const serviceConfig = service.getServiceConfig({space: dto.space, service: dto.service, plugin: dto.plugin})
         // 如果存在翻译器，则先进行翻译
@@ -396,8 +403,10 @@ class Kit {
               projectServiceVersion: projectInstallService == null ? null : projectInstallService.version,
               minServiceVersion: serviceConfig.minServiceVersion,
               defaultCompiler: serviceConfig.compiler,
-              // 预置插件，用于编译时自动编译预置插件（v2.11.0增加）
-              presetPlugins: serviceConfig.presetPlugins,
+              // 服务预置的插件，用于编译时自动编译预置插件（只有编译服务时才传递）（v2.11.0增加）
+              presetPlugins: dto.plugin == null ? serviceConfig.presetPlugins : [],
+              // 已安装的插件，用于获取框架插件安装情况（v2.11.0增加）
+              installedPlugins,
               variables: vars,
               files
             })
@@ -448,6 +457,13 @@ class Kit {
       if (project.service != null && project.service[dto.service] != null) {
         projectInstallService = project.service[dto.service]
       }
+      // 获取项目已安装的插件
+      let installedPlugins = []
+      if (project.plugins != null) {
+        for (const pluginName in project.plugins) {
+          installedPlugins.push({ name: pluginName })
+        }
+      }
       // 获取数据库信息
       const database = projectDatabase.getDatabase(projectId, dto.database)
       // 组装变量
@@ -465,7 +481,10 @@ class Kit {
             version: dto.version,
             // 项目使用的服务版本，安装服务时应该为null
             projectServiceVersion: projectInstallService == null ? null : projectInstallService.version,
-            plugins: dto.plugins,
+            // 服务预置的插件，用于编译时自动编译预置插件（只有编译服务时才传递）（v2.11.0增加）
+            plugins: dto.plugin == null ? dto.plugins : [],
+            // 已安装的插件，用于获取框架插件安装情况（v2.11.0增加）
+            installedPlugins,
             operaType: dto.operaType,
             variables: vars
           })
