@@ -50,6 +50,18 @@
       </el-table-column>
     </el-table>
   </div>
+  <div class="variable-block">
+    <h3>其它</h3>
+    <el-table :data="variableData.others">
+      <el-table-column label="变量名" width="235px" prop="name"></el-table-column>
+      <el-table-column label="变量备注" width="300px" prop="zhRemark"></el-table-column>
+      <el-table-column label="示例" prop="demo">
+        <template #default="{row}">
+          <pre>{{row.demo}}</pre>
+        </template>
+      </el-table-column>
+    </el-table>
+  </div>
 </template>
 
 <script>
@@ -136,6 +148,9 @@ export default {
         select: [
           { name: 'mySelect', enRemark: '', zhRemark: '选项值', type: 'Any', demo: '${mySelect}' },
           { name: 'mySelectSetting', enRemark: '', zhRemark: 'select深度设置内容', type: 'Object', demo: '${mySelectSetting.myField}' },
+        ],
+        others: [
+          { name: '_plugins', enRemark: '', zhRemark: '对于服务而言为预置插件；对于插件而言为已安装的插件。', type: 'Array', demo: '${_plugins[0].name}' },
         ]
       }
     }
