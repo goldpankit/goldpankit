@@ -239,12 +239,12 @@ class DiffExpress {
   #isMerged (diffGroup, contentLines) {
     const expressLines = diffGroup.expressLines
     // 获取原始表达式中新增的行数组
-    let insertLines = expressLines.filter(line => line.startsWith('+')).map(line => {
+    let insertLines = expressLines.filter(line => line.trim().startsWith('+')).map(line => {
       // 转换为对象，以调用#existsLines方法
       return { content: line }
     })
     // 获取原始表达式中删除的行数组
-    let deleteLines = expressLines.filter(line => line.startsWith('-')).map(line => {
+    let deleteLines = expressLines.filter(line => line.trim().startsWith('-')).map(line => {
       // 转换为对象，以调用#existsLines方法
       return { content: line }
     })
@@ -376,12 +376,16 @@ class DiffExpress {
       }
       // 添加删除行记录
       const deleteTotal = this.#countDeleteLines(expressLines)
+      // - 获取第一行删除行的索引
+      const deleteLinesStrings = diffLineStrings.filter(line => line.trim().startsWith('-')).map(line => line.substring(1))
+      const firstDeleteLineIndex = util.getFirstLineIndex(deleteLinesStrings, contentLines, firstPositionLine.index, -1)
       for (let i = 0; i < diffLineStrings.length; i++) {
         const line = diffLineStrings[i]
         const operaType = this.#getDiffLineOperaType(line)
         if (operaType === OPERA_TYPE.DELETE) {
+          // 找出需要被删除的第一行的索引
           diffLines.push(new DiffLine(
-            firstPositionLine.index - deleteTotal + deleteCount,
+            firstDeleteLineIndex - deleteTotal + deleteCount,
             line
           ))
           deleteCount++
@@ -409,6 +413,7 @@ class DiffExpress {
       let lastPositionLine = positionLines[positionLines.length - 1]
       const firstDiffLineIndex = expressLines.findIndex(line => line === firstDiffLineString)
       let lastPositionIndex = positionLines.length - 1
+      // console.log('diffLineStrings', diffLineStrings)
       while (lastPositionIndex >= 0) {
         lastPositionLine = positionLines[lastPositionIndex]
         if (lastPositionLine.expressIndex < firstDiffLineIndex) {
@@ -429,12 +434,15 @@ class DiffExpress {
         }
       }
       // 添加删除行记录
+      // - 获取第一行删除行的索引
+      const deleteLinesStrings = diffLineStrings.filter(line => line.trim().startsWith('-')).map(line => line.substring(1))
+      const firstDeleteLineIndex = util.getFirstLineIndex(deleteLinesStrings, contentLines, lastPositionIndex, 1)
       for (let i = 0; i < diffLineStrings.length; i++) {
         const line = diffLineStrings[i]
         const operaType = this.#getDiffLineOperaType(line)
         if (operaType === OPERA_TYPE.DELETE) {
           diffLines.push(new DiffLine(
-            lastPositionLine.index + deleteIndex,
+            firstDeleteLineIndex + deleteIndex - 1,
             line
           ))
           deleteIndex++
@@ -453,7 +461,7 @@ class DiffExpress {
   #existsLines (newLines, contentLines) {
     const content = this.#linesToText(contentLines.map(line => line.trim()))
     // 获取新行的内容（差异行都是从后往前处理的，这里要做一下反转）
-    const copyNewLines = JSON.parse(JSON.stringify(newLines.map(item => item.content.substring(1).trim())))
+    const copyNewLines = JSON.parse(JSON.stringify(newLines.map(item => item.content.trim().substring(1))))
     copyNewLines.reverse()
     return util.containsLines(copyNewLines, this.#getLines(content))
   }
