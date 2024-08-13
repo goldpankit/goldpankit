@@ -36,14 +36,14 @@ export default ({ mode }) => {
           rewrite: (path) => path.replace(new RegExp(`^${localApiPrefix}`), "")
         },
         [remoteApiPrefix]: {
-          target: 'http://localhost:10088',
-          // target: 'http://client-api.goldpankit.com',
+          // target: 'http://localhost:10088',
+          target: 'http://client-api.goldpankit.com',
           changeOrigin: true,
           rewrite: (path) => path.replace(new RegExp(`^${remoteApiPrefix}`), "")
         },
         ['/resource']: {
-          target: 'http://localhost:10088/resource',
-          // target: 'http://client-api.goldpankit.com/resource',
+          // target: 'http://localhost:10088/resource',
+          target: 'http://client-api.goldpankit.com/resource',
           changeOrigin: true,
           rewrite: (path) => path.replace(new RegExp(`^/resource`), "")
         }
