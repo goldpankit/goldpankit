@@ -253,6 +253,20 @@ export default {
       if (this.isPlugin) {
         return
       }
+      // 从项目配置中获取
+      if (this.projectConfig != null) {
+        const plugins = []
+        for (const pluginName in this.projectConfig.plugins) {
+          const plugin = this.projectConfig.plugins[pluginName]
+          const isPresetPlugin = plugin.variables.find(variable => variable.inputType === 'table' || variable.inputType === 'query_model') == null
+          if (isPresetPlugin) {
+            plugins.push({ name: pluginName })
+          }
+        }
+        this.selectedPlugins = plugins
+        return
+      }
+      // 如果项目没有安装过，则查询框架的预置插件
       fetchPresetPlugins({
         space: this.space,
         service: this.service,
