@@ -51,9 +51,9 @@ module.exports = {
         return startIndex + searchLines.indexOf(trimmedLines[0])
       }
       // 多行，逐行往下匹配
-      for (let i = 0; i < searchLines.length - trimmedLines.length + 1; i++) { // 5
+      for (let i = 0; i < searchLines.length - trimmedLines.length + 1; i++) {
         let firstLineIndex = -1
-        for (let j = 0; j < trimmedLines.length; j++) { // 2
+        for (let j = 0; j < trimmedLines.length; j++) {
           // 逐行匹配，有一行不匹配，则清空首行索引，并结束循环，进入下一次范围行搜索
           if (trimmedLines[j].trim() !== searchLines[i + j].trim()) {
             firstLineIndex = -1
