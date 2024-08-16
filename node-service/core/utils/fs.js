@@ -125,6 +125,7 @@ module.exports = {
       }
       // 获取写入文件路径
       const filepath = path.join(project.codespace, relativePath)
+      const fileExists = this.exists(filepath)
       let content = file.content
       // 如果为已删除文件，且本地存在该文件，加入删除队列，此时file.content为null
       if (file.operaType === 'DELETED') {
@@ -158,7 +159,7 @@ module.exports = {
         continue
       }
       // 如果文件在项目中不存在
-      if (!this.exists(filepath)) {
+      if (!fileExists) {
         // - 如果项目中存在文件（这里的文件指的是项目其它文件，不含kit.json和kit.db.json的文件）
         if (isNotEmptyProject) {
           // - 如果文件必须要在本地中存在才生效，则不做处理
@@ -167,17 +168,16 @@ module.exports = {
           }
           // - 新内容是差异表达式（此时的差异表达式可能是“纯删”或“纯加”语句）
           if (diffExp.isDiffEllipsis(content)) {
-            // 本地内容视为空串
+            // 文件在项目中不存在，视为本地内容为空串
             let localFileContent = ''
             // 合并
             const mergeResult = diffExp.merge(content, localFileContent)
             content = mergeResult.content
-            // 合并失败
+            // 合并失败（本地不存在文件，并且还合并失败，说明content为存在定位行的差异表达式）
             if (!mergeResult.success) {
-              // 左侧内容=差异表达式+本地内容
-              localFileContent = `[AUTOMERGE]\nThe following is the logic for merging the code, \nbut we are currently unable to merge according to this logic. \nPlease manually perform the merge.\n\n${mergeResult.errorExpress}\n\n${localFileContent}`
+              continue
             }
-            // 如果内容为空，则不做处理（此时本地也不存在）
+            // 合并成功 && 内容为空，则不做处理（此时本地也不存在）
             if (content.trim() === '') {
               continue
             }
@@ -212,21 +212,23 @@ module.exports = {
         // 合并
         const mergeResult = diffExp.merge(content, localFileContent)
         content = mergeResult.content
-        // 合并后的结果为空，且本地存在该文件，加入删除队列
-        if (content.trim() === '') {
-          if (this.exists(filepath)) {
-            const fileInfo = this.readFile(filepath)
-            file.localContent = fileInfo.content
-            // 文件操作类型调整为删除
-            file.operaType = 'DELETED'
-            diffFiles.push(file)
-          }
-          continue
-        }
         // 合并失败
         if (!mergeResult.success) {
           // 左侧内容=差异表达式+本地内容
           localFileContent = `[AUTOMERGE]\nThe following is the logic for merging the code, \nbut we are currently unable to merge according to this logic. \nPlease manually perform the merge.\n\n${mergeResult.errorExpress}\n\n${localFileContent}`
+          file.content = content
+          file.localContent = localFileContent
+          diffFiles.push(file)
+          continue
+        }
+        // 合并后的结果为空，且本地存在该文件，加入删除队列
+        if (content.trim() === '') {
+          const fileInfo = this.readFile(filepath)
+          file.localContent = fileInfo.content
+          // 文件操作类型调整为删除
+          file.operaType = 'DELETED'
+          diffFiles.push(file)
+          continue
         }
       }
       file.content = content

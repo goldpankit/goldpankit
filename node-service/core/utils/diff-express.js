@@ -561,7 +561,7 @@ class DiffExpress {
    * @param expressLines 表达式行集
    */
   #hasPositionLines (expressLines) {
-    return expressLines.filter(line => !line.startsWith('+') && !line.startsWith('-')).length > 0
+    return expressLines.filter(line => !line.trim().startsWith('+') && !line.trim().startsWith('-')).length > 0
   }
 
   /**
