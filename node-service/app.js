@@ -11,7 +11,7 @@ const command = yargs.argv._[0];
 // 组装参数
 const args = {
   // 启动端口
-  port: jsonArgs.p || jsonArgs.port || 80,
+  port: jsonArgs.p || jsonArgs.port || 8130,
   // 本地地址
   localAddress: 'localhost',
   // 局域网地址
