@@ -345,7 +345,7 @@ class DiffExpress {
         config: expressGroup.config,
       }
     }
-    let positionDirection = this.#getPositionLinesDirection(firstDiffLineString, positionLines, expressLines)
+    let diffDirection = this.#getDiffLinesDirection(firstDiffLineString, positionLines, expressLines)
     const diffLineStrings = this.#getDiffLineStrings(expressLines)
     /**
      * 差异行全都在最顶部的处理逻辑
@@ -359,7 +359,7 @@ class DiffExpress {
      * 删除行索引 = 第一条定位行 - 删除索引（c为1，d为2）
      * 新增行索引 = 第一条定位行
      */
-    if (positionDirection === DIRECTION.TOP) {
+    if (diffDirection === DIRECTION.TOP) {
       // 获取第一行定位行的索引
       const firstPositionLine = positionLines[0]
       let deleteCount = 0
@@ -385,7 +385,7 @@ class DiffExpress {
         if (operaType === OPERA_TYPE.DELETE) {
           // 找出需要被删除的第一行的索引
           diffLines.push(new DiffLine(
-            firstDeleteLineIndex - deleteTotal + deleteCount,
+            firstDeleteLineIndex - deleteTotal + deleteCount + 1,
             line
           ))
           deleteCount++
@@ -404,7 +404,7 @@ class DiffExpress {
      * 新增行索引 = 最后一条定位行索引 + 1（因为是先插入e，再插入c，所以e和c的索引是一致的）
      * 删除行索引 = 最后一条定位行索引 + 删除索引
      */
-    else if (positionDirection === DIRECTION.BOTTOM || positionDirection === DIRECTION.CENTER) {
+    else if (diffDirection === DIRECTION.BOTTOM || diffDirection === DIRECTION.CENTER) {
       /**
        * 获取最后一行定位行的索引
        * 因为存在差异行上下都存在定位行的情况，所以可得
@@ -413,7 +413,6 @@ class DiffExpress {
       let lastPositionLine = positionLines[positionLines.length - 1]
       const firstDiffLineIndex = expressLines.findIndex(line => line === firstDiffLineString)
       let lastPositionIndex = positionLines.length - 1
-      // console.log('diffLineStrings', diffLineStrings)
       while (lastPositionIndex >= 0) {
         lastPositionLine = positionLines[lastPositionIndex]
         if (lastPositionLine.expressIndex < firstDiffLineIndex) {
@@ -450,7 +449,7 @@ class DiffExpress {
       }
     }
     diffLines.reverse()
-    return new DiffGroup(diffLines, positionDirection, positionLines, expressGroup)
+    return new DiffGroup(diffLines, diffDirection, positionLines, expressGroup)
   }
 
   /**
@@ -476,7 +475,7 @@ class DiffExpress {
     const deletedLines = diffGroup.diffLines.filter(diffLine => diffLine.operaType === OPERA_TYPE.DELETE)
     for (const diffLine of deletedLines) {
       // 匹配到了删除的行
-      if (this.#eq(diffLine.content.substring(1), contentLines[diffLine.lineIndex])) {
+      if (this.#eq(diffLine.content.trim().substring(1), contentLines[diffLine.lineIndex])) {
         contentLines.splice(diffLine.lineIndex, 1)
       }
       // 未匹配到删除的行，添加到错误组中
@@ -604,7 +603,7 @@ class DiffExpress {
    * @param positionLines 定位行数组
    * @param expressLines 表达式行数组
    */
-  #getPositionLinesDirection (diffLineString, positionLines, expressLines) {
+  #getDiffLinesDirection (diffLineString, positionLines, expressLines) {
     const diffLineIndex = expressLines.findIndex(line => this.#eq(line, diffLineString))
     const firstPositionLineIndex = expressLines.findIndex(line => this.#eq(line, positionLines[0].content))
     const lastPositionLineIndex = expressLines.findIndex(line => this.#eq(line, positionLines[positionLines.length - 1].content))
@@ -615,10 +614,6 @@ class DiffExpress {
     // - 定位行全都在最顶部
     if (diffLineIndex > lastPositionLineIndex) {
       return DIRECTION.BOTTOM
-    }
-    // - 定位行一部分在顶部一部分在底部
-    if (diffLineIndex < lastPositionLineIndex && diffLineIndex > firstPositionLineIndex) {
-      return DIRECTION.CENTER
     }
     // - 表达式不正确
     return DIRECTION.INCORRECT

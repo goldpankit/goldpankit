@@ -30,10 +30,12 @@ module.exports = {
    * @param direction 搜索的方向，1表示向下查找，-1表示向上查找
    */
   getFirstLineIndex (lines, totalLines, startIndex, direction) {
+    // 去掉左右两侧空格
+    const trimmedLines = lines.map(line => line.trim())
     // 根据查找方向获取搜索范围
-    let searchLines = totalLines.slice(startIndex)
+    let searchLines = totalLines.slice(startIndex).map(line => line.trim())
     if (direction === -1) {
-      searchLines = totalLines.slice(0, startIndex)
+      searchLines = totalLines.slice(0, startIndex).map(line => line.trim())
       /*
       向上查找时，需要进行反序，例如
       - 1
@@ -45,15 +47,15 @@ module.exports = {
     // 向下搜索
     if (direction === 1) {
       // 单行
-      if (lines.length === 1) {
-        return startIndex + searchLines.indexOf(lines[0])
+      if (trimmedLines.length === 1) {
+        return startIndex + searchLines.indexOf(trimmedLines[0])
       }
       // 多行，逐行往下匹配
       for (let i = 0; i < searchLines.length; i++) {
         let firstLineIndex = -1
-        for (let j = 0; j < lines.length; j++) {
+        for (let j = 0; j < trimmedLines.length; j++) {
           // 逐行匹配，有一行不匹配，则清空首行索引，并结束循环，进入下一次范围行搜索
-          if (lines[j].trim() !== searchLines[i + j].trim()) {
+          if (trimmedLines[j].trim() !== searchLines[i + j].trim()) {
             firstLineIndex = -1
             break
           }
@@ -69,20 +71,20 @@ module.exports = {
     }
     // 向上搜索
     if (direction === -1) {
-      if (lines.length === 1) {
-        return searchLines.lastIndexOf(lines[0])
+      if (trimmedLines.length === 1) {
+        return searchLines.lastIndexOf(trimmedLines[0])
       }
       // 多行，逐行往上匹配
-      for (let i = searchLines.length - 1; i >= lines.length - 1; i--) {
+      for (let i = searchLines.length - 1; i >= trimmedLines.length - 1; i--) {
         let firstLineIndex = -1
-        for (let j = lines.length - 1; j >= 0; j--) {
+        for (let j = trimmedLines.length - 1; j >= 0; j--) {
           // 逐行匹配，有一行不匹配，则清空首行索引，并结束循环，进入下一次范围行搜索
-          if (lines[j].trim() !== searchLines[i + j - lines.length + 1].trim()) {
+          if (trimmedLines[j].trim() !== searchLines[i + j - trimmedLines.length + 1].trim()) {
             break
           }
           // 记录匹配的首行坐标
           if (j === 0) {
-            firstLineIndex = i + j - lines.length + 1
+            firstLineIndex = i + j - trimmedLines.length + 1
           }
         }
         if (firstLineIndex !== -1) {

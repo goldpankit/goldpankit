@@ -4,7 +4,7 @@ const util = require("../../core/utils/util");
 const root = process.cwd()
 const sourceFileContent = fs.readFile(`${root}/source.txt`).content
 const expressFileContent = fs.readFile(`${root}/express.txt`).content
-// console.log(diffExpress.merge(expressFileContent, sourceFileContent))
+console.log(diffExpress.merge(expressFileContent, sourceFileContent))
 // console.log(diffExpress.revertMerge(expressFileContent, sourceFileContent))
 
 function test_getFirstLineIndex () {
@@ -22,4 +22,4 @@ function test_getFirstLineIndex () {
     -1)
   )
 }
-test_getFirstLineIndex()
+// test_getFirstLineIndex()
