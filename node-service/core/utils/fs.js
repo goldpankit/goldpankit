@@ -37,13 +37,15 @@ module.exports = {
       // 删除文件
       if (file.filetype !== 'DIRECTORY') {
         let content = file.content
+        // 读取本地文件（本地文件可能不存在，即使在卸载的情况，也有可能是纯删除语句反向后的纯增语句，从而让卸载产生新的文件）
+        let fileInfo = null
+        const fileExists = this.exists(filepath)
+        if (fileExists) {
+          fileInfo = this.readFile(filepath)
+        }
         // 如果内容为差异表达式
         if (diffExp.isDiffEllipsis(content)) {
-          // 读取本地文件（本地文件可能不存在，即使在卸载的情况，也有可能是纯删除语句反向后的纯增语句，从而让卸载产生新的文件）
-          let fileInfo = null
-          if (this.exists(filepath)) {
-            fileInfo = this.readFile(filepath)
-          }
+          // 获取本地文件的内容，如本地文件不存在，则视为空（纯增情况本地文件可能不存在）
           let localFileContent = ''
           if (fileInfo != null) {
             localFileContent = fileInfo.content
@@ -52,11 +54,27 @@ module.exports = {
           content = revertMergeResult.content
           // 如果反向合并失败，则将差异表达式写入本地内容顶部
           if (!revertMergeResult.success) {
+            // 合并失败了，本地文件还不存在的情况，直接忽略
+            if (!fileExists) {
+              continue
+            }
             // 本地文件内容 = 表达式+本地文件内容
-            localFileContent = `[AUTOMERGE]\nThe following is the logic for merging the code, \nbut we are currently unable to merge according to this logic. \nPlease manually perform the merge.\n\n${revertMergeResult.errorExpress}\n\n${fileInfo.content}`
+            localFileContent = `[AUTOMERGE]\nThe following is the logic for merging the code, \nbut we are currently unable to merge according to this logic. \nPlease manually perform the merge.\n\n${revertMergeResult.errorExpress}\n\n${localFileContent}`
           }
-          // 如果本地不存在该文件，则标记为新增
-          if (!this.exists(filepath)) {
+          // 如果合并的结果与本地一致，直接忽略
+          if (content.trim() === localFileContent.trim()) {
+            continue
+          }
+          // 合并后的内容为空 && 本地不存在该文件，直接忽略
+          if (content.trim() === '' && !fileExists) {
+            continue
+          }
+          // 合并后的内容为空 && 本地存在该文件，则做删除
+          if (content.trim() === '' && fileExists) {
+            file.operaType = 'DELETED'
+          }
+          // 合并后的内容不为空 && 本地不存在该文件，则标记为新增
+          if (content.trim() !== '' && !fileExists) {
             file.operaType = 'ADD'
           }
           // 加入差异队列
@@ -66,11 +84,16 @@ module.exports = {
           diffFiles.push(file)
           continue
         }
-        // 将文件标记为“已删除”（指的是在新的服务或插件中代码中已被删除，并不是本地已被删除）并填充本地内容，加入差异文件队列
-        file.operaType = 'DELETED'
-        file.localContent = ''
-        file.localContent = this.readFile(filepath).content
-        diffFiles.push(file)
+        // 本地存在在该文件，做删除处理
+        if (fileExists) {
+          // 将文件标记为“已删除”（指的是在新的服务或插件中代码中已被删除，并不是本地已被删除）并填充本地内容，加入差异文件队列
+          file.operaType = 'DELETED'
+          file.localContent = ''
+          if (fileInfo != null) {
+            file.localContent = fileInfo.content
+          }
+          diffFiles.push(file)
+        }
       }
     }
     return diffFiles

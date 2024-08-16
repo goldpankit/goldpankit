@@ -318,6 +318,16 @@ class DiffExpress {
     const expressLines = expressGroup.lines
     // 找到定位行
     const positionLines = this.#getPositionLines(expressLines, contentLines)
+    // 如果表达式存在定位行 && 没找到定位行，则抛出错误
+    if (this.#hasPositionLines(expressLines) && positionLines.length === 0) {
+      return {
+        error: true,
+        message: 'can not found position lines.',
+        expressGroup,
+        expressLines: expressLines,
+        config: expressGroup.config,
+      }
+    }
     const diffLines = []
     const firstDiffLineString = this.#getFirstDiffLineString(expressLines)
     if (firstDiffLineString == null) {
@@ -361,8 +371,6 @@ class DiffExpress {
       // - 获取第一行删除行的索引
       const deleteLinesStrings = diffLineStrings.filter(line => line.trim().startsWith('-')).map(line => line.substring(1))
       const firstDeleteLineIndex = util.getFirstLineIndex(deleteLinesStrings, contentLines, firstPositionLine.index, -1)
-      console.log('deleteLinesStrings', deleteLinesStrings)
-      console.log('firstPositionLine.index', firstPositionLine.index)
       let deleteIndex = 1
       for (let i = 0; i < diffLineStrings.length; i++) {
         const line = diffLineStrings[i]
@@ -390,10 +398,8 @@ class DiffExpress {
      */
     else if (diffDirection === DIRECTION.BOTTOM) {
       // 获取最后一行定位行的索引
-      let lastPositionIndex = positionLines.length - 1
-      if (positionLines.length === 0) {
-        lastPositionIndex = 0
-      } else {
+      let lastPositionIndex = 0
+      if (positionLines.length > 0) {
         lastPositionIndex = positionLines[positionLines.length - 1].index
       }
       // 添加新增行记录
@@ -512,6 +518,9 @@ class DiffExpress {
    */
   #getPositionLines (expressLines, contentLines, searchStartIndex = 0) {
     let positionLines = []
+    if (!this.#hasPositionLines(expressLines)) {
+      return positionLines
+    }
     for (let i = 0; i < expressLines.length; i++) {
       const line = expressLines[i]
       if (!line.startsWith('+') && !line.startsWith('-')) {
@@ -545,6 +554,14 @@ class DiffExpress {
       }
     }
     return positionLines
+  }
+
+  /**
+   * 判断是否存在定位行
+   * @param expressLines 表达式行集
+   */
+  #hasPositionLines (expressLines) {
+    return expressLines.filter(line => !line.startsWith('+') && !line.startsWith('-')).length > 0
   }
 
   /**
