@@ -1,6 +1,24 @@
 #!/usr/bin/env node
 // 禁用 DeprecationWarning
 process.noDeprecation = true
+const network = require('./core/utils/network')
+const colors = require('colors-console')
+// 获取参数
+const yargs = require('yargs');
+const jsonArgs = yargs.argv;
+// 获取命令
+const command = yargs.argv._[0];
+// 组装参数
+const args = {
+  // 启动端口
+  port: jsonArgs.p || jsonArgs.port || 80,
+  // 本地地址
+  localAddress: 'localhost',
+  // 局域网地址
+  networkAddress: network.getNetworkAddress()
+}
+
+const pkg = require('./package.json')
 const env = require('./env').getConfig()
 const express = require('express');
 const path = require('path');
@@ -73,10 +91,12 @@ app.use(function(err, req, res, next) {
 
 // 开发模式直接启动
 if (env.env === 'develop') {
-  autoopen.findAvailablePort(80, (port) => {
+  autoopen.findAvailablePort(args.port, (port) => {
     // 开启应用监听
     app.listen(port, () => {
-      log.success(`KIT已启动，端口号：${port}`)
+      console.log( colors('green', `  KIT v${pkg.version} started.`))
+      console.log( colors('green', `  ➜   `), `Local: http://${args.localAddress}:${port}/`)
+      console.log( colors('green', `  ➜   `), `Network: http://${args.networkAddress}:${port}/`)
       autoopen.open(port)
     })
   })
@@ -89,10 +109,12 @@ if (env.env === 'develop') {
         return
       }
       // 升级完成后，找到可用的端口号，默认80
-      autoopen.findAvailablePort(80, (port) => {
+      autoopen.findAvailablePort(args.port, (port) => {
         // 开启应用监听
         app.listen(port, () => {
-          log.success(`KIT已启动，端口号：${port}`)
+          console.log( colors('green', `  KIT v${pkg.version} started.`))
+          console.log( colors('green', `  ➜   `), `Local: http://${args.localAddress}:${port}/`)
+          console.log( colors('green', `  ➜   `), `Network: http://${args.networkAddress}:${port}/`)
           autoopen.open(port)
         })
       })
