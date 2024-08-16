@@ -34,30 +34,36 @@ module.exports = {
       }
       const relativePath = file.filepath
       const filepath = path.join(project.codespace, relativePath)
-      if (!this.exists(filepath)) {
-        continue
-      }
       // 删除文件
       if (file.filetype !== 'DIRECTORY') {
         let content = file.content
         // 如果内容为差异表达式
         if (diffExp.isDiffEllipsis(content)) {
-          const fileInfo = this.readFile(filepath)
-          let localFileContent = fileInfo.content
-          const revertMergeResult = diffExp.revertMerge(content, fileInfo.content)
+          // 读取本地文件（本地文件可能不存在，即使在卸载的情况，也有可能是纯删除语句反向后的纯增语句，从而让卸载产生新的文件）
+          let fileInfo = null
+          if (this.exists(filepath)) {
+            fileInfo = this.readFile(filepath)
+          }
+          let localFileContent = ''
+          if (fileInfo != null) {
+            localFileContent = fileInfo.content
+          }
+          const revertMergeResult = diffExp.revertMerge(content, localFileContent)
           content = revertMergeResult.content
           // 如果反向合并失败，则将差异表达式写入本地内容顶部
           if (!revertMergeResult.success) {
             // 本地文件内容 = 表达式+本地文件内容
             localFileContent = `[AUTOMERGE]\nThe following is the logic for merging the code, \nbut we are currently unable to merge according to this logic. \nPlease manually perform the merge.\n\n${revertMergeResult.errorExpress}\n\n${fileInfo.content}`
           }
+          // 如果本地不存在该文件，则标记为新增
+          if (!this.exists(filepath)) {
+            file.operaType = 'ADD'
+          }
           // 加入差异队列
           file.content = content
           file.localContent = localFileContent
-          file.contentEncode = fileInfo.encode
-          if (file.content !== file.localContent) {
-            diffFiles.push(file)
-          }
+          file.contentEncode = 'utf-8'
+          diffFiles.push(file)
           continue
         }
         // 将文件标记为“已删除”（指的是在新的服务或插件中代码中已被删除，并不是本地已被删除）并填充本地内容，加入差异文件队列
@@ -78,7 +84,8 @@ module.exports = {
    */
   writeFiles (files, project, service = null, versionPath = []) {
     const currentFiles = this.getFiles(project.codespace)
-    const hasFile = currentFiles.filter(file => file !== Const.SERVICE_CONFIG_FILE).length > 0
+    // 判断项目中是否存在文件
+    const isNotEmptyProject = currentFiles.filter(file => file !== Const.PROJECT_CONFIG_FILE && file !== Const.PROJECT_DATABASE_CONFIG_FILE).length > 0
     log.debug(`${project.name}: 准备处理 ${files.length} 个文件`)
     const diffFiles = []
     let fileCount = 0
@@ -129,14 +136,34 @@ module.exports = {
       }
       // 如果文件在项目中不存在
       if (!this.exists(filepath)) {
-        // - 如果项目中存在文件
-        if (hasFile) {
-          // - 新内容是差异表达式，则不做处理（本地没有该文件，则不用再做差异合并）
-          if (diffExp.isDiffEllipsis(content)) {
-            continue
-          }
+        // - 如果项目中存在文件（这里的文件指的是项目其它文件，不含kit.json和kit.db.json的文件）
+        if (isNotEmptyProject) {
           // - 如果文件必须要在本地中存在才生效，则不做处理
           if (file.withoutIfNotExists === true) {
+            continue
+          }
+          // - 新内容是差异表达式（此时的差异表达式可能是“纯删”或“纯加”语句）
+          if (diffExp.isDiffEllipsis(content)) {
+            // 本地内容视为空串
+            let localFileContent = ''
+            // 合并
+            const mergeResult = diffExp.merge(content, localFileContent)
+            content = mergeResult.content
+            // 合并失败
+            if (!mergeResult.success) {
+              // 左侧内容=差异表达式+本地内容
+              localFileContent = `[AUTOMERGE]\nThe following is the logic for merging the code, \nbut we are currently unable to merge according to this logic. \nPlease manually perform the merge.\n\n${mergeResult.errorExpress}\n\n${localFileContent}`
+            }
+            // 如果内容为空，则不做处理（此时本地也不存在）
+            if (content.trim() === '') {
+              continue
+            }
+            // 不为空，标记为新增
+            file.localContent = localFileContent
+            file.content = content
+            // 文件操作类型调整为新增
+            file.operaType = 'ADD'
+            diffFiles.push(file)
             continue
           }
           // - 新内容不是差异表达式，则加入差异队列（写入新的文件时视为差异，避免用户对新增文件无感知）
@@ -155,13 +182,24 @@ module.exports = {
         fileCount++
         continue
       }
-      // 如果文件存在，且为差异表达式，合并内容
+      // 如果文件在项目中存在 && 为差异表达式，合并内容
       const fileInfo = this.readFile(filepath)
       let localFileContent = fileInfo.content
       if (diffExp.isDiffEllipsis(content)) {
         // 合并
         const mergeResult = diffExp.merge(content, localFileContent)
         content = mergeResult.content
+        // 合并后的结果为空，且本地存在该文件，加入删除队列
+        if (content.trim() === '') {
+          if (this.exists(filepath)) {
+            const fileInfo = this.readFile(filepath)
+            file.localContent = fileInfo.content
+            // 文件操作类型调整为删除
+            file.operaType = 'DELETED'
+            diffFiles.push(file)
+          }
+          continue
+        }
         // 合并失败
         if (!mergeResult.success) {
           // 左侧内容=差异表达式+本地内容

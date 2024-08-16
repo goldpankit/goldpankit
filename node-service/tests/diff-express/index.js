@@ -4,8 +4,14 @@ const util = require("../../core/utils/util");
 const root = process.cwd()
 const sourceFileContent = fs.readFile(`${root}/source.txt`).content
 const expressFileContent = fs.readFile(`${root}/express.txt`).content
-console.log(diffExpress.merge(expressFileContent, sourceFileContent))
-// console.log(diffExpress.revertMerge(expressFileContent, sourceFileContent))
+
+// 合并测试
+const mergeResult = diffExpress.merge(expressFileContent, sourceFileContent)
+console.log(mergeResult.success, mergeResult.message, mergeResult.content)
+
+// 反向合并测试
+// const revertResult = diffExpress.revertMerge(expressFileContent, sourceFileContent)
+// console.log(revertResult.success, revertResult.message, revertResult.content)
 
 function test_getFirstLineIndex () {
   const util = require('../../core/utils/util')
