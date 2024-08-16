@@ -483,7 +483,7 @@ class DiffExpress {
         errorGroups.push({
           ...diffGroup,
           error: true,
-          message: `can not match diff line '${diffLine.content.substring(1)}'.`
+          message: `can not match diff line '${diffLine.content}'.`
         })
         break
       }
