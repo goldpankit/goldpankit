@@ -1,16 +1,20 @@
 <div align="center">
   <img src="https://foruda.gitee.com/images/1692956820292184320/b882ad5d_1173697.png" width="50px"/>
-  <h1>GoldPanKit</h1>
+  <h1>GoldPanKit - 一分钟构建框架</h1>
 </div>
 
 ## 介绍
-GoldPanKit是一个全新的研发套件，由清华海峡研究院和CodeRd原班人马研发。将代码编写成服务，通过一键安装&卸载服务的方式来快速完成项目工程、项目功能模块、技术栈、接口和页面的研发和对接。旨在突破传统的研发效率，让项目从0到1小时级上线不是梦。
+GoldPanKit是一个全新的研发套件，由清华海峡研究院和CodeRd原班人马研发，实现快速构建框架、框架功能和集成技术栈。
 
-## 立即体验
+## 线上体验
+前往[官网](http://www.goldpankit.com)体验一分钟搭建主流框架。
+
+## 体验NPM上强大的客户端
 在终端依次执行以下命令
-
-1. - npm install goldpankit -g
-2. - kit
+```
+npm install goldpankit -g --registry https://registry.npmmirror.com
+kit
+```
 
 执行成功后将自动打开Kit站点。之后每次使用Kit只需要运行kit命令即可。
 
@@ -27,8 +31,9 @@ alter user 'root'@'localhost' identified with mysql_native_password by 'your pas
 
 在终端重新执行kit命令后，kit会自动检查并更新，更新成功后再次执行kit命令即可。如果更新失败，大概率是没有权限导致，请尝试使用超级管理员打开终端并重新执行kit命令。
 
-## 项目架构
-注意该仓库仅包含node客户端部分，但你仍然可以启动并直接使用线上服务来获取服务数据（后台部分不开源）。代码中的工程目录如下
+## 启动项目
+
+#### 项目目录
 
 - node-service：本地服务工程
 - node-page：页面工程
@@ -44,12 +49,5 @@ alter user 'root'@'localhost' identified with mysql_native_password by 'your pas
 1. npm install
 2. npm run serve
 
-
-
-## 参与贡献
-
-1.  Fork 本仓库
-2.  新建 Feat_xxx 分支
-3.  提交代码
-4.  新建 Pull Request
-
+## 效果预览
+项目启动成功后，访问`http://localhost:5173/`即可打开首页。
