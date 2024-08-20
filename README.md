@@ -4,7 +4,13 @@
 </div>
 
 ## 介绍
-GoldPanKit是一个全新的研发套件，由清华海峡研究院和CodeRd原班人马研发，实现快速构建框架、框架功能和集成技术栈。
+GoldPanKit是一个全新的研发套件，由清华海峡研究院和CodeRd原班人马研发，实现包括：
+1. 一键构建框架
+2. 支持为框架编写插件
+3. 支持框架的一键升级
+4. 支持单表、多表的代码生成
+5. 支持直连数据库，自动初始化数据库脚本
+6. 支持直连文件系统，免除下载解压复制粘贴的步骤
 
 ## 线上体验
 前往[官网](http://www.goldpankit.com)体验一分钟搭建主流框架。
@@ -38,16 +44,24 @@ alter user 'root'@'localhost' identified with mysql_native_password by 'your pas
 - node-service：本地服务工程
 - node-page：页面工程
 
-#### 本地启动步骤
- **启动node-service** 
+#### 启动node-service
+```shell
+npm install --registry https://registry.npmmirror.com
+npm link
+kit
+```
 
-1. npm install
-2. npm link
-3. kit
-
- **启动node-page** 
-1. npm install
-2. npm run serve
+#### 启动node-page 
+```shell
+npm install --registry https://registry.npmmirror.com
+npm run serve
+```
 
 ## 效果预览
 项目启动成功后，访问`http://localhost:5173/`即可打开首页。
+![index.png](lib/index.png)
+![index.png](lib/services.png)
+![index.png](lib/service_detail.png)
+![index.png](lib/service_install.png)
+![index.png](lib/workbench.png)
+![index.png](lib/query_model.png)
