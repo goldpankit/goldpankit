@@ -254,7 +254,7 @@ export default {
         return
       }
       // 从项目配置中获取
-      if (this.projectConfig != null) {
+      if (this.projectConfig != null && this.projectConfig.plugins != null) {
         const plugins = []
         for (const pluginName in this.projectConfig.plugins) {
           const plugin = this.projectConfig.plugins[pluginName]

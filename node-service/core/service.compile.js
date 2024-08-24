@@ -469,6 +469,17 @@ class Kit {
       // 组装变量
       const variables = this.#getVariables(project, database, dto.variables, dto.plugin != null)
       let serviceVars = null
+      // 获取预置插件
+      const presetPlugins = dto.plugin == null ? dto.plugins : []
+      /*
+      已安装插件 = 预置插件 + 项目已安装的插件，虽然预置插件在升级时通常为项目已安装的插件，但是在首次安装时，项目已安装插件为空，这里将预置插件也视为已安装的插件来处理
+      避免引起首次安装时对已安装插件的判断不准确。
+       */
+      for (const presetPlugin of presetPlugins) {
+        if (installedPlugins.find(installedPlugin => installedPlugin.name === presetPlugin.name) == null) {
+          installedPlugins.push(presetPlugin)
+        }
+      }
       return Promise.all(variables)
         .then(vars => {
           serviceVars = vars
@@ -482,7 +493,7 @@ class Kit {
             // 项目使用的服务版本，安装服务时应该为null
             projectServiceVersion: projectInstallService == null ? null : projectInstallService.version,
             // 服务预置的插件，用于编译时自动编译预置插件（只有编译服务时才传递）（v2.11.0增加）
-            plugins: dto.plugin == null ? dto.plugins : [],
+            plugins: presetPlugins,
             // 已安装的插件，用于获取框架插件安装情况（v2.11.0增加）
             installedPlugins,
             operaType: dto.operaType,
