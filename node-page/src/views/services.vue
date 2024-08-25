@@ -181,7 +181,7 @@ export default {
       width: 100%;
       min-height: 300px;
       & > li {
-        padding: 50px 30px;
+        padding: 20px 30px;
         box-sizing: border-box;
         background-color: var(--color-light);
         display: flex;
