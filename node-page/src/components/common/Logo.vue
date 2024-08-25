@@ -10,6 +10,14 @@
     <div v-if="withVersion" class="version">
       v{{ version }}
     </div>
+    <ul class="online-wrap">
+      <li>
+        <a href="http://www.goldpankit.com" target="_blank" @click.stop>访问线上版本</a>
+      </li>
+      <li>
+        <a href="https://www.yuque.com/u21334242/goldpankit/eauwiag8k720gcr8" target="_blank" @click.stop>查看使用文档</a>
+      </li>
+    </ul>
   </div>
 </template>
 
@@ -111,6 +119,17 @@ export default {
   .version {
     margin-left: 15px;
     font-style: italic;
+    cursor: pointer;
+  }
+  .online-wrap {
+    display: flex;
+    li {
+      margin-left: 15px;
+    }
+    a {
+      font-weight: bold;
+      text-decoration: underline !important;
+    }
   }
 }
 @keyframes loop {
