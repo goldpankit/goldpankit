@@ -32,7 +32,7 @@
       </el-form-item>
       <el-form-item label="库名" prop="schema" required>
         <div class="database-input">
-          <el-input v-model="form.schema" @input="form.name = form.schema"/>
+          <el-input v-model="form.schema" maxlength="64" @input="form.name = form.schema"/>
           <el-button type="primary" @click="openCreateDatabaseDialog">创建该库</el-button>
         </div>
       </el-form-item>
@@ -111,7 +111,7 @@ export default {
         ],
         schema: [
           { required: true, message: '请输入数据库名称'},
-          { pattern: /^[a-zA-Z0-9_]+$/, message: '数据库名称只能包含字母、数字和下划线', trigger: 'blur' }
+          { pattern: /^[a-zA-Z_]+[a-zA-Z0-9_]*$/, message: '数据库名称只能使用字母、数字和下划线，且不可以数字开头', trigger: 'blur' }
         ],
         username: [
           { required: true, message: '请输入用户名' }
