@@ -74,7 +74,12 @@ module.exports = {
               content = null
               const relativeBuildFilePath = build.content
               const buildFilePath = path.join(project.codespace, relativeBuildFilePath)
-              // 编译和安装，从差异文件中读取最新的构建文件，如果找不到，则不做构建处理（说明构建过程没有变化）
+              /*
+              编译和安装
+              1. 如果存在差异文件，则从差异文件中获取；
+              2. 如果不存在差异文件，则从本地文件获取，但是也有可能是完全重复的安装，此时作出构建提示，也是有必要的，当用户
+                重复安装，说明可能是忘记执行构建了。
+              */
               if (operaType === 'INSTALL' || operaType === 'COMPILE') {
                 // 从安装或编译的文件中查找最新的构建文件
                 if (diffFiles != null && diffFiles.length > 0) {
@@ -83,8 +88,18 @@ module.exports = {
                     content = targetFile.content
                   }
                 }
+                // 如果不存在差异文件，则从本地读取
+                else {
+                  if (fs.exists(buildFilePath)){
+                    content = fs.readFile(buildFilePath).content
+                  }
+                }
               }
-              // 卸载和清除编译，优先从差异文件中查找文件，如果找不到，则从本地读取
+              /*
+              卸载和清除编译
+              1. 如果存在差异文件，则从差异文件中查找文件
+              2. 如果从差异文件中找不到，并且本地存在，则从本地读取
+              */
               if (operaType === 'UNINSTALL' || operaType === 'CLEAN_COMPILE') {
                 // 从安装或编译的文件中查找最新的构建文件
                 if (diffFiles != null && diffFiles.length > 0) {
