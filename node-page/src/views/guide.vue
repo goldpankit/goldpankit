@@ -1,9 +1,14 @@
 <template>
   <div class="page">
     <div class="banner">
+      <div class="dynamic-background">
+        <svg class="wave-top" width="100%" viewBox="0 0 1200 250">
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M0 108.306L50 114.323C100 120.34 200 132.374 300 168.476C400 204.578 500 264.749 600 246.698C700 228.647 800 132.374 900 108.306C1000 84.2382 1100 132.374 1150 156.442L1200 180.51V-8.5451e-06H1150C1100 -8.5451e-06 1000 -8.5451e-06 900 -8.5451e-06C800 -8.5451e-06 700 -8.5451e-06 600 -8.5451e-06C500 -8.5451e-06 400 -8.5451e-06 300 -8.5451e-06C200 -8.5451e-06 100 -8.5451e-06 50 -8.5451e-06H0V108.306Z" fill="#fafafa"/>
+        </svg>
+      </div>
       <div class="wrap">
         <h2>Gold Pan Kit</h2>
-        <h3>一分钟搭建框架！</h3>
+        <h3>{{ slogan.message }}</h3>
         <div class="opera">
           <el-button @click="$router.push({name: 'SignUp'})" type="important">注册</el-button>
           <el-button type="important2" @click="$router.push({name: 'PublicServices'})">去搭框架</el-button>
@@ -123,10 +128,107 @@
   </div>
 </template>
 
-<script setup lang="ts">
-// definePageMeta({
-//   layout: 'blank'
-// })
+<script>
+import anime from 'animejs/lib/anime.es.js';
+export default {
+  data () {
+    return {
+      slogan: {
+        messageTimeout: null,
+        letterTimeout: null,
+        deleteTimeout: null,
+        messages: ['一分钟搭建框架！', '灵活的功能和技术栈选配！'],
+        message: '一分钟搭建框架！'
+      }
+    }
+  },
+  methods: {
+    // 开启口号动画
+    startSloganAnimation () {
+      this.slogan.message = ''
+      this.__outputMessage(this.slogan.messages, 0, 0)
+    },
+    // 开启banner动画
+    startBannerAnimation () {
+      const wave1 = "M0 108.306L50 114.323C100 120.34 200 132.374 300 168.476C400 204.578 500 264.749 600 246.698C700 228.647 800 132.374 900 108.306C1000 84.2382 1100 132.374 1150 156.442L1200 180.51V0H1150C1100 0 1000 0 900 0C800 0 700 0 600 0C500 0 400 0 300 0C200 0 100 0 50 0H0V108.306Z",
+        wave2 = "M0 250L50 244.048C100 238.095 200 226.19 300 226.19C400 226.19 500 238.095 600 232.143C700 226.19 800 202.381 900 196.429C1000 190.476 1100 202.381 1150 208.333L1200 214.286V0H1150C1100 0 1000 0 900 0C800 0 700 0 600 0C500 0 400 0 300 0C200 0 100 0 50 0H0V250Z",
+        wave3 = "M0 250L50 238.095C100 226.19 200 202.381 300 166.667C400 130.952 500 83.3333 600 101.19C700 119.048 800 202.381 900 214.286C1000 226.19 1100 166.667 1150 136.905L1200 107.143V0H1150C1100 0 1000 0 900 0C800 0 700 0 600 0C500 0 400 0 300 0C200 0 100 0 50 0H0V250Z",
+        wave4 = "M0 125L50 111.111C100 97.2222 200 69.4444 300 97.2222C400 125 500 208.333 600 236.111C700 263.889 800 236.111 900 229.167C1000 222.222 1100 236.111 1150 243.056L1200 250V0H1150C1100 0 1000 0 900 0C800 0 700 0 600 0C500 0 400 0 300 0C200 0 100 0 50 0H0V125Z";
+
+      anime({
+        targets: '.wave-top > path',
+        easing: 'linear',
+        duration: 15000,
+        loop: true,
+        d: [
+          { value: [wave1, wave2] },
+          { value: wave3 },
+          { value: wave4 },
+          { value: wave1 },
+        ],
+      });
+    },
+    // 输出消息
+    __outputMessage (messages, index, timeout = 5000) {
+      this.slogan.messageTimeout = setTimeout(() => {
+        this.slogan.message = ''
+        this.__outputLetters(messages[index].split(''), 0)
+        setTimeout(() => {
+          this.__deleteLetters()
+        }, 3000)
+        if (index < messages.length - 1) {
+          this.__outputMessage(messages, index + 1)
+        } else {
+          this.__outputMessage(messages, 0)
+        }
+      }, timeout)
+    },
+    // 输出字符
+    __outputLetters (letters, index) {
+      this.slogan.letterTimeout = setTimeout(() => {
+        this.slogan.message += letters[index]
+        if (index < letters.length - 1) {
+          this.__outputLetters(letters, index + 1)
+        }
+      }, 150)
+    },
+    // 删除字符
+    __deleteLetters () {
+      this.slogan.deleteTimeout = setTimeout(() => {
+        this.slogan.message = this.slogan.message.slice(0, -1)
+        if (this.slogan.message.length > 0) {
+          this.__deleteLetters()
+        }
+      }, 50)
+    }
+  },
+  mounted () {
+    // 开启口号动画
+    this.startSloganAnimation()
+    // 开启banner动画
+    this.startBannerAnimation()
+
+    // 解决浏览器页签切换时口号输出不正确的问题
+    document.addEventListener('visibilitychange', () => {
+      // 页签显示开启口号动画
+      if (document.visibilityState === 'visible') {
+        this.startSloganAnimation()
+      }
+      // 页签隐藏关闭口号动画
+      else {
+        if (this.slogan.letterTimeout != null) {
+          clearTimeout(this.slogan.letterTimeout)
+        }
+        if (this.slogan.messageTimeout != null) {
+          clearTimeout(this.slogan.messageTimeout)
+        }
+        if (this.slogan.deleteTimeout != null) {
+          clearTimeout(this.slogan.deleteTimeout)
+        }
+      }
+    })
+  }
+}
 </script>
 
 <style scoped lang="scss">
@@ -167,6 +269,19 @@
   background: #2e3444;
   position: relative;
   overflow: hidden;
+  .dynamic-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow: hidden;
+    svg {
+      transform: rotate(180deg);
+      position: absolute;
+      bottom: 0;
+    }
+  }
   .wrap {
     display: flex;
     justify-content: center;
@@ -187,6 +302,7 @@
         font-size: 18px;
         border-radius: 100px;
         margin-right: 20px;
+        box-shadow: 0 0 10px -5px #000;
         &:last-of-type {
           margin-right: 0;
         }
@@ -199,10 +315,22 @@
     text-shadow: 0 0 5px #ab5155;
   }
   h3 {
-    width: 800px;
+    height: 40px;
     font-size: var(--sub-title-font-size);
     margin-bottom: 15px;
     text-align: center;
+    position: relative;
+    &::after {
+      content: '';
+      width: 2px;
+      height: 32px;
+      background: var(--primary-color-match-2);
+      position: absolute;
+      top: 50%;
+      right: -3px;
+      transform: translateX(0) translateY(-50%);
+      animation: shine 1s infinite;
+    }
   }
   p {
     width: 600px;
@@ -389,5 +517,13 @@ footer {
 @keyframes changeBackground {
   0%   { background-color: #FC777D; }
   100% { background-color: #2d1516; }
+}
+@keyframes shine {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 </style>
