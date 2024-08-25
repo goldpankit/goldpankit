@@ -711,10 +711,11 @@ class DiffExpress {
   #normalizeContent (content) {
     const contentLines = this.#getLines(content)
     contentLines.forEach((line, index) => {
-      // 空行，去掉前后方空格
-      if (line.trim() === '') {
-        contentLines[index] = line.trim()
-      }
+      // 此处代码会引起空格的差异
+      // // 空行，去掉前后方空格
+      // if (line.trim() === '') {
+      //   contentLines[index] = line.trim()
+      // }
     })
     return this.#linesToText(contentLines)
   }

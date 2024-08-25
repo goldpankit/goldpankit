@@ -67,24 +67,27 @@ export default {
     },
     // 初始化
     init () {
+      const language = this.__getLanguage(this.filepath)
       diffEditor = monaco.editor.createDiffEditor(
         this.$el.querySelector(".container"),
         {
           // 允许拖动左右窗口
           enableSplitViewResizing: true,
           // 禁用菜单
-          contextmenu: false
+          contextmenu: false,
+          // 不忽略空格
+          ignoreTrimWhitespace: false
         }
       )
       // 左侧本地内容
       originalModel = monaco.editor.createModel(
         this.originalText,
-        "text/plain"
+        language,
       )
       // 右侧覆盖内容
       modifiedModel = monaco.editor.createModel(
         this.newText,
-        "text/plain"
+        language
       )
       // - 内容变更后触发v-model修改
       modifiedModel.onDidChangeContent((e) => {
@@ -112,6 +115,27 @@ export default {
       setTimeout(() => {
         this.loading = false
       }, 300)
+    },
+    // 根据文件名称获取语言
+    __getLanguage (filepath) {
+      if (filepath == null || filepath === '') {
+        return 'text/plain'
+      }
+      // 获取后缀
+      let pointIndex = filepath.indexOf('.')
+      if (pointIndex === -1) {
+        return 'text/plain'
+      }
+      const suffix = filepath.substring(filepath.lastIndexOf('.'))
+      // 从monaco中获取所有语言
+      const languages = monaco.languages.getLanguages()
+      const targetLang = languages.find(lang => {
+        return lang.extensions != null && lang.extensions.find(ext => ext === suffix) != null
+      })
+      if (targetLang != null) {
+        return targetLang.id
+      }
+      return 'text/plain'
     }
   },
   mounted () {
