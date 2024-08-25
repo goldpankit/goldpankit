@@ -235,9 +235,10 @@ export default {
     'isWorking.uninstall': function () {
       this.$emit('update:uninstalling', this.isWorking.uninstall)
     },
-    // 项目配置发生变化后重新初始化变量值
+    // 项目配置发生变化后重新初始化变量值和获取预置插件
     projectConfig () {
       this.initVariables()
+      this.fetchPresetPlugins()
     },
     // 切换版本后，刷新预置插件
     selectedVersion () {
@@ -250,7 +251,13 @@ export default {
     ...mapGetters(['getCurrentDatabaseDetail']),
     // 获取预置插件
     fetchPresetPlugins () {
+      // 如果是安装插件，不做处理（插件没有预置插件）
       if (this.isPlugin) {
+        return
+      }
+      // 如果没有选择项目，则预置插件调整为空
+      if (this.currentProject == null) {
+        this.selectedPlugins = []
         return
       }
       // 从项目配置中获取

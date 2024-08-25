@@ -78,6 +78,7 @@ export default {
     // 切换项目
     handleProjectChange (projectId) {
       if (projectId == null || projectId === '') {
+        this.project = null
         return
       }
       fetchById(projectId)
