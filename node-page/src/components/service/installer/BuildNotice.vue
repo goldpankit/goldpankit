@@ -3,9 +3,9 @@
     <h2>执行构建</h2>
     <el-button class="button-close" @click="ignoreAll" icon="Close"/>
     <ul>
-      <li v-for="(build,index) in builds" :key="build.name">
+      <li v-for="build in builds" :key="build.name">
         <div class="title">
-          <h3>{{index + 1}}、{{build.name}}</h3>
+          <h3>{{build.index + 1}}、{{build.name}}</h3>
           <template v-if="build.type !== 'Markdown'">
             <el-button type="text" size="small" @click="$refs.scriptPreviewDialog.open(build)">查看构建脚本</el-button>
           </template>

@@ -66,6 +66,7 @@ module.exports = {
           for (let i = 0; i < contents.length; i++) {
             builds[i].content = contents[i]
           }
+          let buildIndex = 0
           for (const build of builds) {
             // 此处content可能是构建脚本内容，也可能是构建脚本文件的路径
             let content = build.content
@@ -119,8 +120,10 @@ module.exports = {
             if (content != null && content.trim() !== '') {
               buildDetails.push({
                 ...build,
+                index: buildIndex,
                 content
               })
+              buildIndex++
             }
           }
           resolve(buildDetails)
