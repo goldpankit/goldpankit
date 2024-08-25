@@ -1,0 +1,1 @@
+import{y as e}from"./index-6053e319.js";function o(s){return e.post("/usr/password/update",s,{baseURL:"/remote-api"})}function t(s){return e.post("/usr/password/updateByMobileOTP",s,{baseURL:"/remote-api"})}function r(s){return e.post("/usr/password/sendUpdatePasswordMobileOTP",s,{baseURL:"/remote-api"})}export{t as a,r as s,o as u};
