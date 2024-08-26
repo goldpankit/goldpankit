@@ -9,7 +9,7 @@
         <div v-else class="file">
           <i class="iconfont icon-wenjian"></i>
           <label>{{file.filepath}}</label>
-          <p>{{$t('service.mergeUnPreview')}}</p>
+          <p>（暂不支持预览该文件类型）</p>
         </div>
       </div>
     </div>

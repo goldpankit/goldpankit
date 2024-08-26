@@ -149,19 +149,20 @@ module.exports = {
     */
     else {
       log.debug(`${project.name}：项目中存在文件，将自动进行文件合并`)
-      for (const file of files) {
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i]
+        // 获取文件路径
+        const relativePath = file.filepath
+        const filepath = path.join(project.codespace, relativePath)
         // 目录，不做处理
-        if (file.filetype === 'DIRECTORY') {
+        if (file.filetype === 'DIRECTORY' || (this.exists(filepath) && this.isDirectory(filepath))) {
           continue
         }
-        // 获取相对路径
-        const relativePath = file.filepath
         // kit.json为项目配置文件，不允许操作
         if (relativePath === Const.PROJECT_CONFIG_FILE) {
           continue
         }
         // 获取文件信息
-        const filepath = path.join(project.codespace, relativePath)
         const fileExists = this.exists(filepath)
         let localFile = null
         if (fileExists) {
@@ -177,15 +178,20 @@ module.exports = {
             原因：假设文件使用了变量A来作为文件名，此时修改文件名使用了变量B，且变量A与变量B产生的结果是一致的，那么编译文件列表中会存在删除了该文件又新增了该文件，
             所以标记为删除文件时，需要判断是否同一路径又存在ADD的文件，如果是，那么该文件不应做删除处理。
             */
-            if (files.find(f => f.filepath === relativePath && f.operaType === 'ADD')) {
-              log.debug(`${project.name}：检测到 ${filepath} 存在`)
-              continue
-            }
-            // 虽然在此之前已经将目录类型的文件continue了，但已删除的文件没有filetype，导致已删除的目录未得到处理，此处做进一步判断
-            if (this.isDirectory(filepath)) {
+            let nextOperaFile = files.find((f, index) => {
+              if (index <= i) {
+                return false
+              }
+              return f.filepath === relativePath && f.operaType !== 'DELETED'
+            })
+            if (nextOperaFile) {
+              log.debug(`${project.name}：检测到 ${filepath} 存在后续操作，停止删除`)
               continue
             }
             // 填充本地内容并加入差异队列
+            log.debug(`${project.name}：${filepath} 已加入删除差异队列`)
+            // - 已删除的文件，contentEncode可能为null，需要填充，不填充会导致合并时无法判断预览
+            file.contentEncode = localFile.encode
             file.localContent = localFile.content
             diffFiles.push(file)
           }
@@ -228,7 +234,6 @@ module.exports = {
               if (file.localContent !== file.content) {
                 diffFiles.push(file)
               }
-              continue
             }
             // 合并失败
             else {
@@ -237,7 +242,6 @@ module.exports = {
               // 本地内容=差异表达式+本地内容
               file.localContent = `[AUTOMERGE]\nThe following is the logic for merging the code, \nbut we are currently unable to merge according to this logic. \nPlease manually perform the merge.\n\n${mergeResult.errorExpress}\n\n${localFile.content}`
               diffFiles.push(file)
-              continue
             }
           }
           // 非差异表达式

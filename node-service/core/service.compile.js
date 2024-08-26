@@ -494,8 +494,12 @@ class Kit {
             projectServiceVersion: projectInstallService == null ? null : projectInstallService.version,
             // 服务预置的插件，用于编译时自动编译预置插件（只有编译服务时才传递）（v2.11.0增加）
             plugins: presetPlugins,
-            // 已安装的插件，用于获取框架插件安装情况（v2.11.0增加）
-            installedPlugins,
+            /*
+             已安装的插件，用于获取框架插件安装情况（v2.11.0增加）
+             服务：如果是安装服务，则已安装插件为预置插件
+             插件：如果是安装插件，则已安装插件为服务中已安装的插件
+            */
+            installedPlugins: projectInstallService == null ? installedPlugins : presetPlugins,
             operaType: dto.operaType,
             variables: vars
           })
