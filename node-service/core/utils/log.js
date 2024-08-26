@@ -2,7 +2,9 @@ const colors = require('colors-console')
 
 // 日志配置
 let config = {
-  debugMode: false
+  debugMode: false,
+  // 跟踪文件名称，通过--trace-file参数指定
+  traceFile: null
 }
 
 function getTimestamp () {
@@ -22,6 +24,26 @@ module.exports = {
   debug (message) {
     if (config.debugMode) {
       console.log(this.__prefix(), colors('grey', `[DEBUG] ${message}`))
+    }
+  },
+  // 跟踪文件
+  traceFile(file, message) {
+    if (config.traceFile == null) {
+      return
+    }
+    if (file.filepath == null || file.filepath === '') {
+      return
+    }
+    // 指定目录
+    if (config.traceFile.startsWith('/') && config.traceFile.endsWith('/')) {
+      if (file.filepath.indexOf(config.traceFile) !== -1) {
+        console.log(this.__prefix(), `${file.filepath}`, colors('yellow', message))
+      }
+      return
+    }
+    // 指定文件
+    if (file.filepath != null && file.filepath.endsWith(config.traceFile)) {
+      console.log(this.__prefix(), `${file.filepath}`, colors('yellow', message))
     }
   },
   // 提示消息

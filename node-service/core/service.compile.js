@@ -500,15 +500,15 @@ class Kit {
       if (project == null) {
         return Promise.reject(response.INSTALL.MISSING_PROJECT)
       }
-      if (project.service == null) {
-        return Promise.reject(response.INSTALL.PROJECT_NOT_ALLOWED)
+      // 获取项目安装的服务配置
+      let projectInstallService = null
+      // - 首次安装时，项目中没有服务配置
+      if (project.service != null) {
+        if (project.service[dto.service] == null) {
+          return Promise.reject(response.INSTALL.PROJECT_NOT_ALLOWED)
+        }
+        projectInstallService = project.service[dto.service]
       }
-      // 项目中未能找到该服务的配置，视为项目不支持
-      if (project.service[dto.service] == null) {
-        return Promise.reject(response.INSTALL.PROJECT_NOT_ALLOWED)
-      }
-      // 获取项目安装的服务
-      let projectInstallService = project.service[dto.service]
       if (isPlugin) {
         log.debug(`ready to install plugin: ${dto.plugin}`)
       } else {
@@ -535,7 +535,7 @@ class Kit {
       */
       installedPlugins = isPlugin ? installedPlugins : presetPlugins
       // debug
-      if (projectInstallService == null) {
+      if (!isPlugin) {
         log.debug(`service preset plugins：${JSON.stringify(presetPlugins, null, 2)}`)
         log.debug(`project installed plugins：${JSON.stringify(installedPlugins, null, 2)}`)
       } else {

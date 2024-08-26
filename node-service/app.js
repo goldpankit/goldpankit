@@ -12,8 +12,10 @@ const command = yargs.argv._[0];
 const args = {
   // 启动端口
   port: jsonArgs.p || jsonArgs.port || 8130,
-  // 是否为debug模式
+  // 是否为debug模式 --debug
   debugMode: jsonArgs.debug || false,
+  // 跟踪文件名称 --trace-file Test.java
+  traceFile: jsonArgs.traceFile,
   // 本地地址
   localAddress: 'localhost',
   // 局域网地址
@@ -34,7 +36,8 @@ const app = express();
 
 // 写入debug模式到缓存中
 log.setConfig({
-  debugMode: args.debugMode
+  debugMode: args.debugMode,
+  traceFile: args.traceFile
 })
 
 // 开启远程接口代理

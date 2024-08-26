@@ -127,6 +127,7 @@ module.exports = {
         // 已删除的文件，不做处理
         if (file.operaType === 'DELETED') {
           log.debug(`${project.name}: ${i}. ${file.filepath} is 'DELETED' file，ignored.`)
+          log.traceFile(file, `is 'DELETED' file，ignored.`)
           continue
         }
         // 获取相对路径
@@ -175,6 +176,7 @@ module.exports = {
         // 已删除的文件，如果在本地找到文件，则加入差异队列
         if (file.operaType === 'DELETED') {
           log.debug(`${project.name}：${i}. ${filepath} will be deleted.`)
+          log.traceFile(file, `will be deleted.`)
           if (fileExists) {
             /*
             ??? 此处可能会存在问题，等待具体场景出现再完善
@@ -182,18 +184,25 @@ module.exports = {
             原因：假设文件使用了变量A来作为文件名，此时修改文件名使用了变量B，且变量A与变量B产生的结果是一致的，那么编译文件列表中会存在删除了该文件又新增了该文件，
             所以标记为删除文件时，需要判断是否同一路径又存在ADD的文件，如果是，那么该文件不应做删除处理。
             */
-            let nextOperaFile = files.find((f, index) => {
+            const nextOperaFileIndex = files.findIndex((f, index) => {
               if (index <= i) {
                 return false
               }
               return f.filepath === relativePath && f.operaType !== 'DELETED'
             })
-            if (nextOperaFile) {
+            if (nextOperaFileIndex !== -1) {
+              const nextOperaFile = files[nextOperaFileIndex]
               log.debug(`${project.name}：${i}. found ${filepath} exists another operation, deletion is stopped.`)
+              log.traceFile(file, `exists another operation, deletion is stopped.`)
+              log.traceFile(file, `  current file index: ${i}`)
+              log.traceFile(file, `  another file index: ${nextOperaFileIndex}`)
+              log.traceFile(file, `  another file opera type: ${nextOperaFile.operaType}`)
+              // log.traceFile(file, `  another file content: \n${nextOperaFile.content}`)
               continue
             }
             // 填充本地内容并加入差异队列
             log.debug(`${project.name}：${i}. ${filepath} joined the delete-diff-queue.`)
+            log.traceFile(file, `joined the delete-diff-queue.`)
             // - 已删除的文件，contentEncode可能为null，需要填充，不填充会导致合并时无法判断预览
             file.contentEncode = localFile.encode
             file.localContent = localFile.content
@@ -220,6 +229,7 @@ module.exports = {
           // 差异表达式
           if (diffExp.isDiffEllipsis(file.content)) {
             log.debug(`${project.name}: ${i}. ${filepath} is diff-express，auto-merging...`)
+            log.traceFile(file, `is diff-express，auto-merging...`)
             // 合并
             const mergeResult = diffExp.merge(file.content, localFile.content)
             // 合并成功
@@ -227,6 +237,7 @@ module.exports = {
               // 合并后的结果为空，加入删除队列
               if (mergeResult.content.trim() === '') {
                 log.debug(`${project.name}: ${i}. ${filepath} auto-merge result is blank，joined the delete-diff-queue.`)
+                log.traceFile(file, `auto-merge result is blank，joined the delete-diff-queue.`)
                 file.localContent = localFile.content
                 // 文件操作类型调整为删除
                 file.operaType = 'DELETED'
@@ -239,14 +250,17 @@ module.exports = {
               // 本地内容 != 最新内容，则加入差异队列
               if (file.localContent !== file.content) {
                 log.debug(`${project.name}: ${i}. ${filepath} auto-merge successfully，joined the diff-queue.`)
+                log.traceFile(file, `auto-merge successfully，joined the diff-queue.`)
                 diffFiles.push(file)
               } else {
                 log.debug(`${project.name}: ${i}. ${filepath} auto-merge successfully，but the new content equals the local content，ignored.`)
+                log.traceFile(file, `auto-merge successfully，but the new content equals the local content，ignored.`)
               }
             }
             // 合并失败
             else {
               log.debug(`${project.name}: ${i}. ${filepath} auto-merge failed.`)
+              log.traceFile(file, `auto-merge failed.`)
               // 最新内容=合并后的内容（虽然合并失败，但并不是全部失败，能合并的还是会自动合并，不能合并的表达式通过错误表达式字段返回，在本地内容展示）
               file.content = mergeResult.content
               // 本地内容=差异表达式+本地内容
@@ -260,9 +274,11 @@ module.exports = {
             // 本地内容 != 最新内容，则加入差异列表
             if (file.localContent !== file.content) {
               log.debug(`${project.name}: ${i}. ${filepath} has bean overwritten and joined the diff-queue.`)
+              log.traceFile(file, `has bean overwritten and joined the diff-queue.`)
               diffFiles.push(file)
             } else {
               log.debug(`${project.name}: ${i}. ${filepath} content equals the local content，ignored.`)
+              log.traceFile(file, `content equals the local content，ignored.`)
             }
           }
         }
@@ -275,11 +291,13 @@ module.exports = {
           // 非差异表达式，直接加入差异队列
           if (!diffExp.isDiffEllipsis(file.content)) {
             log.debug(`${project.name}: ${i}. ${filepath} is new file，joined diff-queue.`)
+            log.traceFile(file, `is new file，joined diff-queue.`)
             file.localContent = ''
             file.operaType = 'ADD'
             diffFiles.push(file)
           } else {
             log.debug(`${project.name}: ${i}. ${filepath} is diff-express，and can't found in the local，ignored.`)
+            log.traceFile(file, `is diff-express，and can't found in the local，ignored.`)
           }
         }
       }
