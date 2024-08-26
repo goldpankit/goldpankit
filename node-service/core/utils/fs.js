@@ -111,138 +111,179 @@ module.exports = {
     const isNotEmptyProject = currentFiles.filter(file => file !== Const.PROJECT_CONFIG_FILE && file !== Const.PROJECT_DATABASE_CONFIG_FILE).length > 0
     log.debug(`${project.name}: 准备处理 ${files.length} 个文件`)
     const diffFiles = []
-    let fileCount = 0
-    for (const file of files) {
-      // 目录，不做处理
-      if (file.filetype === 'DIRECTORY') {
-        continue
-      }
-      // 获取相对路径
-      const relativePath = file.filepath
-      // kit.json为项目配置文件，不允许操作
-      if (relativePath === Const.PROJECT_CONFIG_FILE) {
-        continue
-      }
-      // 获取写入文件路径
-      const filepath = path.join(project.codespace, relativePath)
-      const fileExists = this.exists(filepath)
-      let content = file.content
-      // 如果为已删除文件，且本地存在该文件，加入删除队列，此时file.content为null
-      if (file.operaType === 'DELETED') {
-        if (this.exists(filepath)) {
-          /*
-          如果编译的文件中存在路径相同且operaType为ADD的，则不做删除处理
-          原因：假设文件使用了变量A来作为文件名，此时修改文件名使用了变量B，且变量A与变量B产生的结果是一致的，那么编译文件列表中会存在删除了该文件又新增了该文件，
-          所以标记为删除文件时，需要判断是否同一路径又存在ADD的文件，如果是，那么该文件不应做删除处理。
-          */
-          if (files.find(f => f.filepath === relativePath)) {
-            continue
-          }
-          // 虽然在此之前已经将目录类型的文件continue了，但已删除的文件接口中未能获取filetype，导致已删除的目录未得到处理，此处临时做处理
-          if (this.isDirectory(filepath)) {
-            continue
-          }
-          file.localContent = this.readFile(filepath).content
-          diffFiles.push(file)
+    let writeFileCount = 0
+    /*
+    如果项目中不存在文件，直接写入
+    */
+    if (!isNotEmptyProject) {
+      log.debug(`${project.name}：项目中不存在文件，文件内容将直接写入`)
+      for (const file of files) {
+        // 目录，不做处理
+        if (file.filetype === 'DIRECTORY') {
+          continue
         }
-        continue
-      }
-      // 如果文件内容为空，且本地存在该文件，加入删除队列
-      if (content.trim() === '') {
-        if (this.exists(filepath)) {
-          const fileInfo = this.readFile(filepath)
-          file.localContent = fileInfo.content
-          // 文件操作类型调整为删除
-          file.operaType = 'DELETED'
-          diffFiles.push(file)
+        // 已删除的文件，不做处理
+        if (file.operaType === 'DELETED') {
+          continue
         }
-        continue
+        // 获取相对路径
+        const relativePath = file.filepath
+        // kit.json为项目配置文件，不允许操作
+        if (relativePath === Const.PROJECT_CONFIG_FILE) {
+          continue
+        }
+        // 获取写入文件路径
+        const filepath = path.join(project.codespace, relativePath)
+        // 写入文件
+        this.writeFileWithForce(filepath, file, () => {
+          writeFileCount++
+        })
       }
-      // 如果文件在项目中不存在
-      if (!fileExists) {
-        // - 如果项目中存在文件（这里的文件指的是项目其它文件，不含kit.json和kit.db.json的文件）
-        if (isNotEmptyProject) {
-          // - 如果文件必须要在本地中存在才生效，则不做处理
-          if (file.withoutIfNotExists === true) {
-            continue
+    }
+    /*
+    项目中存在文件
+    1. 对于删除状态的文件，如果本地存在，则视为删除，并加入差异队列；同时，如果文件中还存在相同文件的ADD操作，则忽略；
+    2. 对于最新内容为空的文件，如果本地存在，则视为删除，并加入差异队列
+    3. 对于最新文件，如果本地存在 && 为差异表达式，则做合并处理，并加入差异队列；否则做覆盖处理，并加入比差异队列
+    4. 对于最新文件，如果本地不存在 && 为差异表达式，则直接忽略；否则做新增处理，并加入比差异队列
+    */
+    else {
+      log.debug(`${project.name}：项目中存在文件，将自动进行文件合并`)
+      for (const file of files) {
+        // 目录，不做处理
+        if (file.filetype === 'DIRECTORY') {
+          continue
+        }
+        // 获取相对路径
+        const relativePath = file.filepath
+        // kit.json为项目配置文件，不允许操作
+        if (relativePath === Const.PROJECT_CONFIG_FILE) {
+          continue
+        }
+        // 获取文件信息
+        const filepath = path.join(project.codespace, relativePath)
+        const fileExists = this.exists(filepath)
+        let localFile = null
+        if (fileExists) {
+          localFile = this.readFile(filepath)
+        }
+        // 已删除的文件，如果在本地找到文件，则加入差异队列
+        if (file.operaType === 'DELETED') {
+          log.debug(`${project.name}：${filepath} 将被删除`)
+          if (fileExists) {
+            /*
+            ??? 此处可能会存在问题，等待具体场景出现再完善
+            如果编译的文件中存在路径相同且operaType为ADD的，则不做删除处理
+            原因：假设文件使用了变量A来作为文件名，此时修改文件名使用了变量B，且变量A与变量B产生的结果是一致的，那么编译文件列表中会存在删除了该文件又新增了该文件，
+            所以标记为删除文件时，需要判断是否同一路径又存在ADD的文件，如果是，那么该文件不应做删除处理。
+            */
+            if (files.find(f => f.filepath === relativePath && f.operaType === 'ADD')) {
+              log.debug(`${project.name}：检测到 ${filepath} 存在`)
+              continue
+            }
+            // 虽然在此之前已经将目录类型的文件continue了，但已删除的文件没有filetype，导致已删除的目录未得到处理，此处做进一步判断
+            if (this.isDirectory(filepath)) {
+              continue
+            }
+            // 填充本地内容并加入差异队列
+            file.localContent = localFile.content
+            diffFiles.push(file)
           }
-          // - 新内容是差异表达式（此时的差异表达式可能是“纯删”或“纯加”语句）
-          if (diffExp.isDiffEllipsis(content)) {
-            // 文件在项目中不存在，视为本地内容为空串
-            let localFileContent = ''
+          continue
+        }
+        // 如果最新内容为空，且本地存在该文件，则加入差异队列
+        if (file.content == null || file.content.trim() === '') {
+          if (fileExists) {
+            file.localContent = localFile.content
+            // 文件操作类型调整为删除
+            file.operaType = 'DELETED'
+            diffFiles.push(file)
+          }
+          continue
+        }
+        /*
+        文件在项目中存在（冲突文件）
+        1. 如果文件内容为差异表达式，则进行合并，并加入差异队列
+        2. 如果文件内容不为差异表达式，则直接加入差异队列
+        */
+        if (fileExists) {
+          // 差异表达式
+          if (diffExp.isDiffEllipsis(file.content)) {
             // 合并
-            const mergeResult = diffExp.merge(content, localFileContent)
-            content = mergeResult.content
-            // 合并失败（本地不存在文件，并且还合并失败，说明content为存在定位行的差异表达式）
-            if (!mergeResult.success) {
+            const mergeResult = diffExp.merge(file.content, localFile.content)
+            // 合并成功
+            if (mergeResult.success) {
+              // 合并后的结果为空，加入删除队列
+              if (mergeResult.content.trim() === '') {
+                file.localContent = localFile.content
+                // 文件操作类型调整为删除
+                file.operaType = 'DELETED'
+                diffFiles.push(file)
+                continue
+              }
+              // 合并成功 && 存在最新内容
+              file.content = mergeResult.content
+              file.localContent = localFile.content
+              // 本地内容 != 最新内容，则加入差异队列
+              if (file.localContent !== file.content) {
+                diffFiles.push(file)
+              }
               continue
             }
-            // 合并成功 && 内容为空，则不做处理（此时本地也不存在）
-            if (content.trim() === '') {
+            // 合并失败
+            else {
+              // 最新内容=合并后的内容（虽然合并失败，但并不是全部失败，能合并的还是会自动合并，不能合并的表达式通过错误表达式字段返回，在本地内容展示）
+              file.content = mergeResult.content
+              // 本地内容=差异表达式+本地内容
+              file.localContent = `[AUTOMERGE]\nThe following is the logic for merging the code, \nbut we are currently unable to merge according to this logic. \nPlease manually perform the merge.\n\n${mergeResult.errorExpress}\n\n${localFile.content}`
+              diffFiles.push(file)
               continue
             }
-            // 不为空，标记为新增
-            file.localContent = localFileContent
-            file.content = content
-            // 文件操作类型调整为新增
+          }
+          // 非差异表达式
+          else {
+            file.localContent = localFile.content
+            // 本地内容 != 最新内容，则加入差异列表
+            if (file.localContent !== file.content) {
+              diffFiles.push(file)
+            }
+          }
+        }
+        /*
+        文件在项目中不存在（新文件）
+        1. 如果文件内容为差异表达式，则忽略
+        2. 如果文件内容不为差异表达式，则直接加入差异队列
+        */
+        else {
+          // 非差异表达式，直接加入差异队列
+          if (!diffExp.isDiffEllipsis(file.content)) {
+            file.localContent = ''
             file.operaType = 'ADD'
             diffFiles.push(file)
-            continue
           }
-          // - 新内容不是差异表达式，则加入差异队列（写入新的文件时视为差异，避免用户对新增文件无感知）
-          diffFiles.push(file)
-          continue
         }
-        // - 项目中不存在文件，且为二进制文件，转换内容为二进制，并直接写入到项目中
-        if (file.contentEncode === 'base64') {
-          content = Buffer.from(content, 'base64')
-          this.createFile(filepath, content, true)
-          fileCount++
-          continue
-        }
-        // - 项目中不存在文件，且为文本文件，直接写入到项目中
-        this.createFile(filepath, content, true)
-        fileCount++
-        continue
-      }
-      // 如果文件在项目中存在 && 为差异表达式，合并内容
-      const fileInfo = this.readFile(filepath)
-      let localFileContent = fileInfo.content
-      if (diffExp.isDiffEllipsis(content)) {
-        // 合并
-        const mergeResult = diffExp.merge(content, localFileContent)
-        content = mergeResult.content
-        // 合并失败
-        if (!mergeResult.success) {
-          // 左侧内容=差异表达式+本地内容
-          localFileContent = `[AUTOMERGE]\nThe following is the logic for merging the code, \nbut we are currently unable to merge according to this logic. \nPlease manually perform the merge.\n\n${mergeResult.errorExpress}\n\n${localFileContent}`
-          file.content = content
-          file.localContent = localFileContent
-          diffFiles.push(file)
-          continue
-        }
-        // 合并后的结果为空，且本地存在该文件，加入删除队列
-        if (content.trim() === '') {
-          const fileInfo = this.readFile(filepath)
-          file.localContent = fileInfo.content
-          // 文件操作类型调整为删除
-          file.operaType = 'DELETED'
-          diffFiles.push(file)
-          continue
-        }
-      }
-      file.content = content
-      file.localContent = localFileContent
-      // 如果文件存在，且本地内容 != 编译后的内容，则加入差异列表
-      if (file.localContent !== file.content) {
-        diffFiles.push(file)
       }
     }
     // 给出文件写入提醒
-    if (fileCount > 0 && service != null) {
-      log.success(`${service}: write ${fileCount} files to ${project.codespace} successfully.`)
+    if (writeFileCount > 0 && service != null) {
+      log.success(`${service}: write ${writeFileCount} files to ${project.codespace} successfully.`)
     }
     return diffFiles
+  },
+  /**
+   * 强制写入文件
+   * @param filepath 文件路径
+   * @param file 文件对象
+   */
+  writeFileWithForce (filepath, file, callback) {
+    if (file.contentEncode === 'base64') {
+      this.createFile(filepath, Buffer.from(file.content, 'base64'), true)
+      callback && callback()
+      return
+    }
+    // - 项目中不存在文件，且为文本文件，直接写入到项目中
+    this.createFile(filepath, file.content, true)
+    callback && callback()
   },
   /**
    * 获取文件和子文件
