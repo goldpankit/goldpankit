@@ -25,7 +25,7 @@ module.exports = {
   },
   // 删除代码文件，卸载时调用
   deleteFiles (files, project, service) {
-    log.debug(`${project.name}: preparing to delete ${files.length} files`)
+    log.debug(`${project.name}: preparing to delete ${files.length} files.`)
     const diffFiles = []
     for (const file of files) {
       // 排除掉已删除的文件
@@ -109,24 +109,24 @@ module.exports = {
     const currentFiles = this.getFiles(project.codespace)
     // 判断项目中是否存在文件
     const isNotEmptyProject = currentFiles.filter(file => file !== Const.PROJECT_CONFIG_FILE && file !== Const.PROJECT_DATABASE_CONFIG_FILE).length > 0
-    log.debug(`${project.name}: 准备处理 ${files.length} 个文件`)
+    log.debug(`${project.name}: prepare to process ${files.length} files.`)
     const diffFiles = []
     let writeFileCount = 0
     /*
     如果项目中不存在文件，直接写入
     */
     if (!isNotEmptyProject) {
-      log.debug(`${project.name}：项目中不存在文件，文件内容将直接写入`)
+      log.debug(`${project.name}：project is empty, and the file contents are written directly.`)
       for (let i = 0; i < files.length; i++) {
         const file = files[i]
         // 目录，不做处理
         if (file.filetype === 'DIRECTORY') {
-          log.debug(`${project.name}: ${i}. ${file.filepath} 为目录，忽略处理`)
+          log.debug(`${project.name}: ${i}. ${file.filepath} is directory，ignored.`)
           continue
         }
         // 已删除的文件，不做处理
         if (file.operaType === 'DELETED') {
-          log.debug(`${project.name}: ${i}. ${file.filepath} 已被删除，忽略处理`)
+          log.debug(`${project.name}: ${i}. ${file.filepath} is 'DELETED' file，ignored.`)
           continue
         }
         // 获取相对路径
@@ -151,7 +151,7 @@ module.exports = {
     4. 对于最新文件，如果本地不存在 && 为差异表达式，则直接忽略；否则做新增处理，并加入比差异队列
     */
     else {
-      log.debug(`${project.name}：项目中存在文件，开始进行文件合并...`)
+      log.debug(`${project.name}：project is not empty, will run the diff-express processor...`)
       for (let i = 0; i < files.length; i++) {
         const file = files[i]
         // 获取文件路径
@@ -159,7 +159,7 @@ module.exports = {
         const filepath = path.join(project.codespace, relativePath)
         // 目录，不做处理
         if (file.filetype === 'DIRECTORY' || (this.exists(filepath) && this.isDirectory(filepath))) {
-          log.debug(`${project.name}: ${i}. ${filepath} 为目录，不做处理`)
+          log.debug(`${project.name}: ${i}. ${filepath} is directory，ignored.`)
           continue
         }
         // kit.json为项目配置文件，不允许操作
@@ -174,7 +174,7 @@ module.exports = {
         }
         // 已删除的文件，如果在本地找到文件，则加入差异队列
         if (file.operaType === 'DELETED') {
-          log.debug(`${project.name}：${i}. ${filepath} 将被删除`)
+          log.debug(`${project.name}：${i}. ${filepath} will be deleted.`)
           if (fileExists) {
             /*
             ??? 此处可能会存在问题，等待具体场景出现再完善
@@ -189,11 +189,11 @@ module.exports = {
               return f.filepath === relativePath && f.operaType !== 'DELETED'
             })
             if (nextOperaFile) {
-              log.debug(`${project.name}：${i}. 检测到 ${filepath} 存在后续操作，停止删除`)
+              log.debug(`${project.name}：${i}. found ${filepath} exists another operation, deletion is stopped.`)
               continue
             }
             // 填充本地内容并加入差异队列
-            log.debug(`${project.name}：${i}. ${filepath} 已加入删除差异队列`)
+            log.debug(`${project.name}：${i}. ${filepath} joined the delete-diff-queue.`)
             // - 已删除的文件，contentEncode可能为null，需要填充，不填充会导致合并时无法判断预览
             file.contentEncode = localFile.encode
             file.localContent = localFile.content
@@ -219,14 +219,14 @@ module.exports = {
         if (fileExists) {
           // 差异表达式
           if (diffExp.isDiffEllipsis(file.content)) {
-            log.debug(`${project.name}: ${i}. ${filepath} 为差异表达式，即将做自动合并`)
+            log.debug(`${project.name}: ${i}. ${filepath} is diff-express，auto-merging...`)
             // 合并
             const mergeResult = diffExp.merge(file.content, localFile.content)
             // 合并成功
             if (mergeResult.success) {
               // 合并后的结果为空，加入删除队列
               if (mergeResult.content.trim() === '') {
-                log.debug(`${project.name}: ${i}. ${filepath} 合并结果为空，已加入删除差异队列`)
+                log.debug(`${project.name}: ${i}. ${filepath} auto-merge result is blank，joined the delete-diff-queue.`)
                 file.localContent = localFile.content
                 // 文件操作类型调整为删除
                 file.operaType = 'DELETED'
@@ -238,15 +238,15 @@ module.exports = {
               file.localContent = localFile.content
               // 本地内容 != 最新内容，则加入差异队列
               if (file.localContent !== file.content) {
-                log.debug(`${project.name}: ${i}. ${filepath} 自动合并成功，已加入差异队列`)
+                log.debug(`${project.name}: ${i}. ${filepath} auto-merge successfully，joined the diff-queue.`)
                 diffFiles.push(file)
               } else {
-                log.debug(`${project.name}: ${i}. ${filepath} 自动合并成功，与本地内容一致，已忽略`)
+                log.debug(`${project.name}: ${i}. ${filepath} auto-merge successfully，but the new content equals the local content，ignored.`)
               }
             }
             // 合并失败
             else {
-              log.debug(`${project.name}: ${i}. ${filepath} 自动合并失败`)
+              log.debug(`${project.name}: ${i}. ${filepath} auto-merge failed.`)
               // 最新内容=合并后的内容（虽然合并失败，但并不是全部失败，能合并的还是会自动合并，不能合并的表达式通过错误表达式字段返回，在本地内容展示）
               file.content = mergeResult.content
               // 本地内容=差异表达式+本地内容
@@ -259,10 +259,10 @@ module.exports = {
             file.localContent = localFile.content
             // 本地内容 != 最新内容，则加入差异列表
             if (file.localContent !== file.content) {
-              log.debug(`${project.name}: ${i}. ${filepath} 做覆盖处理，已加入差异队列`)
+              log.debug(`${project.name}: ${i}. ${filepath} has bean overwritten and joined the diff-queue.`)
               diffFiles.push(file)
             } else {
-              log.debug(`${project.name}: ${i}. ${filepath} 与本地内容一致，已忽略`)
+              log.debug(`${project.name}: ${i}. ${filepath} content equals the local content，ignored.`)
             }
           }
         }
@@ -274,19 +274,19 @@ module.exports = {
         else {
           // 非差异表达式，直接加入差异队列
           if (!diffExp.isDiffEllipsis(file.content)) {
-            log.debug(`${project.name}: ${i}. ${filepath} 为新文件，已加入差异队列`)
+            log.debug(`${project.name}: ${i}. ${filepath} is new file，joined diff-queue.`)
             file.localContent = ''
             file.operaType = 'ADD'
             diffFiles.push(file)
           } else {
-            log.debug(`${project.name}: ${i}. ${filepath} 为差异表达式，且在本地未找到该文件，已忽略`)
+            log.debug(`${project.name}: ${i}. ${filepath} is diff-express，and can't found in the local，ignored.`)
           }
         }
       }
     }
     // 给出文件写入提醒
     if (writeFileCount > 0 && service != null) {
-      log.success(`${service}: 成功写入 ${writeFileCount} 个文件至 ${project.codespace}`)
+      log.success(`${service}: write ${writeFileCount} files to ${project.codespace} successfully.`)
     }
     return diffFiles
   },
@@ -364,7 +364,7 @@ module.exports = {
         content: buffer.toString(encode)
       }
     } catch (e) {
-      log.error(`读取${filepath}文件失败`, e)
+      log.error(`read file ${filepath} failed`, e)
     }
   },
   readAddFileArray (codespace) {
@@ -391,7 +391,7 @@ module.exports = {
     }
     if (!this.exists(filepath)) {
       fs.mkdirSync(filepath, {recursive: true})
-      log.debug(`create directory: ${filepath}`)
+      log.debug(`+ created directory: ${filepath}`)
     }
   },
   getDirectory(filepath) {
@@ -402,13 +402,13 @@ module.exports = {
       fs.rmdirSync(filepath, {
         recursive: force
       })
-      log.debug(`delete directory: ${filepath}`)
+      log.debug(`- deleted directory: ${filepath}`)
     }
   },
   deleteFile(filepath) {
     if (this.exists(filepath)) {
       fs.unlinkSync(filepath)
-      log.debug(`删除文件: ${filepath}`)
+      log.debug(`- deleted file: ${filepath}`)
     }
   },
   createFile(filepath, content, force = false) {
@@ -421,7 +421,7 @@ module.exports = {
       }
     }
     fs.writeFileSync(filepath, content)
-    log.debug(`创建新文件: ${filepath}`)
+    log.debug(`+ created file: ${filepath}`)
   },
   rewrite (filepath, content) {
     this.createFile(filepath, content, true)

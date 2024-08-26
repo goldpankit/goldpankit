@@ -32,6 +32,7 @@ class Kit {
    * @returns {Promise<void>}
    */
   install (dto) {
+    const isPlugin = dto.plugin != null
     return new Promise((resolve, reject) => {
       // 验证安装
       const checkResult = this.#checkInstall(dto.projectId, dto.space, dto.service, dto.plugin != null)
@@ -53,7 +54,7 @@ class Kit {
             object.merge(projectConfig, config)
           }
           // 安装的是服务
-          if (dto.plugin == null) {
+          if (!isPlugin) {
             config.name = project.name
             config.space = dto.space
             config.service[dto.service] = {
@@ -68,14 +69,35 @@ class Kit {
             if (projectConfig != null && projectConfig.services != null) {
               config.plugins = projectConfig.services
             }
+            log.debug(`sync preset plugins to the project config...`)
             // 补充预置插件安装信息到到plugins中
             for (const presetPlugin of data.presetPlugins) {
+              if (config.plugins[presetPlugin.name] == null) {
+                log.debug(`  added ${presetPlugin.name}.`)
+              } else {
+                log.debug(`  updated ${presetPlugin.name}.`)
+              }
               config.plugins[presetPlugin.name] = {
                 version: presetPlugin.version,
                 variables: this.#getSimpleMainServiceVariables(presetPlugin.variables).map(variable => {
                   variable.value = this.#getPresetPluginVariableValue(variable)
                   return variable
                 })
+              }
+            }
+            /*
+             同步预置插件，预置插件为项目所有已安装的插件（除了带有查询模型和表变量的插件），如果预置插件在项目已安装插件中已不存在，则需要删除配置文件中对该插件的配置
+             例如：已安装redis缓存，在做插件升级时，把redis去掉了，并选择了本地缓存插件，则需要删除配置文件中的redis配置
+            */
+            for (const localPluginName in config.plugins) {
+              // 如果已安装的插件不是预置插件，则跳过
+              if (!this.#isPresetPlugin(config.plugins[localPluginName])) {
+                continue
+              }
+              // 如果已安装的插件可能是预置插件，则验证在预置插件中是否存在，不存在则删除
+              if (data.presetPlugins.find(plugin => plugin.name === localPluginName) == null) {
+                log.debug(`  deleted ${localPluginName}.`)
+                delete config.plugins[localPluginName]
               }
             }
           }
@@ -97,6 +119,7 @@ class Kit {
               variables: this.#getSimpleMainServiceVariables(dto.variables)
             }
           }
+          log.debug(`write kit.json...`)
           fs.createFile(projectService.getConfigPath(project.id), fs.toJSONFileString(config), true)
           // 写入数据库配置文件
           const dbConfig = projectDatabase.getProjectDatabaseConfigByIdWithDefaultBlankArray(project.id)
@@ -112,6 +135,7 @@ class Kit {
               }
             }
           }
+          log.debug(`write kit.db.json...`)
           fs.createFile(projectDatabase.getDatabaseConfigPath(project.id), fs.toJSONFileString(dbConfig), true)
 
           // 获取服务的构建详情（也可能是插件的构建详情）
@@ -152,7 +176,7 @@ class Kit {
             })
         })
         .catch(e => {
-          log.error('安装出现异常', e)
+          log.error('install throw an exception', e)
           reject(e)
         })
     })
@@ -208,12 +232,12 @@ class Kit {
               })
             })
             .catch(e => {
-              log.error('获取构建出现异常', e)
+              log.error('get builds throw an exception.', e)
               reject(e)
             })
         })
         .catch(e => {
-          log.error('卸载出现异常', e)
+          log.error('uninstall throw an exception.', e)
           reject(e)
         })
     })
@@ -268,12 +292,12 @@ class Kit {
                 reject(e)
               })
           } catch (e) {
-            log.error('编译成功，写入文件出现异常', e)
+            log.error('compiled successfully, but write files throw an exception.', e)
             reject(e)
           }
         })
         .catch(e => {
-          log.error('编译出现异常', e)
+          log.error('compile throw an exception.', e)
           reject(e)
         })
     })
@@ -325,7 +349,7 @@ class Kit {
             })
         })
         .catch(e => {
-          log.error('编译出现异常', e)
+          log.error('compile throw an exception.', e)
           reject(e)
         })
     })
@@ -363,6 +387,7 @@ class Kit {
       return response.INSTALL.PROJECT_NOT_ALLOWED
     }
   }
+
   /**
    * 编译服务
    * @param dto = {
@@ -453,6 +478,7 @@ class Kit {
       }
     })
   }
+
   /**
    * 安装服务
    * @param dto = {
@@ -484,9 +510,9 @@ class Kit {
       // 获取项目安装的服务
       let projectInstallService = project.service[dto.service]
       if (isPlugin) {
-        log.debug(`准备安装插件: ${dto.plugin}`)
+        log.debug(`ready to install plugin: ${dto.plugin}`)
       } else {
-        log.debug(`准备安装服务: ${dto.service}`)
+        log.debug(`ready to install service: ${dto.service}`)
       }
       // 获取数据库信息
       const database = projectDatabase.getDatabase(projectId, dto.database)
@@ -510,10 +536,10 @@ class Kit {
       installedPlugins = isPlugin ? installedPlugins : presetPlugins
       // debug
       if (projectInstallService == null) {
-        log.debug(`服务预置插件：${JSON.stringify(presetPlugins, null, 2)}`)
-        log.debug(`项目已安装的插件：${JSON.stringify(installedPlugins, null, 2)}`)
+        log.debug(`service preset plugins：${JSON.stringify(presetPlugins, null, 2)}`)
+        log.debug(`project installed plugins：${JSON.stringify(installedPlugins, null, 2)}`)
       } else {
-        log.debug(`项目已安装的插件：${JSON.stringify(installedPlugins, null, 2)}`)
+        log.debug(`project installed plugins：${JSON.stringify(installedPlugins, null, 2)}`)
       }
       return Promise.all(variables)
         .then(vars => {
@@ -554,6 +580,27 @@ class Kit {
     } catch (e) {
       return Promise.reject(e)
     }
+  }
+
+  /**
+   * 判断插件是否可以是预置插件
+   *
+   * @param pluginConfig 插件配置
+   */
+  #isPresetPlugin (pluginConfig) {
+    if (pluginConfig == null) {
+      return false
+    }
+    const variables = pluginConfig.variables == null ? [] : pluginConfig.variables
+    for (const variable of variables) {
+      if (variable.inputType === 'table') {
+        return false
+      }
+      if (variable.inputType === 'query_model') {
+        return false
+      }
+    }
+    return true
   }
 
   // 获取主服务简化变量
@@ -752,7 +799,7 @@ class Kit {
               return reject(`「${variable.label}」参数错误，找不到查询模型！`)
             }
             if (model.tables == null) {
-              log.error(`模型中缺少tables属性！模型ID：${modelId}，请检查kit.db.json文件中该模型配置是否正确！`)
+              log.error(`missing field 'tables', please check the query model on the 'kit.db.json' for Model ID = '${modelId}'.`)
               return reject(`「${variable.label}」参数错误，模型缺少关联表！`)
             }
             // 获取数据库表（没有时会连接数据库）

@@ -18,14 +18,14 @@ module.exports = {
           // 执行升级命令
           const upgradeCommand = `npm install goldpankit@${latestVersion.versionNo} -g --registry https://registry.npmmirror.com`
           const upgradeCommandTip = `npm install goldpankit@${latestVersion.versionNo} -g --registry https://registry.npmmirror.com\nOR\nsudo npm install goldpankit@${latestVersion.versionNo} -g --registry https://registry.npmmirror.com`
-          log.tip(`正在自动升级, 请稍等...`)
+          log.tip(`Upgrading kit to v${latestVersion.versionNo}, please wait a moment...`)
           node.exec(process.cwd(), upgradeCommand)
             .then(() => {
-              log.success(`已升级至 v${latestVersion.versionNo}。现在你可以重新执行 'kit' 命令来打开KIT。如果反复出现此消息，请尝试手动执行以下命令：\n\`\`\`\n${upgradeCommandTip}\n\`\`\``)
+              log.success(`Upgrade kit to v${latestVersion.versionNo} successfully. and now you can execute 'kit' command to open KIT. If you see this message repeatedly, please try to execute the following command manually:\n\`\`\`\n${upgradeCommandTip}\n\`\`\``)
               resolve(true)
             })
             .catch(e => {
-              log.error(`自动升级失败. 你可以手动执行以下命令来进行升级。\n\`\`\`\n${upgradeCommandTip}\n\`\`\`\n如果多次升级失败，请尝试使用超级管理员权限或更换node版本！`)
+              log.error(`Upgrade kit to v${latestVersion.versionNo} failed. you can execute the following command manually:\n\`\`\`\n${upgradeCommandTip}\n\`\`\`\nIf you see this message repeatedly, please try to execute the following command manually:\n\`\`\`\n${upgradeCommandTip}\n\`\`\`\nIf multiple upgrades fail, please try to use administrator permissions or change the node version!`)
               reject(e)
             })
         })

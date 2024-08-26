@@ -18,7 +18,7 @@ module.exports = {
     const projectId = dto.projectId
     const diffFiles = dto.diffFiles
     const project = projectService.findConfigById(projectId)
-    log.debug(`${project.name}: preparing to process ${diffFiles.length} diff files.`)
+    log.debug(`${project.name}: auto-merging for ${diffFiles.length} files.`)
     let mergeCount = 0
     let deletedCount = 0
     for (const file of diffFiles) {
