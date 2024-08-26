@@ -75,11 +75,9 @@ class Request {
 module.exports = {
   router,
   get (url) {
-    // console.log(`[GET] defined api for url '${url}'`)
     return new Request(url, 'get')
   },
   post (url) {
-    // console.log(`[POST] defined api for url '${url}'`)
     return new Request(url, 'post')
   }
 }

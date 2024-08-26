@@ -117,13 +117,16 @@ module.exports = {
     */
     if (!isNotEmptyProject) {
       log.debug(`${project.name}：项目中不存在文件，文件内容将直接写入`)
-      for (const file of files) {
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i]
         // 目录，不做处理
         if (file.filetype === 'DIRECTORY') {
+          log.debug(`${project.name}: ${i}. ${file.filepath} 为目录，忽略处理`)
           continue
         }
         // 已删除的文件，不做处理
         if (file.operaType === 'DELETED') {
+          log.debug(`${project.name}: ${i}. ${file.filepath} 已被删除，忽略处理`)
           continue
         }
         // 获取相对路径
@@ -148,7 +151,7 @@ module.exports = {
     4. 对于最新文件，如果本地不存在 && 为差异表达式，则直接忽略；否则做新增处理，并加入比差异队列
     */
     else {
-      log.debug(`${project.name}：项目中存在文件，将自动进行文件合并`)
+      log.debug(`${project.name}：项目中存在文件，开始进行文件合并...`)
       for (let i = 0; i < files.length; i++) {
         const file = files[i]
         // 获取文件路径
@@ -156,6 +159,7 @@ module.exports = {
         const filepath = path.join(project.codespace, relativePath)
         // 目录，不做处理
         if (file.filetype === 'DIRECTORY' || (this.exists(filepath) && this.isDirectory(filepath))) {
+          log.debug(`${project.name}: ${i}. ${filepath} 为目录，不做处理`)
           continue
         }
         // kit.json为项目配置文件，不允许操作
@@ -170,7 +174,7 @@ module.exports = {
         }
         // 已删除的文件，如果在本地找到文件，则加入差异队列
         if (file.operaType === 'DELETED') {
-          log.debug(`${project.name}：${filepath} 将被删除`)
+          log.debug(`${project.name}：${i}. ${filepath} 将被删除`)
           if (fileExists) {
             /*
             ??? 此处可能会存在问题，等待具体场景出现再完善
@@ -185,11 +189,11 @@ module.exports = {
               return f.filepath === relativePath && f.operaType !== 'DELETED'
             })
             if (nextOperaFile) {
-              log.debug(`${project.name}：检测到 ${filepath} 存在后续操作，停止删除`)
+              log.debug(`${project.name}：${i}. 检测到 ${filepath} 存在后续操作，停止删除`)
               continue
             }
             // 填充本地内容并加入差异队列
-            log.debug(`${project.name}：${filepath} 已加入删除差异队列`)
+            log.debug(`${project.name}：${i}. ${filepath} 已加入删除差异队列`)
             // - 已删除的文件，contentEncode可能为null，需要填充，不填充会导致合并时无法判断预览
             file.contentEncode = localFile.encode
             file.localContent = localFile.content
@@ -215,12 +219,14 @@ module.exports = {
         if (fileExists) {
           // 差异表达式
           if (diffExp.isDiffEllipsis(file.content)) {
+            log.debug(`${project.name}: ${i}. ${filepath} 为差异表达式，即将做自动合并`)
             // 合并
             const mergeResult = diffExp.merge(file.content, localFile.content)
             // 合并成功
             if (mergeResult.success) {
               // 合并后的结果为空，加入删除队列
               if (mergeResult.content.trim() === '') {
+                log.debug(`${project.name}: ${i}. ${filepath} 合并结果为空，已加入删除差异队列`)
                 file.localContent = localFile.content
                 // 文件操作类型调整为删除
                 file.operaType = 'DELETED'
@@ -232,11 +238,15 @@ module.exports = {
               file.localContent = localFile.content
               // 本地内容 != 最新内容，则加入差异队列
               if (file.localContent !== file.content) {
+                log.debug(`${project.name}: ${i}. ${filepath} 自动合并成功，已加入差异队列`)
                 diffFiles.push(file)
+              } else {
+                log.debug(`${project.name}: ${i}. ${filepath} 自动合并成功，与本地内容一致，已忽略`)
               }
             }
             // 合并失败
             else {
+              log.debug(`${project.name}: ${i}. ${filepath} 自动合并失败`)
               // 最新内容=合并后的内容（虽然合并失败，但并不是全部失败，能合并的还是会自动合并，不能合并的表达式通过错误表达式字段返回，在本地内容展示）
               file.content = mergeResult.content
               // 本地内容=差异表达式+本地内容
@@ -249,7 +259,10 @@ module.exports = {
             file.localContent = localFile.content
             // 本地内容 != 最新内容，则加入差异列表
             if (file.localContent !== file.content) {
+              log.debug(`${project.name}: ${i}. ${filepath} 做覆盖处理，已加入差异队列`)
               diffFiles.push(file)
+            } else {
+              log.debug(`${project.name}: ${i}. ${filepath} 与本地内容一致，已忽略`)
             }
           }
         }
@@ -261,16 +274,19 @@ module.exports = {
         else {
           // 非差异表达式，直接加入差异队列
           if (!diffExp.isDiffEllipsis(file.content)) {
+            log.debug(`${project.name}: ${i}. ${filepath} 为新文件，已加入差异队列`)
             file.localContent = ''
             file.operaType = 'ADD'
             diffFiles.push(file)
+          } else {
+            log.debug(`${project.name}: ${i}. ${filepath} 为差异表达式，且在本地未找到该文件，已忽略`)
           }
         }
       }
     }
     // 给出文件写入提醒
     if (writeFileCount > 0 && service != null) {
-      log.success(`${service}: write ${writeFileCount} files to ${project.codespace} successfully.`)
+      log.success(`${service}: 成功写入 ${writeFileCount} 个文件至 ${project.codespace}`)
     }
     return diffFiles
   },
@@ -392,7 +408,7 @@ module.exports = {
   deleteFile(filepath) {
     if (this.exists(filepath)) {
       fs.unlinkSync(filepath)
-      log.debug(`delete file: ${filepath}`)
+      log.debug(`删除文件: ${filepath}`)
     }
   },
   createFile(filepath, content, force = false) {
@@ -405,7 +421,7 @@ module.exports = {
       }
     }
     fs.writeFileSync(filepath, content)
-    log.debug(`create file: ${filepath}`)
+    log.debug(`创建新文件: ${filepath}`)
   },
   rewrite (filepath, content) {
     this.createFile(filepath, content, true)

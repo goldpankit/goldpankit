@@ -127,7 +127,12 @@ class Kit {
           Promise.all(getBuildsDetailsPromises)
             .then(buildsList => {
               // 将服务构建(插件构建)和预置插件构建合并到一个数组中
-              const builds = buildsList.flat()
+              const builds = buildsList.flat().map((build, index) => {
+                return {
+                  ...build,
+                  index
+                }
+              })
               // 返回构建信息
               const result = {
                 projectId: project.id,
@@ -175,6 +180,12 @@ class Kit {
           const unbuilds = data.version.unbuilds == null || data.version.unbuilds === '' ? [] : JSON.parse(data.version.unbuilds)
           serviceBuild.getBuildDetails('UNINSTALL', project, unbuilds, data.files, data.version.compiler, variables)
             .then(builds => {
+              builds = builds.map((build, index) => {
+                return {
+                  ...build,
+                  index
+                }
+              })
               // 删除文件
               const diffFiles = fs.deleteFiles(data.files, project)
               // 删除项目配置中服务的配置
@@ -233,7 +244,12 @@ class Kit {
             Promise.all(getBuildsDetailsPromises)
               .then(buildsList => {
                 // 将服务构建(插件构建)和预置插件构建合并到一个数组中
-                const builds = buildsList.flat()
+                const builds = buildsList.flat().map((build, index) => {
+                  return {
+                    ...build,
+                    index
+                  }
+                })
                 // 返回构建信息
                 const result = {
                   projectId: data.project.id,
@@ -282,7 +298,12 @@ class Kit {
           Promise.all(getBuildsDetailsPromises)
             .then(buildsList => {
               // 将服务构建(插件构建)和预置插件构建合并到一个数组中
-              const builds = buildsList.flat()
+              const builds = buildsList.flat().map((build, index) => {
+                return {
+                  ...build,
+                  index
+                }
+              })
               // 删除文件
               const diffFiles = fs.deleteFiles(data.files, data.project)
               // 返回构建信息
@@ -449,20 +470,23 @@ class Kit {
     try {
       const projectId = dto.projectId
       const project = projectService.findDetailById(projectId)
+      const isPlugin = dto.plugin != null
       if (project == null) {
         return Promise.reject(response.INSTALL.MISSING_PROJECT)
       }
-      // 获取项目安装的服务
-      let projectInstallService = null
-      if (project.service != null && project.service[dto.service] != null) {
-        projectInstallService = project.service[dto.service]
+      if (project.service == null) {
+        return Promise.reject(response.INSTALL.PROJECT_NOT_ALLOWED)
       }
-      // 获取项目已安装的插件
-      let installedPlugins = []
-      if (project.plugins != null) {
-        for (const pluginName in project.plugins) {
-          installedPlugins.push({ name: pluginName })
-        }
+      // 项目中未能找到该服务的配置，视为项目不支持
+      if (project.service[dto.service] == null) {
+        return Promise.reject(response.INSTALL.PROJECT_NOT_ALLOWED)
+      }
+      // 获取项目安装的服务
+      let projectInstallService = project.service[dto.service]
+      if (isPlugin) {
+        log.debug(`准备安装插件: ${dto.plugin}`)
+      } else {
+        log.debug(`准备安装服务: ${dto.service}`)
       }
       // 获取数据库信息
       const database = projectDatabase.getDatabase(projectId, dto.database)
@@ -471,14 +495,25 @@ class Kit {
       let serviceVars = null
       // 获取预置插件
       const presetPlugins = dto.plugin == null ? dto.plugins : []
-      /*
-      已安装插件 = 预置插件 + 项目已安装的插件，虽然预置插件在升级时通常为项目已安装的插件，但是在首次安装时，项目已安装插件为空，这里将预置插件也视为已安装的插件来处理
-      避免引起首次安装时对已安装插件的判断不准确。
-       */
-      for (const presetPlugin of presetPlugins) {
-        if (installedPlugins.find(installedPlugin => installedPlugin.name === presetPlugin.name) == null) {
-          installedPlugins.push(presetPlugin)
+      // 获取项目已安装的插件
+      let installedPlugins = []
+      if (project.plugins != null) {
+        for (const pluginName in project.plugins) {
+          installedPlugins.push({ name: pluginName })
         }
+      }
+      /*
+       重置已安装插件
+       服务：已安装插件 = 预置插件
+       插件：已安装插件 = 项目已安装的插件
+      */
+      installedPlugins = isPlugin ? installedPlugins : presetPlugins
+      // debug
+      if (projectInstallService == null) {
+        log.debug(`服务预置插件：${JSON.stringify(presetPlugins, null, 2)}`)
+        log.debug(`项目已安装的插件：${JSON.stringify(installedPlugins, null, 2)}`)
+      } else {
+        log.debug(`项目已安装的插件：${JSON.stringify(installedPlugins, null, 2)}`)
       }
       return Promise.all(variables)
         .then(vars => {
@@ -499,7 +534,7 @@ class Kit {
              服务：如果是安装服务，则已安装插件为预置插件
              插件：如果是安装插件，则已安装插件为服务中已安装的插件
             */
-            installedPlugins: projectInstallService == null ? installedPlugins : presetPlugins,
+            installedPlugins,
             operaType: dto.operaType,
             variables: vars
           })

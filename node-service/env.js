@@ -1,7 +1,7 @@
 const config = {
   current: 'production',
   common: {
-    debug: false,
+    debug: true,
     localApiPrefix: '/local-api',
     remoteApiPrefix: "/remote-api",
     limitFiles: 5000
