@@ -146,7 +146,7 @@ module.exports = {
       }
     }
     /*
-    项目中存在文件
+    项目中存在文件（要么是升级框架，要么是插件的安装、升级、卸载）
     1. 对于删除状态的文件，如果本地存在，则视为删除，并加入差异队列；同时，如果文件中还存在相同文件的ADD操作，则忽略；
     2. 对于最新内容为空的文件，如果本地存在，则视为删除，并加入差异队列
     3. 对于最新文件，如果本地存在 && 为差异表达式，则做合并处理，并加入差异队列；否则做覆盖处理，并加入比差异队列
@@ -180,25 +180,41 @@ module.exports = {
           log.traceFile(file, `will be deleted.`)
           if (fileExists) {
             /*
-            ??? 此处可能会存在问题，等待具体场景出现再完善
-            如果编译的文件中存在路径相同且operaType为ADD的，则不做删除处理
-            原因：假设文件使用了变量A来作为文件名，此时修改文件名使用了变量B，且变量A与变量B产生的结果是一致的，那么编译文件列表中会存在删除了该文件又新增了该文件，
-            所以标记为删除文件时，需要判断是否同一路径又存在ADD的文件，如果是，那么该文件不应做删除处理。
+             情况1: 一个插件版本可能对同一个文件即存在删除，又存在新增。
+             例如文件使用了变量A来作为文件名，此时修改文件名使用了变量B，且变量A与变量B产生的结果是一致的，则编译文件列表中会存在删除了该文件又新增了该文件。
+             此时新增文件和删除文件的顺序是不一定的，但是他们的serviceVersionId一定是一样的。此时删除动作应该被忽略
             */
-            const nextOperaFileIndex = files.findIndex((f, index) => {
+            const anotherFileIndex = files.findIndex(f => f.serviceVersionId === file.serviceVersionId && f.operaType !== 'DELETED')
+            if (anotherFileIndex !== -1) {
+              const anotherFile = files[anotherFileIndex]
+              log.debug(`${project.name}：${i}. ${filepath} exists another file operation, deletion is stopped.`)
+              log.traceFile(file, `exists another file operation, deletion is stopped.`)
+              log.traceFile(file, `  current file index: ${i}`)
+              log.traceFile(file, `  current file version: ${file.version}`)
+              log.traceFile(file, `  another file index: ${anotherFileIndex}`)
+              log.traceFile(file, `  another file version: ${anotherFile.version}`)
+              log.traceFile(file, `  another file opera type: ${anotherFile.operaType}`)
+              continue
+            }
+            /*
+             情况2:一个插件存在多个版本（serviceVersionId不一样），且前面的版本出现了删除，后面的版本又出现了新增或者修改（如果出现了修改，可能是数据不正确），
+             那么删除动作应该被忽略。
+            */
+            const anotherVersionFileIndex = files.findIndex((f, index) => {
               if (index <= i) {
                 return false
               }
-              return f.filepath === relativePath && f.operaType !== 'DELETED'
+              return f.filepath === relativePath && f.operaType !== 'DELETED' && f.serviceVersionId !== file.serviceVersionId
             })
-            if (nextOperaFileIndex !== -1) {
-              const nextOperaFile = files[nextOperaFileIndex]
-              log.debug(`${project.name}：${i}. found ${filepath} exists another operation, deletion is stopped.`)
-              log.traceFile(file, `exists another operation, deletion is stopped.`)
+            if (anotherVersionFileIndex !== -1) {
+              const anotherVersionFile = files[anotherVersionFileIndex]
+              log.debug(`${project.name}：${i}. ${filepath} exists another version file operation, deletion is stopped.`)
+              log.traceFile(file, `exists another version operation, deletion is stopped.`)
               log.traceFile(file, `  current file index: ${i}`)
-              log.traceFile(file, `  another file index: ${nextOperaFileIndex}`)
-              log.traceFile(file, `  another file opera type: ${nextOperaFile.operaType}`)
-              // log.traceFile(file, `  another file content: \n${nextOperaFile.content}`)
+              log.traceFile(file, `  current file version: ${file.version}`)
+              log.traceFile(file, `  another version file index: ${anotherVersionFileIndex}`)
+              log.traceFile(file, `  another version file version: ${anotherVersionFile.version}`)
+              log.traceFile(file, `  another version file opera type: ${anotherVersionFile.operaType}`)
               continue
             }
             // 填充本地内容并加入差异队列
@@ -248,6 +264,7 @@ module.exports = {
               // 合并成功 && 存在最新内容
               file.content = mergeResult.content
               file.localContent = localFile.content
+              file.operaType = 'MODIFIED'
               // 本地内容 != 最新内容，则加入差异队列
               if (file.localContent !== file.content) {
                 log.debug(`${project.name}: ${i}. ${filepath} auto-merge successfully，joined the diff-queue.`)
@@ -262,6 +279,7 @@ module.exports = {
             else {
               log.debug(`${project.name}: ${i}. ${filepath} auto-merge failed.`)
               log.traceFile(file, `auto-merge failed.`)
+              file.operaType = 'MODIFIED'
               // 最新内容=合并后的内容（虽然合并失败，但并不是全部失败，能合并的还是会自动合并，不能合并的表达式通过错误表达式字段返回，在本地内容展示）
               file.content = mergeResult.content
               // 本地内容=差异表达式+本地内容
@@ -272,6 +290,7 @@ module.exports = {
           // 非差异表达式
           else {
             file.localContent = localFile.content
+            file.operaType = 'MODIFIED'
             // 本地内容 != 最新内容，则加入差异列表
             if (file.localContent !== file.content) {
               log.debug(`${project.name}: ${i}. ${filepath} has bean overwritten and joined the diff-queue.`)
