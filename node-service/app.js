@@ -12,6 +12,8 @@ const command = yargs.argv._[0];
 const args = {
   // 启动端口
   port: jsonArgs.p || jsonArgs.port || 8130,
+  // 是否为debug模式
+  debugMode: jsonArgs.debug || false,
   // 本地地址
   localAddress: 'localhost',
   // 局域网地址
@@ -23,41 +25,38 @@ const env = require('./env').getConfig()
 const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
-const logger = require('morgan');
 const autoopen = require('./core/utils/autoopen')
 const routers = require('./routes/index');
 const log = require('./core/utils/log')
 const client = require('./core/client')
 const { createProxyMiddleware } = require('http-proxy-middleware');
 const app = express();
-// 开启日志
-if (env.debug) {
-  app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Credentials', 'true');
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-    next();
-  })
-  app.use(logger('dev'));
-}
+
+// 写入debug模式到缓存中
+log.setConfig({
+  debugMode: args.debugMode
+})
+
 // 开启远程接口代理
-const logLevel = env.debug ? 'info' : 'silent'
 app.use(env.remoteApiPrefix, createProxyMiddleware({
   target: env.remoteApi,
   changeOrigin: true,
-  logLevel,
+  logLevel: 'silent',
   pathRewrite: {
     [`^${env.remoteApiPrefix}`]: '',
   }
 }));
+
 // 开启远程接口代理
 app.use('/resource', createProxyMiddleware({
   target: env.remoteApi + '/resource',
   changeOrigin: true,
-  logLevel,
+  logLevel: 'silent',
   pathRewrite: {
     ['^/resource']: '',
   }
 }));
+
 // 设置请求参数大小
 app.use(express.json({limit: '100mb'}));
 app.use(express.urlencoded({ extended: false }));
@@ -67,6 +66,7 @@ app.use(express.static(publicPath));
 for (const key in routers) {
   app.use(env.localApiPrefix, routers[key]);
 }
+
 // 处理刷新
 app.get('*', (req, res) => {
   res.sendFile(path.join(publicPath, 'index.html'));

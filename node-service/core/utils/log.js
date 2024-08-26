@@ -1,18 +1,26 @@
 const colors = require('colors-console')
-const env = require('../../env').getConfig()
+
+// 日志配置
+let config = {
+  debugMode: false
+}
 
 function getTimestamp () {
   const date = new Date();
   return `${date.getFullYear()-2000}/${date.getMonth() + 1}/${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
 }
 module.exports = {
+  // 设置日志配置
+  setConfig (extraConfig) {
+    Object.assign(config, extraConfig)
+  },
   // 日志消息
   info (message) {
     console.log(this.__prefix(), colors('cyan', message))
   },
   // DEBUG日志
   debug (message) {
-    if (env.debug) {
+    if (config.debugMode) {
       console.log(this.__prefix(), colors('grey', `[DEBUG] ${message}`))
     }
   },
