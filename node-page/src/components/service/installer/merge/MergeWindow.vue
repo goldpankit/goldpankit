@@ -16,7 +16,7 @@
           :data="files"
           :show-checkbox="true"
           :default-expand-all="true"
-          node-key="filepath"
+          node-key="nodeKey"
           empty-text="No Files"
           :highlight-current="true"
           :expand-on-click-node="false"
@@ -57,6 +57,7 @@
           <template v-else>
             <MergeTextFileView
               v-if="currentFile.contentEncode === 'utf-8'"
+              :factor="currentFile.nodeKey"
               :filepath="currentFile.filepath"
               :original-text="localContent"
               v-model:new-text="currentFile.content"
@@ -132,11 +133,12 @@ export default {
     diffFiles () {
       this.__handleDiffChange()
     },
+    // 当新内容发生变化时，赋值到目标文件中
     newContent() {
-      // 获取最新编辑框内容并替换
-      this.installData.diff.diffFiles.forEach(item => {
-        if(item.filepath == this.currentFile.filepath) item.content = this.currentFile.content
-      })
+      const targetFile = this.installData.diff.diffFiles.find(diffFile => diffFile.nodeKey === this.currentFile.nodeKey)
+      if (targetFile != null) {
+        targetFile.content = this.currentFile.content
+      }
     }
   },
   methods: {
@@ -147,13 +149,15 @@ export default {
     },
     // 选择文件
     selectFile (data) {
+      // 点击目录时，重新选中当前文件
       if (data.type === 'DIRECTORY') {
         this.$refs.tree.setCurrentKey(null)
         if (this.currentFile != null) {
-          this.$refs.tree.setCurrentKey(this.currentFile.filepath)
+          this.$refs.tree.setCurrentKey(`${this.currentFile.filepath}-${this.currentFile.serviceVersionId}`)
         }
         return
       }
+      // 点击文件时，选中点击文件
       this.currentFile = data
     },
     // 处理节点选中
@@ -227,7 +231,7 @@ export default {
         targetFiles = [this.currentFile]
       }
       this.installData.diff.diffFiles = this.installData.diff.diffFiles.filter(f => {
-        return targetFiles.find(selectedFile => selectedFile.filepath === f.filepath) == null
+        return targetFiles.find(selectedFile => selectedFile.filepath === f.filepath && selectedFile.serviceVersionId === f.serviceVersionId) == null
       })
       this.__handleDiffChange()
       this.selectedFiles = []
@@ -256,9 +260,11 @@ export default {
           tempDirPaths.push(dir)
           let targetNode = children.find(f => f.label === dir)
           if (targetNode == null) {
+            const filepath = path.join(tempDirPaths)
             targetNode = {
               type: 'DIRECTORY',
-              filepath: path.join(tempDirPaths),
+              filepath,
+              nodeKey: filepath,
               label: dir,
               children: []
             }
@@ -269,6 +275,7 @@ export default {
         // 添加文件
         children.push({
           ...diffFile,
+          nodeKey: `${diffFile.filepath}-${diffFile.serviceVersionId}`,
           operaType: this.__getOperaType(diffFile),
           type: diffFile.filetype,
           label: filename,
@@ -278,7 +285,7 @@ export default {
           // 选中文件
           this.currentFile = children[0]
           this.$nextTick(() => {
-            this.$refs.tree.setCurrentKey(children[0].filepath)
+            this.$refs.tree.setCurrentKey(`${children[0].filepath}-${children[0].serviceVersionId}`)
           })
         }
       }
@@ -295,7 +302,7 @@ export default {
       }
       return 'UPDATE'
     },
-    // 浓缩目录
+    // 浓缩目录，将src/main/java这种目录浓缩成一个目录
     __ns (nodes) {
       for (const node of nodes) {
         this.__nsNode(node)

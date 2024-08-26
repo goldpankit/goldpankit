@@ -22,6 +22,10 @@ export default {
       type: String,
       required: true
     },
+    // 因子，因子发生变化后，将重新渲染文本对比
+    factor: {
+      required: true
+    },
     // 原始内容
     originalText: {
       type: String,
@@ -36,11 +40,6 @@ export default {
   data () {
     return {
       loading: true
-    }
-  },
-  computed: {
-    factor () {
-      return [this.filepath]
     }
   },
   watch: {
