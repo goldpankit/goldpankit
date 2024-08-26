@@ -43,6 +43,12 @@ class Kit {
       dto.operaType = 'INSTALL'
       this.#install(dto)
         .then(({ data, project, service, database, variables}) => {
+          // 如果项目代码目录不存在，则创建
+          if (!fs.exists(project.codespace)) {
+            log.debug(`the project code space '${project.codespace}' does not exist and will be created automatically.`)
+            fs.createDirectory(project.codespace)
+            log.debug(`project code space '${project.codespace}' is created.`)
+          }
           // 写入文件
           const diffFiles = fs.writeFiles(data.files, project, service, data.versionPath)
           // 写入配置

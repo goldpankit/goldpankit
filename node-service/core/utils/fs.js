@@ -141,6 +141,8 @@ module.exports = {
         const filepath = path.join(project.codespace, relativePath)
         // 写入文件
         this.writeFileWithForce(filepath, file, () => {
+          log.debug(`${project.name}: ${i}. ${file.filepath} is written.`)
+          log.traceFile(file, ` is written.`)
           writeFileCount++
         })
       }
