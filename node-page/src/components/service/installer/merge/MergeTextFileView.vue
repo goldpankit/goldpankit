@@ -55,11 +55,14 @@ export default {
     refreshContent () {
       this.loading = true
       this.$nextTick(() => {
+        const language = this.__getLanguage(this.filepath)
         if (originalModel != null) {
           originalModel.setValue(this.originalText || '')
+          originalModel.setLanguage(language)
         }
         if (modifiedModel != null) {
           modifiedModel.setValue(this.newText || '')
+          modifiedModel.setLanguage(language)
         }
         this.__loadSuccess()
       })

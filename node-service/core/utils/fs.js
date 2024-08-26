@@ -122,6 +122,7 @@ module.exports = {
         // 目录，不做处理
         if (file.filetype === 'DIRECTORY') {
           log.debug(`${project.name}: ${i}. ${file.filepath} is directory，ignored.`)
+          log.traceFile(file, `is directory，ignored.`)
           continue
         }
         // 已删除的文件，不做处理
@@ -292,7 +293,6 @@ module.exports = {
           if (!diffExp.isDiffEllipsis(file.content)) {
             log.debug(`${project.name}: ${i}. ${filepath} is new file，joined diff-queue.`)
             log.traceFile(file, `is new file，joined diff-queue.`)
-            file.localContent = ''
             file.operaType = 'ADD'
             diffFiles.push(file)
           } else {

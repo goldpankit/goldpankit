@@ -15,6 +15,10 @@ let diffEditor
 export default {
   name: "AddTextFileView",
   props: {
+    // 文件路径
+    filepath: {
+      required: true
+    },
     // 内容
     text: {
       required: true
@@ -40,6 +44,7 @@ export default {
       this.$nextTick(() => {
         if (diffEditor != null) {
           diffEditor.setValue(this.text)
+          diffEditor.getModel().setLanguage(this.__getLanguage(this.filepath))
         }
         this.__loadSuccess()
       })
@@ -50,7 +55,7 @@ export default {
         this.$el.querySelector(".container"),
         {
           value: this.text,
-          language: 'text/plain',
+          language: this.__getLanguage(this.filepath),
           automaticLayout: true,
           readOnly: true
         }
@@ -61,6 +66,27 @@ export default {
       setTimeout(() => {
         this.loading = false
       }, 300)
+    },
+    // 根据文件名称获取语言
+    __getLanguage (filepath) {
+      if (filepath == null || filepath === '') {
+        return 'text/plain'
+      }
+      // 获取后缀
+      let pointIndex = filepath.indexOf('.')
+      if (pointIndex === -1) {
+        return 'text/plain'
+      }
+      const suffix = filepath.substring(filepath.lastIndexOf('.'))
+      // 从monaco中获取所有语言
+      const languages = monaco.languages.getLanguages()
+      const targetLang = languages.find(lang => {
+        return lang.extensions != null && lang.extensions.find(ext => ext === suffix) != null
+      })
+      if (targetLang != null) {
+        return targetLang.id
+      }
+      return 'text/plain'
     }
   },
   mounted () {

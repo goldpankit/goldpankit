@@ -49,6 +49,7 @@
           <template v-else-if="currentFile.operaType === 'ADD'">
             <AddTextFileView
               v-if="currentFile.contentEncode === 'utf-8'"
+              :filepath="currentFile.filepath"
               :text="currentFile.content"
             />
             <AddFileView v-else :file="currentFile"/>
