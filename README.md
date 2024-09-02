@@ -1,64 +1,71 @@
 <div align="center">
   <img src="https://foruda.gitee.com/images/1692956820292184320/b882ad5d_1173697.png" width="50px"/>
-  <h1>GoldPanKit - 一分钟构建框架</h1>
+  <h1>GoldPanKit - One-minute, Build a framework!</h1>
 </div>
 
-## 介绍
-GoldPanKit是一个全新的研发套件，由清华海峡研究院和CodeRd原班人马研发，实现包括：
-1. 一键构建框架
-2. 支持为框架编写插件
-3. 支持框架的一键升级
-4. 支持单表、多表的代码生成
-5. 支持直连数据库，自动初始化数据库脚本
-6. 支持直连文件系统，免除下载解压复制粘贴的步骤
+<div align="center">
 
-## 线上体验
-前往[官网](http://www.goldpankit.com)体验一分钟搭建主流框架。
+English | [简体中文](./README.zh-CN.md)
 
-## 体验NPM上强大的客户端
-在终端依次执行以下命令
+</div>
+
+## Introduction
+GoldPanKit, developed by the Tsinghua Strait Research Institute and the original team from CodeRd, is a comprehensive development toolkit that offers a range of features to streamline and enhance the software development process. Here's a brief overview of its capabilities:
+
+One-click framework construction: Quickly set up the initial structure of your software framework with a single command.
+Plugin development support: Enable the creation of additional functionalities through plugins that can be seamlessly integrated into the framework.
+Framework upgrade with one click: Simplify the process of updating the framework to the latest version with minimal effort.
+Code generation for single and multiple tables: Automate the generation of code based on database tables, whether you're working with a single table or multiple tables.
+Direct database connection: Facilitate a straightforward connection to the database, with the ability to automatically initialize database scripts.
+Direct file system connection: Eliminate the need for manual downloading, unzipping, copying, and pasting by connecting directly to the file system.
+
+## Online
+Visit the [official website](http://www.goldpankit.com) to experience the one-minute setup of mainstream frameworks.
+
+## Experience the powerful client-side on NPM.
+Execute the following commands in the terminal sequentially.
 ```
 npm install goldpankit -g --registry https://registry.npmmirror.com
 kit
 ```
 
-执行成功后将自动打开Kit站点。之后每次使用Kit只需要运行kit命令即可。
+After successful execution, the Kit site will open automatically. Subsequently, to use Kit, simply run the kit command.
 
 
- **注意事项** 
+ **Precautions** 
 
-- 1. 由于windows系统中可能存在多个盘，执行命令时，需要切换到您项目所在的盘下执行，否则无法选中您的项目目录。
-- 2. 连接MySQL数据库时出现：ER_NOT_SUPPORTED_AUTH_MODE: Client does not support authentication protocol requested by server; consider upgrading MySQL client错误，这是数据库认证协议未支持导致的，通过以下命令修改一下数据库密码即可。
+- 1. Due to the possibility of multiple drives in the Windows system, you need to switch to the drive where your project is located when executing commands; otherwise, you won't be able to select your project directory.
+- 2. If you encounter the error "ER_NOT_SUPPORTED_AUTH_MODE: Client does not support authentication protocol requested by server; consider upgrading MySQL client" when connecting to the MySQL database, it is caused by the unsupported database authentication protocol. You can modify the database password with the following command:
+```sql
 alter user 'root'@'localhost' identified with mysql_native_password by 'your password';
+```
 
+ **Version Update**
 
+After re-executing the kit command in the terminal, kit will automatically check for updates and perform them. Once the update is successful, execute the kit command again. If the update fails, it is likely due to lack of permissions; try opening the terminal as a superuser and re-executing the kit command.
 
- **版本更新**
+## Starting the Project
 
-在终端重新执行kit命令后，kit会自动检查并更新，更新成功后再次执行kit命令即可。如果更新失败，大概率是没有权限导致，请尝试使用超级管理员打开终端并重新执行kit命令。
+#### Project Directory
 
-## 启动项目
+- node-service：Local service project
+- node-page：Page project
 
-#### 项目目录
-
-- node-service：本地服务工程
-- node-page：页面工程
-
-#### 启动node-service
+#### Starting node-service
 ```shell
 npm install --registry https://registry.npmmirror.com
 npm link
 kit
 ```
 
-#### 启动node-page 
+#### Starting node-page
 ```shell
 npm install --registry https://registry.npmmirror.com
 npm run serve
 ```
 
-## 效果预览
-项目启动成功后，访问`http://localhost:5173/`即可打开首页。
+## Preview of the Project
+After the project is successfully started, you can access the homepage by visiting `http://localhost:5173/`.
 ![index.png](lib/index.png)
 ![index.png](lib/services.png)
 ![index.png](lib/service_detail.png)
