@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://foruda.gitee.com/images/1727349824894599116/8d940a96_1173697.png" width="50px"/>
+  <img src="https://foruda.gitee.com/images/1727349824894599116/8d940a96_1173697.png"/>
   <h1>金镐研发套件，无止尽的探索研发效率！</h1>
 </div>
 
