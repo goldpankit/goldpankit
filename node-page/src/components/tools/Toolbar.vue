@@ -1,29 +1,36 @@
 <template>
   <ul class="kit-toolbar">
+<!--    <li>-->
+<!--      <div class="icon-wrap" @click="$refs.aiWindow.open()">-->
+<!--        <AIIcon/>-->
+<!--      </div>-->
+<!--      <span>{{$t('tool.ai.name')}}</span>-->
+<!--    </li>-->
     <li>
-      <div class="icon-wrap" @click="$refs.aiWindow.open()">
-        <AIIcon/>
+      <div class="icon-wrap">
+        <ToolBoxIcon @click="$refs.toolboxWindow.open()"/>
       </div>
-      <span>{{$t('tool.ai.name')}}</span>
+      <span>工具箱</span>
     </li>
   </ul>
-  <AIWindow ref="aiWindow"/>
+  <ToolboxWindow ref="toolboxWindow"/>
+<!--  <AIWindow ref="aiWindow"/>-->
 </template>
 
 <script>
 import AIIcon from "./ai/AIIcon.vue";
-import AIWindow from "./ai/AIWindow.vue";
+import ToolBoxIcon from "@/components/tools/toolbox/ToolBoxIcon";
+import ToolboxWindow from "@/components/tools/toolbox/ToolboxWindow";
 
 export default {
-  name: "Toolbar",
-  components: {AIWindow, AIIcon}
+  name: 'Toolbar',
+  components: {ToolBoxIcon, AIIcon, ToolboxWindow }
 }
 </script>
 
 <style scoped lang="scss">
 .kit-toolbar {
-  display: none;
-  position: absolute;
+  position: fixed;
   right: 50px;
   bottom: 50px;
   z-index: 98;

@@ -1,18 +1,18 @@
 <template>
-  <div class="ai-icon">
-    <img src="/images/ai.png" alt="AI助手">
+  <div class="toolbox-icon">
+    <img src="/images/tools/toolbox.svg" alt="金镐工具箱">
   </div>
 </template>
 
 <script>
 
 export default {
-  name: "AIIcon"
+  name: 'ToolBoxIcon'
 }
 </script>
 
 <style scoped lang="scss">
-.ai-icon {
+.toolbox-icon {
   width: 100%;
   height: 100%;
   img {

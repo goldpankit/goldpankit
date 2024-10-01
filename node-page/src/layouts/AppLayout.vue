@@ -1,14 +1,17 @@
 <template>
   <div class="app-layout">
     <slot></slot>
+    <Toolbar/>
   </div>
 </template>
 
 <script>
 import {mapActions} from "vuex";
+import Toolbar from '@/components/tools/Toolbar'
 
 export default {
   name: 'AppLayout',
+  components: { Toolbar },
   props: {
     headerVisible: {
       type: Boolean,

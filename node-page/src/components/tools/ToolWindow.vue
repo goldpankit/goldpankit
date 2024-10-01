@@ -57,7 +57,7 @@ export default {
   }
   .el-dialog__header {
     flex-shrink: 0;
-    padding: 0;
+    padding: 0 !important;
     margin: 0;
     .tool-window__header {
       background: #eee;
@@ -102,7 +102,7 @@ export default {
     }
   }
   .el-dialog__body {
-    padding: 0;
+    padding: 0 !important;
     margin: 0;
     flex-grow: 1;
     overflow: hidden;
