@@ -11,7 +11,7 @@ export default {
   formatStr(jsonText, space = 4) {
     const toolFunName = "Json 字符串格式化";
     if (!jsonText) throw new Error(`[${toolFunName}] 参数不能为空`);
-    if (typeof jsonText !== "string") {
+    if (typeof jsonText !== "string" || typeof space !== "number" || space < 0) {
       throw new Error(`[${toolFunName}] 错误的参数类型 ${typeof jsonText}`);
     }
 
