@@ -23,6 +23,7 @@
 export default {
   data () {
     return {
+      developers: ['刘大逵', '天析'],
       value: 'hello world',
       records: [
         { label: '驼峰命名', value: 'helloWorld' },
@@ -33,12 +34,17 @@ export default {
         { label: '纯大写', value: 'HELLOWORLD' }
       ]
     }
+  },
+  mounted() {
+    this.$emit('on-rendered')
   }
 }
 </script>
 
 <style scoped lang="scss">
 .page {
+  height: 100%;
+  overflow-y: auto;
   .page-wrap {
     padding: 20px;
   }
@@ -62,6 +68,7 @@ export default {
       justify-content: center;
       align-items: center;
       border: 1px solid #eee;
+      background-color: #fff;
       &:hover {
         box-shadow: 0 0 10px -2px #eee;
       }

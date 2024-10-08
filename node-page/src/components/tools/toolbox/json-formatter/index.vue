@@ -91,6 +91,7 @@ let jsonFormatterEditor
 export default {
   data () {
     return {
+      developers: ['刘大逵', '天析'],
       data: '',
       errorMessage: null,
       settings: {
@@ -189,6 +190,7 @@ export default {
   },
   mounted () {
     this.initEditor()
+    this.$emit('on-rendered')
   }
 }
 </script>

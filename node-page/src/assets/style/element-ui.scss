@@ -52,6 +52,10 @@ body.theme-light {
     --el-disabled-text-color: var(--color-light);
     font-weight: bold;
   }
+  // 危险按钮
+  .el-button--danger {
+    --el-button-hover-bg-color: var(--color-danger);
+  }
   // 表格
   .el-table {
     .table-column-sortable {
