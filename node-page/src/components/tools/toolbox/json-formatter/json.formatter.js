@@ -17,8 +17,11 @@ class JsonFormatter {
     if (!jsonText) {
       throw new Error('参数不能为空')
     }
-    if (typeof jsonText !== "string") {
-      throw new Error(`错误的参数类型 ${typeof jsonText}`)
+    if (typeof jsonText !== 'string') {
+      throw new Error(`jsonText: 错误的参数类型 ${typeof jsonText}`)
+    }
+    if (typeof space !== 'number' || space < 0) {
+      throw new Error(`space: 错误的参数类型 ${typeof space}`)
     }
     // 开启净化
     if (sanitized) {
