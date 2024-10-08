@@ -4,13 +4,15 @@
 
 <script>
 
-import JsonFormatter from './json-formatter/Index.vue'
+import JsonFormatter from './json-formatter/index.vue'
+import NameGenerator from './name-generator/index.vue'
 import Empty from "@/components/common/Empty.vue";
 export default {
   name: 'ToolRouter',
   components: {
     Empty,
-    JsonFormatter
+    JsonFormatter,
+    NameGenerator
   },
   props: {
     // 工具名称

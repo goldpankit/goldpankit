@@ -42,7 +42,7 @@ export default {
     return {
       tools: [
         { name: 'JsonFormatter', label: 'JSON格式化' },
-        { name: 'name-generator', label: '名称生成' },
+        { name: 'NameGenerator', label: '名称生成' },
         { name: 'password-generator', label: '密码生成' },
         { name: 'qr-generator', label: '二维码生成' },
         { name: 'ip-query', label: 'IP地址查询' },
