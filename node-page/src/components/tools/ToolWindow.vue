@@ -6,12 +6,13 @@
     :fullscreen="true"
     :show-close="false"
     :append-to-body="true"
+    :style="style"
   >
     <template #header>
       <header class="tool-window__header">
         <h2>{{title}}</h2>
         <div class="window-opera">
-          <span class="icon" @click="fullscreen = !fullscreen">
+          <span class="icon" @click="switchFullscreen">
             <el-icon v-if="!fullscreen"><FullScreen /></el-icon>
             <img v-else src="/images/common/exit-fullscreen.svg">
           </span>
@@ -29,11 +30,28 @@ export default {
   props: {
     title: {
       required: true
+    },
+    width: {
+      default: '1000px'
     }
   },
   data () {
     return {
       fullscreen: false
+    }
+  },
+  computed: {
+    style () {
+      return {
+        width: `${this.fullscreen ? '98%' : this.width} !important`
+      }
+    }
+  },
+  methods: {
+    // 切换全屏
+    switchFullscreen () {
+      this.fullscreen = !this.fullscreen
+      this.$emit('switch-fullscreen', this.fullscreen)
     }
   }
 }
@@ -43,7 +61,6 @@ export default {
 .tool-window {
   border-radius: 10px !important;
   overflow: hidden !important;
-  width: 1000px !important;
   height: 90% !important;
   top: 5%;
   display: flex;
@@ -51,11 +68,10 @@ export default {
   position: relative;
   transition: all ease .15s;
   &.fullscreen {
-    width: 98% !important;
     height: 95% !important;
     top: 2.5%;
   }
-  .el-dialog__header {
+  & > .el-dialog__header {
     flex-shrink: 0;
     padding: 0 !important;
     margin: 0;
@@ -101,7 +117,7 @@ export default {
       }
     }
   }
-  .el-dialog__body {
+  & > .el-dialog__body {
     padding: 0 !important;
     margin: 0;
     flex-grow: 1;

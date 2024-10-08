@@ -1,7 +1,9 @@
 <template>
   <ToolWindow
     title="工具箱"
+    width="1200px"
     v-model="visible"
+    @switch-fullscreen="handleSwitchFullscreen"
   >
     <div class="toolbox-wrap">
       <div class="tool-list-wrap">
@@ -20,7 +22,7 @@
         </ul>
       </div>
       <div class="tool-body">
-        <ToolRouter :tool-name="currentTool.name"/>
+        <ToolRouter ref="toolRouter" :tool-name="currentTool.name"/>
       </div>
     </div>
   </ToolWindow>
@@ -39,8 +41,8 @@ export default {
   data () {
     return {
       tools: [
+        { name: 'JsonFormatter', label: 'JSON格式化' },
         { name: 'name-generator', label: '名称生成' },
-        { name: 'json-formatter', label: 'JSON格式化' },
         { name: 'password-generator', label: '密码生成' },
         { name: 'qr-generator', label: '二维码生成' },
         { name: 'ip-query', label: 'IP地址查询' },
@@ -50,6 +52,12 @@ export default {
         { name: 'http-status-code', label: 'http状态码' },
       ],
       currentTool: null
+    }
+  },
+  methods: {
+    // 处理全屏切换，切换时触发工具实现的onSwitchFullscreen方法
+    handleSwitchFullscreen (fullscreen) {
+      this.$refs.toolRouter.onSwitchFullscreen(fullscreen)
     }
   },
   created () {

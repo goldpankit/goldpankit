@@ -1,6 +1,5 @@
 <template>
-  <JsonFormatter v-if="toolName === 'json-formatter'"/>
-  <Empty v-else description="待实现"/>
+  <component ref="component" :is="component"/>
 </template>
 
 <script>
@@ -17,6 +16,21 @@ export default {
     // 工具名称
     toolName: {
       required: true
+    }
+  },
+  computed: {
+    component () {
+      let targetComponent = this.$options.components[this.toolName]
+      if (targetComponent == null) {
+        targetComponent = Empty
+      }
+      return targetComponent
+    }
+  },
+  methods: {
+    // 触发具体实现的方法
+    onSwitchFullscreen (fullscreen) {
+      this.$refs.component.onSwitchFullscreen && this.$refs.component.onSwitchFullscreen(fullscreen)
     }
   }
 }

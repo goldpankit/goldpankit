@@ -1,4 +1,7 @@
-export default {
+/**
+ * JSON格式化器
+ */
+class JsonFormatter {
   /**
    * Json 字符串格式化
    *
@@ -6,27 +9,46 @@ export default {
    *
    * @param {string} jsonText JSON 字符串
    * @param {number} space 缩进空格数
+   * @param {boolean} sanitized 是否净化
    * @returns {string}
    */
-  formatStr(jsonText, space = 4) {
-    const toolFunName = "Json 字符串格式化";
-    if (!jsonText) throw new Error(`[${toolFunName}] 参数不能为空`);
-    if (typeof jsonText !== "string") {
-      throw new Error(`[${toolFunName}] 错误的参数类型 ${typeof jsonText}`);
+  format (jsonText, space = 4, sanitized = false) {
+    // 参数验证
+    if (!jsonText) {
+      throw new Error('参数不能为空')
     }
+    if (typeof jsonText !== "string") {
+      throw new Error(`错误的参数类型 ${typeof jsonText}`)
+    }
+    // 开启净化
+    if (sanitized) {
+      jsonText = this.sanitize(jsonText)
+    }
+    // 格式化
+    try {
+      return JSON.stringify(JSON.parse(jsonText), null, parseInt(space))
+    } catch (error) {
+      throw new Error(`格式化失败：${error.message}`)
+    }
+  }
 
-    const sanitizedJson = jsonText
+  /**
+   * 净化JSON字符串
+   *
+   * @param jsonText
+   * @returns {*}
+   */
+  sanitize (jsonText) {
+    return jsonText
       .replace(/'/g, '"')
       .replace(/‘/g, '"')
       .replace(/’/g, '"')
+      .replace(/“/g, '"')
+      .replace(/”/g, '"')
       .replace(/：/g, ":")
       .replace(/True/g, "true")
-      .replace(/False/g, "false");
+      .replace(/False/g, "false")
+  }
+}
 
-    try {
-      return JSON.stringify(JSON.parse(sanitizedJson), null, space);
-    } catch (error) {
-      throw new Error(`[${toolFunName}] ${error.message}`);
-    }
-  },
-};
+export default new JsonFormatter()
