@@ -28,6 +28,7 @@
     "vuex": "^4.1.0"
   },
   "devDependencies": {
+    "@types/crypto-js": "^4.2.2",
     "@vitejs/plugin-vue": "^4.0.0",
     "@vitejs/plugin-vue-jsx": "^3.0.0",
     "crypto-js": "^4.2.0",
