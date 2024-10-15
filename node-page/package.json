@@ -16,6 +16,7 @@
     "element-plus": "^2.7.4",
     "js-cookie": "^3.0.5",
     "konva": "^9.2.0",
+    "lodash": "^4.17.21",
     "monaco-editor": "^0.41.0",
     "pinyin-pro": "^3.16.6",
     "sortablejs": "^1.15.0",
