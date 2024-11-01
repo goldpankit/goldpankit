@@ -26,3 +26,8 @@ tmp
 
 # test file
 test.*
+
+# lock
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
