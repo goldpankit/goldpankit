@@ -1,8 +1,7 @@
 export default {
   _split(input) {
-    const toolFunName = "名称转换";
     if (typeof input !== "string") {
-      throw new Error(`[${toolFunName}] Invalid input type=${typeof input}`);
+      throw new Error(`Invalid input type=${typeof input}`);
     }
     return input
       .replace(/[\s_-]+/g, "|")
