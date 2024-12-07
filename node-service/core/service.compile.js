@@ -764,6 +764,7 @@ class Kit {
                 ...variable,
                 value: null
               })
+              return
             }
             mysql.getTable({
               host: database.host,
@@ -773,6 +774,7 @@ class Kit {
               database: database.schema
             }, variable.value === undefined ? variable.defaultValue : variable.value)
               .then(value => {
+                console.log('value', value)
                 // 补充动态字段，children为字段变量组
                 if (variable.children != null && variable.children.length > 0) {
                   this.#paddingFieldVariablesWithResolve(project, database, variable, value, null, null, null, resolve, reject)
