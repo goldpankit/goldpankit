@@ -16,6 +16,7 @@
     "element-plus": "^2.7.4",
     "js-cookie": "^3.0.5",
     "konva": "^9.2.0",
+    "lodash": "^4.17.21",
     "monaco-editor": "^0.41.0",
     "pinyin-pro": "^3.16.6",
     "sortablejs": "^1.15.0",
@@ -28,8 +29,10 @@
     "vuex": "^4.1.0"
   },
   "devDependencies": {
+    "@types/crypto-js": "^4.2.2",
     "@vitejs/plugin-vue": "^4.0.0",
     "@vitejs/plugin-vue-jsx": "^3.0.0",
+    "crypto-js": "^4.2.0",
     "sass": "^1.60.0",
     "sass-loader": "^13.2.2",
     "vite": "^4.1.4"
