@@ -21,9 +21,12 @@ module.exports = {
     console.log(this.__prefix(), colors('cyan', message))
   },
   // DEBUG日志
-  debug (message) {
+  debug (message, data) {
     if (config.debugMode) {
       console.log(this.__prefix(), colors('grey', `[DEBUG] ${message}`))
+      if (data) {
+        console.log(data)
+      }
     }
   },
   // 跟踪文件

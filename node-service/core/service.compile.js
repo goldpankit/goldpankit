@@ -500,7 +500,7 @@ class Kit {
    */
   #install (dto) {
     try {
-      console.log('开始安装代码...')
+      log.debug('开始安装代码...')
       const projectId = dto.projectId
       const project = projectService.findDetailById(projectId)
       const isPlugin = dto.plugin != null
@@ -550,7 +550,7 @@ class Kit {
       }
       return Promise.all(variables)
         .then(vars => {
-          console.log('开始解析变量...')
+          log.debug('开始解析变量...')
           serviceVars = vars
           // 执行安装
           return serviceApi.install({
@@ -760,7 +760,6 @@ class Kit {
           }
           // 输入类型为表，则查询出表信息
           if (variable.inputType === 'table') {
-            console.log('获取表信息', variable)
             const tableName = variable.value === undefined ? variable.defaultValue : variable.value
             if (database == null || tableName == null || tableName === '') {
               resolve({
@@ -777,7 +776,7 @@ class Kit {
               database: database.schema
             }, variable.value === undefined ? variable.defaultValue : variable.value)
               .then(value => {
-                console.log('获取到表信息', value)
+                log.debug('获取到表信息', value)
                 // 补充动态字段，children为字段变量组
                 if (variable.children != null && variable.children.length > 0) {
                   this.#paddingFieldVariablesWithResolve(project, database, variable, value, null, null, null, resolve, reject)
