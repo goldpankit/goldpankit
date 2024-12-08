@@ -93,8 +93,10 @@ import MergeFileView from "./MergeFileView.vue";
 export default {
   name: "MergeWindow",
   components: {
-    MergeFileView,
-    AddFileView, AddTextFileView, DeletedFileView, DeletedTextFileView, MergeTextFileView, MarkdownEditor},
+    MergeFileView, AddFileView, AddTextFileView,
+    DeletedFileView, DeletedTextFileView, MergeTextFileView,
+    MarkdownEditor
+  },
   data () {
     return {
       visible: false,
@@ -136,7 +138,12 @@ export default {
     },
     // 当新内容发生变化时，赋值到目标文件中
     newContent() {
-      const targetFile = this.installData.diff.diffFiles.find(diffFile => diffFile.nodeKey === this.currentFile.nodeKey)
+      // 从差异文件中找出对应的文件
+      const targetFile = this.diffFiles.find(diffFile => {
+        // 构建nodekey，跟files中的对象nodeKey构建逻辑保持一致
+        let nodeKey = `${diffFile.filepath}-${diffFile.serviceVersionId}`
+        return nodeKey === this.currentFile.nodeKey
+      })
       if (targetFile != null) {
         targetFile.content = this.currentFile.content
       }
