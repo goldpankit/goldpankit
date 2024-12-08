@@ -133,8 +133,9 @@ module.exports = {
         }
         // 获取相对路径
         const relativePath = file.filepath
-        // kit.json为项目配置文件，不允许操作
-        if (relativePath === Const.PROJECT_CONFIG_FILE) {
+        // kit.json和kit.db.json为项目配置文件，不允许操作
+        console.log('relativePath', relativePath)
+        if (relativePath === Const.PROJECT_CONFIG_FILE || relativePath === Const.PROJECT_DATABASE_CONFIG_FILE) {
           continue
         }
         // 获取写入文件路径
@@ -167,7 +168,7 @@ module.exports = {
           continue
         }
         // kit.json为项目配置文件，不允许操作
-        if (relativePath === Const.PROJECT_CONFIG_FILE) {
+        if (relativePath === Const.PROJECT_CONFIG_FILE || relativePath === Const.PROJECT_DATABASE_CONFIG_FILE) {
           continue
         }
         // 获取文件信息
