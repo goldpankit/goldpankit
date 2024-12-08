@@ -220,7 +220,13 @@ class MySQL {
           if (index !== -1) {
             let secondInfo = field.COLUMN_TYPE.substring(index + 1, field.COLUMN_TYPE.length - 1)
             length = secondInfo.split(',')[0].trim()
+            // 如果表字段存在unsigned或zerofil的设定，则length可能为“11) unsigned zerofil 11)”，此时需要抽取出这里的数字作为长度
+            length = length.match(/\d+/) ? length.match(/\d+/)[0] : length
             decimal = secondInfo.split(',')[1] == null ? 0 : secondInfo.split(',')[1].trim()
+            // 如果表字段存在unsigned或zerofil的设定，则length可能为“4,2) unsigned zerofil 11)”，此时需要抽取出这里的数字作为长度
+            if (typeof decimal === 'string') {
+              decimal = decimal.match(/\d+/) ? decimal.match(/\d+/)[0] : decimal
+            }
           }
           return {
             name: field.COLUMN_NAME,
