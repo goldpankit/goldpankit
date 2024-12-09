@@ -384,10 +384,10 @@ export default {
           align-items: center;
           &.file {
             &.ADD {
-              color: var(--primary-color-match-2);
+              color: var(--color-success);
             }
             &.UPDATE {
-              color: var(--color-success);
+              color: var(--primary-color-match-2);
             }
           }
           .el-icon {
