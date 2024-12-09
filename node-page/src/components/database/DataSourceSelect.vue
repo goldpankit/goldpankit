@@ -75,6 +75,10 @@ export default {
           })
         }
       }
+    },
+    // 监听值，如果发生变化，触发change，修复 安装框架/当已有项目中存在数据库，且项目文件夹被删除后，在切换版本时，会选中不存在的数据库
+    modelValue () {
+      this.handleChange(this.modelValue)
     }
   },
   methods: {
