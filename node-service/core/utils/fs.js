@@ -134,7 +134,6 @@ module.exports = {
         // 获取相对路径
         const relativePath = file.filepath
         // kit.json和kit.db.json为项目配置文件，不允许操作
-        console.log('relativePath', relativePath)
         if (relativePath === Const.PROJECT_CONFIG_FILE || relativePath === Const.PROJECT_DATABASE_CONFIG_FILE) {
           continue
         }
@@ -187,14 +186,17 @@ module.exports = {
              例如文件使用了变量A来作为文件名，此时修改文件名使用了变量B，且变量A与变量B产生的结果是一致的，则编译文件列表中会存在删除了该文件又新增了该文件。
              此时新增文件和删除文件的顺序是不一定的，但是他们的serviceVersionId一定是一样的。此时删除动作应该被忽略
             */
-            const anotherFileIndex = files.findIndex(f => f.serviceVersionId === file.serviceVersionId && f.operaType !== 'DELETED')
+            const anotherFileIndex = files.findIndex(f =>
+              f.filepath === relativePath && f.serviceVersionId === file.serviceVersionId && f.operaType !== 'DELETED')
             if (anotherFileIndex !== -1) {
               const anotherFile = files[anotherFileIndex]
-              log.debug(`${project.name}：${i}. ${filepath} exists another file operation, deletion is stopped.`)
+              log.debug(`${project.name}：${i}. ${relativePath} exists another file operation, deletion is stopped.`)
               log.traceFile(file, `exists another file operation, deletion is stopped.`)
               log.traceFile(file, `  current file index: ${i}`)
+              log.traceFile(file, `  current file path: ${relativePath}`)
               log.traceFile(file, `  current file version: ${file.version}`)
               log.traceFile(file, `  another file index: ${anotherFileIndex}`)
+              log.traceFile(file, `  another file path: ${anotherFile.filepath}`)
               log.traceFile(file, `  another file version: ${anotherFile.version}`)
               log.traceFile(file, `  another file opera type: ${anotherFile.operaType}`)
               continue
@@ -211,11 +213,13 @@ module.exports = {
             })
             if (anotherVersionFileIndex !== -1) {
               const anotherVersionFile = files[anotherVersionFileIndex]
-              log.debug(`${project.name}：${i}. ${filepath} exists another version file operation, deletion is stopped.`)
+              log.debug(`${project.name}：${i}. ${relativePath} exists another version file operation, deletion is stopped.`)
               log.traceFile(file, `exists another version operation, deletion is stopped.`)
-              log.traceFile(file, `  current file index: ${i}`)
-              log.traceFile(file, `  current file version: ${file.version}`)
+              log.traceFile(file, `  current version file index: ${i}`)
+              log.traceFile(file, `  current version file path: ${relativePath}`)
+              log.traceFile(file, `  current version file version: ${file.version}`)
               log.traceFile(file, `  another version file index: ${anotherVersionFileIndex}`)
+              log.traceFile(file, `  another version file path: ${anotherVersionFile.filepath}`)
               log.traceFile(file, `  another version file version: ${anotherVersionFile.version}`)
               log.traceFile(file, `  another version file opera type: ${anotherVersionFile.operaType}`)
               continue
