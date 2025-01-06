@@ -42,6 +42,7 @@ export default {
     return {
       tools: [
         { name: 'JsonFormatter', label: 'JSON格式化' },
+        { name: 'TextComparer', label: '文本对比' },
         // { name: 'NameGenerator', label: '名称生成' },
         // { name: 'PasswordGenerator', label: '密码生成' },
         // { name: 'qr-generator', label: '二维码生成' },

@@ -205,8 +205,8 @@ export default {
     flex-shrink: 0;
     display: flex;
     padding: 10px 20px;
-    border-bottom: 1px solid #eee;
-    background-color: var(--background-color);
+    border-bottom: 1px solid var(--tool-toolbar-border-color);
+    background-color: var(--tool-toolbar-background-color);
     ul.setting-wrap {
       flex-grow: 1;
       display: flex;
