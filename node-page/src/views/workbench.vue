@@ -373,12 +373,6 @@ export default {
           if (withSubServices) {
             this.searchPlugins()
           }
-          // 获取服务的数据库变量（如果有）
-          const serviceVariables = this.installedService[serviceName].variables || []
-          const databaseVariable = serviceVariables.find(variable => variable.inputType === 'datasource')
-          if (databaseVariable != null) {
-            this.setCurrentDatabase(databaseVariable.value)
-          }
         })
         .catch(e => {
           this.$tip.apiFailed(e)
