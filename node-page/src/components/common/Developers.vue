@@ -5,6 +5,7 @@
       <li
         v-for="item in developers"
         :key="item.name"
+        @click="gotoHome(item)"
       >
         <img :src="`/images/developers/${item.name}.png`" :alt="`${item.name}头像`"/>
       </li>
@@ -29,12 +30,14 @@ export default {
       allDevelopers: [
         {
           name: '刘大逵',
+          home: 'https://v.douyin.com/iyacJeUA/',
           email: '',
           github: 'https://github.com/jason',
           gitee: 'https://github.com/jason',
         },
         {
           name: '天析',
+          home: 'https://github.com/tianxidev',
           email: '',
           github: 'https://github.com/jason',
           gitee: 'https://github.com/jason',
@@ -46,6 +49,13 @@ export default {
     // 已参与的开发者
     developers () {
       return this.allDevelopers.filter(item => this.data.includes(item.name))
+    }
+  },
+  methods: {
+    gotoHome (developer) {
+      if (developer.home != null && developer.home !== '') {
+        window.open(developer.home)
+      }
     }
   }
 }
@@ -70,6 +80,7 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
+    cursor: pointer;
   }
   img {
     width: 25px;

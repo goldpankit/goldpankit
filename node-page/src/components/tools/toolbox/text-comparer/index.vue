@@ -35,6 +35,7 @@ export default {
   name: 'TextComparer',
   data() {
     return {
+      developers: ['刘大逵'],
       hasDiffComputed: false,
       diffCount: 0
     }
@@ -119,6 +120,7 @@ export default {
   },
   mounted() {
     this.initDiffEditor()
+    this.$emit('on-rendered')
   },
   beforeDestroy() {
     if (diffEditor) {
@@ -145,8 +147,10 @@ export default {
 .text-comparer {
   width: 100%;
   height: 100%;
-
+  display: flex;
+  flex-direction: column;
   .nav-buttons {
+    flex-shrink: 0;
     padding: 10px 20px;
     display: flex;
     justify-content: space-between;
@@ -173,13 +177,10 @@ export default {
   }
 
   .container {
-    width: 100%;
-    height: calc(100% - 52px);
-
+    flex: 1;
     .editor-container {
       width: 100%;
       height: 100%;
-      min-height: 500px;
     }
   }
 }

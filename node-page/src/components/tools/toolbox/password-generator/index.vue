@@ -1,10 +1,10 @@
 <template>
   <div class="page">
-    <el-form :model="form" :rules="rules">
-      <el-form-item label="密码长度" required>
-        <el-input-number v-model="form.length" :controls="false"/>
+    <el-form ref="form" :model="form" :rules="rules">
+      <el-form-item label="密码长度" prop="length" required>
+        <el-input-number :min="4" :max="30" v-model="form.length" :controls="false"/>
       </el-form-item>
-      <el-form-item label="生成规则" required>
+      <el-form-item label="生成规则" prop="rules" required>
         <el-checkbox-group v-model="form.rules">
           <el-checkbox value="lowercase">小写字母</el-checkbox>
           <el-checkbox value="uppercase">大写字母</el-checkbox>
@@ -19,7 +19,7 @@
         <el-input v-model="form.result"/>
       </el-form-item>
       <div class="opera">
-        <el-button type="primary" size="default">立即生成</el-button>
+        <el-button type="primary" size="default" @click="generate">立即生成</el-button>
         <el-button type="primary" size="default">复制</el-button>
         <el-button type="danger" size="default">重置</el-button>
       </div>
@@ -28,6 +28,7 @@
 </template>
 
 <script>
+import PasswordGenerator from './password.generator'
 
 export default {
   data () {
@@ -35,19 +36,37 @@ export default {
       developers: ['刘大逵', '天析'],
       form: {
         length: 8,
-        rules: ['lowercase', 'uppercase', 'numbers'],
+        rules: ['lowercase', 'uppercase', 'numbers', 'special'],
         excludeLetters: '1lI0oO',
         result: ''
       },
       rules: {
         length: [
-          { required: true, message: '请输入密码长度', trigger: 'blur' },
-          { type: 'number', message: '长度必须为数字值', trigger: 'blur' }
+          { required: true, message: '请输入密码长度' },
+          { type: 'number', message: '长度必须为数字值' },
+          {
+            validator: (rule, value, callback) => {
+              if (value >= 4 && value <= 30) {
+                return callback()
+              }
+              callback(new Error('密码长度在4到30位之间'))
+            }
+          }
         ],
-        excludeLetters: [
-          { required: true, message: '请输入排除字符', trigger: 'blur' }
+        rules: [
+          { required: true, message: '请选择生成规则' }
         ]
       }
+    }
+  },
+  methods: {
+    generate () {
+      this.$refs.form.validate((pass) => {
+        if (!pass) {
+          return
+        }
+        this.form.result = PasswordGenerator.generatePassword(this.form.length, this.form.rules, this.form.excludeLetters)
+      })
     }
   },
   mounted() {

@@ -43,8 +43,8 @@ export default {
       tools: [
         { name: 'JsonFormatter', label: 'JSON格式化' },
         { name: 'TextComparer', label: '文本对比' },
+        { name: 'PasswordGenerator', label: '密码生成' },
         // { name: 'NameGenerator', label: '名称生成' },
-        // { name: 'PasswordGenerator', label: '密码生成' },
         // { name: 'qr-generator', label: '二维码生成' },
         // { name: 'ip-query', label: 'IP地址查询' },
         // { name: 'patter-test', label: '正则测试' },
