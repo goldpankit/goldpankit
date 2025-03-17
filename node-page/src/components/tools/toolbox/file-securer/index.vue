@@ -2,7 +2,19 @@
   <div class="file-securer">
     <div class="content-wrap">
       <el-alert
-        description="请务必记住您的加密密码，否则将无法正确解密文件！"
+        description="支持多大文件？答：能加解密多大文件取决于机器性能！"
+        type="info"
+        show-icon
+        :closable="false"
+      />
+      <el-alert
+        description="会不会暴露？答：纯js进行加解密，不会经过网络，妥善保管加解密即可！"
+        type="info"
+        show-icon
+        :closable="false"
+      />
+      <el-alert
+        description="注意：请务必记住您的加密密码，否则将无法正确解密文件！"
         type="warning"
         show-icon
         :closable="false"
@@ -154,7 +166,6 @@ export default {
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    gap: 20px;
     background-color: #fff;
     padding: 30px;
     border: 1px solid #eee;
@@ -166,13 +177,18 @@ export default {
 // 提示
 :deep(.el-alert) {
   flex-shrink: 0;
+  margin-bottom: 5px;
   .el-alert__icon {
     font-size: 16px !important;
     margin-right: 0 !important;
   }
+  &:last-of-type {
+    margin-bottom: 0;
+  }
 }
 // 文件上传
 .file-upload-area {
+  margin-top: 20px;
   flex-grow: 1;
   & > div {
     height: 100%;
@@ -199,6 +215,7 @@ export default {
 
 // 密码
 .password-input {
+  margin-top: 20px;
   flex-shrink: 0;
   display: flex;
   align-items: center;
@@ -209,6 +226,7 @@ export default {
 
 // 操作按钮
 .action-buttons {
+  margin-top: 20px;
   flex-shrink: 0;
   display: flex;
   gap: 20px;
@@ -217,6 +235,7 @@ export default {
 
 // 错误消息
 .error-message {
+  margin-top: 20px;
   min-height: 30px;
   flex-shrink: 0;
   color: #f44336;
