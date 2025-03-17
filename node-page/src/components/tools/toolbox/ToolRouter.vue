@@ -15,6 +15,7 @@ import JsonFormatter from './json-formatter/index.vue'
 import NameGenerator from './name-generator/index.vue'
 import PasswordGenerator from './password-generator/index.vue'
 import TextComparer from './text-comparer/index.vue'
+import FileSecurer from './file-securer/index.vue'
 import Empty from '@/components/common/Empty.vue'
 import Developers from "@/components/common/Developers.vue";
 export default {
@@ -25,7 +26,8 @@ export default {
     JsonFormatter,
     NameGenerator,
     PasswordGenerator,
-    TextComparer
+    TextComparer,
+    FileSecurer
   },
   props: {
     // 工具名称

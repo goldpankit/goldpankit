@@ -3,6 +3,8 @@
   "version": "2.11.0",
   "scripts": {
     "serve": "vite",
+    "dev": "vite",
+    "prod": "vite --mode production",
     "build": "vite build",
     "preview": "vite preview"
   },
