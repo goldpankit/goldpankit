@@ -9,6 +9,7 @@ import prismjs from 'vite-plugin-prismjs'
 export default ({ mode }) => {
   const localApiPrefix = loadEnv(mode, process.cwd()).VITE_LOCAL_API_PREFIX
   const remoteApiPrefix = loadEnv(mode, process.cwd()).VITE_REMOTE_API_PREFIX
+  const api = loadEnv(mode, process.cwd()).VITE_API
   return defineConfig({
     build: {
       outDir: '../node-service/public'
@@ -36,14 +37,12 @@ export default ({ mode }) => {
           rewrite: (path) => path.replace(new RegExp(`^${localApiPrefix}`), "")
         },
         [remoteApiPrefix]: {
-          target: 'http://localhost:10088',
-          // target: 'http://client-api.goldpankit.com',
+          target: api,
           changeOrigin: true,
           rewrite: (path) => path.replace(new RegExp(`^${remoteApiPrefix}`), "")
         },
         ['/resource']: {
-          target: 'http://localhost:10088/resource',
-          // target: 'http://client-api.goldpankit.com/resource',
+          target: `${api}/resource`,
           changeOrigin: true,
           rewrite: (path) => path.replace(new RegExp(`^/resource`), "")
         }
