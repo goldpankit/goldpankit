@@ -20,7 +20,7 @@ module.exports = {
         [queryModelVariable.value.value]: pluginVariables
       }
     }
-    originalPluginQueryModelParameters[pluginName] = pluginVariables
+    originalPluginQueryModelParameters[queryModelVariable.value.value] = pluginVariables
     return originalPluginQueryModelParameters
   }
 }

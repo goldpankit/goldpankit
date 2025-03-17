@@ -112,7 +112,6 @@ export default {
         }
       }
       this.group[this.valueKey] = copyFields
-      console.log('this.group[this.valueKey]', this.group[this.valueKey])
       this.emitChange()
     },
     emitChange () {

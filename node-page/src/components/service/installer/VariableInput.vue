@@ -59,6 +59,7 @@
       :value-key="valueKey"
       v-model="variable[valueKey]"
       @change="$emit('change', $event)"
+      @change-query-model="$emit('change-query-model', $event)"
     />
   </div>
 </template>

@@ -122,11 +122,12 @@ class Kit {
               config.plugins = projectConfig.services
             }
             const pluginVariables = this.#getSimpleMainServiceVariables(dto.variables)
-            const queryModelVariables = InstallParameterHandler.getPluginQueryModelParameters(dto.plugin, pluginVariables, config.plugins[dto.plugin]['qm-values'])
+            const pluginConfig = config.plugins[dto.plugin]
+            const queryModelVariables = InstallParameterHandler.getPluginQueryModelParameters(dto.plugin, pluginVariables, pluginConfig == null ? null : pluginConfig['qm-values'])
             config.plugins[dto.plugin] = {
               version: dto.version,
               variables: pluginVariables,
-              // 记录查询模型变量值
+              // 记录查询模型的插件变量，用于实现根据查询模型记忆并回写插件参数功能
               'qm-values': queryModelVariables
             }
           }

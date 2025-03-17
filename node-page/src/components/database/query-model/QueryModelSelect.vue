@@ -106,10 +106,14 @@ export default {
       if (this.models.find(model => model.id === value) == null) {
         this.$emit('update:modelValue', null)
         this.$emit('change', null)
+        // 重新触发一个新的自定义事件，以避免外部绑定change事件会触发多次
+        this.$emit('change-query-model', null)
         return
       }
       this.$emit('update:modelValue', value)
-      this.$emit('change')
+      this.$emit('change', value)
+      // 重新触发一个新的自定义事件，以避免外部绑定change事件会触发多次
+      this.$emit('change-query-model', value)
     },
     // 刷新各字段变量组的字段设置
     refreshFieldSetting () {

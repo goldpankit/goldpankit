@@ -61,7 +61,11 @@
                   </div>
                 </template>
                 <!-- 根变量 -->
-                <VariableInput v-if="variable.type === 'variable'" :variable="variable"/>
+                <VariableInput
+                  v-if="variable.type === 'variable'"
+                  :variable="variable"
+                  @change-query-model="handleQueryModelChange"
+                />
                 <!-- 服务变量组 -->
                 <ul v-else-if="variable.type === 'group'" class="group-vars">
                   <li v-for="v of variable.children" :key="`${variable.name}_${v.name}`">
@@ -76,6 +80,7 @@
                 />
               </el-form-item>
             </template>
+            <!-- 选择插件，只有框架才需要选择 -->
             <el-form-item v-if="!isPlugin" label="选择插件">
               <PluginSelector
                 v-model="selectedPlugins"
@@ -183,7 +188,9 @@ export default {
         install: false,
         uninstall: false
       },
-      // 安装的版本信息
+      // 选中的查询模型（单独拿出来，用于获取根据查询模型来获取插件参数，实现切换查询模型时自动填充对应参数）
+      selectedQueryModel: null,
+      // 安装的版本信息（包含发布时间、版本号、版本变量等信息）
       versionData: null,
       // 变量
       variables: [],
@@ -206,6 +213,80 @@ export default {
       }
       return 'padding-top: 0; border-top: 0;margin-top: 0;'
     },
+    // 框架的安装参数（kit.json中的参数）
+    frameworkInstallVariables () {
+      if (this.projectConfig == null) {
+        return []
+      }
+      const serviceObject = this.projectConfig.service || this.projectConfig.main
+      if (serviceObject != null) {
+        let service = null
+        for (const key in serviceObject) {
+          service = key
+          break
+        }
+        return serviceObject[service].variables
+      }
+    },
+    /**
+     * 插件的安装参数（kit.json中的参数）
+     * - 如果选择了查询模型，则从kit.json中的plugins/xxx插件/qm-values字段中读取插件参数，如果读取不到，则构建查询模型参数，以实现查询模型的选中
+     * - 如果没有选择查询模型，则从kit.json中的plugins/xxx插件/variables中读取
+     * @returns {[{name, inputType, value: {settings: {}, value: null}}]|*|*[]}
+     */
+    pluginInstallVariables () {
+      if (this.projectConfig == null) {
+        return []
+      }
+      if (!this.isPlugin) {
+        return []
+      }
+      // 从项目配置中获取已安装的插件列表
+      const projectPlugins = this.projectConfig.plugins || this.projectConfig.services
+      if (projectPlugins == null) {
+        return []
+      }
+      const plugin = projectPlugins[this.plugin]
+      if (plugin == null) {
+        return []
+      }
+      // 没有选中查询模型，则返回项目配置中的插件参数
+      if (this.selectedQueryModel == null) {
+        return plugin.variables || []
+      }
+      // 选中了查询模型，则从plugin.qm-values中获取对应模型的参数
+      const queryModelPluginVariables = plugin['qm-values']
+      // 兼容2.15.0之前的数据版本（在该版本之前的kit.json中没有qm-values属性，此时直接使用variables属性）
+      if (queryModelPluginVariables == null) {
+        return plugin.variables || []
+      }
+      if (queryModelPluginVariables[this.selectedQueryModel] != null) {
+        return queryModelPluginVariables[this.selectedQueryModel]
+      }
+      /*
+       选中了模型，但并没有模型参数，则需要构建一个插件参数列表，包含了当前选中的查询模型。
+       因为当前插件参数发生变化后会重新初始化变量值，以实现查询模型参数的记忆回写功能。
+      */
+      // 找到查询模型变量定义
+      const variablesDefines = JSON.parse(this.versionData.variables)
+      const queryModelVariableDefine = variablesDefines.find(v => v.inputType === 'query_model')
+      // 构建查询模型的settings值
+      const queryModelVariableValueSettings = {}
+      for (const group of queryModelVariableDefine.children) {
+        queryModelVariableValueSettings[group.name] = []
+      }
+      return [
+        {
+          name: queryModelVariableDefine.name,
+          inputType: queryModelVariableDefine.inputType,
+          // 按照查询模型定义的children属性构建一个变量值，此机构与kit.json中的查询模型变量结构一致
+          value: {
+            value: this.selectedQueryModel,
+            settings: queryModelVariableValueSettings
+          }
+        }
+      ]
+    },
     // 服务和插件的唯一标志
     unique () {
       return [this.space, this.service, this.plugin, this.selectedVersion]
@@ -224,6 +305,14 @@ export default {
       handler (newValue) {
         this.selectedVersion = newValue
       }
+    },
+    // 插件安装变量发生变化
+    pluginInstallVariables () {
+      // 清空了查询模型选择，虽然会影响插件安装变量，但不要重新初始化变量值
+      if (this.selectedQueryModel == null) {
+        return
+      }
+      this.initVariables()
     },
     // 如果切换了服务或插件，则重新获取服务或插件的版本信息，随后会重新初始化变量信息
     unique () {
@@ -302,6 +391,11 @@ export default {
         .catch(e => {
           this.$tip.apiFailed(e)
         })
+    },
+    // 查询模型变更，变更时，插件参数 = 查询模型的参数（从qm-values中获取）
+    // watch会监控插件参数的变化，从而重新初始化变量值
+    handleQueryModelChange (queryModelId) {
+      this.selectedQueryModel = queryModelId
     },
     // 安装服务
     install () {
@@ -603,58 +697,37 @@ export default {
         if (this.projectConfig != null) {
           // 安装的是插件
           if (this.isPlugin) {
-            // 从自身服务中获取
-            const pluginProject = this.projectConfig.plugins || this.projectConfig.services
-            if (pluginProject != null) {
-              const plugin = pluginProject[this.plugin]
-              if (plugin != null) {
-                // 拿到最后一个变量（变量名可重复，后者覆盖前者）
-                const targetVar = plugin.variables.findLast(v => v.name === variable.name)
-                if (targetVar != null && targetVar.value != null) {
-                  /*
-                  此处需要拷贝一份value
-                  原因：项目没变的情况下，读取到的plugin为同一个引用，所以targetVar也为同一个引用，value赋值为targetVar时，targetVar.value和value为同一个引用。
-                  在表字段或查询字段配置的情况下，会更改value中的值，不拷贝的情况下会影响targetVar的值，这样重新从plugin中获取到的值发生了变化，引起初始化结果不正确。
-                  场景：切换插件
-                  */
-                  value = JSON.parse(JSON.stringify(targetVar.value))
-                }
-              }
+            // 拿到最后一个变量（变量名可重复，后者覆盖前者）
+            const targetVar = this.pluginInstallVariables.findLast(v => v.name === variable.name)
+            if (targetVar != null && targetVar.value != null) {
+              /*
+              此处需要拷贝一份value
+              原因：项目没变的情况下，读取到的plugin为同一个引用，所以targetVar也为同一个引用，value赋值为targetVar时，targetVar.value和value为同一个引用。
+              在表字段或查询字段配置的情况下，会更改value中的值，不拷贝的情况下会影响targetVar的值，这样重新从plugin中获取到的值发生了变化，引起初始化结果不正确。
+              场景：切换插件
+              */
+              value = JSON.parse(JSON.stringify(targetVar.value))
             }
             // 如果没有获取到值，则还可以从主服务中获取
             if (value == null) {
-              const serviceObject = this.projectConfig.service || this.projectConfig.main
-              if (serviceObject != null) {
-                let service = null
-                for (const key in serviceObject) {
-                  service = key
-                  break
-                }
-                /**
-                 * 此处存在漏洞，例如主服务中存在queryFields，子服务中也存在queryFields，但他们想要表达的不是同一层含义。
-                 * 对比默认值和主服务中的值，如果类型不匹配，则不视为是同一层含义，此时将value置为null。
-                 * 但这样依然可能存在类型相同但含义不同的情况，为少数情况，暂不做处理
-                 */
-                const valueFromService = serviceObject[service].variables[variable.name]
-                value = valueFromService
-                if (valueFromService != null && valueFromService.constructor !== variable.defaultValue.constructor) {
-                  value = null
-                }
+              /**
+               * 此处存在漏洞，例如主服务中存在queryFields，子服务中也存在queryFields，但他们想要表达的不是同一层含义。
+               * 对比默认值和主服务中的值，如果类型不匹配，则不视为是同一层含义，此时将value置为null。
+               * 但这样依然可能存在类型相同但含义不同的情况，为少数情况，暂不做处理
+               */
+              const valueFromService = this.frameworkInstallVariables[variable.name]
+              value = valueFromService
+              if (valueFromService != null && valueFromService.constructor !== variable.defaultValue.constructor) {
+                value = null
               }
             }
           }
           // 安装的是服务
           else {
-            const serviceObject = this.projectConfig.service || this.projectConfig.main
-            if (serviceObject != null) {
-              const service = serviceObject[this.service]
-              if (service != null) {
-                // 拿到最后一个变量（变量名可重复，后者覆盖前者）
-                const targetVar = service.variables.findLast(v => v.name === variable.name)
-                if (targetVar != null) {
-                  value = targetVar.value
-                }
-              }
+            // 拿到最后一个变量（变量名可重复，后者覆盖前者）
+            const targetVar = this.frameworkInstallVariables.findLast(v => v.name === variable.name)
+            if (targetVar != null) {
+              value = targetVar.value
             }
           }
         }
@@ -779,6 +852,24 @@ export default {
           variable.children.forEach(item => {
             item.value = item.defaultValue
           })
+        }
+        return variable
+      }
+      /**
+       * 数据库
+       * 只有在项目配置文件中读取到值时，才更改数据库值。不完全按照插件或框架的配置进行。例如
+       * 当查询模型A切换到查询模型B时，插件的参数会读取查询模型的对应的插件参数（即kit.json中qm-values中的配置内容），
+       * 以实现根据查询模型快速回写记忆参数的功能，如果读取不到，插件参数则只有查询模型参数，其它参数一律为空，详见pluginInstallVariables computed逻辑
+       * 此时数据库的值也不能发生改变。
+       */
+      if (variable.inputType === 'datasource') {
+        if (value != null) {
+          variable.value = value
+        }
+        // 从当前变量中读取，如果读取到了，则直接赋值
+        const targetDatabaseVariable = this.variables.find(v => v.name === variable.name)
+        if (targetDatabaseVariable != null) {
+          variable.value = targetDatabaseVariable.value
         }
         return variable
       }
