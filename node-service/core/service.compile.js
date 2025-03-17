@@ -14,6 +14,7 @@ const path = require('path')
 const ignore = require("ignore");
 const env = require('../env').getConfig()
 const log = require('./utils/log')
+const InstallParameterHandler = require("./service.install.parameter.handler");
 
 class Kit {
   constructor() {
@@ -120,9 +121,13 @@ class Kit {
             if (projectConfig != null && projectConfig.services != null) {
               config.plugins = projectConfig.services
             }
+            const pluginVariables = this.#getSimpleMainServiceVariables(dto.variables)
+            const queryModelVariables = InstallParameterHandler.getPluginQueryModelParameters(dto.plugin, pluginVariables, config.plugins[dto.plugin]['qm-values'])
             config.plugins[dto.plugin] = {
               version: dto.version,
-              variables: this.#getSimpleMainServiceVariables(dto.variables)
+              variables: pluginVariables,
+              // 记录查询模型变量值
+              'qm-values': queryModelVariables
             }
           }
           log.debug(`write kit.json...`)
