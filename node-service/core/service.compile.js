@@ -506,7 +506,6 @@ class Kit {
    */
   #install (dto) {
     try {
-      log.debug('开始安装代码...')
       const projectId = dto.projectId
       const project = projectService.findDetailById(projectId)
       const isPlugin = dto.plugin != null
@@ -525,7 +524,7 @@ class Kit {
       if (isPlugin) {
         log.debug(`ready to install plugin: ${dto.plugin}`)
       } else {
-        log.debug(`ready to install service: ${dto.service}`)
+        log.debug(`ready to install framework: ${dto.service}`)
       }
       // 获取数据库信息
       const database = projectDatabase.getDatabase(projectId, dto.database)
@@ -549,14 +548,14 @@ class Kit {
       installedPlugins = isPlugin ? installedPlugins : presetPlugins
       // debug
       if (!isPlugin) {
-        log.debug(`service preset plugins：${JSON.stringify(presetPlugins, null, 2)}`)
+        log.debug(`framework preset plugins：${JSON.stringify(presetPlugins, null, 2)}`)
         log.debug(`project installed plugins：${JSON.stringify(installedPlugins, null, 2)}`)
       } else {
         log.debug(`project installed plugins：${JSON.stringify(installedPlugins, null, 2)}`)
       }
       return Promise.all(variables)
         .then(vars => {
-          log.debug('开始解析变量...')
+          log.debug('variables ready to install service...', vars)
           serviceVars = vars
           // 执行安装
           return serviceApi.install({
@@ -782,7 +781,7 @@ class Kit {
               database: database.schema
             }, variable.value === undefined ? variable.defaultValue : variable.value)
               .then(value => {
-                log.debug('获取到表信息', value)
+                log.debug('table info', value)
                 // 补充动态字段，children为字段变量组
                 if (variable.children != null && variable.children.length > 0) {
                   this.#paddingFieldVariablesWithResolve(project, database, variable, value, null, null, null, resolve, reject)
