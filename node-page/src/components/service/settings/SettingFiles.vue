@@ -148,7 +148,8 @@ export default {
           relativePath: this.currentNode.relativePath,
           compiler: this.currentNode.compiler,
           withoutIfNotExists: this.currentNode.withoutIfNotExists,
-          enableExpress: this.currentNode.enableExpress,
+          // 增加trim，防止启用表达式多处空行或空格
+          enableExpress: this.currentNode.enableExpress.trim(),
           variables: this.currentNode.variables.filter(v => v.name.trim().length > 0)
         })
           .then(() => {
