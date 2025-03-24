@@ -224,9 +224,20 @@ class Kit {
               })
               // 删除文件
               const diffFiles = fs.deleteFiles(data.files, project)
-              // 删除项目配置中服务的配置
+              // 删除项目配置中插件的配置
               const plugins = projectConfig.services || projectConfig.plugins
-              delete plugins[dto.plugin]
+              const targetPlugin = plugins[dto.plugin]
+              // - 如果目标插件中不存在qm-values（查询模型的记忆参数）和table-values（单表的记忆参数），则直接删除插件
+              if (targetPlugin != null && targetPlugin['qm-values'] === undefined && targetPlugin['table-values'] === undefined) {
+                delete plugins[dto.plugin]
+              }
+              // 存在查询模型记忆参数，将当前插件的变量赋值为目标模型的记忆参数，防止卸载后选中了其它模型
+              else if (targetPlugin != null && targetPlugin['qm-values'] != null) {
+                const queryModelVariable = variables.find(v => v.inputType === 'query_model')
+                if (queryModelVariable != null && queryModelVariable.value != null) {
+                  targetPlugin.variables = targetPlugin['qm-values'][queryModelVariable.value.modelId]
+                }
+              }
               // 重新写入项目配置文件中
               fs.createFile(projectService.getConfigPath(project.id), fs.toJSONFileString(projectConfig), true)
               // 返回构建信息
@@ -872,6 +883,8 @@ class Kit {
             // 补充并修复join信息（即补充join的表信息和字段信息，修复join的table和targetTable，让targetTable始终为被关联的表）
             const joins = this.#getPaddingAndRepairedJoins(model, mainTable, model.joins)
             const value = {
+              // 增加查询模型ID，用于插件时根据模型ID查询记忆参数并赋值给插件参数
+              modelId: model.id,
               name: model.name,
               comment: model.comment,
               mainTable,
