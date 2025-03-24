@@ -122,7 +122,7 @@ export default {
 <style lang="scss">
 .project-select-popper {
   padding: 5px 0;
-  border-radius: 20px !important;
+  border-radius: 10px !important;
   .el-select-dropdown__wrap {
     max-height: 600px;
   }

@@ -565,7 +565,7 @@ export default {
         li {
           padding: 10px;
           margin: 5px 10px 0 10px;
-          border-radius: 10px;
+          border-radius: 5px;
           transition: all ease .15s;
           border-top: 0;
           &:first-of-type {
