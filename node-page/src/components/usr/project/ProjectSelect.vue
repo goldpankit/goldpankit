@@ -6,10 +6,12 @@
       @update:modelValue="$emit('update:modelValue', $event)"
       @change="handleChange"
       clearable
+      filterable
+      :filter-method="filterMethod"
       placeholder="请选择或新建项目"
     >
       <el-option
-        v-for="item in list"
+        v-for="item in filterList"
         :value="item.id"
         :key="item.id"
         :label="item.name"
@@ -52,12 +54,28 @@ export default {
   },
   data () {
     return {
+      keyword: '',
       list: []
+    }
+  },
+  computed: {
+    // 过滤后的项目列表
+    filterList () {
+      if (this.keyword == null || this.keyword.trim() === '') {
+        return this.list
+      }
+      return this.list.filter(item => {
+        return item.name.toLowerCase().includes(this.keyword.toLowerCase())
+      })
     }
   },
   methods: {
     ...mapMutations(['setCurrentProject', 'setCurrentProjectDetail']),
     getLimitString,
+    // 搜索选民
+    filterMethod (keyword) {
+      this.keyword = keyword
+    },
     // 查询项目
     fetchAll (callback) {
       fetchAll()
@@ -103,12 +121,29 @@ export default {
 
 <style lang="scss">
 .project-select-popper {
+  padding: 5px 0;
+  border-radius: 20px !important;
+  .el-select-dropdown__wrap {
+    max-height: 600px;
+  }
   .el-select-dropdown__item {
     height: auto;
     line-height: 1.5;
-    padding: 8px 20px;
-    &.selected {
-      background-color: var(--primary-color-match-1-light);
+    padding: 8px 10px;
+    border-radius: 10px;
+    margin: 0 20px;
+    &.is-selected {
+      padding: 15px 20px;
+      background-color: var(--primary-color-match-1-light) !important;
+      .option-wrap {
+        .name {
+          color: var(--primary-color-match-2) !important;
+          font-weight: bold;
+        }
+        .codespace {
+          font-weight: normal;
+        }
+      }
     }
     .option-wrap {
       .name {
@@ -141,10 +176,6 @@ export default {
     .el-select__wrapper {
       height: 40px;
       border-radius: 5px 0 0 5px;
-      .el-select__selected-item {
-        color: var(--color-service-name) !important;
-        font-weight: bold;
-      }
     }
     .el-input__prefix-inner {
       color: var(--font-color);
