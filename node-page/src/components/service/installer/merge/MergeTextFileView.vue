@@ -1,7 +1,7 @@
 <template>
   <div class="merge-file-view" :class="{loading}">
     <div class="toolbar">
-      <p>{{$t('service.mergeTip')}}</p>
+      <p>提示：左侧为本地文件内容，右侧为即将写入文件的内容</p>
       <div class="merge-file-view__opera">
         <el-button @click="prev" icon="Top">Prev</el-button>
         <el-button @click="next" icon="Bottom">Next</el-button>
@@ -66,6 +66,12 @@ export default {
         }
         this.__loadSuccess()
       })
+    },
+    // 调整尺寸
+    resize () {
+      if (diffEditor != null) {
+        diffEditor.layout()
+      }
     },
     // 初始化
     init () {
@@ -165,6 +171,12 @@ export default {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    & > p {
+      word-break: break-all;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+    }
     .merge-file-view__opera {
       flex-shrink: 0;
       width: 200px;

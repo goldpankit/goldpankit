@@ -28,6 +28,7 @@
     "vue-konva": "^3.0.2",
     "vue-router": "^4.1.6",
     "vue3-json-viewer": "^2.2.2",
+    "vue3-split": "^0.0.3",
     "vuex": "^4.1.0"
   },
   "devDependencies": {

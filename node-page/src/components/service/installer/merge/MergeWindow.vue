@@ -9,10 +9,22 @@
     :close-on-press-escape="false"
     :show-close="false"
   >
-    <div class="merge-wrap">
-      <div class="file-tree">
+    <SplitWindow
+      class="merge-wrap"
+      direction="horizontal"
+      :sizes="[treeWidthPercent, 100 - treeWidthPercent]"
+      :min-size="[50, 500]"
+      @onDrag="handleSplitDrag"
+    >
+      <SplitPanel class="file-tree">
+        <div class="toolbar" :style="treeStyle">
+          <el-checkbox v-model="visibleSetting.visibleMergeFile" class="visible-merge-file" label="冲突文件"/>
+          <el-checkbox v-model="visibleSetting.visibleNewFile" class="visible-new-file" label="新增文件"/>
+          <el-checkbox v-model="visibleSetting.visibleDeleteFile" class="visible-delete-file" label="已删除文件"/>
+        </div>
         <el-tree
           ref="tree"
+          :style="treeStyle"
           :data="files"
           :show-checkbox="true"
           :default-expand-all="true"
@@ -20,19 +32,20 @@
           empty-text="No Files"
           :highlight-current="true"
           :expand-on-click-node="false"
+          :filter-node-method="filterFile"
           @node-click="selectFile"
           @check="handleCheck"
         >
           <template #default="{ node, data }">
-            <span class="node-label" :class="{file: data.type === 'FILE', [data.operaType]: true}">
-              <el-icon v-if="data.type === 'DIRECTORY'"><Folder /></el-icon>
-              <el-icon v-else><Document /></el-icon>
-              <span class="filename">{{data.label}}</span>
-            </span>
+          <span class="node-label" :class="{file: data.type === 'FILE', [data.operaType]: true}">
+            <el-icon v-if="data.type === 'DIRECTORY'"><Folder /></el-icon>
+            <el-icon v-else><Document /></el-icon>
+            <span class="filename">{{data.label}}</span>
+          </span>
           </template>
         </el-tree>
-      </div>
-      <div class="content-preview">
+      </SplitPanel>
+      <SplitPanel class="content-preview">
         <template v-if="currentFile != null">
           <!-- 删除文件 -->
           <template v-if="currentFile.operaType === 'DELETED'">
@@ -57,6 +70,7 @@
           <!-- 合并文件 -->
           <template v-else>
             <MergeTextFileView
+              ref="previewWindow"
               v-if="currentFile.contentEncode === 'utf-8'"
               :factor="currentFile.nodeKey"
               :filepath="currentFile.filepath"
@@ -66,8 +80,8 @@
             <MergeFileView v-else :file="currentFile"/>
           </template>
         </template>
-      </div>
-    </div>
+      </SplitPanel>
+    </SplitWindow>
     <div class="opera">
       <div class="danger-opera">
         <el-button @click="ignoreAllFiles">{{$t('service.ignoreAll')}}</el-button>
@@ -83,15 +97,17 @@
 import {mapState} from 'vuex'
 import {merge} from '@/api/service.compile.js'
 import path from '@/utils/path'
-import MarkdownEditor from "../../../common/MarkdownEditor.vue";
-import MergeTextFileView from "./MergeTextFileView.vue";
-import DeletedFileView from "./DeletedFileView.vue";
-import DeletedTextFileView from "./DeletedTextFileView.vue";
-import AddTextFileView from "./AddTextFileView.vue";
-import AddFileView from "./AddFileView.vue";
-import MergeFileView from "./MergeFileView.vue";
+import MarkdownEditor from '@/components/common/MarkdownEditor'
+import MergeTextFileView from './MergeTextFileView'
+import DeletedFileView from './DeletedFileView'
+import DeletedTextFileView from './DeletedTextFileView'
+import AddTextFileView from './AddTextFileView'
+import AddFileView from './AddFileView'
+import MergeFileView from './MergeFileView'
+import MergeWindowMixin from '@/components/service/installer/merge/MergeWindow.mixin'
 export default {
   name: "MergeWindow",
+  mixins: [MergeWindowMixin],
   components: {
     MergeFileView, AddFileView, AddTextFileView,
     DeletedFileView, DeletedTextFileView, MergeTextFileView,
@@ -102,29 +118,49 @@ export default {
       visible: false,
       currentFile: null,
       selectedFiles: [],
-      files: []
+      files: [],
+      visibleSetting: {
+        // 显示冲突文件
+        visibleMergeFile: true,
+        // 显示新增文件
+        visibleNewFile: true,
+        // 显示已删除文件
+        visibleDeleteFile: true
+      }
     }
   },
   computed: {
     ...mapState(['installData']),
+    // 文件展示因子
+    fileVisibleFactors () {
+      return [
+        this.visibleSetting.visibleNewFile,
+        this.visibleSetting.visibleMergeFile,
+        this.visibleSetting.visibleDeleteFile
+      ]
+    },
+    // 项目ID
     projectId () {
       if (this.installData == null || this.installData.diff == null) {
         return []
       }
       return this.installData.diff.projectId
     },
+    // 所有的差异文件
     diffFiles () {
       if (this.installData == null || this.installData.diff == null) {
         return []
       }
       return this.installData.diff.diffFiles
     },
+    // 当前文件本地内容
     localContent () {
       if (this.currentFile == null) {
         return ''
       }
       return this.currentFile.localContent
     },
+    // 当前文件新内容
     newContent () {
       if (this.currentFile == null) {
         return ''
@@ -135,6 +171,9 @@ export default {
   watch: {
     diffFiles () {
       this.__handleDiffChange()
+    },
+    fileVisibleFactors () {
+      this.$refs.tree.filter(this.visibleSetting)
     },
     // 当新内容发生变化时，赋值到目标文件中
     newContent() {
@@ -155,6 +194,23 @@ export default {
       this.selectedFiles = []
       this.visible = true
     },
+    // 过滤文件
+    filterFile (setting, data) {
+      if (setting.visibleNewFile && data.operaType === 'ADD') {
+        return true
+      }
+      if (setting.visibleMergeFile && data.operaType === 'UPDATE') {
+        return true
+      }
+      if (setting.visibleDeleteFile && data.operaType === 'DELETED') {
+        return true
+      }
+      // 如果操作类型未知，作展示处理（防止新增了新的类型，无法展示）
+      if (data.operaType !== 'ADD' && data.operaType !== 'UPDATE' && data.operaType !== 'DELETED') {
+        return true
+      }
+      return false
+    },
     // 选择文件
     selectFile (data) {
       // 点击目录时，重新选中当前文件
@@ -170,7 +226,28 @@ export default {
     },
     // 处理节点选中
     handleCheck (data, {checkedNodes}) {
-      this.selectedFiles = checkedNodes.filter(node => node.type !== 'DIRECTORY')
+      this.selectedFiles = checkedNodes
+        .filter(node => node.type !== 'DIRECTORY')
+        // 根据展示设置过滤掉不展示的文件
+        .filter(node => {
+          // 未知文件
+          if (node.operaType !== 'ADD' && node.operaType !== 'UPDATE' && node.operaType !== 'DELETED') {
+            return true
+          }
+          // 展示了新增文件
+          if (this.visibleSetting.visibleNewFile && node.operaType === 'ADD') {
+            return true
+          }
+          // 展示了冲突文件
+          if (this.visibleSetting.visibleMergeFile && node.operaType === 'UPDATE') {
+            return true
+          }
+          // 展示了已删除文件
+          if (this.visibleSetting.visibleDeleteFile && node.operaType === 'DELETED') {
+            return true
+          }
+          return false
+        })
     },
     // 覆盖
     overwrite () {
@@ -335,19 +412,26 @@ export default {
 </script>
 
 <style lang="scss">
-.merge-window {
+.el-dialog.merge-window {
+  border-radius: 10px;
+  overflow: hidden;
   min-width: 1000px;
   display: flex;
   flex-direction: column;
-  width: 98% !important;
+  width: 98%;
   height: 98% !important;
   top: 1%;
   .el-dialog__header {
-    background: var(--background-color);
+    background: var(--tool-toolbar-background-color);
     margin-right: 0;
+    padding: 5px 16px;
+    text-align: center;
+    .el-dialog__title {
+      font-size: var(--font-size);
+    }
   }
   .el-dialog__body {
-    padding: 0;
+    padding: 0 !important;
     flex-grow: 1;
     overflow: hidden;
     display: flex;
@@ -368,20 +452,64 @@ export default {
     }
   }
   .merge-wrap {
-    flex-grow: 1;
-    display: flex;
     overflow: hidden;
+    // 文件树
     .file-tree {
-      flex-shrink: 0;
-      width: 350px;
-      overflow-x: auto;
-      padding: 10px 0;
+      overflow-x: hidden;
+      width: 100%;
+      height: 100%;
       box-sizing: border-box;
-      border-right: 5px solid var(--background-color);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      * {
+        user-select: none;
+      }
+      // 工具栏
+      .toolbar {
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 0 5px;
+        border-bottom: 1px solid var(--border-default-color);
+        .el-checkbox {
+          margin-right: 0;
+        }
+        // 显示冲突文件
+        .visible-merge-file {
+          .el-checkbox__label {
+            color: var(--primary-color-match-2);
+          }
+        }
+        // 显示新增文件
+        .visible-new-file {
+          .el-checkbox__label {
+            color: var(--color-success);
+          }
+        }
+        // 显示删除文件
+        .visible-delete-file {
+          .el-checkbox__label {
+            color: var(--color-gray);
+          }
+        }
+      }
       .el-tree {
+        width: 100%;
+        height: 100%;
+        box-sizing: content-box;
+        .el-tree-node {
+          // 选中状态
+          &.is-current .el-tree-node__content {
+            background-color: var(--color-gray-2);
+          }
+        }
         .node-label {
           display: flex;
           align-items: center;
+          // 增加右侧间距，让滚动条滚动到最右侧时留有间距
+          padding-right: 10px;
           &.file {
             &.ADD {
               color: var(--color-success);
@@ -403,7 +531,8 @@ export default {
     }
     // 内容预览
     .content-preview {
-      flex-grow: 1;
+      width: 100%;
+      height: 100%;
       overflow: hidden;
       display: flex;
       // 文件变更提醒
