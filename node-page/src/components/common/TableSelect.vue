@@ -106,10 +106,12 @@ export default {
       if (this.tables.find(table => table.name === value) == null) {
         this.$emit('update:modelValue', null)
         this.$emit('change', null)
+        this.$emit('change-table', null)
         return
       }
       this.$emit('update:modelValue', value)
       this.$emit('change', value)
+      this.$emit('change-table', value)
     }
   }
 }

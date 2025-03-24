@@ -45,6 +45,12 @@ export default {
       selectedAll: false
     }
   },
+  watch: {
+    // 表变更后，重新初始化
+    table () {
+      this.init()
+    }
+  },
   methods: {
     // 全选
     selectAll () {
@@ -82,14 +88,18 @@ export default {
           // 过滤掉未找到的对象
           .filter(field => field != null)
       )
+    },
+    // 初始化，重新触发选中，避免字段修改后不生效，同时也可以初始化选中状态
+    init () {
+      this.copyFields = JSON.parse(JSON.stringify(this.table.fields))
+      // 触发选中，避免字段修改后不生效，同时也可以初始化选中状态
+      if (this.modelValue != null && this.modelValue.length > 0) {
+        this.handleInput(this.modelValue.map(f => f.name))
+      }
     }
   },
   created () {
-    this.copyFields = JSON.parse(JSON.stringify(this.table.fields))
-    // 触发选中，避免字段修改后不生效，同时也可以初始化选中状态
-    if (this.modelValue != null && this.modelValue.length > 0) {
-      this.handleInput(this.modelValue.map(f => f.name))
-    }
+    this.init()
   }
 }
 </script>

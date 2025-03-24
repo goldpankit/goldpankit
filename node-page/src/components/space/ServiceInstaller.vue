@@ -65,6 +65,7 @@
                   v-if="variable.type === 'variable'"
                   :variable="variable"
                   @change-query-model="handleQueryModelChange"
+                  @change-table="handleTableChange"
                 />
                 <!-- 服务变量组 -->
                 <ul v-else-if="variable.type === 'group'" class="group-vars">
@@ -188,8 +189,10 @@ export default {
         install: false,
         uninstall: false
       },
-      // 选中的查询模型（单独拿出来，用于获取根据查询模型来获取插件参数，实现切换查询模型时自动填充对应参数）
+      // 选中的查询模型（单独拿出来，用于根据查询模型来获取插件参数，实现切换查询模型时自动填充对应参数）
       selectedQueryModel: null,
+      // 选中的表（单独拿出来，用于根据表来获取插件参数，实现切换表时自动填充对应参数）
+      selectedTable: null,
       // 安装的版本信息（包含发布时间、版本号、版本变量等信息）
       versionData: null,
       // 变量
@@ -231,7 +234,8 @@ export default {
     /**
      * 插件的安装参数（kit.json中的参数）
      * - 如果选择了查询模型，则从kit.json中的plugins/xxx插件/qm-values字段中读取插件参数，如果读取不到，则构建查询模型参数，以实现查询模型的选中
-     * - 如果没有选择查询模型，则从kit.json中的plugins/xxx插件/variables中读取
+     * - 如果选择了表，则从kit.json中的plugins/xxx插件/table-values字段中读取插件参数，如果读取不到，则构建表参数，以实现表的选中
+     * - 如果没有选择查询模型和表，则从kit.json中的plugins/xxx插件/variables中读取
      * @returns {[{name, inputType, value: {settings: {}, value: null}}]|*|*[]}
      */
     pluginInstallVariables () {
@@ -250,39 +254,73 @@ export default {
       if (plugin == null) {
         return []
       }
-      // 没有选中查询模型，则返回项目配置中的插件参数
-      if (this.selectedQueryModel == null) {
+      // 没有选中查询模型和表，则返回项目配置中的插件参数
+      if (this.selectedQueryModel == null && this.selectedTable == null) {
         return plugin.variables || []
       }
       // 选中了查询模型，则从plugin.qm-values中获取对应模型的参数
-      const queryModelPluginVariables = plugin['qm-values']
-      // 兼容2.15.0之前的数据版本（在该版本之前的kit.json中没有qm-values属性，此时直接使用variables属性）
-      if (queryModelPluginVariables == null) {
+      if (this.selectedQueryModel != null) {
+        const queryModelPluginVariables = plugin['qm-values']
+        // 兼容2.15.0之前的数据版本（在该版本之前的kit.json中没有qm-values属性，此时直接使用variables属性）
+        if (queryModelPluginVariables == null) {
+          return plugin.variables || []
+        }
+        if (queryModelPluginVariables[this.selectedQueryModel] != null) {
+          return queryModelPluginVariables[this.selectedQueryModel]
+        }
+        /*
+         选中了模型，但并没有模型参数，则需要构建一个插件参数列表，包含了当前选中的查询模型。
+         因为当前插件参数发生变化后会重新初始化变量值，以实现查询模型参数的记忆回写功能。
+        */
+        // 找到查询模型变量定义
+        const variablesDefines = JSON.parse(this.versionData.variables)
+        const queryModelVariableDefine = variablesDefines.find(v => v.inputType === 'query_model')
+        // 构建查询模型的settings值
+        const queryModelVariableValueSettings = {}
+        for (const group of queryModelVariableDefine.children) {
+          queryModelVariableValueSettings[group.name] = []
+        }
+        return [
+          {
+            name: queryModelVariableDefine.name,
+            inputType: queryModelVariableDefine.inputType,
+            // 按照查询模型定义的children属性构建一个变量值，此机构与kit.json中的查询模型变量结构一致
+            value: {
+              value: this.selectedQueryModel,
+              settings: queryModelVariableValueSettings
+            }
+          }
+        ]
+      }
+      // 选中了表，则从plugin.table-values中获取对应表的参数
+      const tablePluginVariables = plugin['table-values']
+      // 兼容2.15.0之前的数据版本（在该版本之前的kit.json中没有table-values属性，此时直接使用variables属性）
+      if (tablePluginVariables == null) {
         return plugin.variables || []
       }
-      if (queryModelPluginVariables[this.selectedQueryModel] != null) {
-        return queryModelPluginVariables[this.selectedQueryModel]
+      if (tablePluginVariables[this.selectedTable] != null) {
+        return tablePluginVariables[this.selectedTable]
       }
       /*
-       选中了模型，但并没有模型参数，则需要构建一个插件参数列表，包含了当前选中的查询模型。
-       因为当前插件参数发生变化后会重新初始化变量值，以实现查询模型参数的记忆回写功能。
+       选中了表，但并没有表参数，则需要构建一个插件参数列表，包含了当前选中的表。
+       因为当前插件参数发生变化后会重新初始化变量值，以实现表参数的记忆回写功能。
       */
-      // 找到查询模型变量定义
+      // 找到表变量定义
       const variablesDefines = JSON.parse(this.versionData.variables)
-      const queryModelVariableDefine = variablesDefines.find(v => v.inputType === 'query_model')
+      const tableVariableDefine = variablesDefines.find(v => v.inputType === 'table')
       // 构建查询模型的settings值
-      const queryModelVariableValueSettings = {}
-      for (const group of queryModelVariableDefine.children) {
-        queryModelVariableValueSettings[group.name] = []
+      const tableVariableValueSettings = {}
+      for (const group of tableVariableDefine.children) {
+        tableVariableValueSettings[group.name] = []
       }
       return [
         {
-          name: queryModelVariableDefine.name,
-          inputType: queryModelVariableDefine.inputType,
-          // 按照查询模型定义的children属性构建一个变量值，此机构与kit.json中的查询模型变量结构一致
+          name: tableVariableDefine.name,
+          inputType: tableVariableDefine.inputType,
+          // 按照表定义的children属性构建一个变量值，此机构与kit.json中的查询模型变量结构一致
           value: {
-            value: this.selectedQueryModel,
-            settings: queryModelVariableValueSettings
+            value: this.selectedTable,
+            settings: tableVariableValueSettings
           }
         }
       ]
@@ -308,8 +346,8 @@ export default {
     },
     // 插件安装变量发生变化
     pluginInstallVariables () {
-      // 清空了查询模型选择，虽然会影响插件安装变量，但不要重新初始化变量值
-      if (this.selectedQueryModel == null) {
+      // 清空了查询模型或表选择，不要重新初始化变量值，使其保留原有变量设定
+      if (this.selectedQueryModel == null && this.selectedTable == null) {
         return
       }
       this.initVariables()
@@ -397,6 +435,9 @@ export default {
     handleQueryModelChange (queryModelId) {
       this.selectedQueryModel = queryModelId
     },
+    handleTableChange (tableId) {
+      this.selectedTable = tableId
+    },
     // 安装服务
     install () {
       // 用户已租赁服务，直接安装
@@ -428,6 +469,8 @@ export default {
       })
       // 清空查询模型的选择
       this.selectedQueryModel = null
+      // 清空表选择
+      this.selectedTable = null
     },
     __install () {
       if (this.isWorking.install) {

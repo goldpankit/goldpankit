@@ -52,6 +52,7 @@
       :value-key="valueKey"
       v-model="variable[valueKey]"
       @change="$emit('change', $event)"
+      @change-table="$emit('change-table', $event)"
     />
     <QueryModelSelect
       v-else-if="variable.inputType === 'query_model'"

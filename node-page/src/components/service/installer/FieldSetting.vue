@@ -83,7 +83,6 @@ export default {
   methods: {
     // 处理排序
     handleSort (newFields) {
-      console.log('newFields', newFields)
       this.handleSelect(newFields)
     },
     /**
