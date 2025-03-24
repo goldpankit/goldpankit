@@ -563,7 +563,29 @@ export default {
       :deep(.plugin-list) {
         flex-grow: 1;
         li {
-          padding: 10px 20px;
+          padding: 10px;
+          margin: 5px 10px 0 10px;
+          border-radius: 10px;
+          transition: all ease .15s;
+          border-top: 0;
+          &:first-of-type {
+            margin-top: 0;
+          }
+          &.selected {
+            background-color: var(--primary-color-match-1-light);
+            &:hover {
+              background-color: var(--primary-color-match-1-light);
+            }
+            p {
+              color: var(--font-color);
+            }
+          }
+          &:hover {
+            background-color: var(--background-color);
+            p {
+              color: var(--font-color);
+            }
+          }
           h5 {
             position: relative;
             padding-right: 30px;
