@@ -304,7 +304,7 @@ export default {
       height: initial;
       line-height: initial;
       padding: 5px 30px 5px 10px;
-      background-color: #f2f2f2;
+      background-color: var(--primary-color-match-1-light);
       margin-right: 5px;
       margin-bottom: 5px;
       border-radius: 5px;

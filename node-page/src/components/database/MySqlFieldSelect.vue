@@ -97,6 +97,11 @@ export default {
 <style scoped lang="scss">
 .mysql-field-select {
   width: 100%;
+  // 调整选中效果
+  :deep(.el-select__selected-item) .el-tag{
+    background-color: var(--primary-color-match-1-light);
+    color: var(--color-service-name);
+  }
 }
 </style>
 <style lang="scss">

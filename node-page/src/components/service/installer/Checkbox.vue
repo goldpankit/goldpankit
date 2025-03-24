@@ -87,7 +87,7 @@ export default {
 
 <style scoped lang="scss">
 .installer-checkbox {
-  --color-value: var(--primary-color-match-1);
+  --color-value: var(--primary-color-match-1-light);
   display: flex;
   flex-wrap: wrap;
   line-height: initial;
