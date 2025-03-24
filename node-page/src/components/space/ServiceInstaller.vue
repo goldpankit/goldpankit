@@ -422,9 +422,12 @@ export default {
         this.variables = []
         return
       }
+      // 设置变量
       this.variables = JSON.parse(this.versionData.variables).map(item => {
         return this.__initVariableValue(item, null)
       })
+      // 清空查询模型的选择
+      this.selectedQueryModel = null
     },
     __install () {
       if (this.isWorking.install) {
