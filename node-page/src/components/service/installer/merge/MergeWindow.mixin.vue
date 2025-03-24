@@ -22,8 +22,9 @@ export default {
           filter: 'none'
         }
       }
-      const minPercent = 20
-      // 调整后的树宽度百分比 < 默认树的百分比时，进行样式计算，改变透明度和模糊效果，让其更聚焦代码内容
+      // 开始模糊的百分比
+      const minPercent = 15
+      // 调整后的树宽度百分比 < 开始模糊的百分比，进行样式计算，改变透明度和模糊效果，让其更聚焦代码内容
       if (this.splitSizes[0] < minPercent) {
         let blur = Math.round((minPercent - this.splitSizes[0])/2)
         if (blur > 5) {
