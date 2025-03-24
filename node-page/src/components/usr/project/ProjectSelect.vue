@@ -141,6 +141,7 @@ export default {
           font-weight: bold;
         }
         .codespace {
+          color: var(--font-color);
           font-weight: normal;
         }
       }
