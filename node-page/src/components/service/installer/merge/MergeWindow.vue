@@ -18,6 +18,15 @@
     >
       <SplitPanel class="file-tree">
         <div class="toolbar" :style="treeStyle">
+          <el-input v-model="visibleSetting.keyword" placeholder="搜索文件" prefix-icon="Search">
+            <template #suffix>
+              <IconButton
+                v-model="visibleSetting.keywordIgnoreCase"
+                :is-switch="true"
+                value="iconfont icon-fontsize"
+              />
+            </template>
+          </el-input>
           <el-checkbox v-model="visibleSetting.visibleMergeFile" class="visible-merge-file" label="冲突文件"/>
           <el-checkbox v-model="visibleSetting.visibleNewFile" class="visible-new-file" label="新增文件"/>
           <el-checkbox v-model="visibleSetting.visibleDeleteFile" class="visible-delete-file" label="已删除文件"/>
@@ -120,6 +129,8 @@ export default {
       selectedFiles: [],
       files: [],
       visibleSetting: {
+        keyword: '',
+        keywordIgnoreCase: true,
         // 显示冲突文件
         visibleMergeFile: true,
         // 显示新增文件
@@ -136,7 +147,9 @@ export default {
       return [
         this.visibleSetting.visibleNewFile,
         this.visibleSetting.visibleMergeFile,
-        this.visibleSetting.visibleDeleteFile
+        this.visibleSetting.visibleDeleteFile,
+        this.visibleSetting.keyword,
+        this.visibleSetting.keywordIgnoreCase
       ]
     },
     // 项目ID
@@ -196,20 +209,7 @@ export default {
     },
     // 过滤文件
     filterFile (setting, data) {
-      if (setting.visibleNewFile && data.operaType === 'ADD') {
-        return true
-      }
-      if (setting.visibleMergeFile && data.operaType === 'UPDATE') {
-        return true
-      }
-      if (setting.visibleDeleteFile && data.operaType === 'DELETED') {
-        return true
-      }
-      // 如果操作类型未知，作展示处理（防止新增了新的类型，无法展示）
-      if (data.operaType !== 'ADD' && data.operaType !== 'UPDATE' && data.operaType !== 'DELETED') {
-        return true
-      }
-      return false
+      return this.__visibleNode(data)
     },
     // 选择文件
     selectFile (data) {
@@ -230,23 +230,7 @@ export default {
         .filter(node => node.type !== 'DIRECTORY')
         // 根据展示设置过滤掉不展示的文件
         .filter(node => {
-          // 未知文件
-          if (node.operaType !== 'ADD' && node.operaType !== 'UPDATE' && node.operaType !== 'DELETED') {
-            return true
-          }
-          // 展示了新增文件
-          if (this.visibleSetting.visibleNewFile && node.operaType === 'ADD') {
-            return true
-          }
-          // 展示了冲突文件
-          if (this.visibleSetting.visibleMergeFile && node.operaType === 'UPDATE') {
-            return true
-          }
-          // 展示了已删除文件
-          if (this.visibleSetting.visibleDeleteFile && node.operaType === 'DELETED') {
-            return true
-          }
-          return false
+          return this.__visibleNode(node)
         })
     },
     // 覆盖
@@ -325,6 +309,43 @@ export default {
     ignoreAllFiles () {
       this.installData.diff.diffFiles = []
       this.visible = false
+    },
+    // 判断节点是否展示
+    __visibleNode (node) {
+      // 目录
+      if (node.type === 'DIRECTORY') {
+        return false
+      }
+      // 未知文件
+      if (node.operaType !== 'ADD' && node.operaType !== 'UPDATE' && node.operaType !== 'DELETED') {
+        return true
+      }
+      // 关键字匹配
+      if (this.visibleSetting.keyword.trim() !== '') {
+        // 忽略大小写
+        if (this.visibleSetting.keywordIgnoreCase) {
+          if (node.filepath.toLowerCase().indexOf(this.visibleSetting.keyword.trim().toLowerCase()) === -1) {
+            return false
+          }
+        }
+        // 不忽略大小写
+        else if (node.filepath.indexOf(this.visibleSetting.keyword.trim()) === -1) {
+          return false
+        }
+      }
+      // 展示了新增文件
+      if (this.visibleSetting.visibleNewFile && node.operaType === 'ADD') {
+        return true
+      }
+      // 展示了冲突文件
+      if (this.visibleSetting.visibleMergeFile && node.operaType === 'UPDATE') {
+        return true
+      }
+      // 展示了已删除文件
+      if (this.visibleSetting.visibleDeleteFile && node.operaType === 'DELETED') {
+        return true
+      }
+      return false
     },
     // 差异文件变动
     __handleDiffChange () {
@@ -471,8 +492,17 @@ export default {
         display: flex;
         align-items: center;
         gap: 15px;
-        padding: 0 5px;
+        padding: 5px 10px;
         border-bottom: 1px solid var(--border-default-color);
+        // 搜索框
+        .el-input {
+          width: 180px;
+          height: 30px;
+          .el-input__wrapper {
+            border-radius: 50px;
+            background-color: var(--tool-toolbar-background-color);
+          }
+        }
         .el-checkbox {
           margin-right: 0;
         }
