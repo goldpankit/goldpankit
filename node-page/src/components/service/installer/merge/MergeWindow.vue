@@ -1,13 +1,15 @@
 <template>
   <el-dialog
     class="merge-window"
-    :title="$t('service.mergeFileTitle')"
+    title="文件合并"
     v-model="visible"
     fullscreen
     append-to-body
     :destroy-on-close="true"
     :close-on-press-escape="false"
-    :show-close="false"
+    :close-on-click-modal="false"
+    :show-close="true"
+    @close="ignoreAllFiles"
   >
     <SplitWindow
       class="merge-wrap"
@@ -39,19 +41,20 @@
             :show-checkbox="true"
             :default-expand-all="true"
             node-key="nodeKey"
-            empty-text="No Files"
             :highlight-current="true"
             :expand-on-click-node="false"
             :filter-node-method="filterFile"
             @node-click="selectFile"
-            @check="handleCheck"
           >
+            <template #empty>
+              <Empty :with-image="true" image-size="100px" description="未查找到相关文件"/>
+            </template>
             <template #default="{ node, data }">
-            <span class="node-label" :class="{file: data.type === 'FILE', [data.operaType]: true}">
-              <el-icon v-if="data.type === 'DIRECTORY'"><Folder /></el-icon>
-              <el-icon v-else><Document /></el-icon>
-              <span class="filename">{{data.label}}</span>
-            </span>
+              <span class="node-label" :class="{file: data.type === 'FILE', [data.operaType]: true}">
+                <el-icon v-if="data.type === 'DIRECTORY'"><Folder /></el-icon>
+                <el-icon v-else><Document /></el-icon>
+                <span class="filename">{{data.label}}</span>
+              </span>
             </template>
           </el-tree>
         </Scrollbar>
@@ -99,8 +102,8 @@
       </SplitPanel>
     </SplitWindow>
     <div class="opera">
-      <el-button @click="ignoreFiles">忽略当前文件</el-button>
-      <el-button type="primary" @click="overwrite">{{$t('service.overwrite')}}</el-button>
+      <el-button type="danger" @click="ignoreFiles">确认忽略</el-button>
+      <el-button type="primary" @click="overwrite">确认合并</el-button>
     </div>
   </el-dialog>
 </template>
@@ -132,8 +135,6 @@ export default {
       visible: false,
       // 当前查看的文件
       currentFile: null,
-      // 选中的文件
-      selectedFiles: [],
       // 文件树
       files: [],
       // 筛选设置
@@ -214,7 +215,6 @@ export default {
     open () {
       // 清理运行时数据
       this.currentFile = null
-      this.selectedFiles = []
       // 清理搜索关键字
       this.filterSetting.keyword = ''
       this.filterSetting.keywordIgnoreCase = true
@@ -238,27 +238,21 @@ export default {
       // 点击文件时，选中点击文件
       this.currentFile = data
     },
-    // 处理节点选中
-    handleCheck (data, {checkedNodes}) {
-      this.selectedFiles = checkedNodes
-        .filter(node => node.type !== 'DIRECTORY')
-        // 根据展示设置过滤掉不展示的文件
-        .filter(node => {
-          return this.__visibleNode(node)
-        })
-    },
     // 覆盖
     overwrite () {
-      let targetFiles = this.selectedFiles
+      let targetFiles = this.__getSelectedFiles()
       // 覆盖当前已选文件（单选覆盖）
       if (targetFiles.length === 0 || (targetFiles.length === 1 && targetFiles[0] === this.currentFile)) {
+        if (this.currentFile == null) {
+          return
+        }
         targetFiles = [this.currentFile]
         merge({
           projectId: this.projectId,
           diffFiles: targetFiles
         })
           .then(() => {
-            this.ignoreFiles(this.selectedFiles)
+            this.ignoreFiles(targetFiles)
           })
           .catch(e => {
             this.$tip.apiFailed(e)
@@ -273,7 +267,7 @@ export default {
             diffFiles: targetFiles
           })
             .then(() => {
-              this.ignoreFiles(this.selectedFiles)
+              this.ignoreFiles(targetFiles)
             })
             .catch(e => {
               this.$tip.apiFailed(e)
@@ -282,17 +276,20 @@ export default {
         .catch(() => {})
     },
     // 忽略
-    ignoreFiles () {
-      let targetFiles = this.selectedFiles
+    ignoreFiles (targetFiles) {
+      if (targetFiles == null) {
+        targetFiles = this.__getSelectedFiles()
+      }
       if (targetFiles.length === 0) {
+        if (this.currentFile == null) {
+          return
+        }
         targetFiles = [this.currentFile]
       }
       // 将文件标记为已忽略
       for (const file of targetFiles) {
         file.__ignore = true
       }
-      // 清空选择的文件
-      this.selectedFiles = []
       // 判断是否存在还未合并的文件
       if (!this.__hasMergeFile(this.files)) {
         this.visible = false
@@ -302,6 +299,18 @@ export default {
       this.__toNextFile()
       // 重新触发过滤
       this.$refs.tree.filter()
+    },
+    // 忽略所有
+    ignoreAllFiles () {
+      this.installData.diff.diffFiles = []
+      this.visible = false
+    },
+    // 获取选中的文件
+    __getSelectedFiles () {
+      return this.$refs.tree.getCheckedNodes()
+        .filter(node => {
+          return this.__visibleNode(node)
+        })
     },
     // 跳转到下一个文件
     __toNextFile () {
@@ -488,6 +497,9 @@ export default {
     .el-dialog__title {
       font-size: var(--font-size);
     }
+    .el-dialog__close {
+      top: -5px;
+    }
   }
   .el-dialog__body {
     padding: 0 !important;
@@ -497,13 +509,18 @@ export default {
     flex-direction: column;
   }
   .opera {
-    height: 60px;
+    height: 80px;
     flex-shrink: 0;
     display: flex;
     justify-content: center;
     align-items: center;
     position: relative;
     background: var(--background-color);
+    gap: 20px;
+    box-shadow: 0 -1px 10px -2 rgba(0, 0, 0, 0.5);
+    .el-button {
+      width: 200px;
+    }
   }
   .merge-wrap {
     overflow: hidden;
@@ -571,8 +588,14 @@ export default {
         margin-top: 55px;
         width: 100%;
         height: 100%;
+        .el-scrollbar__wrap {
+          overflow-x: hidden;
+        }
         .el-scrollbar__view {
           height: 100%;
+        }
+        .el-scrollbar__bar.is-horizontal {
+          display: none;
         }
       }
       .el-tree {
@@ -607,6 +630,16 @@ export default {
             color: var(--color-gray);
           }
         }
+        // 空提示
+        .empty {
+          width: 100%;
+          height: 100%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          position: relative;
+          top: -35px;
+        }
       }
     }
     // 内容预览
@@ -625,11 +658,11 @@ export default {
         align-items: center;
         .icon {
           font-size: 100px !important;
-          color: #ccc;
+          color: #eaebf0;
         }
         p {
           margin-top: 10px;
-          color: var(--color-gray);
+          color: #909399;
         }
       }
     }
