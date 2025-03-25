@@ -52,7 +52,7 @@
             <template #default="{ node, data }">
               <span class="node-label" :class="{file: data.type === 'FILE', [data.operaType]: true}">
                 <el-icon v-if="data.type === 'DIRECTORY'"><Folder /></el-icon>
-                <el-icon v-else><Document /></el-icon>
+                <LangIcon v-else :suffix="data.suffix"/>
                 <span class="filename">{{data.label}}</span>
               </span>
             </template>
@@ -102,7 +102,7 @@
       </SplitPanel>
     </SplitWindow>
     <div class="opera">
-      <el-button type="danger" @click="ignoreFiles">确认忽略</el-button>
+      <el-button type="danger" @click="ignoreFiles()">确认忽略</el-button>
       <el-button type="primary" @click="overwrite">确认合并</el-button>
     </div>
   </el-dialog>
@@ -120,11 +120,13 @@ import AddTextFileView from './AddTextFileView'
 import AddFileView from './AddFileView'
 import MergeFileView from './MergeFileView'
 import MergeWindowMixin from '@/components/service/installer/merge/MergeWindow.mixin'
-import Empty from "@/components/common/Empty.vue";
+import Empty from '@/components/common/Empty'
+import LangIcon from '@/components/common/LangIcon'
 export default {
   name: "MergeWindow",
   mixins: [MergeWindowMixin],
   components: {
+    LangIcon,
     Empty,
     MergeFileView, AddFileView, AddTextFileView,
     DeletedFileView, DeletedTextFileView, MergeTextFileView,
@@ -621,9 +623,10 @@ export default {
               color: var(--primary-color-match-2);
             }
           }
-          .el-icon {
-            font-size: 16px;
+          // 文件图标
+          .lang-icon,.el-icon {
             margin-right: 3px;
+            font-size: 16px;
           }
           &.DELETED {
             text-decoration: line-through;
