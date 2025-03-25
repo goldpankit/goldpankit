@@ -18,18 +18,18 @@
     >
       <SplitPanel class="file-tree">
         <div class="toolbar" :style="treeStyle">
-          <el-input v-model="visibleSetting.keyword" placeholder="搜索文件" prefix-icon="Search">
+          <el-input v-model="filterSetting.keyword" placeholder="搜索文件" prefix-icon="Search">
             <template #suffix>
               <IconButton
-                v-model="visibleSetting.keywordIgnoreCase"
+                v-model="filterSetting.keywordIgnoreCase"
                 :is-switch="true"
                 value="iconfont icon-fontsize"
               />
             </template>
           </el-input>
-          <el-checkbox v-model="visibleSetting.visibleMergeFile" class="visible-merge-file" label="冲突文件"/>
-          <el-checkbox v-model="visibleSetting.visibleNewFile" class="visible-new-file" label="新增文件"/>
-          <el-checkbox v-model="visibleSetting.visibleDeleteFile" class="visible-delete-file" label="已删除文件"/>
+          <el-checkbox v-model="filterSetting.visibleMergeFile" class="visible-merge-file" label="冲突文件"/>
+          <el-checkbox v-model="filterSetting.visibleNewFile" class="visible-new-file" label="新增文件"/>
+          <el-checkbox v-model="filterSetting.visibleDeleteFile" class="visible-delete-file" label="已删除文件"/>
         </div>
         <el-tree
           ref="tree"
@@ -128,7 +128,8 @@ export default {
       currentFile: null,
       selectedFiles: [],
       files: [],
-      visibleSetting: {
+      // 筛选设置
+      filterSetting: {
         keyword: '',
         keywordIgnoreCase: true,
         // 显示冲突文件
@@ -142,15 +143,9 @@ export default {
   },
   computed: {
     ...mapState(['installData']),
-    // 文件展示因子
-    fileVisibleFactors () {
-      return [
-        this.visibleSetting.visibleNewFile,
-        this.visibleSetting.visibleMergeFile,
-        this.visibleSetting.visibleDeleteFile,
-        this.visibleSetting.keyword,
-        this.visibleSetting.keywordIgnoreCase
-      ]
+    // 文件筛选因子
+    filterSettingFactors () {
+      return JSON.stringify(this.filterSetting)
     },
     // 项目ID
     projectId () {
@@ -185,8 +180,8 @@ export default {
     diffFiles () {
       this.__handleDiffChange()
     },
-    fileVisibleFactors () {
-      this.$refs.tree.filter(this.visibleSetting)
+    filterSettingFactors () {
+      this.$refs.tree.filter(this.filterSetting)
     },
     // 当新内容发生变化时，赋值到目标文件中
     newContent() {
@@ -206,6 +201,9 @@ export default {
       this.currentFile = null
       this.selectedFiles = []
       this.visible = true
+      // 清理搜索关键字
+      this.filterSetting.keyword = ''
+      this.filterSetting.keywordIgnoreCase = true
     },
     // 过滤文件
     filterFile (setting, data) {
@@ -321,28 +319,28 @@ export default {
         return true
       }
       // 关键字匹配
-      if (this.visibleSetting.keyword.trim() !== '') {
+      if (this.filterSetting.keyword.trim() !== '') {
         // 忽略大小写
-        if (this.visibleSetting.keywordIgnoreCase) {
-          if (node.filepath.toLowerCase().indexOf(this.visibleSetting.keyword.trim().toLowerCase()) === -1) {
+        if (this.filterSetting.keywordIgnoreCase) {
+          if (node.filepath.toLowerCase().indexOf(this.filterSetting.keyword.trim().toLowerCase()) === -1) {
             return false
           }
         }
         // 不忽略大小写
-        else if (node.filepath.indexOf(this.visibleSetting.keyword.trim()) === -1) {
+        else if (node.filepath.indexOf(this.filterSetting.keyword.trim()) === -1) {
           return false
         }
       }
       // 展示了新增文件
-      if (this.visibleSetting.visibleNewFile && node.operaType === 'ADD') {
+      if (this.filterSetting.visibleNewFile && node.operaType === 'ADD') {
         return true
       }
       // 展示了冲突文件
-      if (this.visibleSetting.visibleMergeFile && node.operaType === 'UPDATE') {
+      if (this.filterSetting.visibleMergeFile && node.operaType === 'UPDATE') {
         return true
       }
       // 展示了已删除文件
-      if (this.visibleSetting.visibleDeleteFile && node.operaType === 'DELETED') {
+      if (this.filterSetting.visibleDeleteFile && node.operaType === 'DELETED') {
         return true
       }
       return false
@@ -401,6 +399,9 @@ export default {
     __getOperaType (diffFile) {
       if (diffFile.operaType === 'DELETED') {
         return 'DELETED'
+      }
+      if (diffFile.operaType === 'ADD') {
+        return 'ADD'
       }
       // 没有本地文件，肯定是新增
       if (diffFile.localContent == null) {

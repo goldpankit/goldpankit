@@ -170,8 +170,8 @@ module.exports = {
         if (relativePath === Const.PROJECT_CONFIG_FILE || relativePath === Const.PROJECT_DATABASE_CONFIG_FILE) {
           continue
         }
-        // 获取文件信息
-        const fileExists = this.exists(filepath)
+        // 获取文件信息，此处判断文件是否存在，需要区分大小写进行判断
+        const fileExists = this.exists(filepath, false)
         let localFile = null
         if (fileExists) {
           localFile = this.readFile(filepath)
@@ -431,7 +431,8 @@ module.exports = {
   },
   createDirectory(filepath, force = false) {
     if (force) {
-      this.deleteDirectory(filepath, force)
+      // 忽略大小写进行删除，因为删除后立即会创建新的目录
+      this.deleteDirectory(filepath, force, true)
     }
     if (!this.exists(filepath)) {
       fs.mkdirSync(filepath, {recursive: true})
@@ -441,23 +442,28 @@ module.exports = {
   getDirectory(filepath) {
     return path.dirname(filepath)
   },
-  deleteDirectory(filepath, force = false) {
-    if (this.exists(filepath)) {
+  deleteDirectory(filepath, force = false, ignoreCase = false) {
+    if (this.exists(filepath, ignoreCase)) {
       fs.rmdirSync(filepath, {
         recursive: force
       })
       log.debug(`- deleted directory: ${filepath}`)
     }
   },
-  deleteFile(filepath) {
-    if (this.exists(filepath)) {
+  deleteFile(filepath, ignoreCase = false) {
+    // 删除文件动作默认需要严格匹配文件路径和名称的大小写才可删除
+    if (this.exists(filepath, ignoreCase)) {
       fs.unlinkSync(filepath)
       log.debug(`- deleted file: ${filepath}`)
     }
   },
   createFile(filepath, content, force = false) {
     if (force) {
-      this.deleteFile(filepath)
+      /*
+       忽略大小写进行删除，因为删除后会产生新的文件，如果文件a.txt转为了A.txt，如果不忽略大小写，则不会进行文件删除，从而将A.txt内容写入了a.txt
+       例如Java文件中的文件名发生变化后，class的名称也会发生变化，如果直接将A.java的内容写入a.java，那么会引起class名和文件名不匹配的问题
+      */
+      this.deleteFile(filepath, true)
       // 获取文件所在目录，如果目录不存在，则创建目录
       const directory = this.getDirectory(filepath)
       if (!this.exists(directory)) {
@@ -470,8 +476,19 @@ module.exports = {
   rewrite (filepath, content) {
     this.createFile(filepath, content, true)
   },
-  exists(filepath) {
-    return fs.existsSync(filepath)
+  exists(filepath, ignoreCase = true) {
+    const exists = fs.existsSync(filepath)
+    // 如果忽略大小写进行判断，则可以直接返回，因为existsSync本身就是忽略大小写判断
+    if (ignoreCase) {
+      return exists
+    }
+    // 如果不忽略大小写，并且忽略大小写的情况下文件不存在，则直接返回false
+    if (!exists) {
+      return false
+    }
+    // 获取原始文件路径进行大小写对比
+    const realpath = fs.realpathSync.native(filepath)
+    return realpath === filepath
   },
   isEmptyDirectory(filepath) {
     return fs.readdirSync(filepath).length === 0
