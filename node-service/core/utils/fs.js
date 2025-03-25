@@ -488,8 +488,8 @@ module.exports = {
     }
     return 'utf-8'
   },
-  toJSONFileString (json) {
-    return JSON.stringify(json, null, 2)
+  toJSONFileString (json, space = 0) {
+    return JSON.stringify(json, null, space)
   },
   // 获取相对路径
   getRelativePath(path, parentPath) {
