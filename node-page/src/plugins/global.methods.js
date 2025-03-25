@@ -5,8 +5,8 @@ export default {
   overwriteConfirm (files) {
     const $t = this.$t
     return ElMessageBox({
-      title: $t('common.modal.overwriteFileTitle'),
-      message: $t('common.modal.overwriteFileTip', { fileNames: files[0].label, fileCount: files.length }),
+      title: '确认文件合并',
+      message: `合并前请确认本地代码已提交GIT，避免代码丢失，确认合并已选择的 ${files.length} 个文件吗？`,
       showCancelButton: true,
       cancelButtonText: $t('common.cancel'),
       confirmButtonText: $t('common.confirm')

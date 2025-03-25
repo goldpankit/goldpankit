@@ -55,8 +55,8 @@ export default {
       installServiceTip: '安装此服务将从您的账户中扣除 {price} 金豆。您确定要安装吗？',
       uninstallServiceTip: '您确定要卸载这个服务吗？',
       overwriteFileTitle: '文件覆盖确认',
-      overwriteFileTip: '确认覆盖{fileNames}等{fileCount}个文件吗？',
-      overwriteAllTip: '确认覆盖所有文件吗？',
+      overwriteFileTip: '确认合并 {fileNames} 等 {fileCount} 个文件吗？',
+      overwriteAllTip: '确认合并所有文件吗？',
     },
     // 日期差
     dateOffset: {
