@@ -722,6 +722,16 @@ export default {
           }
           variable.value.settings = settings
         }
+        // 如果是table，需要移除字段的__selected字段
+        if (variable.inputType === 'table') {
+          // 循环变量组（例如查询参数、新建&编辑字段）
+          for (const group of variable.children) {
+            // 循环清理选中字段的__selected字段
+            group.value.forEach(field => {
+              delete field.__selected
+            })
+          }
+        }
         // 变量组
         if (variable.type === 'group') {
           variable.children = this.__getInstallVariables(variable.children)
