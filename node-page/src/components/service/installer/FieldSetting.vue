@@ -54,7 +54,7 @@ import SortableButton from "@/components/common/SortableButton.vue";
 
 export default {
   name: 'FieldSetting',
-  components: {SortableButton, VariableRemarkIcon, TableFieldVariableInput, MySqlFieldSelect },
+  components: { SortableButton, VariableRemarkIcon, TableFieldVariableInput, MySqlFieldSelect },
   props: {
     // 表对象
     table: {
@@ -88,6 +88,8 @@ export default {
     /**
      * 触发选中
      * 添加字段原始信息，方便后期获取；将字段变量组中的动态变量添加到字段中
+     * - 手动触发时，fields仅包含字段原始信息
+     * - 初始化触发时，fields会包含完整的字段信息，包括动态字段部分
      *
      * @param fields 选中的字段
      */
@@ -102,9 +104,21 @@ export default {
         if (field.origin == null) {
           field.origin = JSON.parse(JSON.stringify(field))
         }
+        // 从group中读取字段列表（例如查询参数变量组，会用value或defaultValue保存所有选中的字段及字段的动态字段设置）
+        const selectedFields = this.group[this.valueKey] || []
+        // 找到对应字段值，用于填充字段的动态变量
+        const targetField = selectedFields.find(f => f.name === field.name)
         // 将动态的字段变量添加到字段对象中，但需要保留原来的值
         for (const variable of this.group.children) {
-          field[variable.name] = isEmptyValue(field[variable.name]) ? variable.defaultValue : field[variable.name]
+          // 给动态的字段变量赋值
+          if (targetField != null) {
+            field[variable.name] = targetField[variable.name]
+          }
+          // 没有值，则赋予变量默认值
+          if (isEmptyValue(field[variable.name])) {
+            field[variable.name] = variable.defaultValue
+          }
+          // 如果变量未设定默认值，则计算出默认值
           if (isEmptyValue(field[variable.name])) {
             field[variable.name] = getDefaultEmptyValue(variable.inputType)
           }
