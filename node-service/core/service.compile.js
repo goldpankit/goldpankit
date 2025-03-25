@@ -122,15 +122,21 @@ class Kit {
               config.plugins = projectConfig.services
             }
             const pluginVariables = this.#getSimpleMainServiceVariables(dto.variables)
+            // 获取原始的查询模型记忆参数和表记忆参数
             const pluginConfig = config.plugins[dto.plugin]
-            const queryModelVariables = InstallParameterHandler.getPluginQueryModelParameters(dto.plugin, pluginVariables, pluginConfig == null ? null : pluginConfig['qm-values'])
-            const tableVariables = InstallParameterHandler.getPluginTableParameters(dto.plugin, pluginVariables, pluginConfig == null ? null : pluginConfig['table-values'])
+            const qmValues = InstallParameterHandler.getPluginQueryModelParameters(dto.plugin, pluginVariables, pluginConfig == null ? null : pluginConfig['qm-values'])
+            const tableValues = InstallParameterHandler.getPluginTableParameters(dto.plugin, pluginVariables, pluginConfig == null ? null : pluginConfig['table-values'])
             config.plugins[dto.plugin] = {
               version: dto.version,
-              variables: pluginVariables,
-              // 记录查询模型的插件变量，用于实现根据查询模型记忆并回写插件参数功能
-              'qm-values': queryModelVariables,
-              'table-values': tableVariables
+              variables: pluginVariables
+            }
+            // 记录查询模型的插件变量，用于实现根据查询模型记忆并回写插件参数功能
+            if (qmValues != null) {
+              config.plugins[dto.plugin]['qm-values'] = qmValues
+            }
+            // 记录表的插件变量，用于实现根据表记忆并回写插件参数功能
+            if (tableValues != null) {
+              config.plugins[dto.plugin]['table-values'] = tableValues
             }
           }
           log.debug(`write kit.json...`)
