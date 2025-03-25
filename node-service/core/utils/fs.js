@@ -431,7 +431,17 @@ module.exports = {
   },
   createDirectory(filepath, force = false) {
     if (force) {
-      // 忽略大小写进行删除，因为删除后立即会创建新的目录
+      /*
+       忽略大小写进行删除，场景说明如下：
+       某框架修改了目录名称，从Test转为了test并发布了新的版本，产生了如下两条记录
+        1. 新增test目录
+          在macos和windows下，都会认为Test目录就是test目录，因为默认情况下文件操作不区分大小写，于是并不会产生新的test目录；
+        2. 删除Test目录
+        此时就导致了没有产生新的test目录，旧的Test目录又被删除，升级动作缺少了整个目录
+       因此，此处删除目录，需要忽略大小写进行删除，则可以得到
+        1. 新增test目录（删除了Test目录，新增了test目录）
+        2. 删除Test目录（删除动作默认都是区分大小写的，所以会因为找不到Test目录而忽略删除动作）
+      */
       this.deleteDirectory(filepath, force, true)
     }
     if (!this.exists(filepath)) {
@@ -460,8 +470,15 @@ module.exports = {
   createFile(filepath, content, force = false) {
     if (force) {
       /*
-       忽略大小写进行删除，因为删除后会产生新的文件，如果文件a.txt转为了A.txt，如果不忽略大小写，则不会进行文件删除，从而将A.txt内容写入了a.txt
-       例如Java文件中的文件名发生变化后，class的名称也会发生变化，如果直接将A.java的内容写入a.java，那么会引起class名和文件名不匹配的问题
+       忽略大小写进行删除，场景说明如下：
+       某框架修改了文件名称，从a.txt转为了A.txt并发布了新的版本，产生了如下两条记录
+        1. 新增A.txt
+          在macos和windows下，都会认为a.txt就是A.txt，因为默认情况下文件操作不区分大小写，于是A.txt的内容会写入a.txt中，并不会产生新的A.txt文件；
+        2. 删除a.txt
+        此时就导致了没有产生新的A.txt文件，旧的a.txt在写入A.txt内容后又被删除，升级动作缺少了文件！
+       因此，此处删除文件，需要忽略大小写进行删除，则可以得到
+        1. 新增A.txt（删除了旧的a.txt，新增了A.txt）
+        2. 删除a.txt（删除动作默认都是区分大小写的，所以会因为找不到a.txt而忽略删除动作）
       */
       this.deleteFile(filepath, true)
       // 获取文件所在目录，如果目录不存在，则创建目录
@@ -476,6 +493,13 @@ module.exports = {
   rewrite (filepath, content) {
     this.createFile(filepath, content, true)
   },
+  /**
+   * 关于ignoreCase，参考createFile的场景说明
+   *
+   * @param filepath 文件路径
+   * @param ignoreCase 是否忽略大小写
+   * @returns {boolean}
+   */
   exists(filepath, ignoreCase = true) {
     const exists = fs.existsSync(filepath)
     // 如果忽略大小写进行判断，则可以直接返回，因为existsSync本身就是忽略大小写判断
