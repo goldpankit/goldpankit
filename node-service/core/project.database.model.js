@@ -1,5 +1,7 @@
 const utils = require('./utils/index')
 const projectDatabase = require('./project.database')
+const projectService = require('./project')
+const fs = require("./utils/fs");
 module.exports = {
   // 查询模型
   findAll (projectId, databaseId) {
@@ -20,7 +22,21 @@ module.exports = {
       return Promise.reject(new Error(`找不到模型，请刷新后重试！模型ID: ${modelId}`))
     }
     // 执行删除
+    // - 删除数据库中的模型配置（kit.db.json/models）
     database.models.splice(index, 1)
+    // - 删除项目配置的模型配置（kit.json/qm-values）
+    const projectConfig = projectService.getProjectConfigById(projectId)
+    if (projectConfig != null && projectConfig.plugins != null) {
+      for (const pluginName in projectConfig.plugins) {
+        const plugin = projectConfig.plugins[pluginName]
+        if (plugin['qm-values'] == null) {
+          continue
+        }
+        delete plugin['qm-values'][modelId]
+      }
+      // 写入项目配置
+      fs.createFile(projectService.getConfigPath(projectId), fs.toJSONFileString(projectConfig), true)
+    }
     // 保存
     projectDatabase.saveDatabase(projectId, database)
   },
