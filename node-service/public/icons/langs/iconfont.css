@@ -1,0 +1,113 @@
+@font-face {
+  font-family: "language"; /* Project id 4870845 */
+  /* Color fonts */
+  src:
+       url('iconfont.woff2?t=1742926977527') format('woff2'),
+       url('iconfont.woff?t=1742926977527') format('woff'),
+       url('iconfont.ttf?t=1742926977527') format('truetype');
+}
+
+.language {
+  font-family: "language" !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.lang-file:before {
+  content: "\e689";
+}
+
+.lang-sh:before {
+  content: "\e640";
+}
+
+.lang-ppt:before {
+  content: "\e642";
+}
+
+.lang-xlsx:before {
+  content: "\e60c";
+}
+
+.lang-pdf:before {
+  content: "\e733";
+}
+
+.lang-docx:before {
+  content: "\e623";
+}
+
+.lang-jpg:before {
+  content: "\e6a5";
+}
+
+.lang-png:before {
+  content: "\e63b";
+}
+
+.lang-gif:before {
+  content: "\e68c";
+}
+
+.lang-sql:before {
+  content: "\e68f";
+}
+
+.lang-txt:before {
+  content: "\e690";
+}
+
+.lang-log:before {
+  content: "\e68e";
+}
+
+.lang-doc:before {
+  content: "\ebb2";
+}
+
+.lang-jpeg:before {
+  content: "\ebb3";
+}
+
+.lang-html:before {
+  content: "\e706";
+}
+
+.lang-vue:before {
+  content: "\e799";
+}
+
+.lang-md:before {
+  content: "\ebb1";
+}
+
+.lang-java:before {
+  content: "\e7be";
+}
+
+.lang-xml:before {
+  content: "\e6a0";
+}
+
+.lang-json:before {
+  content: "\e639";
+}
+
+.lang-css:before {
+  content: "\e63a";
+}
+
+.lang-scss:before {
+  content: "\e75b";
+}
+
+.lang-js:before {
+  content: "\e62c";
+}
+
+.lang-yml:before {
+  content: "\e6d5";
+}
+
