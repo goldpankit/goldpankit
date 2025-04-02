@@ -503,7 +503,12 @@ class DiffExpress {
    */
   #getLineIndex(targetLine, contentLines, searchStartIndex = 0) {
     for (let i = searchStartIndex; i < contentLines.length; i++) {
-      if (this.#eq(targetLine, contentLines[i])) {
+      let translatedLine = targetLine
+        // 转译"-"
+        .replace('\\-', '-')
+        // 转译"+"
+        .replace('\\+', '+')
+      if (this.#eq(translatedLine, contentLines[i])) {
         return i
       }
     }
