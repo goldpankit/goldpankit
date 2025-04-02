@@ -413,15 +413,20 @@ export default {
       }
       this.__ns(this.files)
     },
-    // 获取操作类型
+    /**
+     * 获取操作类型
+     * 这里的操作类型是相对于本地文件而言的，不是版本文件的操作类型
+     * 除了操作类型为“DELETED”时会影响合并逻辑（DELETED时会删除本地文件），其它的操作类型均不会有影响
+     */
     __getOperaType (diffFile) {
       if (diffFile.operaType === 'DELETED') {
         return 'DELETED'
       }
-      if (diffFile.operaType === 'ADD') {
-        return 'ADD'
-      }
-      // 没有本地文件，肯定是新增
+      /*
+       没有本地文件视为新增
+       例如搭建框架时或安装插件时，大概率本地都没有文件，但对于框架或插件来说，某一个文件可能因为版本
+       迭代，操作类型已是修改。所以是否新增需要根据本地文件进行判断，跟文件本身的操作类型无关。
+      */
       if (diffFile.localContent == null) {
         return 'ADD'
       }
