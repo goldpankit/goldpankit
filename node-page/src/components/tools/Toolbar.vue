@@ -1,30 +1,30 @@
 <template>
   <ul class="kit-toolbar">
-<!--    <li>-->
-<!--      <div class="icon-wrap" @click="$refs.aiWindow.open()">-->
-<!--        <AIIcon/>-->
-<!--      </div>-->
-<!--      <span>{{$t('tool.ai.name')}}</span>-->
-<!--    </li>-->
-    <li>
+    <li @click="$refs.aiWindow.open()">
+      <div class="icon-wrap" @click="$refs.aiWindow.open()">
+        <Icon value="iconfont-colors icon-ai-helper3"/>
+      </div>
+      <span>AI助手</span>
+    </li>
+    <li @click="$refs.toolboxWindow.open()">
       <div class="icon-wrap">
-        <ToolBoxIcon @click="$refs.toolboxWindow.open()"/>
+        <ToolBoxIcon/>
       </div>
       <span>工具箱</span>
     </li>
   </ul>
   <ToolboxWindow ref="toolboxWindow"/>
-<!--  <AIWindow ref="aiWindow"/>-->
+  <AiWindow ref="aiWindow"/>
 </template>
 
 <script>
-import AIIcon from "./ai/AIIcon.vue";
-import ToolBoxIcon from "@/components/tools/toolbox/ToolBoxIcon";
-import ToolboxWindow from "@/components/tools/toolbox/ToolboxWindow";
+import ToolBoxIcon from '@/components/tools/toolbox/ToolBoxIcon'
+import ToolboxWindow from '@/components/tools/toolbox/ToolboxWindow'
+import AiWindow from '@/components/tools/ai/AiWindow';
 
 export default {
   name: 'Toolbar',
-  components: {ToolBoxIcon, AIIcon, ToolboxWindow }
+  components: { AiWindow, ToolBoxIcon, ToolboxWindow }
 }
 </script>
 
@@ -38,10 +38,14 @@ export default {
   padding: 20px 10px;
   border-radius: 10px;
   box-shadow: 0 0 10px -5px rgba(0, 0, 0, .25);
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
   li {
     display: flex;
     flex-direction: column;
     align-items: center;
+    cursor: pointer;
     &:hover {
       .icon-wrap {
         transform: scale(1.08);
@@ -53,7 +57,12 @@ export default {
       border-radius: 50%;
       overflow: hidden;
       transition: all ease .15s;
-      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      :deep(.icon) {
+        font-size: 40px !important;
+      }
     }
     span {
       margin-top: 5px;
