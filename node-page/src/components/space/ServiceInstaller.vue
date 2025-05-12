@@ -230,6 +230,7 @@ export default {
         }
         return serviceObject[service].variables
       }
+      return []
     },
     /**
      * 插件的安装参数（kit.json中的参数）
