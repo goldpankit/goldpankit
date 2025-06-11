@@ -37,12 +37,11 @@
           </p>
         </div>
         <div class="action-buttons">
+          <p v-if="lastEndTime != null" class="end-time-text">您已购买本系统源码，有效期至：{{ lastEndTime }}（剩余{{ getRemainingDay(lastEndTime) }}天）</p>
           <el-button
-            v-if="lastEndTime == null"
             type="primary"
-            @click="$refs.buySourceCodeWindow.open(projectProfile)"
-          >购买源码</el-button>
-          <p v-else class="end-time-text">您已购买本系统源码，有效期至：{{ lastEndTime }}</p>
+            @click="$refs.buySourceCodeWindow.open(projectProfile, lastEndTime != null)"
+          >{{ lastEndTime == null ? '购买源码' : '延长使用期限' }}</el-button>
           <el-button type="important" @click="$refs.buyEpibolyWindow.open(projectProfile)">需要技术支持</el-button>
         </div>
       </div>

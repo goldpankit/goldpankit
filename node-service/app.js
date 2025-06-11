@@ -97,7 +97,7 @@ if (env.env === 'develop') {
   autoopen.findAvailablePort(args.port, (port) => {
     // 开启应用监听
     app.listen(port, () => {
-      console.log( colors('green', `  KIT v${pkg.version} started.`))
+      console.log( colors('green', `  KIT v${pkg.version} started（DEV MODE）.`))
       console.log( colors('green', `  ➜   `), `Local: http://${args.localAddress}:${port}/`)
       console.log( colors('green', `  ➜   `), `Network: http://${args.networkAddress}:${port}/`)
       autoopen.open(port)
