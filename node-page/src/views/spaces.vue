@@ -31,7 +31,7 @@
             <ServiceList
               :services="space.mainServices"
               @select="$router.push({
-                name: 'ServiceDetail',
+                name: 'ProjectDetail',
                 params: { spaceName: space.name, serviceName: $event.name }
               })"
             />

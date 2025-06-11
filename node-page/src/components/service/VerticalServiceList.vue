@@ -9,7 +9,7 @@
         :service="service.name"
         :with-paths="false"
       />
-      <p>{{service.introduce}}</p>
+      <p>{{ space }}-{{service.name}}-{{service.introduce}}</p>
       <div class="price-wrap">
         <p class="text-info-1 text-mini">{{getDateOffsetText(service.lastPublish)}}</p>
         <BeanAmount :price="service.price.price" :type="service.price.leaseType"/>

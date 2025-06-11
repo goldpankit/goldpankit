@@ -14,18 +14,18 @@
       <template v-else-if="service != null && plugin == null">
         <template v-if="withPaths">
           <router-link :target="withNewPage ? '_blank': ''" :to="{
-            name: 'SpaceDetail',
-            params: {
-              name: space
+            name: 'ProjectProfile',
+            query: {
+              p: space
             }
           }">@{{space}}</router-link>
           /
         </template>
         <router-link :target="withNewPage ? '_blank': ''" :to="{
           name: 'ServiceDetail',
-          params: {
-            spaceName: space,
-            serviceName: service
+          query: {
+            p: space,
+            n: service
           }
         }">{{serviceLabel || service}}</router-link>
       </template>
@@ -33,17 +33,17 @@
       <template v-else>
         <template v-if="withPaths">
           <router-link :target="withNewPage ? '_blank': ''" :to="{
-            name: 'SpaceDetail',
-            params: {
-              name: space
+            name: 'ProjectProfile',
+            query: {
+              p: space
             }
           }">@{{space}}</router-link>
           /
           <router-link :target="withNewPage ? '_blank': ''" :to="{
             name: 'ServiceDetail',
-            params: {
-              spaceName: space,
-              serviceName: service
+            query: {
+              p: space,
+              n: service
             }
           }">{{serviceLabel || service}}</router-link>
           /

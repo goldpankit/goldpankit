@@ -161,4 +161,38 @@ html {
     -webkit-text-fill-color: black;
     background-color: #fff !important;
   }
+
+  // 价格
+  .text-price {
+    color: var(--color-danger) !important;
+    font-size: 30px;
+    font-weight: bold;
+    font-style: normal;
+    &::before {
+      font-weight: normal;
+      color: var(--font-color);
+      font-size: 15px;
+      content: '¥';
+      margin-right: 5px;
+    }
+    &::after {
+      font-weight: normal;
+      color: var(--font-color);
+      font-size: 13px;
+      content: '元';
+      margin-left: 5px;
+    }
+    // 源码价格
+    &.code-price {
+      &::after {
+        content: '元/年'
+      }
+    }
+    // 部署价格
+    &.deploy-price {
+      &::after {
+        content: '元/套'
+      }
+    }
+  }
 }

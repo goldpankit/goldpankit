@@ -28,7 +28,7 @@ const router = createRouter({
         {
           path: '/',
           name: 'Index',
-          component: () => import('@/views/guide.vue')
+          component: () => import('@/views/index.vue')
         },
         {
           path: '/signin',
@@ -41,27 +41,17 @@ const router = createRouter({
           component: () => import('@/views/signup.vue')
         },
         {
-          path: '/spaces',
-          name: 'PublicSpaces',
-          component: () => import('@/views/spaces.vue')
-        },
-        {
-          path: '/services',
-          name: 'PublicServices',
-          component: () => import('@/views/services.vue')
-        },
-        {
           path: '/project/databases/:projectId',
           name: 'Databases',
           component: () => import('@/views/project/database/list.vue')
         },
         {
-          path: '/space/:name',
-          name: 'SpaceDetail',
-          component: () => import('@/views/space/detail.vue')
+          path: '/project/profile',
+          name: 'ProjectProfile',
+          component: () => import('@/views/project/profile.vue')
         },
         {
-          path: '/space/:spaceName/:serviceName',
+          path: '/project/service',
           name: 'ServiceDetail',
           component: () => import('@/views/service/detail.vue')
         },

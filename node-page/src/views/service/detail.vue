@@ -101,8 +101,8 @@
             </li>
           </ul>
           <div v-if="relationServices.length > 0" class="relation-services-wrap">
-            <h4>{{$t('service.relationList')}}</h4>
-            <VerticalServiceList :services="relationServices"/>
+            <h4>相关代码工程</h4>
+            <VerticalServiceList :space="route.space" :services="relationServices"/>
           </div>
         </div>
       </div>
@@ -239,14 +239,14 @@ export default {
     }
   },
   beforeRouteUpdate (to, from, next) {
-    this.route.space = to.params.spaceName
-    this.route.service = to.params.serviceName
+    this.route.space = to.query.p
+    this.route.service = to.query.n
     this.initData()
     next()
   },
   created () {
-    this.route.space = this.$route.params.spaceName
-    this.route.service = this.$route.params.serviceName
+    this.route.space = this.$route.query.p
+    this.route.service = this.$route.query.n
     this.initData()
   }
 }

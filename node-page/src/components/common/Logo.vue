@@ -43,7 +43,7 @@ export default {
   methods: {
     // 跳转至首页
     go2home () {
-      window.open('/services')
+      window.open('/')
     },
     // 获取版本号
     fetchVersion () {

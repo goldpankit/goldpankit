@@ -30,3 +30,9 @@ export function search (data) {
     baseURL: import.meta.env.VITE_REMOTE_API_PREFIX
   })
 }
+// 查询项目列表
+export function fetchList () {
+  return request.get('/space/list', {
+    baseURL: import.meta.env.VITE_REMOTE_API_PREFIX
+  })
+}

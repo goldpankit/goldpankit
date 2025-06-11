@@ -441,22 +441,11 @@ export default {
     },
     // 安装服务
     install () {
-      // 用户已租赁服务，直接安装
-      if (this.serviceLease != null) {
-        this.__install()
+      if (this.userInfo == null) {
+        this.$router.push('/signin')
         return
       }
-      // 用户未租赁服务 || 按次收费且金额超过伐值，则做金额提醒
-      if (this.servicePrice < 50) {
-        this.__install()
-        return
-      }
-      // 超过服务金额伐值时做提醒
-      this.installConfirm(this.servicePrice)
-        .then(() => {
-          this.__install()
-        })
-        .catch(() => {})
+      this.__install()
     },
     // 初始化变量
     initVariables () {
