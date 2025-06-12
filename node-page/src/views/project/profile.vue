@@ -43,7 +43,10 @@
             @click="$refs.buySourceCodeWindow.open(projectProfile, lastEndTime != null)"
           >{{ lastEndTime == null ? '购买源码' : '延长使用期限' }}</el-button>
           <el-button type="important" @click="$refs.buyEpibolyWindow.open(projectProfile)">需要技术支持</el-button>
-          <el-button v-if="projectProfile.techDocUrl != null && projectProfile.techDocUrl !== ''" class="button-doc-url" @click="openDoc">查看技术文档</el-button>
+          <el-button
+            v-if="projectProfile.techDocUrl != null && projectProfile.techDocUrl !== ''"
+            @click="openDoc"
+          >查看技术文档</el-button>
         </div>
       </div>
     </div>
@@ -248,8 +251,6 @@ export default {
       font-size: var(--font-size-middle);
       border-radius: 100px;
       cursor: pointer;
-    }
-    .button-doc-url {
     }
   }
 }
