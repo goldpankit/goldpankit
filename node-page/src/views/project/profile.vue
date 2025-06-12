@@ -43,6 +43,7 @@
             @click="$refs.buySourceCodeWindow.open(projectProfile, lastEndTime != null)"
           >{{ lastEndTime == null ? '购买源码' : '延长使用期限' }}</el-button>
           <el-button type="important" @click="$refs.buyEpibolyWindow.open(projectProfile)">需要技术支持</el-button>
+          <el-button v-if="projectProfile.techDocUrl != null && projectProfile.techDocUrl !== ''" class="button-doc-url" @click="openDoc">查看技术文档</el-button>
         </div>
       </div>
     </div>
@@ -119,6 +120,10 @@ export default {
         .catch(e => {
           this.$tip.apiFailed(e)
         })
+    },
+    // 打开文档
+    openDoc () {
+      window.open(this.projectProfile.techDocUrl)
     }
   },
   created () {
@@ -244,6 +249,8 @@ export default {
       border-radius: 100px;
       cursor: pointer;
     }
+    .button-doc-url {
+    }
   }
 }
 
@@ -305,14 +312,6 @@ export default {
   grid-template-columns: repeat(3, 1fr);
   gap: 30px;
   perspective: 1000px;
-
-  @media (max-width: 1024px) {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
-  }
 }
 
 // 项目卡片
