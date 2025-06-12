@@ -76,7 +76,6 @@
       <MarkdownEditor
         v-model="projectProfile.description"
         :readonly="true"
-        :without-padding="true"
       />
     </div>
     <!-- 购买源码下单窗口 -->
@@ -423,6 +422,9 @@ export default {
     }
     img {
       max-width: 100%;
+    }
+    .vuepress-markdown-body {
+      padding: 32px 40px;
     }
   }
 }
