@@ -8,7 +8,7 @@
       <!-- 页面标题 -->
       <div class="page-header">
         <h1 class="tech-title">每套系统均由金镐开源组织研发</h1>
-        <h2 class="tech-subtitle">清华技术团队，13年技术深耕</h2>
+        <h2 class="tech-subtitle">清华技术团队，10余年技术深耕</h2>
       </div>
 
       <!-- 产品展示区 -->
