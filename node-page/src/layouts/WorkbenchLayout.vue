@@ -1,7 +1,7 @@
 <template>
   <AppLayout class="workbench-layout">
     <header>
-      <Logo/>
+      <Logo :with-logo-image="true"/>
       <ul class="opera">
         <li>
           <ProjectSelect :model-value="currentProject"/>

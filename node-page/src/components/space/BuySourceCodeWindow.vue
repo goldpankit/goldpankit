@@ -7,7 +7,7 @@
     class="buy-window"
   >
     <div class="message-wrap">
-      <p v-if="isRenewal">您已购买该项目源码，确认额外支付{{project.price * 20 / 100}}元延长「{{ project.label }}」系统源码的使用期限吗？</p>
+      <p v-if="isRenewal">您已购买该项目源码，确认额外支付{{project.price * 20 / 100}}元延长1年「{{ project.label }}」源码的使用期限吗？</p>
       <p v-else>此购买方式适用于外包企业或个人开发者用户，购买后，源码可通过社区站点或Node客户端进行构建和下载，有效期1年，次年仅收取最新定价的20%作为维护费即可延续使用！有效期内可不限次数对源码进行升级、部署和使用工程插件生成代码，并可获得系统的技术问答支持，确认下单购买「{{ project.label }}」系统源码吗？</p>
     </div>
     <template #footer>

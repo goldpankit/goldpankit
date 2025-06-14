@@ -17,7 +17,7 @@
           v-for="project in projects"
           :key="project.name"
           class="product-card tech-card"
-          :href="`/project/profile?p=${project.name}`" target="_blank"
+          :href="`/space/profile?p=${project.name}`" target="_blank"
         >
           <!-- 产品信息区域 -->
           <div class="product-info">

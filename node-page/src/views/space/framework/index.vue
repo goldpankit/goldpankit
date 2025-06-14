@@ -55,12 +55,10 @@
             <el-button
               type="important"
               @click="$router.push({
-                name: 'ServiceInstaller',
-                params: {
-                  spaceName: space.name,
-                  serviceName: service.name
-                },
+                name: 'FrameworkInstaller',
                 query: {
+                  s: space.name,
+                  n: service.name,
                   major: currentMajorVersion
                 }
               })"
@@ -77,11 +75,6 @@
                 }
               })"
             >创建插件</el-button>
-<!--            <el-button-->
-<!--              type="primary"-->
-<!--              size="large"-->
-<!--              disabled-->
-<!--            >{{$t('issue.createNewIssue')}}</el-button>-->
           </div>
           <!-- 服务基础信息 -->
           <ul class="info-list">
@@ -106,16 +99,16 @@
 </template>
 
 <script>
+import {mapState} from 'vuex'
 import ServiceStructureView from "@/components/space/ServiceStructureView.vue";
 import PluginList from "@/components/service/PluginList.vue";
 import MarkdownEditor from "@/components/common/MarkdownEditor.vue";
 import BeanAmount from "@/components/common/BeanAmount.vue";
 import {fetchList, fetchServiceDetail} from "@/api/service";
 import {fetchProfileByName} from "@/api/service.space";
-import VerticalServiceList from "../../components/service/VerticalServiceList.vue";
-import ServiceTitle from "../../components/service/ServiceTitle.vue";
-import ServiceStatus from "../../components/service/ServiceStatus.vue";
-import {mapState} from "vuex";
+import VerticalServiceList from '@/components/service/VerticalServiceList'
+import ServiceTitle from '@/components/service/ServiceTitle'
+import ServiceStatus from '@/components/service/ServiceStatus'
 
 export default {
   components: {

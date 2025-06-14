@@ -1,7 +1,7 @@
 <template>
   <template v-if="userInfo == null">
-    <el-button size="default" @click="$router.push({ name: 'SignIn' })">{{$t('common.signIn')}}</el-button>
-    <el-button size="default" type="important" @click="$router.push({ name: 'SignUp' })">{{$t('common.signUp')}}</el-button>
+    <el-button size="large" type="primary" @click="$router.push({ name: 'SignIn' })">登录</el-button>
+    <el-button size="large" type="important" @click="$router.push({ name: 'SignUp' })">注册</el-button>
     <div class="menu" @click="$router.push({ name: 'Desktop' })">
       <span></span>
       <span></span>
@@ -33,6 +33,9 @@ export default {
 <style scoped lang="scss">
 .i18n {
   margin-right: 15px;
+}
+.el-button {
+  width: 100px;
 }
 .menu {
   width: 30px;

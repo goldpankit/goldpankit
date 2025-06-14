@@ -1,7 +1,7 @@
 <template>
   <AppLayout class="default-layout">
     <header>
-      <Logo/>
+      <Logo :with-logo-image="true"/>
       <ul class="opera">
         <li>
           <LoginView/>

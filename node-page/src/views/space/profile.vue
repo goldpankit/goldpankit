@@ -59,7 +59,7 @@
           v-for="codeProject in projectProfile.services"
           class="project-card"
           :key="codeProject.name"
-          :href="`/project/service?p=${projectProfile.name}&n=${codeProject.name}`"
+          :href="`/space/framework?p=${projectProfile.name}&n=${codeProject.name}`"
         >
           <div class="card-glow"></div>
           <div class="project-info">

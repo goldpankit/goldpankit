@@ -1,10 +1,11 @@
 <template>
   <div class="logo" @click="go2home">
+    <img v-if="withLogoImage" src="/images/logo.png" alt="logo"/>
     <div class="logo-wrap">
       <h1>Gold Pan Kit</h1>
       <div class="decoration" :class="{ 'no-animation': !withAnimation }">
         <em></em>
-        <i v-if="withAnimation">一分钟搭建框架</i>
+        <i v-if="withAnimation">金镐技术社区</i>
       </div>
     </div>
     <div v-if="withVersion" class="version">
@@ -28,6 +29,9 @@ import {fetchVersion} from "@/api/client";
 export default {
   name: 'Logo',
   props: {
+    withLogoImage: {
+      default: false,
+    },
     withVersion: {
       default: true
     },
@@ -66,6 +70,10 @@ export default {
 .logo {
   display: flex;
   align-items: center;
+  & > img {
+    width: 48px;
+    margin-right: 10px;
+  }
   .logo-wrap {
     cursor: pointer;
     width: 160px;

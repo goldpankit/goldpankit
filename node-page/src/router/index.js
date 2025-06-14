@@ -46,19 +46,19 @@ const router = createRouter({
           component: () => import('@/views/project/database/list.vue')
         },
         {
-          path: '/project/profile',
-          name: 'ProjectProfile',
-          component: () => import('@/views/project/profile.vue')
+          path: '/space/profile',
+          name: 'SpaceProfile',
+          component: () => import('@/views/space/profile.vue')
         },
         {
-          path: '/project/service',
-          name: 'ServiceDetail',
-          component: () => import('@/views/service/detail.vue')
+          path: '/space/framework',
+          name: 'FrameworkDetail',
+          component: () => import('@/views/space/framework/index.vue')
         },
         {
-          path: '/space/:spaceName/:serviceName/install',
-          name: 'ServiceInstaller',
-          component: () => import('@/views/service/install.vue')
+          path: '/space/framework/install',
+          name: 'FrameworkInstaller',
+          component: () => import('@/views/space/framework/install.vue')
         },
         {
           path: '/workbench',

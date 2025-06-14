@@ -14,7 +14,7 @@
       <template v-else-if="service != null && plugin == null">
         <template v-if="withPaths">
           <router-link :target="withNewPage ? '_blank': ''" :to="{
-            name: 'ProjectProfile',
+            name: 'SpaceProfile',
             query: {
               p: space
             }
@@ -22,7 +22,7 @@
           /
         </template>
         <router-link :target="withNewPage ? '_blank': ''" :to="{
-          name: 'ServiceDetail',
+          name: 'FrameworkDetail',
           query: {
             p: space,
             n: service

@@ -1,7 +1,7 @@
 <template>
   <AppLayout class="none-layout">
     <header>
-      <Logo/>
+      <Logo :with-logo-image="true"/>
     </header>
     <main>
       <router-view/>

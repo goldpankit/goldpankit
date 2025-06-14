@@ -1,8 +1,8 @@
 <template>
   <div class="page-wrap">
     <div class="background-text">
-      <p>我<em style="color: #999;">无力</em>创办一个<em>伟大</em>的公司</p>
-      <p>但我的<em>人生</em>依然需要满意的<em>作品</em><br/><em style="font-size: 30px;">加油，刘大逵！！</em></p>
+      <p>我<em style="color: #999;">无力</em>创办一个<em>伟大</em>的企业</p>
+      <p>但我的<em>人生</em>依然需要满意的<em>作品</em><br/></p>
     </div>
     <div class="wrap">
       <!-- Logo -->

@@ -49,7 +49,7 @@ export default {
   methods: {
     // 查询空间
     fetchSpace() {
-      fetchProfileByName(this.$route.params.spaceName)
+      fetchProfileByName(this.route.space)
         .then(data => {
           this.space = data
         })
@@ -91,8 +91,8 @@ export default {
     }
   },
   created () {
-    this.route.space = this.$route.params.spaceName
-    this.route.service = this.$route.params.serviceName
+    this.route.space = this.$route.query.s
+    this.route.service = this.$route.query.n
     this.route.majorVersion = this.$route.query.major
     this.fetchSpace()
     this.fetchService()
