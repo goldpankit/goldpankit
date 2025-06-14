@@ -53,10 +53,10 @@
             <ul v-if="service.user != null && userInfo.id === service.user.id" class="opera">
               <li>
                 <el-button type="primary" size="default" v-if="service.type === 'MAIN'" @click="openSettings(service)">
-                  {{$t('service.serviceSettings')}}
+                  框架设置
                 </el-button>
                 <el-button v-else type="primary" size="default" @click="openSettings(service)">
-                  {{$t('plugin.settings')}}
+                  插件设置
                 </el-button>
               </li>
               <li><el-button type="important2" size="default" @click="deleteService(service)">删除</el-button></li>

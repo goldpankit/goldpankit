@@ -1,22 +1,21 @@
 <template>
   <div class="page">
     <div class="wrap">
-      <h2>{{$t('space.createSpace')}}</h2>
+      <h2>创建项目空间</h2>
       <div class="form-wrap">
         <el-form ref="form" :model="form" :rules="rules">
-          <el-form-item label="Space Name" prop="name" required>
-            <template #label>
-              <span>{{$t('space.spaceName')}}</span>
-              <HelpButton code="space-name"/>
-            </template>
-            <el-input v-model="form.name" maxlength="20"/>
+          <el-form-item label="项目标识符" prop="name" required>
+            <el-input v-model="form.name" placeholder="请输入项目标识符"/>
           </el-form-item>
-          <el-form-item :label="$t('space.homePage')" prop="homepage">
-            <el-input v-model="form.homepage" />
+          <el-form-item label="项目名称" prop="label" required>
+            <el-input v-model="form.label" placeholder="请输入项目名称"/>
+          </el-form-item>
+          <el-form-item label="技术文档" prop="techDocUrl">
+            <el-input v-model="form.techDocUrl" placeholder="请输入项目技术文档地址"/>
           </el-form-item>
           <el-form-item :label="$t('space.otherSettings')" class="item-other-settings">
             <div>
-              <el-checkbox v-model="form.withPrivate" :label="$t('space.isPrivateServiceTip')"/>
+              <el-checkbox v-model="form.withPrivate" label="这是一个私有项目"/>
             </div>
 <!--            <div>-->
 <!--              <el-checkbox v-model="form.subServiceReceivable" :label="$t('space.receiveSubServicesTip')"/>-->
@@ -24,8 +23,8 @@
           </el-form-item>
         </el-form>
         <el-form ref="descForm" class="description-form" :model="form">
-          <el-form-item :label="$t('space.spaceDescriptionLabel')" prop="description" required>
-            <MarkdownEditor v-model="form.description" :placeholder="$t('space.spaceDescription')"/>
+          <el-form-item label="项目描述" prop="description">
+            <MarkdownEditor v-model="form.description" placeholder="请撰写项目描述"/>
           </el-form-item>
         </el-form>
       </div>
@@ -48,22 +47,19 @@ export default {
     return {
       form: {
         name: '',
+        label: '',
+        techDocUrl: '',
         withPrivate: false,
         subServiceReceivable: false,
-        homepage: '',
-        introduce: '',
         description: ''
       },
       rules: {
         name: [
-          { required: true, message: 'Please input space name' }
+          { required: true, message: '请输入项目唯一标识符' }
         ],
-        introduce: [
-          { required: true, message: 'Please input space introduce' }
-        ],
-        description: [
-          { required: true, message: 'Please input space description' }
-        ],
+        label: [
+          { required: true, message: '请输入项目名称' }
+        ]
       }
     }
   },
@@ -71,10 +67,6 @@ export default {
     create () {
       this.$refs.form.validate((pass) => {
         if (!pass) {
-          return
-        }
-        if (this.form.description.trim() === '') {
-          this.$tip.warning('Please input space description')
           return
         }
         create(this.form)

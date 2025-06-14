@@ -2,9 +2,9 @@
   <div class="page">
     <div class="wrap">
       <div class="line">
-        <router-link :to="{ name: 'PublicServices' }" class="module public-space">
-          <h2>{{$t('service.publicServices')}}</h2>
-          <p>{{$t('service.publicServiceIntroduce')}}</p>
+        <router-link :to="{ name: 'Index' }" class="module public-space">
+          <h2>选购程序</h2>
+          <p>点击此处查看所有程序，您可以阅读项目的说明和查看提供的插件信息来选择您需要的项目，以协助您快速的研发。</p>
         </router-link>
         <a @click="toUserProfile" class="module profile">
           <template v-if="userInfo == null">
@@ -43,7 +43,7 @@
       <div class="line gap-top">
         <router-link class="module workbench" :to="{ name: 'Workbench' }">
           <h2>{{$t('space.workbench')}}</h2>
-          <p>{{$t('space.workbenchIntroduce')}}</p>
+          <p>点击此处进入项目工作台，您可以在工作台页面为通过插件生成相关代码。</p>
         </router-link>
 <!--        <router-link :to="{ name: 'Databases' }" class="module database">-->
 <!--          <h2>{{$t('database.databases')}}</h2>-->
@@ -69,8 +69,8 @@
 </template>
 
 <script>
-import UserProjects from "../components/usr/project/UserProjects.vue";
-import {mapActions, mapState} from "vuex";
+import { mapActions, mapState } from 'vuex'
+import UserProjects from '@/components/usr/project/UserProjects'
 
 export default {
   components: {UserProjects},

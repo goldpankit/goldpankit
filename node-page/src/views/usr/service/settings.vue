@@ -47,8 +47,8 @@
       <div class="main">
         <template v-if="initialized">
           <ul class="tabs">
-            <li :class="{ selected: currentTab === 'space' }" @click="currentTab = 'space'">{{$t('service.settings.space')}}</li>
-            <li :class="{ selected: currentTab === 'basic' }" @click="currentTab = 'basic'">{{$t('service.settings.service')}}</li>
+            <li :class="{ selected: currentTab === 'space' }" @click="currentTab = 'space'">项目设置</li>
+            <li :class="{ selected: currentTab === 'basic' }" @click="currentTab = 'basic'">框架设置</li>
             <li :class="{ selected: currentTab === 'readme' }" @click="currentTab = 'readme'">{{$t('service.settings.readme')}}</li>
             <li :class="{ selected: currentTab === 'variables' }" @click="currentTab = 'variables'">{{$t('service.settings.variables')}}</li>
             <li :class="{ selected: currentTab === 'files' }" @click="currentTab = 'files'">{{$t('service.settings.files')}}</li>

@@ -33,14 +33,14 @@
       <template v-else>
         <template v-if="withPaths">
           <router-link :target="withNewPage ? '_blank': ''" :to="{
-            name: 'ProjectProfile',
+            name: 'SpaceProfile',
             query: {
               p: space
             }
           }">@{{space}}</router-link>
           /
           <router-link :target="withNewPage ? '_blank': ''" :to="{
-            name: 'ServiceDetail',
+            name: 'FrameworkDetail',
             query: {
               p: space,
               n: service
