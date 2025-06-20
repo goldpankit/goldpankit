@@ -13,38 +13,47 @@
           <div class="banner-line"></div>
           <p class="banner-desc">{{ projectProfile.introduce }}</p>
         </div>
-        <div class="price-wrap">
-          <p>
-            <label>源码价格为</label>
-            <span class="text-price code-price">{{ projectProfile.price }}</span>
-            <label>，次年仅需</label>
-            <span class="text-price code-price">{{ projectProfile.price * 20 / 100 }}</span>
-            <label>维护费即可续购，有效期间内可自行部署和升级</label>
-          </p>
-          <p>
-            <template v-if="projectProfile.price >= 3000">
-              <label>如需我方部署和维护，价格为</label>
-              <span class="text-price deploy-price">{{ projectProfile.price }}</span>
-              <label>（不包含服务器、域名等第三方费用），免费维护1年</label>
-            </template>
-            <template v-else>
-              <label>如需我方部署和维护，价格为</label>
-              <span class="text-price deploy-price">3000</span>
-              <label>（不包含服务器、域名等第三方费用），免费维护</label>
+        <!-- 价格 -->
+        <div v-if="projectProfile.price > 0 || projectProfile.epibolyPrice > 0" class="price-wrap">
+          <template v-if="projectProfile.price > 0">
+            <p>
+              <label>源码价格为</label>
+              <span class="text-price code-price">{{ projectProfile.price }}</span>
+              <label>，次年仅需</label>
+              <span class="text-price code-price">{{ projectProfile.maintenancePrice }}</span>
+            </p>
+            <p class="text-mini">（次年收取的为维护费，维护期间内依然可自行部署和升级）</p>
+          </template>
+          <p v-if="projectProfile.price > 0 && projectProfile.epibolyPrice > 0" class="space-holder"></p>
+          <template v-if="projectProfile.epibolyPrice > 0">
+            <p>
+              <label>由我方提供技术支持，价格为</label>
+              <span class="text-price deploy-price">{{ projectProfile.epibolyPrice }}</span>
+            </p>
+            <p class="text-mini">（不包含服务器、域名等第三方费用）</p>
+            <p>
+              <label>免费维护</label>
               <em>1</em>
               <label>年</label>
-            </template>
-          </p>
+            </p>
+          </template>
         </div>
         <div class="action-buttons">
-          <p v-if="lastEndTime != null" class="end-time-text">您已购买本系统源码，有效期至：{{ lastEndTime }}（剩余{{ getRemainingDay(lastEndTime) }}天）</p>
+          <template v-if="projectProfile.price > 0">
+            <p v-if="lastEndTime != null" class="end-time-text">您已购买本系统源码，有效期至：{{ lastEndTime }}（剩余{{ $getRemainingDay(lastEndTime) }}天）</p>
+            <el-button
+              type="primary"
+              @click="$refs.buySourceCodeWindow.open(projectProfile, lastEndTime != null)"
+            >{{ lastEndTime == null ? '购买源码' : '延长使用期限' }}</el-button>
+          </template>
           <el-button
-            type="primary"
-            @click="$refs.buySourceCodeWindow.open(projectProfile, lastEndTime != null)"
-          >{{ lastEndTime == null ? '购买源码' : '延长使用期限' }}</el-button>
-          <el-button type="important" @click="$refs.buyEpibolyWindow.open(projectProfile)">需要技术支持</el-button>
+            v-if="projectProfile.epibolyPrice > 0"
+            type="important"
+            @click="$refs.buyEpibolyWindow.open(projectProfile)"
+          >{{ projectProfile.price == null || projectProfile.price === 0 ? '获取技术支持' : '需要技术支持' }}</el-button>
           <el-button
             v-if="projectProfile.techDocUrl != null && projectProfile.techDocUrl !== ''"
+            class="pc-only"
             @click="openDoc"
           >查看技术文档</el-button>
         </div>
@@ -170,6 +179,8 @@ export default {
     // 增加高斯模糊
     filter: blur(50px);
     opacity: .2;
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
   }
 
   .banner-wrap {
@@ -223,22 +234,35 @@ export default {
     display: flex;
     flex-direction: column;
     align-items: center;
+    .text-price {
+      margin: 0 5px;
+    }
     p {
-      margin-bottom: 30px;
+      margin: 0;
+      font-size: 16px;
       display: flex;
       align-items: flex-end;
-      label {
-        margin: 0 10px;
+      &:last-of-type {
+        margin-bottom: 0;
+      }
+      &.text-mini {
+        font-size: 12px;
+        margin: 10px 0;
+      }
+      &.space-holder {
+        height: 12px;
       }
       em {
         color: var(--color-danger);
         font-weight: bold;
         font-size: var(--font-size-large);
         font-style: normal;
+        margin: 0 5px;
       }
     }
   }
   .action-buttons {
+    margin-top: 30px;
     // 有效期
     .end-time-text {
       margin-bottom: 20px;
