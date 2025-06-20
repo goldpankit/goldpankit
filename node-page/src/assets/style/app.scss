@@ -194,5 +194,11 @@ html {
         content: '元起/套'
       }
     }
+    // 免费
+    &.zero-price {
+      &::before, &::after {
+        content: initial;
+      }
+    }
   }
 }

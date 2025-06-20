@@ -32,7 +32,9 @@
 
             <!-- 价格 -->
             <div>
-              <div class="text-price">{{ project.price }}</div>
+              <div v-if="project.price > 0" class="text-price">{{ project.price }}</div>
+              <div v-else-if="project.epibolyPrice" class="text-price deploy-price">{{ project.epibolyPrice }}</div>
+              <div v-else class="text-price zero-price">免费</div>
             </div>
           </div>
 
