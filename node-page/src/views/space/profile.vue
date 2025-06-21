@@ -40,7 +40,7 @@
         </div>
         <div class="action-buttons">
           <template v-if="projectProfile.price > 0">
-            <p v-if="lastEndTime != null" class="end-time-text">您已购买本系统源码，有效期至：{{ lastEndTime }}（剩余{{ $getRemainingDay(lastEndTime) }}天）</p>
+            <p v-if="lastEndTime != null" class="end-time-text">您已购买本系统源码，有效期至：{{ lastEndTime }}（剩余{{ getRemainingDay(lastEndTime) }}天）</p>
             <el-button
               type="primary"
               @click="$refs.buySourceCodeWindow.open(projectProfile, lastEndTime != null)"

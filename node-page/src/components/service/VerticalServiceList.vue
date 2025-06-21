@@ -6,7 +6,9 @@
     >
       <ServiceTitle
         :space="space"
+        :space-label="spaceLabel"
         :service="service.name"
+        :service-label="service.label"
         :with-paths="false"
       />
       <p>{{ space }}-{{service.name}}-{{service.introduce}}</p>
@@ -24,10 +26,13 @@ import ServiceTitle from "./ServiceTitle.vue";
 
 export default {
   name: "VerticalServiceList",
-  components: {ServiceTitle, BeanAmount},
+  components: { ServiceTitle, BeanAmount },
   props: {
     space: {
       require: true
+    },
+    spaceLabel: {
+      require: false
     },
     services: {
       type: Array,

@@ -75,14 +75,14 @@
 </template>
 
 <script>
-import Pagination from "../../components/common/Pagination.vue";
-import Empty from "../../components/common/Empty.vue";
-import {deleteService, fetchPage} from "../../api/user.service";
-import {fetchLocalServices} from "../../api/service";
+import Pagination from '@/components/common/Pagination'
+import Empty from '@/components/common/Empty'
+import {deleteService, fetchPage} from '@/api/user.service'
+import {fetchLocalServices} from '@/api/service'
 import {mapState} from "vuex";
-import BeanAmount from "../../components/common/BeanAmount.vue";
-import ServiceTitle from "../../components/service/ServiceTitle.vue";
-import ServiceStatus from "../../components/service/ServiceStatus.vue";
+import BeanAmount from '@/components/common/BeanAmount'
+import ServiceTitle from '@/components/service/ServiceTitle'
+import ServiceStatus from '@/components/service/ServiceStatus'
 
 export default {
   components: {ServiceStatus, ServiceTitle, BeanAmount, Empty, Pagination},

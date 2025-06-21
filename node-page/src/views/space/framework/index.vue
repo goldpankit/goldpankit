@@ -2,7 +2,12 @@
   <div v-loading="loading" class="page">
     <div v-if="space != null && service != null" class="wrap">
       <div class="header">
-        <ServiceTitle :space="space.name" :service="service.name" :service-label="service.label"/>
+        <ServiceTitle
+          :space="space.name"
+          :space-label="space.label"
+          :service="service.name"
+          :service-label="service.label"
+        />
         <div class="tech-stack-wrap">
           <ServiceStatus :with-private="service.withPrivate"/>
           <p>{{majorVersionDetail.subServices.length}} {{$t('service.plugins')}}</p>
@@ -90,7 +95,11 @@
           </ul>
           <div v-if="relationServices.length > 0" class="relation-services-wrap">
             <h4>相关代码工程</h4>
-            <VerticalServiceList :space="route.space" :services="relationServices"/>
+            <VerticalServiceList
+              :space="route.space"
+              :space-label="space.label"
+              :services="relationServices"
+            />
           </div>
         </div>
       </div>

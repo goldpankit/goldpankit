@@ -8,7 +8,7 @@
     <h3 class="paths">
       <!-- 只有空间 -->
       <template v-if="service == null && plugin == null">
-        {{space}}
+        {{spaceLabel || space}}
       </template>
       <!-- 空间和服务 -->
       <template v-else-if="service != null && plugin == null">
@@ -18,7 +18,7 @@
             query: {
               p: space
             }
-          }">@{{space}}</router-link>
+          }">@{{spaceLabel || space}}</router-link>
           /
         </template>
         <router-link :target="withNewPage ? '_blank': ''" :to="{
@@ -37,7 +37,7 @@
             query: {
               p: space
             }
-          }">@{{space}}</router-link>
+          }">@{{spaceLabel || space}}</router-link>
           /
           <router-link :target="withNewPage ? '_blank': ''" :to="{
             name: 'FrameworkDetail',
@@ -73,6 +73,9 @@ export default {
     },
     space: {
       required: true
+    },
+    spaceLabel: {
+      required: false
     },
     service: {
       required: false
