@@ -61,7 +61,7 @@
     </div>
 
     <!-- 代码工程 -->
-    <div class="section">
+    <div v-if="projectProfile.services.length > 0" class="section">
       <h2 class="section-title"><span class="tech-highlight">代码工程</span></h2>
       <div class="project-grid">
         <a
