@@ -114,7 +114,6 @@ export default {
             this.$router.push(redirect_uri)
           } else {
             const backUri = this.$router.options.history.state.back
-            console.log('backUri', backUri)
             /**
              * 返回页面为null或为注册页面，则跳转到用户桌面去。当直接访问登录页面时，返回页为null。
              */
