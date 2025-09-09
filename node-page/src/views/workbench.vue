@@ -32,7 +32,7 @@
                     type="primary"
                     icon="Upload"
                     @click="upgrade"
-                  >{{$t('service.upgrade')}}</el-button>
+                  >立即升级</el-button>
                 </template>
               </el-popover>
             </div>
@@ -284,7 +284,7 @@ export default {
     ...mapMutations(['setCurrentProject', 'setCurrentDatabase']),
     // 升级
     upgrade () {
-      window.open(`/space/${this.space}/${this.service.name}/install?major=${this.majorVersion}`)
+      window.open(`/space/framework/install?s=${this.space}&n=${this.service.name}&major=${this.majorVersion}`)
     },
     // 安装
     install () {
@@ -332,7 +332,7 @@ export default {
               confirmButtonText: '查看服务详情'
             })
               .then(() => {
-                window.open(`/space/${this.space}/${this.service.name}`)
+                window.open(`/space/framework?p=${this.space}&n=${this.service.name}`)
               })
             return
           }
