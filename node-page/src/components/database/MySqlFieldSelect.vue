@@ -6,9 +6,9 @@
     :model-value="modelValue == null ? [] : modelValue.map(f => f.name)"
     @update:modelValue="handleInput"
   >
-    <el-option @click="selectedAll = !selectedAll, selectAll()" disabled>
+    <el-option @click="selectAll(!selectedAll)" disabled>
       <div class="option-content">
-        <el-checkbox v-model="selectedAll" @change="selectAll"/>
+        <el-checkbox v-model="selectedAll" @change="selectAll(selectedAll)" @click.stop/>
         <span>全选</span>
       </div>
     </el-option>
@@ -53,8 +53,9 @@ export default {
   },
   methods: {
     // 全选
-    selectAll () {
-      if (this.selectedAll) {
+    selectAll (selectedAll) {
+      this.selectedAll = selectedAll
+      if (selectedAll) {
         this.handleInput(this.copyFields.map(f => f.name))
         return
       }
@@ -62,6 +63,7 @@ export default {
     },
     // 处理选中
     handleInput (fieldNames) {
+      console.log('handleInput', fieldNames)
       // 处理选中
       this.copyFields.forEach(field => {
         field.__selected = false
