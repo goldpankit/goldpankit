@@ -34,7 +34,10 @@ export default {
   methods: {
     handleInput (e) {
       this.value = e.target.innerText
-      this.$emit('update:modelValue', e.target.innerText)
+
+      // 一旦更新modelValue，会使得输入内容重新渲染，导致光标重新定位在文字开头
+      // this.$emit('update:modelValue', this.value)
+
       if (this.changeTimeout != null) {
         clearTimeout(this.changeTimeout)
       }
@@ -48,6 +51,8 @@ export default {
     },
     // 失去焦点时修改焦点值，避免别名、字段名等信息通过v-model直接修改后导致表格重新渲染（会导致输入不连贯）
     handleBlur () {
+      // 在失去焦点时更新modelValue，不进行实时更新，避免光标重新定位在文字开头
+      this.$emit('update:modelValue', this.value)
       this.$emit('update:blur-model-value', this.value)
       this.$emit('blur')
     }
