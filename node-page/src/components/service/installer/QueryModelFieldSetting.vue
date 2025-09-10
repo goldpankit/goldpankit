@@ -109,15 +109,27 @@ export default {
     handleSelect (fields) {
       // 补充好信息后的字段列表，注意此处不能直接使用fields，否则会丢失补充的信息
       const paddingFields = []
+
+      // v3.1.1补充
+      // 从group中读取字段列表（例如查询参数变量组，会用value或defaultValue保存所有选中的字段及字段的动态字段设置）
+      const selectedFields = this.group[this.valueKey] || []
+
       for (const field of fields) {
         // 增加字段原始信息
         if (field.origin == null) {
           field.origin = JSON.parse(JSON.stringify(field))
         }
+
+        // v3.1.1 删除，下面代码逻辑上无需重复获取
         // 从group中读取字段列表（例如查询参数变量组，会用value或defaultValue保存所有选中的字段及字段的动态字段设置）
-        const selectedFields = this.group[this.valueKey] || []
+        // const selectedFields = this.group[this.valueKey] || []
+
         // 找到对应字段值，用于填充字段的动态变量
-        const targetField = selectedFields.find(f => f.name === field.name)
+        // v3.1.1删除
+        // const targetField = selectedFields.find(f => f.name === field.name)
+        // v3.1.1补充，原有逻辑会导致存在相同的字段名称时，信息赋予错误
+        const targetField = selectedFields.find(f => f.name === field.name && f.table.id === field.table.id)
+
         // 将动态的字段变量添加到字段对象中，但需要保留原来的值
         for (const variable of this.group.children) {
           // 给动态的字段变量赋值
