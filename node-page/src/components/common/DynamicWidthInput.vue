@@ -35,24 +35,33 @@ export default {
     handleInput (e) {
       this.value = e.target.innerText
 
-      // 一旦更新modelValue，会使得输入内容重新渲染，导致光标重新定位在文字开头
+      // v3.1.1修改，一旦更新modelValue，会使得输入内容重新渲染，导致光标重新定位在文字开头
       // this.$emit('update:modelValue', this.value)
 
-      if (this.changeTimeout != null) {
-        clearTimeout(this.changeTimeout)
-      }
-      this.changeTimeout = setTimeout(() => {
-        this.$emit('change', {
-          oldValue: this.oldValue,
-          newValue: e.target.innerText
-        })
-        this.oldValue = e.target.innerText
-      }, 300)
+      // v3.1.1修改，实时修改会导致表别名无法修改问题，具体原因未排查，已迁移至blur事件中处理，也统一了数据更新的逻辑
+      // if (this.changeTimeout != null) {
+      //   clearTimeout(this.changeTimeout)
+      // }
+      // this.changeTimeout = setTimeout(() => {
+      //   this.$emit('change', {
+      //     oldValue: this.oldValue,
+      //     newValue: e.target.innerText
+      //   })
+      //   this.oldValue = e.target.innerText
+      // }, 300)
     },
     // 失去焦点时修改焦点值，避免别名、字段名等信息通过v-model直接修改后导致表格重新渲染（会导致输入不连贯）
     handleBlur () {
-      // 在失去焦点时更新modelValue，不进行实时更新，避免光标重新定位在文字开头
+      // v3.1.1补充，在失去焦点时更新modelValue，不进行实时更新，避免光标重新定位在文字开头
       this.$emit('update:modelValue', this.value)
+
+      // v3.1.1补充，在失去焦点时触发change，不进行实时触发，避免表别名无法修改问题
+      this.$emit('change', {
+        oldValue: this.oldValue,
+        newValue: this.value
+      })
+      this.oldValue = this.value
+
       this.$emit('update:blur-model-value', this.value)
       this.$emit('blur')
     }
