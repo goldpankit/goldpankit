@@ -165,7 +165,7 @@
     </div>
     <div v-else-if="service == null" class="incorrect-wrap">
       <div class="content">
-        <p>{{$t('workbench.noServiceInstalledTip1')}}<router-link :to="{name: 'PublicServices'}">{{$t('service.publicServices')}}</router-link>{{$t('workbench.noServiceInstalledTip2')}}</p>
+        <p>当前项目没有安装任何框架，请切换项目或前往<router-link to="/">首页</router-link>为此项目挑选合适的程序框架</p>
       </div>
     </div>
   </div>
