@@ -91,7 +91,20 @@ export default {
   },
   methods: {
     // 处理排序
-    handleSort () {
+    handleSort (sortedFields) {
+      // v3.1.1补充，排序后并不会直接修改this.group[this.valueKey]的数据顺序，此处需要重新赋值
+      for (const field of sortedFields) {
+        // 找到在group[this.valueKey]中的字段信息，并填充到field中
+        const originField = this.group[this.valueKey].find(f => f.table.id === field.table.id && f.name === field.name)
+        if (originField == null) {
+          continue
+        }
+        Object.assign(field, originField)
+      }
+      // v3.1.1补充，因为排序后不会直接影响this.group[this.valueKey]，所以在此处需要重新赋值
+      this.group[this.valueKey].splice(0, this.group[this.valueKey].length)
+      this.group[this.valueKey].push.apply(this.group[this.valueKey], sortedFields)
+
       this.initSelectedFields()
       this.$refs.fieldSelect.selectFields(this.selectedFields)
     },
