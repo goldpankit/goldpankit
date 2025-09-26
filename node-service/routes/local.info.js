@@ -11,13 +11,17 @@ request
     let ipv4 = '无法获取'
     let ipv6 = '无法获取'
     let mac = '无法获取'
-    for (const interface of interfaces.en1) {
-      if (interface.family === 'IPv4' && !interface.internal) {
-        ipv4 = interface.address
-        mac = interface.mac
-      }
-      if (interface.family === 'IPv6' && !interface.internal) {
-        ipv6 = interface.address
+    // mac系统为 en1 ， Windows系统为 WLAN
+    const targetInterface = interfaces.en1 || interfaces.WLAN
+    if (targetInterface != null) {
+      for (const interface of targetInterface) {
+        if (interface.family === 'IPv4' && !interface.internal) {
+          ipv4 = interface.address
+          mac = interface.mac
+        }
+        if (interface.family === 'IPv6' && !interface.internal) {
+          ipv6 = interface.address
+        }
       }
     }
     // cpu
