@@ -48,6 +48,8 @@
           v-model="password"
           placeholder="此处输入密码进行加解密"
           @input="error = ''"
+          :readonly="readonly"
+          @click="readonly = false"
         />
         <el-button
           type="primary"
@@ -93,7 +95,9 @@ export default {
       isWorking: false,
       selectedFile: null,
       password: '',
-      error: ''
+      error: '',
+      // 密码输入框是否只读，用于避免自动密码填充
+      readonly: true
     }
   },
   computed: {

@@ -8,9 +8,9 @@
     <div class="toolbox-wrap">
       <div class="tool-list-wrap">
         <div class="search-wrap">
-          <el-input v-model="keyword" size="default" placeholder="搜索" round/>
+          <el-input v-model="keyword" size="default" placeholder="搜索" round />
         </div>
-        <ul>
+        <ul v-if="computedTools.length > 0">
           <li
             v-for="tool in computedTools"
             :key="tool.name"
@@ -20,6 +20,7 @@
             <label>{{ tool.label }}</label>
           </li>
         </ul>
+        <Empty v-else description="未找到工具"/>
       </div>
       <div class="tool-body">
         <ToolRouter ref="toolRouter" :tool-name="currentTool.name"/>
@@ -32,11 +33,12 @@
 import ToolWindow from '@/components/tools/ToolWindow'
 import BaseToolWindow from '@/components/tools/BaseToolWindow'
 import ToolRouter from '@/components/tools/toolbox/ToolRouter'
+import Empty from '@/components/common/Empty'
 
 export default {
   name: 'ToolboxWindow',
   extends: BaseToolWindow,
-  components: {ToolRouter, ToolWindow },
+  components: { Empty, ToolRouter, ToolWindow },
   data () {
     return {
       keyword: '',
@@ -62,8 +64,8 @@ export default {
   computed: {
     computedTools () {
       return this.tools.filter(tool => {
-        return tool.label.toLowerCase().includes(this.keyword.toLowerCase())
-          || tool.pinyin.toLowerCase().includes(this.keyword.toLowerCase())
+        return tool.label.toLowerCase().includes(this.keyword.trim().toLowerCase())
+          || tool.pinyin.toLowerCase().includes(this.keyword.trim().toLowerCase())
       })
     }
   },
