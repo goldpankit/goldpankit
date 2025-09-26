@@ -24,7 +24,7 @@ export default {
   data () {
     return {
       developers: ['刘大逵', '天析'],
-      value: 'Hello world, I am JaSon, a-b|c_d',
+      value: 'Hello world',
       records: [
         { label: '驼峰命名', value: '' },
         { label: '帕斯卡命名', value: '' },
