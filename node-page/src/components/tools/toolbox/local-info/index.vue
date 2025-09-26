@@ -9,15 +9,16 @@
           <el-button size="small" type="primary" @click="copyText(localInfo.publicIP)">复制</el-button>
         </li>
         <li>
-          <label>局域网IPv4</label>
+          <label>本地IPv4地址</label>
           <p class="text-danger">{{ localInfo.ipv4 }}</p>
           <el-button size="small" type="primary" @click="copyText(localInfo.ipv4)">复制</el-button>
         </li>
-        <li>
-          <label>局域网IPv6</label>
-          <p class="text-danger">{{ localInfo.ipv6 }}</p>
-          <el-button size="small" type="primary" @click="copyText(localInfo.ipv6)">复制</el-button>
-        </li>
+        <!-- 不一定准确，暂不研究 -->
+<!--        <li>-->
+<!--          <label>局域网IPv6</label>-->
+<!--          <p class="text-danger">{{ localInfo.ipv6 }}</p>-->
+<!--          <el-button size="small" type="primary" @click="copyText(localInfo.ipv6)">复制</el-button>-->
+<!--        </li>-->
         <li>
           <label>Mac</label>
           <p>{{ localInfo.mac }}</p>
