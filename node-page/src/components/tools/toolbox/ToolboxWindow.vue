@@ -8,11 +8,11 @@
     <div class="toolbox-wrap">
       <div class="tool-list-wrap">
         <div class="search-wrap">
-          <el-input size="default" placeholder="搜索" round/>
+          <el-input v-model="keyword" size="default" placeholder="搜索" round/>
         </div>
         <ul>
           <li
-            v-for="tool in tools"
+            v-for="tool in computedTools"
             :key="tool.name"
             :class="{ selected: tool.name === currentTool.name }"
             @click="currentTool = tool"
@@ -39,14 +39,16 @@ export default {
   components: {ToolRouter, ToolWindow },
   data () {
     return {
+      keyword: '',
       tools: [
-        { name: 'JsonFormatter', label: 'JSON格式化' },
-        { name: 'TextComparer', label: '文本对比' },
-        { name: 'PasswordGenerator', label: '密码生成' },
-        { name: 'FileSecurer', label: '文件加解密' },
-        { name: 'NameGenerator', label: '命名生成' },
-        { name: 'ImageToBase64', label: '图片转Base64' },
-        { name: 'Base64ToImage', label: 'Base64转图片' },
+        { name: 'LocalInfo', pinyin: 'bendixinxi',  label: '本地信息' },
+        { name: 'JsonFormatter', pinyin: 'jsongeshihua', label: 'JSON格式化' },
+        { name: 'TextComparer', pinyin: 'wenbenduibi', label: '文本对比' },
+        { name: 'PasswordGenerator', pinyin: 'mimashengcheng', label: '密码生成' },
+        { name: 'FileSecurer', pinyin: 'wenjianjiajiemi', label: '文件加解密' },
+        { name: 'NameGenerator', pinyin: 'mingmingshengcheng', label: '命名生成' },
+        { name: 'ImageToBase64', pinyin: 'tupianzhuanbase64', label: '图片转Base64' },
+        { name: 'Base64ToImage', pinyin: 'base64zhuanpupian', label: 'Base64转图片' },
         // { name: 'qr-generator', label: '二维码生成' },
         // { name: 'ip-query', label: 'IP地址查询' },
         // { name: 'patter-test', label: '正则测试' },
@@ -55,6 +57,14 @@ export default {
         // { name: 'http-status-code', label: 'http状态码' },
       ],
       currentTool: null
+    }
+  },
+  computed: {
+    computedTools () {
+      return this.tools.filter(tool => {
+        return tool.label.toLowerCase().includes(this.keyword.toLowerCase())
+          || tool.pinyin.toLowerCase().includes(this.keyword.toLowerCase())
+      })
     }
   },
   methods: {

@@ -17,11 +17,13 @@ import TextComparer from './text-comparer/index'
 import FileSecurer from './file-securer/index'
 import ImageToBase64 from './image-to-base64/index'
 import Base64ToImage from './base64-to-image/index'
+import LocalInfo from './local-info/index'
 import Empty from '@/components/common/Empty'
 import Developers from '@/components/common/Developers'
 export default {
   name: 'ToolRouter',
   components: {
+    LocalInfo,
     Developers,
     Empty,
     JsonFormatter,

@@ -10,6 +10,7 @@ const userLogin = require('./user.login')
 const userToken = require('./user.token')
 const userService = require('./user.service')
 const localFile = require('./local.file')
+const localInfo = require('./local.info')
 const databaseUtil = require('./database.util')
 module.exports = {
   client,
@@ -24,5 +25,6 @@ module.exports = {
   userToken,
   userService,
   localFile,
+  localInfo,
   databaseUtil,
 };

@@ -17,8 +17,12 @@ export default {
   name: 'Base64ToImage',
   data () {
     return {
+      developers: ['刘大逵'],
       base64: null
     }
+  },
+  mounted () {
+    this.$emit('on-rendered')
   }
 }
 </script>

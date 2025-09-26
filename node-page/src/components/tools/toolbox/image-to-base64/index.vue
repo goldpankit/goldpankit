@@ -43,6 +43,7 @@ export default {
   name: 'ImageToBase64',
   data () {
     return {
+      developers: ['刘大逵'],
       error: null,
       selectedFile: null,
       base64: null
@@ -66,6 +67,9 @@ export default {
     if (!window.FileReader) {
       this.error = '您的浏览器暂不支持此功能'
     }
+  },
+  mounted () {
+    this.$emit('on-rendered')
   }
 }
 </script>
