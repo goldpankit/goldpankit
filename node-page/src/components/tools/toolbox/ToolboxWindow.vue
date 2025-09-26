@@ -45,6 +45,7 @@ export default {
         { name: 'PasswordGenerator', label: '密码生成' },
         { name: 'FileSecurer', label: '文件加解密' },
         { name: 'NameGenerator', label: '命名生成' },
+        { name: 'ImageToBase64', label: '图片转Base64' },
         // { name: 'qr-generator', label: '二维码生成' },
         // { name: 'ip-query', label: 'IP地址查询' },
         // { name: 'patter-test', label: '正则测试' },
