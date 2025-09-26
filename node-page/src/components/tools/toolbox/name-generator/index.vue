@@ -11,7 +11,7 @@
         >
           <h4>{{ item.label }}</h4>
           <h3>{{ item.value }}</h3>
-          <el-button size="default">复制</el-button>
+          <el-button size="default" @click="copyText(item.value)">复制</el-button>
         </li>
       </ul>
     </div>
@@ -19,20 +19,50 @@
 </template>
 
 <script>
-
+import NameGenerator from './name.generator'
 export default {
   data () {
     return {
       developers: ['刘大逵', '天析'],
-      value: 'hello world',
+      value: 'Hello world, I am JaSon, a-b|c_d',
       records: [
-        { label: '驼峰命名', value: 'helloWorld' },
-        { label: '帕斯卡命名', value: 'HelloWorld' },
-        { label: '下划线命名', value: 'hello_world' },
-        { label: '中划线命名', value: 'hello-world' },
-        { label: '纯小写', value: 'helloworld' },
-        { label: '纯大写', value: 'HELLOWORLD' }
+        { label: '驼峰命名', value: '' },
+        { label: '帕斯卡命名', value: '' },
+        { label: '下划线命名', value: '' },
+        { label: '中划线命名', value: '' },
+        { label: '纯小写', value: '' },
+        { label: '纯小写-下划线', value: '' },
+        { label: '纯小写-中划线', value: '' },
+        { label: '纯大写', value: '' },
+        { label: '纯大写-下划线', value: '' },
+        { label: '纯大写-中划线', value: '' },
       ]
+    }
+  },
+  watch: {
+    value: {
+      immediate: true,
+      handler () {
+        this.rename()
+      }
+    }
+  },
+  methods: {
+    // 重命名
+    rename () {
+      this.__getRecord('驼峰命名').value = NameGenerator.toCamelCase(this.value)
+      this.__getRecord('帕斯卡命名').value = NameGenerator.toPascalCase(this.value)
+      this.__getRecord('下划线命名').value = NameGenerator.toSnakeCase(this.value)
+      this.__getRecord('中划线命名').value = NameGenerator.toKebabCase(this.value)
+      this.__getRecord('纯小写').value = NameGenerator.toLowerCase(this.value)
+      this.__getRecord('纯小写-下划线').value = NameGenerator.toSnakeCase(this.value, false)
+      this.__getRecord('纯小写-中划线').value = NameGenerator.toKebabCase(this.value, false)
+      this.__getRecord('纯大写').value = NameGenerator.toUpperCase(this.value)
+      this.__getRecord('纯大写-下划线').value = NameGenerator.toSnakeCase(this.value, true)
+      this.__getRecord('纯大写-中划线').value = NameGenerator.toKebabCase(this.value, true)
+    },
+    __getRecord (label) {
+      return this.records.find(item => item.label === label)
     }
   },
   mounted() {
@@ -57,12 +87,13 @@ export default {
   ul {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
     width: 960px;
     margin: 0 auto;
+    gap: 10px;
+    // 3列
     li {
-      width: 313px;
-      height: 150px;
+      width: 32%;
+      padding: 15px;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -79,6 +110,8 @@ export default {
       h3 {
         margin: 15px 0;
         font-size: 20px;
+        word-break: break-all;
+        padding: 0 15px;
       }
     }
   }

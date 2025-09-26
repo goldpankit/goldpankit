@@ -9,9 +9,6 @@ export default {
       .trim()
       .split("|")
       .filter((word) => word)
-      .map((word) => {
-        return word.toLowerCase();
-      })
       .join("|");
   },
 
@@ -38,16 +35,35 @@ export default {
   },
 
   /**
+   * 帕斯卡命名转换
+   *
+   * @param {string} input 待转换的字符串，支持驼峰、下划线、中划线、空格分隔符
+   * @returns {string} 转换后的字符串
+   */
+  toPascalCase(input) {
+    const variableName = this._split(input);
+    const words = variableName.split("|");
+    return words
+      .map((word) => {
+        return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+      })
+      .join("");
+  },
+
+  /**
    *下划线命名转换
    *
    * @param {string} input 待转换的字符串，支持驼峰、下划线、中划线、空格分隔符
    * @param {boolean} dimension 下划线风格，小写 false，大写 true
    * @returns {string} 转换后的字符串
    */
-  toSnakeCase(input, dimension = false) {
+  toSnakeCase(input, dimension ) {
     const variableName = this._split(input);
     const words = variableName.split("|");
     const snakeCase = words.join("_");
+    if (dimension === undefined) {
+      return snakeCase
+    }
     return dimension ? snakeCase.toUpperCase() : snakeCase.toLowerCase();
   },
 
@@ -58,10 +74,37 @@ export default {
    * @param {boolean} dimension 下划线风格，小写 false，大写 true
    * @returns {string} 转换后的字符串
    */
-  toKebabCase(input, dimension = false) {
+  toKebabCase(input, dimension ) {
     const variableName = this._split(input);
     const words = variableName.split("|");
     const kebabCase = words.join("-");
+    if (dimension === undefined) {
+      return kebabCase
+    }
     return dimension ? kebabCase.toUpperCase() : kebabCase.toLowerCase();
   },
+
+  /**
+   * 全小写
+   *
+   * @param {string} input 待转换的字符串，支持驼峰、下划线、中划线、空格分隔符
+   * @returns {string} 转换后的字符串
+   */
+  toLowerCase(input) {
+    const variableName = this._split(input);
+    const words = variableName.split("|");
+    return words.map(item => item.toLowerCase()).join(' ')
+  },
+
+  /**
+   * 全大写
+   *
+   * @param {string} input 待转换的字符串，支持驼峰、下划线、中划线、空格分隔符
+   * @returns {string} 转换后的字符串
+   */
+  toUpperCase(input) {
+    const variableName = this._split(input);
+    const words = variableName.split("|");
+    return words.map(item => item.toUpperCase()).join(' ')
+  }
 };

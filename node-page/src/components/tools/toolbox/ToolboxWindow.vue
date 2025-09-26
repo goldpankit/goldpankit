@@ -29,10 +29,9 @@
 </template>
 
 <script>
-
 import ToolWindow from '@/components/tools/ToolWindow'
 import BaseToolWindow from '@/components/tools/BaseToolWindow'
-import ToolRouter from "@/components/tools/toolbox/ToolRouter.vue";
+import ToolRouter from '@/components/tools/toolbox/ToolRouter'
 
 export default {
   name: 'ToolboxWindow',
@@ -45,7 +44,7 @@ export default {
         { name: 'TextComparer', label: '文本对比' },
         { name: 'PasswordGenerator', label: '密码生成' },
         { name: 'FileSecurer', label: '文件加解密' },
-        // { name: 'NameGenerator', label: '名称生成' },
+        { name: 'NameGenerator', label: '名称生成' },
         // { name: 'qr-generator', label: '二维码生成' },
         // { name: 'ip-query', label: 'IP地址查询' },
         // { name: 'patter-test', label: '正则测试' },

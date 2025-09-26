@@ -89,6 +89,7 @@ export default {
   name: 'FileSecurer',
   data() {
     return {
+      developers: ['刘大逵'],
       isWorking: false,
       selectedFile: null,
       password: '',
@@ -148,6 +149,9 @@ export default {
           this.isWorking = false
         })
     }
+  },
+  mounted () {
+    this.$emit('on-rendered')
   }
 }
 </script>

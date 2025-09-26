@@ -11,13 +11,13 @@
 
 <script>
 
-import JsonFormatter from './json-formatter/index.vue'
-import NameGenerator from './name-generator/index.vue'
-import PasswordGenerator from './password-generator/index.vue'
-import TextComparer from './text-comparer/index.vue'
-import FileSecurer from './file-securer/index.vue'
-import Empty from '@/components/common/Empty.vue'
-import Developers from "@/components/common/Developers.vue";
+import JsonFormatter from './json-formatter/index'
+import NameGenerator from './name-generator/index'
+import PasswordGenerator from './password-generator/index'
+import TextComparer from './text-comparer/index'
+import FileSecurer from './file-securer/index'
+import Empty from '@/components/common/Empty'
+import Developers from '@/components/common/Developers'
 export default {
   name: 'ToolRouter',
   components: {
