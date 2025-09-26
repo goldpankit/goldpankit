@@ -10,13 +10,13 @@
 </template>
 
 <script>
-
 import JsonFormatter from './json-formatter/index'
 import NameGenerator from './name-generator/index'
 import PasswordGenerator from './password-generator/index'
 import TextComparer from './text-comparer/index'
 import FileSecurer from './file-securer/index'
 import ImageToBase64 from './image-to-base64/index'
+import Base64ToImage from './base64-to-image/index'
 import Empty from '@/components/common/Empty'
 import Developers from '@/components/common/Developers'
 export default {
@@ -29,7 +29,8 @@ export default {
     PasswordGenerator,
     TextComparer,
     FileSecurer,
-    ImageToBase64
+    ImageToBase64,
+    Base64ToImage
   },
   props: {
     // 工具名称
