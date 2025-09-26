@@ -41,10 +41,11 @@
           <label>内存</label>
           <p>{{ localInfo.memory }}</p>
         </li>
-        <li>
-          <label>硬盘</label>
-          <p>{{ localInfo.disk }}</p>
-        </li>
+        <!-- Windows系统不支持，暂不研究 -->
+<!--        <li>-->
+<!--          <label>硬盘</label>-->
+<!--          <p>{{ localInfo.disk }}</p>-->
+<!--        </li>-->
       </ul>
     </div>
     <div class="content-wrap">

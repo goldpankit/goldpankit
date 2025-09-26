@@ -1,6 +1,6 @@
 const request = require('../utils/request.define')
 const os = require('os')
-const diskusage = require('diskusage')
+// const diskusage = require('diskusage')
 
 // 获取本地信息
 request
@@ -17,7 +17,7 @@ request
       for (const interface of targetInterface) {
         if (interface.family === 'IPv4' && !interface.internal) {
           ipv4 = interface.address
-          mac = interface.mac
+          mac = interface.mac.toUpperCase()
         }
         if (interface.family === 'IPv6' && !interface.internal) {
           ipv6 = interface.address
@@ -27,12 +27,12 @@ request
     // cpu
     const cpus = os.cpus()
     let diskInfo = { total: 0, free: 0 };
-    // 获取磁盘信息
-    try {
-      diskInfo = diskusage.checkSync('/');
-    } catch (error) {
-      console.error('获取磁盘信息失败:', error.message);
-    }
+    // // 获取磁盘信息 Windows系统不支持
+    // try {
+    //   diskInfo = diskusage.checkSync('/');
+    // } catch (error) {
+    //   console.error('获取磁盘信息失败:', error.message);
+    // }
 
     return {
       ipv4,
@@ -40,7 +40,7 @@ request
       mac,
       cpu: `${cpus[0].model}(${os.arch()}) ${cpus.length}核`,
       memory: `${(os.totalmem() / (1024 ** 3)).toFixed(1)}GB`,
-      disk: `${(diskInfo.total / (1024 ** 3)).toFixed(1)}GB`,
+      // disk: `${(diskInfo.total / (1024 ** 3)).toFixed(1)}GB`,
       os: `${os.type()}`
     }
   })

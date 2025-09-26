@@ -30,7 +30,6 @@
     "axios": "^1.4.0",
     "colors-console": "^1.0.3",
     "cookie-parser": "^1.4.6",
-    "diskusage": "^1.2.0",
     "express": "^4.18.2",
     "form-data": "^4.0.0",
     "fs": "0.0.1-security",
