@@ -159,10 +159,27 @@ module.exports = {
     config.variables = dto.variables
     fs.rewrite(configPath, fs.toJSONFileString(config))
   },
-  // 发布服务版本
+  /**
+   * 发布服务版本，包含框架和插件均采用此方法
+   * 同时发布为其它插件逻辑：
+   *   1. 插件文件需要从dto.space, dto.service和dto.plugin对应的插件代码位置来获取，这样同一个插件发布为多个插件时，可以以当前的服务唯一标识进行代码文件的获取
+   *   2. 发布时，具体发布的信息如下
+   *     publishSpace: 发布的项目标识符
+   *     publishService: 框架标识符
+   *     plugin: 插件标识符，从dto.plugin中获取，与当前插件的标识符保持一致（不同框架的相同插件保持一致，降低用户使用成本）
+   *     label: 插件名称，从serviceConfig服务配置对象中获取，与当前插件的名称保持一致（不同框架的相同插件保持一致，降低用户使用成本）
+   *   总体来说，dto.space, dto.service和dto.plugin是用于获取代码文件的，而具体的发布到哪个插件取决于publishSpace, publishService等参数，
+   *   前端调用多脆该方法，即可实现同时发布功能。
+   *
+   * @param dto
+   * @returns {Promise<never>|*}
+   */
   publish(dto) {
-    // 获取服务文件
-    const serviceConfig = this.getServiceConfig({ space: dto.space, service: dto.service, plugin: dto.plugin })
+    const serviceConfig = this.getServiceConfig({
+      space: dto.space,
+      service: dto.service,
+      plugin: dto.plugin
+    })
     let fileStoragePath = serviceConfig.codespace
     // 如果存在翻译器，自动翻译，且服务代码空间指定为翻译代码空间
     if ((serviceConfig.translator.filepath != null && serviceConfig.translator.filepath !== '') ||
@@ -194,12 +211,13 @@ module.exports = {
     })
     // 执行发布
     const publishParams = {
-      space: dto.space,
-      service: dto.service,
+      // 发布信息读取publish开头的字段
+      space: dto.publishSpace,
+      service: dto.publishService,
       plugin: dto.plugin,
       label: serviceConfig.label,
-      version: serviceConfig.version,
-      minServiceVersion: serviceConfig.minServiceVersion,
+      version: dto.publishVersion,
+      minServiceVersion: dto.publishMinServiceVersion,
       withPrivate: serviceConfig.private,
       receivable: serviceConfig.receivable,
       prices: serviceConfig.prices,

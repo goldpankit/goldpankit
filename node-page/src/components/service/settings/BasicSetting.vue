@@ -21,11 +21,15 @@
           </el-form-item>
         </template>
         <el-form-item :label="$t('service.settings.version')" prop="version" required>
-          <el-input v-model="form.version" @input="saveConfig"/>
+          <el-input v-model="form.version" @input="saveConfig">
+            <template #prefix>v</template>
+          </el-input>
           <FormItemTip content="如1.0.0.0，其中最后一个版本号不触发升级提醒！"/>
         </el-form-item>
-        <el-form-item v-if="isPlugin" label="最低兼容的服务版本号" prop="minServiceVersion">
-          <el-input v-model="form.minServiceVersion" @input="saveConfig"/>
+        <el-form-item v-if="isPlugin" label="最低兼容的框架版本号" prop="minServiceVersion">
+          <el-input v-model="form.minServiceVersion" @input="saveConfig">
+            <template #prefix>v</template>
+          </el-input>
         </el-form-item>
         <el-form-item :label="$t('service.settings.compiler')" prop="compiler" required>
           <CompilerSelect v-model="form.compiler" @change="saveConfig"/>
@@ -83,15 +87,23 @@
             <el-checkbox v-model="form.private" label="私有" @change="saveConfig"/>
           </div>
         </el-form-item>
+        <!-- 翻译器 -->
         <el-form-item :label="$t('service.settings.translator.translator')" prop="translator">
           <Translator :data="form.translator" @save="saveConfig"/>
         </el-form-item>
+        <!-- 安装构建 -->
         <el-form-item :label="$t('service.settings.installBuilds')" prop="builds">
           <BuildList :builds="form.builds" :service-config="serviceConfig" @save="saveConfig"/>
         </el-form-item>
+        <!-- 卸载构建 -->
         <el-form-item :label="$t('service.settings.uninstallBuilds')" prop="unbuilds">
           <BuildList :builds="form.unbuilds" :with-unbuild="true" :service-config="serviceConfig" @save="saveConfig"/>
         </el-form-item>
+        <!-- 同时发布为其它插件，只有发布插件时才存在 -->
+        <el-form-item v-if="plugin != null" label="同时发布为其它插件" prop="syncPlugins">
+          <SyncPluginsSetting :sync-plugins="form.syncPlugins" @change="saveConfig"/>
+        </el-form-item>
+        <!-- 代码位置 -->
         <el-form-item :label="$t('service.settings.codespace')" prop="codespace">
           <div v-if="!newCodespace.changing" class="codespace-wrap">
             <p>{{form.codespace}}</p>
@@ -119,6 +131,9 @@ import DatabaseTypeSelect from '@/components/database/DatabaseTypeSelect'
 import DirectorySelect from '@/components/common/DirectorySelect'
 import BuildList from '@/components/service/build/BuildList'
 import PluginSelector from '@/components/service/PluginSelector'
+import FormItemTip from '@/components/common/FormItemTip'
+import Translator from '@/components/service/translator/Translator'
+import SyncPluginsSetting from '@/components/service/settings/SyncPluginsSetting'
 import {
   fetchConfig as fetchServiceConfig,
   initialize as initService,
@@ -131,12 +146,12 @@ import {
 } from '@/api/plugin'
 import { gitClone } from '@/api/service'
 import { checkVersionNumber } from '@/utils/form.check'
-import FormItemTip from '@/components/common/FormItemTip'
-import Translator from '@/components/service/translator/Translator'
 
 export default {
   name: "BasicSetting",
-  components: {Translator, FormItemTip, BuildList, DirectorySelect, DatabaseTypeSelect, CompilerSelect, PluginSelector},
+  components: {
+    SyncPluginsSetting,
+    Translator, FormItemTip, BuildList, DirectorySelect, DatabaseTypeSelect, CompilerSelect, PluginSelector},
   props: {
     space: {
       required: true
@@ -170,6 +185,8 @@ export default {
         compiler: '',
         introduce: '',
         presetPlugins: [],
+        // 同步发布的插件
+        syncPlugins: [],
         // 仓库地址
         repository: '',
         // 仓库标签
@@ -236,6 +253,12 @@ export default {
       */
       if (this.form.presetPlugins === undefined) {
         this.form.presetPlugins = []
+      }
+      /*
+       3.1.2增加同步发布插件列表配置，实现一次发布到多个框架中
+      */
+      if (this.form.syncPlugins === undefined) {
+        this.form.syncPlugins = []
       }
       this.originForm = JSON.parse(JSON.stringify(this.form))
     },
@@ -425,12 +448,25 @@ export default {
 <style scoped lang="scss">
 .basic-setting {
   .wrap {
-    width: 750px;
+    width: 950px;
     margin: 0 auto;
     padding: 30px 0;
     :deep(.el-form) {
       .el-form-item__label {
         font-weight: bold;
+        position: relative;
+        padding-left: 12px;
+        &::after {
+          content: '';
+          position: absolute;
+          left: 0;
+          top: 50%;
+          transform: translateY(-50%);
+          width: 5px;
+          height: 12px;
+          background-color: var(--primary-color-3);
+          border-radius: 2px;
+        }
       }
       .codespace-wrap {
         width: 100%;

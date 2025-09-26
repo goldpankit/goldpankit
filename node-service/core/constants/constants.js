@@ -62,6 +62,7 @@ module.exports = {
         // {path: '*', source: 'ruoyi', target: '${projectEnName}' },
       ]
     },
+    syncPlugins: [], // 同步发布的插件列表
     settings: [], // 文件设置列表，设置内容见SERVICE_FILE_CONFIG_CONTENT
     introduce: '', // 插件简介
     readme: `详细的插件描述有利于使用者更好的明确您的插件意图，您可以采用以下大纲来完善您的服务信息。\n\n## 插件介绍\n\n\n## 代码设计\n\n\n## 使用说明\n\n\n## 效果预览\n\n\n## 注意事项` // 插件说明
