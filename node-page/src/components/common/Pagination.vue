@@ -28,6 +28,7 @@ export default {
 .el-pagination {
   --el-pagination-button-height: 40px;
   --el-component-size: 40px;
+  --el-pagination-hover-color: var(--primary-color-match-2) !important;
   justify-content: flex-end;
   :deep(.btn-prev), :deep(.btn-next) {
     &:hover {
@@ -40,6 +41,11 @@ export default {
   }
   &.pagination__bottom {
     margin-top: 20px;
+  }
+  :deep(.el-pager .number) {
+    &.is-active {
+      font-size: 20px;
+    }
   }
 }
 </style>

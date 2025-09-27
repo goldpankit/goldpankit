@@ -2,11 +2,17 @@
   <div class="page">
     <div class="wrap">
       <div class="header">
-        <h2>{{ $t('user.leasedAndPrivateServices') }}</h2>
+        <h2>我的服务和插件</h2>
       </div>
-<!--      <div class="search-wrap">-->
-<!--        <el-input size="large" placeholder="type here and press enter."/>-->
-<!--      </div>-->
+      <div class="search-wrap">
+        <el-input
+          v-model="form.keyword"
+          size="large"
+          placeholder="搜索框架或插件"
+          @keypress.enter="handleCurrentChange(1)"
+        />
+        <el-button type="primary" @clikc="handleCurrentChange(1)">搜索</el-button>
+      </div>
       <div v-loading="loading" class="service-list-wrap">
         <ul v-if="services.length > 0" class="service-list">
           <li v-for="service in services" :key="service.id">
@@ -89,6 +95,9 @@ export default {
   data () {
     return {
       loading: false,
+      form: {
+        keyword: '',
+      },
       pagination: {
         page: 1,
         capacity: 10,
@@ -184,7 +193,7 @@ export default {
       }
       fetchPage({
         ...this.pagination,
-        model: {}
+        model: this.form
       })
         .then(data => {
           this.services = data.records
@@ -251,9 +260,19 @@ export default {
   }
   .search-wrap {
     margin-bottom: 20px;
+    position: relative;
     .el-input {
       height: var(--input-search-height);
       font-size: var(--font-size-middle);
+      .el-input__inner {
+        padding-right: 120px;
+      }
+    }
+    .el-button {
+      width: 100px;
+      height: 100%;
+      position: absolute;
+      right: 0;
     }
   }
   .pagination {
