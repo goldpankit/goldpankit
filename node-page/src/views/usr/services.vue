@@ -2,7 +2,7 @@
   <div class="page">
     <div class="wrap">
       <div class="header">
-        <h2>我的服务和插件</h2>
+        <h2>我的框架和插件</h2>
       </div>
       <div class="search-wrap">
         <el-input

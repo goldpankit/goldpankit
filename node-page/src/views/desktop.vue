@@ -57,8 +57,8 @@
           <p>{{$t('space.createNewSpaceIntroduce')}}</p>
         </router-link>
         <router-link class="module private-services" :to="{ name: 'UserServices' }">
-          <h2>我的服务和插件</h2>
-          <p>点击此处可查看自己创建的服务和插件</p>
+          <h2>我的框架和插件</h2>
+          <p>点击此处可查看自己创建的框架和插件</p>
         </router-link>
       </div>
       <div class="project-wrap">
