@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://foruda.gitee.com/images/1692956820292184320/b882ad5d_1173697.png" width="50px"/>
+  <img src="https://foruda.gitee.com/images/1727349824894599116/8d940a96_1173697.png" width="80px"/>
   <h1>GoldPanKit</h1>
 </div>
 
