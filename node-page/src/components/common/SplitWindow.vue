@@ -18,7 +18,7 @@ export default {
   height: 100%;
   display: flex;
   // 拖拽
-  :deep(.gutter) {
+  & > :deep(.gutter) {
     background-color: var(--tool-toolbar-background-color);
     background-repeat: no-repeat;
     background-position: 50%;

@@ -1,10 +1,13 @@
 <template>
   <div class="merge-file-view" :class="{loading}">
     <div class="toolbar">
-      <p>提示：左侧为本地文件内容，右侧为即将写入文件的内容</p>
+      <p>
+        <template v-if="renderSideBySide">提示：左侧为本地文件内容，右侧为即将写入文件的内容</template>
+      </p>
       <div class="merge-file-view__opera">
-        <el-button @click="prev" icon="Top">Prev</el-button>
-        <el-button @click="next" icon="Bottom">Next</el-button>
+        <el-checkbox v-model="renderSideBySide" label="开启分屏" @change="handleSideBySideChange"/>
+        <el-button size="small" type="primary" @click="prev" icon="Top">上一处</el-button>
+        <el-button size="small" type="primary" @click="next" icon="Bottom">下一处</el-button>
       </div>
     </div>
     <div class="container"></div>
@@ -13,7 +16,7 @@
 
 <script>
 import * as monaco from 'monaco-editor'
-let diffEditor,diffNavi,originalModel,modifiedModel
+let diffEditor,originalModel,modifiedModel
 export default {
   name: "MergeTextFileView",
   props: {
@@ -39,7 +42,9 @@ export default {
   },
   data () {
     return {
-      loading: true
+      loading: true,
+      // 是否分屏
+      renderSideBySide: true
     }
   },
   watch: {
@@ -67,7 +72,7 @@ export default {
         this.__loadSuccess()
       })
     },
-    // 调整尺寸
+    // 调整尺寸（在合并窗口分割线拖拽时会触发）
     resize () {
       if (diffEditor != null) {
         diffEditor.layout()
@@ -83,8 +88,12 @@ export default {
           enableSplitViewResizing: true,
           // 禁用菜单
           contextmenu: false,
+          // 是否分屏
+          renderSideBySide: this.renderSideBySide,
           // 不忽略空格
-          ignoreTrimWhitespace: false
+          ignoreTrimWhitespace: false,
+          // 是否渲染左侧或中间工具条菜单（为false时，存在向右合并的箭头偶发不出现的情况）
+          renderGutterMenu: true
         }
       )
       // 左侧本地内容
@@ -106,19 +115,23 @@ export default {
         original: originalModel,
         modified: modifiedModel,
       })
-      // 差异导航对象
-      diffNavi = monaco.editor.createDiffNavigator(diffEditor, {
-        followsCaret: true, // resets the navigator state when the user selects something in the editor
-        ignoreCharChanges: true, // jump from line to line
-      });
       this.__loadSuccess()
     },
+    // 上一处差异
     next () {
-      diffNavi.next()
+      diffEditor.goToDiff('next')
     },
+    // 下一处差异
     prev () {
-      diffNavi.previous()
+      diffEditor.goToDiff('previous')
     },
+    // 切换分屏
+    handleSideBySideChange (checked) {
+      diffEditor.updateOptions({
+        renderSideBySide: checked
+      })
+    },
+    // 加载完成
     __loadSuccess () {
       setTimeout(() => {
         this.loading = false
@@ -182,7 +195,12 @@ export default {
       width: 200px;
       margin-left: 30px;
       display: flex;
+      align-items: center;
       justify-content: flex-end;
+      gap: 10px;
+      .el-button {
+        margin: 0;
+      }
     }
   }
   .container {
