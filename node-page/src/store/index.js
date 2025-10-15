@@ -98,9 +98,28 @@ export default new Vuex.Store({
             const field =  {
               ...dbField,
               // 增加显示状态
-              visible: modelField == null ? true : modelField.visible !== false,
-              // 增加别名
-              alias: modelField == null ? `${table.alias}_${dbField.name}` : modelField.alias
+              visible: modelField == null ? true : modelField.visible !== false
+            }
+            // 增加别名
+            // - 主表字段别名，与字段名本身一致，但优先获取原来配置的别名（用户可能修改过别名）
+            if (table.type === 'MAIN') {
+              // 优先使用原来的别名（用户可能修改过的别名）
+              if (modelField != null) {
+                field.alias = modelField.alias
+              } else {
+                field.alias = field.name
+              }
+            }
+            // - 子表字段别名，格式为 表别名_字段名，但优先获取原来配置的别名（用户可能修改过别名）
+            else if (table.type === 'SUB') {
+              // 优先使用原来的别名（用户可能修改过的别名）
+              if (modelField != null) {
+                field.alias = modelField.alias
+              }
+              // 字段别名 = 表别名_字段名
+              else {
+                field.alias = `${table.alias}_${dbField.name}`
+              }
             }
             // 该情况为kit.db.json中直接删除了别名，此时别名应当按照规则重新生成
             if (field.alias == null) {
