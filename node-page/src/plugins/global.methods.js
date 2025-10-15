@@ -198,7 +198,7 @@ export default {
     return import.meta.env.VITE_IMAGE_PREFIX + fileKey
   },
   // 复制
-  copyText (text) {
+  $copyText (text) {
     navigator.clipboard.writeText(text)
     this.$tip.apiSuccess('复制成功')
   }

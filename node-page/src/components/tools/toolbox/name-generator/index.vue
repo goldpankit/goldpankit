@@ -11,7 +11,7 @@
         >
           <h4>{{ item.label }}</h4>
           <h3>{{ item.value }}</h3>
-          <el-button size="default" @click="copyText(item.value)">复制</el-button>
+          <el-button size="default" @click="$copyText(item.value)">复制</el-button>
         </li>
       </ul>
     </div>

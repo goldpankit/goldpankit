@@ -5,13 +5,14 @@
         共存在 <em>{{ diffCount }}</em> 处差异
       </div>
       <div class="nav-controls">
+        <el-checkbox v-model="renderSideBySide" label="开启分屏对比" @change="handleSideBySideChange"/>
         <el-button size="default" type="primary" @click="goToPrevDiff">
           <el-icon><Top/></el-icon>
         </el-button>
         <el-button size="default" type="primary" @click="goToNextDiff">
           <el-icon><Bottom/></el-icon>
         </el-button>
-        <el-button size="default" type="danger" @click="goToNextDiff">
+        <el-button size="default" type="danger" @click="clear">
           清空
         </el-button>
       </div>
@@ -27,7 +28,6 @@ import * as monaco from 'monaco-editor'
 
 // 将编辑器相关实例声明在组件外部
 let diffEditor = null
-let diffNavi = null
 let originalModel = null
 let modifiedModel = null
 
@@ -36,8 +36,8 @@ export default {
   data() {
     return {
       developers: ['刘大逵'],
-      hasDiffComputed: false,
-      diffCount: 0
+      diffCount: 0,
+      renderSideBySide: true
     }
   },
   methods: {
@@ -50,8 +50,17 @@ export default {
       diffEditor = monaco.editor.createDiffEditor(this.$refs.diffEditorContainer, {
         automaticLayout: true,
         readOnly: false,
-        renderSideBySide: true,
-        originalEditable: true
+        originalEditable: true,
+        // 允许拖动左右窗口
+        enableSplitViewResizing: true,
+        // 禁用菜单
+        contextmenu: false,
+        // 是否分屏
+        renderSideBySide: this.renderSideBySide,
+        // 不忽略空格
+        ignoreTrimWhitespace: false,
+        // 是否渲染左侧或中间工具条菜单（为false时，存在向右合并的箭头偶发不出现的情况）
+        renderGutterMenu: true
       })
 
       // 设置编辑器的模型
@@ -71,51 +80,33 @@ export default {
 
       // 监听差异计算完成事件
       diffEditor.onDidUpdateDiff(() => {
-        this.updateDiffCount();
-      });
+        this.updateDiffCount()
+      })
     },
-
+    // 切换分屏
+    handleSideBySideChange (checked) {
+      diffEditor.updateOptions({
+        renderSideBySide: checked
+      })
+    },
+    // 清空
+    clear() {
+      originalModel.setValue('')
+      modifiedModel.setValue('')
+      this.updateDiffCount()
+    },
     // 新增更新差异数量的方法
     updateDiffCount() {
-      const lineChanges = diffEditor.getLineChanges() || [];
-      this.diffCount = lineChanges.length;
-
-      // 差异计算完成后再创建导航器
-      if (!diffNavi) {
-        diffNavi = monaco.editor.createDiffNavigator(diffEditor, {
-          followsCaret: true,
-          ignoreCharChanges: true,
-        });
-      }
-      this.hasDiffComputed = true;
+      const lineChanges = diffEditor.getLineChanges() || []
+      this.diffCount = lineChanges.length
     },
-
-    updateContent(originalText, modifiedText) {
-      if (!originalModel || !modifiedModel) {
-        this.initDiffEditor();
-      }
-      originalModel.setValue(originalText || '')
-      modifiedModel.setValue(modifiedText || '')
-
-      // 重置状态
-      this.hasDiffComputed = false;
-      this.diffCount = 0;
-      if (diffNavi) {
-        diffNavi.dispose();
-        diffNavi = null;
-      }
-    },
-
+    // 上一处
     goToPrevDiff() {
-      if (diffNavi && this.hasDiffComputed) {
-        diffNavi.previous();
-      }
+      diffEditor.goToDiff('previous')
     },
-
+    // 下一处
     goToNextDiff() {
-      if (diffNavi && this.hasDiffComputed) {
-        diffNavi.next();
-      }
+      diffEditor.goToDiff('next')
     }
   },
   mounted() {
@@ -134,10 +125,6 @@ export default {
     if (modifiedModel) {
       modifiedModel.dispose()
       modifiedModel = null
-    }
-    if (diffNavi) {
-      diffNavi.dispose()
-      diffNavi = null
     }
   }
 }
@@ -170,6 +157,11 @@ export default {
 
     .nav-controls {
       display: flex;
+      align-items: center;
+      gap: 8px;
+      .el-button {
+        margin: 0;
+      }
       .el-icon {
         font-size: 16px;
       }

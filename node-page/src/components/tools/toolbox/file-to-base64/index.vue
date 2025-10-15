@@ -1,5 +1,5 @@
 <template>
-  <div class="image-to-base64">
+  <div class="file-to-base64">
     <div class="content-wrap">
       <div v-if="error != null" class="error-message">
         {{ error }}
@@ -7,20 +7,20 @@
       <div class="file-upload-area">
         <el-upload
           drag
-          accept=".png, .jpg, .jpeg, .gif"
           action="none"
           :auto-upload="false"
           :on-change="handleFileChange"
           :show-file-list="false"
         >
-          <template v-if="base64 == null">
+          <template v-if="selectedFile == null">
             <el-icon class="el-icon--upload"><upload-filled /></el-icon>
             <div>
               拖动文件到此或 <em>点击上传</em> ，完成后将自动转为base64展示在底部区域
             </div>
           </template>
           <template v-else>
-            <img class="preview-image" :src="base64" alt="预览"/>
+            <Icon type="ELEMENT_PLUS" value="Document" size="80px"/>
+            <p>{{ selectedFile.name }}</p>
           </template>
         </el-upload>
       </div>
@@ -40,7 +40,7 @@
 <script>
 
 export default {
-  name: 'ImageToBase64',
+  name: 'FileToBase64',
   data () {
     return {
       developers: ['刘大逵'],
@@ -75,7 +75,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.image-to-base64 {
+.file-to-base64 {
   height: 100%;
   overflow-y: auto;
   padding: 30px;
@@ -98,7 +98,8 @@ export default {
 
   // 文件上传
   .file-upload-area {
-    flex-grow: 1;
+    flex-shrink: 0;
+    height: 150px;
     overflow: hidden;
     & > div {
       height: 100%;
@@ -126,8 +127,7 @@ export default {
 
   // base64内容
   .base64-wrap {
-    flex-shrink: 0;
-    height: 300px;
+    flex-grow: 1;
     border: 1px dashed var(--el-border-color);
     border-radius: 5px;
     margin-top: 20px;

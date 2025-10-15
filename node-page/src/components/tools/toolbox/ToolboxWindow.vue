@@ -34,6 +34,7 @@ import ToolWindow from '@/components/tools/ToolWindow'
 import BaseToolWindow from '@/components/tools/BaseToolWindow'
 import ToolRouter from '@/components/tools/toolbox/ToolRouter'
 import Empty from '@/components/common/Empty'
+import FileToBase64 from "@/components/tools/toolbox/file-to-base64/index.vue";
 
 export default {
   name: 'ToolboxWindow',
@@ -50,6 +51,7 @@ export default {
         { name: 'FileSecurer', pinyin: 'wenjianjiajiemi', label: '文件加解密' },
         { name: 'NameGenerator', pinyin: 'mingmingshengcheng', label: '命名生成' },
         { name: 'ImageToBase64', pinyin: 'tupianzhuanbase64', label: '图片转Base64' },
+        { name: 'FileToBase64', pinyin: 'wenjianzhuanbase64', label: '文件转Base64' },
         { name: 'Base64ToImage', pinyin: 'base64zhuanpupian', label: 'Base64转图片' },
         // { name: 'qr-generator', label: '二维码生成' },
         // { name: 'ip-query', label: 'IP地址查询' },

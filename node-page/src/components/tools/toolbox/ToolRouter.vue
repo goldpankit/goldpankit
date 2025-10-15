@@ -16,6 +16,7 @@ import PasswordGenerator from './password-generator/index'
 import TextComparer from './text-comparer/index'
 import FileSecurer from './file-securer/index'
 import ImageToBase64 from './image-to-base64/index'
+import FileToBase64 from './file-to-base64/index'
 import Base64ToImage from './base64-to-image/index'
 import LocalInfo from './local-info/index'
 import Empty from '@/components/common/Empty'
@@ -32,6 +33,7 @@ export default {
     TextComparer,
     FileSecurer,
     ImageToBase64,
+    FileToBase64,
     Base64ToImage
   },
   props: {

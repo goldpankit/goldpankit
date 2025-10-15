@@ -6,23 +6,23 @@
         <li>
           <label>公网IP</label>
           <p class="text-danger">{{ localInfo.publicIP }}</p>
-          <el-button size="small" type="primary" @click="copyText(localInfo.publicIP)">复制</el-button>
+          <el-button size="small" type="primary" @click="$copyText(localInfo.publicIP)">复制</el-button>
         </li>
         <li>
           <label>本地IPv4地址</label>
           <p class="text-danger">{{ localInfo.ipv4 }}</p>
-          <el-button size="small" type="primary" @click="copyText(localInfo.ipv4)">复制</el-button>
+          <el-button size="small" type="primary" @click="$copyText(localInfo.ipv4)">复制</el-button>
         </li>
         <!-- 不一定准确，暂不研究 -->
 <!--        <li>-->
 <!--          <label>局域网IPv6</label>-->
 <!--          <p class="text-danger">{{ localInfo.ipv6 }}</p>-->
-<!--          <el-button size="small" type="primary" @click="copyText(localInfo.ipv6)">复制</el-button>-->
+<!--          <el-button size="small" type="primary" @click="$copyText(localInfo.ipv6)">复制</el-button>-->
 <!--        </li>-->
         <li>
           <label>Mac</label>
           <p>{{ localInfo.mac }}</p>
-          <el-button size="small" type="primary" @click="copyText(localInfo.mac)">复制</el-button>
+          <el-button size="small" type="primary" @click="$copyText(localInfo.mac)">复制</el-button>
         </li>
       </ul>
     </div>
@@ -32,7 +32,7 @@
         <li>
           <label>CPU</label>
           <p>{{ localInfo.cpu }}</p>
-          <el-button size="small" type="primary" @click="copyText(localInfo.cpu)">复制</el-button>
+          <el-button size="small" type="primary" @click="$copyText(localInfo.cpu)">复制</el-button>
         </li>
         <li>
           <label>操作系统内核</label>
