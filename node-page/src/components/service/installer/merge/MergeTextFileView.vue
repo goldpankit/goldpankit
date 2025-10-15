@@ -5,7 +5,7 @@
         <template v-if="renderSideBySide">提示：左侧为本地文件内容，右侧为即将写入文件的内容</template>
       </p>
       <div class="merge-file-view__opera">
-        <el-checkbox v-model="renderSideBySide" label="开启分屏" @change="handleSideBySideChange"/>
+        <el-checkbox v-model="renderSideBySide" label="开启分屏对比" @change="handleSideBySideChange"/>
         <el-button size="small" type="primary" @click="prev" icon="Top">上一处</el-button>
         <el-button size="small" type="primary" @click="next" icon="Bottom">下一处</el-button>
       </div>
