@@ -30,10 +30,10 @@ export default {
       allDevelopers: [
         {
           name: '刘大逵',
-          home: 'https://v.douyin.com/iyacJeUA/',
-          email: '',
-          github: 'https://github.com/jason',
-          gitee: 'https://github.com/jason',
+          home: 'https://gitee.com/goldpankit',
+          email: 'caesar.liu@goldpankit.com',
+          github: 'https://gitee.com/goldpankit',
+          gitee: 'https://gitee.com/goldpankit',
         },
         {
           name: '天析',
