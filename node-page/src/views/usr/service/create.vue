@@ -1,22 +1,22 @@
 <template>
   <div class="form">
     <div class="wrap">
-      <h2>{{$t('service.createService')}}</h2>
+      <h2>创建新的项目框架</h2>
       <FormTip v-if="space != null">
-        为空间<em>{{space}}</em>创建服务。
+        为项目<em>{{space}}</em>创建新的框架。
       </FormTip>
       <el-form ref="form" :model="form" :rules="getRules()">
-        <el-form-item label="服务名称" prop="label" required>
+        <el-form-item label="框架名称" prop="label" required>
           <el-input ref="labelInput" v-model="form.label" @input="handleLabelInput"/>
-          <FormItemTip content="服务名称将展示给使用者，方便使用者更好的理解您的用意。"/>
+          <FormItemTip content="框架名称将展示给使用者，方便使用者更好的理解您的用意。"/>
         </el-form-item>
-        <el-form-item label="服务标识符" prop="name" required>
+        <el-form-item label="框架标识符" prop="name" required>
           <el-input class="follow-input" v-model="form.name"/>
-          <FormItemTip content="服务标识符会在使用者安装您的服务后记录在项目配置文件中，且标识符在同一个服务空间中是唯一的，一旦确认将不可修改。"/>
+          <FormItemTip content="框架标识符会在使用者安装您的框架后记录在配置文件中，且标识符在同一个项目中是唯一的，一旦确认将不可修改。"/>
         </el-form-item>
       </el-form>
       <div class="opera">
-        <el-button type="primary" @click="create">创建服务</el-button>
+        <el-button type="primary" @click="create">创建新框架</el-button>
       </div>
     </div>
   </div>

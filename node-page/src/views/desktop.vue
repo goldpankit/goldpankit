@@ -53,8 +53,8 @@
       <!-- 开发者可见 -->
       <div v-if="userInfo != null && userInfo.isDeveloper" class="line gap-top">
         <router-link :to="{ name: 'CreateSpace' }" class="module new-space">
-          <h2>{{$t('space.createNewSpace')}}</h2>
-          <p>{{$t('space.createNewSpaceIntroduce')}}</p>
+          <h2>创建新的项目</h2>
+          <p>点击此处可创建一个新的项目，您可以自由选择是私有项目或公共项目。</p>
         </router-link>
         <router-link class="module private-services" :to="{ name: 'UserServices' }">
           <h2>我的框架和插件</h2>

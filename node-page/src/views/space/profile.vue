@@ -56,6 +56,15 @@
             class="pc-only"
             @click="openDoc"
           >查看技术文档</el-button>
+          <el-button
+            v-if="userInfo != null && userInfo.isDeveloper"
+            @click="$router.push({
+              name: 'CreateService',
+              query: {
+                space: $route.query.p,
+              }
+            })"
+          >发布框架</el-button>
         </div>
       </div>
     </div>
@@ -99,6 +108,7 @@
 </template>
 
 <script >
+import { mapState } from 'vuex'
 import MarkdownEditor from '@/components/common/MarkdownEditor'
 import BuySourceCodeWindow from '@/components/space/BuySourceCodeWindow'
 import BuyEpibolyWindow from '@/components/space/BuyEpibolyWindow'
@@ -118,6 +128,9 @@ export default {
       // 项目信息
       projectProfile: null
     }
+  },
+  computed: {
+    ...mapState(['userInfo'])
   },
   methods: {
     init () {

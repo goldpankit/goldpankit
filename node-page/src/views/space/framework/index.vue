@@ -79,7 +79,7 @@
                   service: service.name
                 }
               })"
-            >创建插件</el-button>
+            >发布插件</el-button>
           </div>
           <!-- 服务基础信息 -->
           <ul class="info-list">
